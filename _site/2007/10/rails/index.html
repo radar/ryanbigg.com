@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2007/10/rails"><header>Rails 2.0</header></a>
+        <p>Rails 2.0 Preview Release 1 was released a couple of days ago. The original idea was of this post to go through all the changelogs and find out all the stuff I thought was cool and list it here. The problem is that there&#8217;s too much cool stuff. <span>url=http://blog.rubyonrails.org/2007/9/30/rails-2-0-0-preview-release</span>DHH summed it up quite nicely.<span>/url</span></p>
+
+<p>My favourites are:</p>
+
+<ol>
+<li>has_one and has_many for restful routes. For example, <span>term</span>map.resources :forums, :has_many =&gt; :topics<span>/term</span>.</li>
+
+<li>Sexy migrations.</li>
+
+<li>The way it loads faster, mashing all the javascript/css into one file so it only gets two files (one for js, one for css) instead of 6 or 7.</li>
+
+<li>Instead of specifying <span>term</span>topic_path(@topic)<span>/term</span> for a topics path, now you can do <span>term</span>topic_path<span>/term</span> and Rails will know what you&#8217;re talking about.</li>
+</ol>
+
+<p>One thing I&#8217;m annoyed at is that routes like <span>term</span>forum_edit_topic_path(forum,topic) <span>/term</span> to edit a topic now become: <span>term</span>edit_forum_topic_path(forum,topic)<span>/term</span> Going through each page and finding all the routes that use this will be a pain, and I&#8217;m considering making a small ruby script to do it for me.</p>
+
+<p>TOMORROW, I hope to get the LPC report up!</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2010/12/commit-it-or-else"><header>Commit it, or else!</header></a>
+        <p>I&#8217;ve seen the same question pop up a couple of times now:</p>
+<blockquote>
+  Should I commit the Gemfile.lock file that Bundler generates?
+</blockquote>
+<p>Yes. Do it. Do it now if you haven&#8217;t already.</p>
+
+<p>Another common question is:</p>
+<blockquote>
+  I always get conflicts in my db/schema.rb file, why should I commit that?
+</blockquote>
+<p>This post answers both.</p>
+<h3>"Why should I commit Gemfile.lock?"</h3>
+<p>When you run <code>bundle install</code> in your project, Bundler will download and install all the gems and their dependencies and their dependencies&#8217; dependencies (and so on) and then create a <code>Gemfile.lock</code> file based on what it installed.</p>
+
+<p>This file is incredibly important because it lists all the precise versions of everything that your project uses at that point in time. Of course, it&#8217;s up to you to ensure that the project is actually working at this point&#8230; something that you should be doing before you commit the <code>Gemfile</code> <strong>and</strong> the <code>Gemfile.lock</code> files. Whenever somebody else clones this project (say, in a couple of days after your setup) and runs <code>bundle install</code>, they will get the <strong>exact same</strong> versions of the gems. Without <code>Gemfile.lock</code>, dependencies will be re-resolved and versions could have been updated during that time. This can lead to undesired outcomes.</p>
+
+<p>Commit it, or else.</p>
+<h3>"Why should I commit schema.rb?</h3>
+<p>The <code>db/schema.rb</code> file in Rails plays a very similar role to that of the <code>Gemfile.lock</code>. Its purpose is to provide the schema for the database at the absolute latest point. This allows everybody who&#8217;s working on the project &#8211; regardless of what time they enter the project &#8211; to run <code>rake db:schema:load</code> to get the absolute latest schema.</p>
+
+<p>Now note here that I <strong>don&#8217;t</strong> recommend running <code>rake db:migrate</code> to get the latest database schema. There&#8217;s a couple of reasons why people may think this is a good idea, but let me tell you right now: it isn&#8217;t. If you&#8217;re getting started on a project, use <code>rake db:schema:load</code> to get set up (after, of course, setting up the database).</p>
+
+<p><code>rake db:migrate</code> will run <em>every single damn migration</em> in your project, creating tables in one &#8220;step&#8221; and then destroying them in a future step. This is an utter waste of time. <code>db/schema.rb</code> has the final outcome of it already there for you.</p>
+
+<p>Also, if you&#8217;re using <code>rake db:migrate</code> to insert data into your database: don&#8217;t. Use <code>db/seeds.rb</code> for that.</p>
+
+<p>On a similar train of thought: if you&#8217;re using migrations to execute queries that you can&#8217;t do using Rails helpers, perhaps that&#8217;s not such a good idea either. Think about it: the only way you&#8217;re going to be able to run those again on another machine is by running all the migrations again, which we&#8217;ve just established is a Terrible Idea. What may be less of a Terrible Idea is to have an alternative Rake task such as a <code>db:setup</code> script which runs <code>db:schema:load</code> and then executes those specific queries. Yes, it&#8217;s more files to maintain, but this would stop you from having to run <strong>all</strong> the migrations to get those specific queries to re-run. Migrations shouldn&#8217;t be used to do this kind of low-level activity; it just simply doesn&#8217;t fit.</p>
+
+<p>As for the conflicts in <code>db/schema.rb</code>? You&#8217;re a programmer for crying out loud. Suck it up and deal with it. Or <a href='http://tbaggery.com/2010/10/24/reduce-your-rails-schema-conflicts.html'>code up a solution</a>, at least.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2007/06/testing-and-migrations"><header>Testing and Migrations</header></a>
+        <p>So I begun a new, very awesome job on Monday. I would say the job trumps anything Coles has to offer and here&#8217;s some of the reasons:</p>
+
+<ol>
+<li>Chairs (something that Coles really needs), comfortable ones too</li>
+
+<li>Wide-screens</li>
+
+<li>Lack of green bags</li>
+
+<li>Great people with equally great knowledge about everything Rails and of course,</li>
+
+<li>Doing something I truly love</li>
+</ol>
+
+<p><span>font:size=4</span>Testing<span>/font</span> Before starting the new job, I had some knowledge of Ruby and Rails, but since then I think it&#8217;s expanded a bit. For example, I now know how to test. Say I want to make sure that it returns an error if the blog&#8217;s subject is blank, and assuming I&#8217;ve set up the model correctly.</p>
+
+<p><span>code</span> require File.dirname(__FILE__) + &#8216;/../test_helper&#8217; class BlogTest &lt; Test::Unit::TestCase def test_validation assert !Blog.new(:description =&gt; &#8220;Here&#8217;s a description&#8221;, :text =&gt; &#8220;And here&#8217;s some text, but uh oh&#8230;&#8221;).save end end <span>/code</span> Basically it says make sure that when I create a new blog using the fields and data provided that it errors. If it errors then it will pass the test. Testing is much more complex than that, especially when you get to the controller testing.</p>
+
+<p>In this example we assume there&#8217;s already two blogs in the table, which is default for fixtures. We also assume that the blog controller&#8217;s action &#8220;create&#8221; is protected by the acts_as_authenticated method of logged_in, which requires session<span>:user</span> to be something other than false!</p>
+
+<p><span>code</span> require File.dirname(__FILE__) + &#8216;/../test_helper&#8217;</p>
+
+<h1 id='beleive_it_or_not_this_line_actually_includes_the_blog_controller_appcontrollersblog_controllerrb'>beleive it or not, this line actually includes the blog controller (app/controllers/blog_controller.rb)!</h1>
+
+<p>require &#8216;blog_controller&#8217;</p>
+
+<p>class BlogController; def rescue_action(e) raise e end; end</p>
+
+<p>class BlogControllerTest &lt; Test::Unit::TestCase def setup @controller = ForumController.new @request = ActionController::TestRequest.new @response = ActionController::TestResponse.new end fixtures :blogs, :users def test_posting</p>
+
+<h1 id='posts_to_blogcreate_and_specifies_sessionuser__1'>posts to blog/create and specifies session<span>:user</span> = 1</h1>
+
+<p>post :create, { :blog =&gt; { :subject =&gt; &#8220;Alright, this should work.&#8221;, :description =&gt; &#8220;At least, we hope so.&#8221;, :text =&gt; &#8220;And we need text, don&#8217;t forget text.&#8221; }}, { :user =&gt; 1 } assert_equal 3, Blog.count end end <span>/code</span></p>
+
+<p>Again, that code should pass and everything should be OK. These can be so much more complicated, I&#8217;m just using basic examples to show why they are awesome.</p>
+
+<p>Another feature of testing is the mocks, located in &#8220;yourapp/test/mocks&#8221; these allow you to create duplicates of the libraries that you would otherwise use in the application, but may want some of the methods to perform differently than what they do in the real version. For example today I used the following:</p>
+
+<p><span>code</span> module AuthenticatedSystem def logged_in? return true end end <span>/code</span></p>
+
+<p>So when the test runs it loads the mocked version of AuthenticatedSystem, and when the &#8220;logged_in?&#8221; method is called it uses the method defined in the mocked version instead of the one in the real version.</p>
+
+<p><span>font:size=4</span>Migrations<span>/font</span></p>
+
+<p>Another thing we covered was Migrations. Migrations let you keep track of the versions of your database, and therefore allow you to revert changes if you manage, and apparently you will manage, to stuff something up.</p>
+
+<p>To generate a migration first of all you can run the &#8220;ruby script/generate migration <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;name&gt;&quot;, where &lt;name&gt; is something logical, like create_tables. This will generate the first migration, or first version of your database. This file will be located at &quot;db/migrate/001_&lt;name&gt;.rb&quot;, go on and open it up to see something like this:</pre></p>
+
+<p><span>code</span> class CreateTables &lt; ActiveRecord::Migration def self.up end def self.down end end <span>/code</span></p>
+
+<p>Which we can flesh out to be something more like this:</p>
+
+<p><span>code</span> class CreateTables &lt; ActiveRecord::Migration def self.up create_table :blogs do |t| add_column &#8220;subject&#8221;, :string add_column &#8220;description&#8221;, :string add_column &#8220;text&#8221;, :text add_column &#8220;created_at&#8221;, :datetime end create_table :comments do |t| add_column &#8220;text&#8221;, :text add_column &#8220;user_id&#8221;, :integer add_column &#8220;created_at&#8221;, :datetime end create_table :users do |t| add_column &#8220;login&#8221;, :string add_column &#8220;password&#8221;, :string end end</p>
+
+<p>def self.down drop_table :blogs drop_table :comments drop_table :users end end</p>
+
+<p><span>/code</span></p>
+
+<p>Alright, so I elaborated a bit that time. Basically, that should create a very skeletised version of a blog + comments + users database for a blog application. So, how do we get it into the database? Well, you could go into mysql and type something like&#8230;</p>
+
+<p>CREATE TABLE <code>blogs</code> ( <code>id</code> INT(11)&#8230; etc. etc etc. )</p>
+
+<p>Or you could just go into your terminal/prompt and type the beautiful command of: <span>code</span> rake db:migrate <span>/code</span></p>
+
+<p>In a hassle-free instant your tables are in your database raring to go.</p>
+
+<p>Now say that I forgot to put in the blog_id field for comments (which I intentionally did in the example), you need to create a new migration by performing &#8220;ruby script/generate migration <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;another_name&gt;&quot; where another_name can be whatever you please.</pre></p>
+
+<p>Again you&#8217;ll see the familiar self.up and self.down methods if you open 002_<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;another_name&gt;.rb which we&apos;ll alter to make it become:</pre></p>
+
+<p><span>code</span> class add_blogid &lt; ActiveRecord::Migration def self.up add_column(&#8220;comments&#8221;,&#8221;blog_id&#8221;,:integer) end end</p>
+
+<p>def self.down remove_column(&#8220;comments&#8221;,&#8221;blog_id&#8221;,:integer) end end <span>/code</span></p>
+
+<p>After that we run &#8220;rake db:migrate&#8221; again in the terminal/prompt and we&#8217;re now up to version 2 of our database. How do we know that? Look in db/schema.rb,</p>
+
+<p><span>code</span> ActiveRecord::Schema.define(:version =&gt; 2) <span>/code</span></p>
+
+<p>Now what if you stuff something up?</p>
+
+<p>rake db:migrate VERSION=<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;version_number_you_want_to_revert_to&gt;</pre></p>
+
+<p>So say you want version 2 because you obliterated the users table in version 3,</p>
+
+<p>rake db:migrate VERSION=2</p>
+
+<p>I would like to thank Anuj and Vishal for being exceptionally patient with me thus far.</p>
+<hr />
+<p>Aside:</p>
+
+<p>A few years ago I did work experience at this place called &#8220;Berlin Wall Software Supermarket&#8221;, and on my first day the owner (Rob) says to me &#8220;You shouldn&#8217;t be here.&#8221;, first impressions weren&#8217;t all that excellent. He emphasised his jerk-ness by making me and my work experience buddy go through the whole store and make sure the stock was in alphabetical order. Then we were seperated because we were getting on too well. So I went to the other store.</p>
+
+<p>There I worked with the owner&#8217;s son, Jamie. First impressions were that he was a pretty decent person, but as soon as we got to the store it turned out he too was an asshole.</p>
+
+<p>Now that I&#8217;ve got a new job I get to walk past both stores every day. The one closer to my work has faded displays of World of Warcraft and is always empty when I walk past it. The other store is now closed down and has been converted into a clothing store.</p>
+
+<p>I make it my duty to walk past that store every day and silently laugh at them and think of how far I have come since those days.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

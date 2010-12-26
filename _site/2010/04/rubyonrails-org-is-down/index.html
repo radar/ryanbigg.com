@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2010/04/rubyonrails-org-is-down"><header>rubyonrails.org is down</header></a>
+        <s>Again!
+
+Put this into your hosts file:
+
+<pre>
+209.20.86.131 rubyonrails.org api.rubyonrails.org guides.rubyonrails.org gems.rubyonrails.org
+</pre>
+
+And all should be well.</s>
+<p>Seems to be broken for now. Follow these instructions if you want the guides:</p>
+<pre>
+git clone git://github.com/rails/rails.git
+git checkout origin/2-3-stable -b 2-3-stable
+cd rails/railties
+rake generate_guides
+open guides/output/index.html
+</pre>
+<p>Run <code>gem server</code> if you want access to the API documentation.</p>
+
+<p>You&#8217;d think they would have sorted this out by now! This has happened, to my recollection, for the past 3-4 years. Hopefully now DHH renews it for a longer period than just a year.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

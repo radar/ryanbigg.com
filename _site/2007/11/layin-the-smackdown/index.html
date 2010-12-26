@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2007/11/layin-the-smackdown"><header>Layin' The Smackdown!</header></a>
+        <p>There&#8217;s a forum on the internet called Rails Forum which is a support forum for Rails (duh). I&#8217;ve been helping out on the forums for a few months now and some of the things people do surprise me. Sometimes they are things like &#8220;why didn&#8217;t I think of that&#8221;, and other times it&#8217;s like &#8220;why did they do that?&#8221;. <a href='http://railsforum.com/viewtopic.php?pid=45524#p45524'>Here's a thread that was one of the latter</a></p>
+
+<p>A guy wanted to add values into a select tag using javascript. He used this code: <p class='code'> window.parent.document.getElementById('client_name').value = '&lt;%= @client.client_name %&gt;';</p> I replied suggesting this code:</p>
+
+<p>&#60;div class=&#8217;code&#8217;&#62;</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;p class=&quot;code&quot;&gt; $(&apos;element_id&apos;).innerHTML = &quot;Option 1&quot;
+&amp;lt;/div&amp;gt;
+Which I know works because I&apos;ve used it before.
+
+Then he replies saying:
+
+&lt;p class=&quot;blockquote&quot;&gt; &lt;strong&gt;Viniosity said:&lt;/strong&gt;
+Ended up using:
+&lt;p class=&quot;code&quot;&gt; window.parent.document.getElementById(&apos;client_name&apos;).value = &quot;&amp;lt;%=client.id %&amp;gt;&quot;;&lt;/p&gt;
+Dear GOD why? At least ditch the window.parent, please!
+
+And I replied yet again:
+&lt;p class=&quot;quote&quot;&gt;I don&apos;t see how that would work. If you&apos;re having a drop down list, and you&apos;re setting the value attribute on it, well... there just isn&apos;t a value attribute! Are you sure this is working because I think that it wouldn&apos;t.&lt;/p&gt;
+I could be wrong, as last time I checked I was Human.
+
+Then he made a reference to me looking like a terminator in my &lt;a href=&quot;http://railsforum.com/img/avatars/174.png&quot;&gt;current avatar on the forums&lt;/a&gt;
+
+Then another guy jumped into the fray called boemitsu who came up with this little beauty:
+
+&lt;p class=&quot;quote&quot;&gt; &lt;strong&gt;boemitsu said:&lt;/strong&gt;
+From my experience, this does not work in IE until version 6...
+
+UNTIL VERSION 6! Oh no! Lucky most people are running version 6 (or better or Firefox).
+
+boemitsu also gave this gem of code too:
+
+&lt;p class=&quot;code&quot;&gt; i=0
+@var.each {|a|
+page &amp;lt;&amp;lt; &quot;$(&apos;id&apos;).options[#{i}] = new Option(&apos;#{a[0]}&apos;,&apos;#{a[1]}&apos;)&quot;
+i = i+1
+}
+
+Maybe he confused JavaScript with Java?
+
+I replied a final time:
+&lt;p class=&quot;quote&quot;&gt; &lt;strong&gt;Me, whilst laying the smackdown said:&lt;/strong&gt;For a moment there I did that thing people do, you know, put one hand on the side of the face and slowly drag it downwards whilst making a groaning noise.&lt;/p&gt;
+Then I re-read what you had written:
+&quot;This does not work in IE until version 6&quot;
+
+Thankfully there was this new operating system released back in 2001 (October 25th, for those of you playing along at home) called Windows XP. This operating system came standard with Internet Explorer Version 6.0 (six-point-oh). Unfortunately, the majority of people were still using Windows ME, or worse, Windows 98, so the &quot;standard&quot; back in 2001 was what came with those operating systems which was Internet Explorer Version 5.5 (five-point-five).
+
+Fortunately the wonderful people at Microsoft decided that on 11th July 2006 that Windows ME and Windows 98 were to be no longer supported! Fantastic news for Microsoft, of course, this meant that more people had to &quot;upgrade&quot; to Windows XP, therefore giving Microsoft more money in which they were to put into a burning pit of lava they call &quot;Vista&quot;.
+
+My point is this (and honestly, I&apos;m surprised you&apos;re still reading), Windows ME and Windows 98 were basically deprecated in 2006. This means anyone using those had to upgrade, meaning they are now *most likely* running Internet Explorer 6 or Mozilla or Opera or Safari or some other browser, and not Internet Explorer 5.5. If we were to support all the older versions of all the software ever created we would still be coding in Fortran and COBOL, or worse, Perl.
+
+Thankfully, old technology is eventually deprecated meaning that, as web developers, we can say &quot;that is no longer supported, please upgrade&quot; and get away with it. Anyone still running Windows 98 and Windows ME deserves to be shot anyway.
+
+That is all.
+
+boemitsu, the man who apparently never sleeps, replied within an instant:
+
+&lt;p class=&quot;quote&quot;&gt; &lt;strong&gt;boemitsu said:&lt;/strong&gt;
+Well sorry that I have written mistakenly until version 6. It should have been version &amp;lt;= 6But anyway...you&apos;re really a cool guy.
+
+So apparently it doesn&apos;t work in IE 6 (and I&apos;m a really cool guy). I&apos;m not sure on this myself (the not working in IE6), as I use Mozilla Firefox. I&apos;ll investigate this later this week and report back.</pre>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

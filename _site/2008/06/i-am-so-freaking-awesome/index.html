@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2008/06/i-am-so-freaking-awesome"><header>I am so freaking awesome</header></a>
+        <pre lang='rails'>
+  (Dir.entries("#{RAILS_ROOT}/app/models") - [".","..",".svn"]).each do |model|
+    has_many model.split(".").first.pluralize.to_sym, :foreign_key => "owner_id"
+  end
+</pre>
+<p>I tried adding:</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre lang=&apos;rails&apos;&gt;
+ if model.classify.is_a?(ActiveRecord::Base)
+      &lt;&lt;-EVAL
+      class #{model.classify}
+        belongs_to :owner
+      end
+      EVAL
+    end
+&lt;/pre&gt;</pre>
+<p>too, but Rails didn&#8217;t like that.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

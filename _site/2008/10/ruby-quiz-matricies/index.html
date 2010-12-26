@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2008/10/ruby-quiz-matricies"><header>Ruby Quiz - Matricies</header></a>
+        <pre lang='ruby'>
+nb = 5
+distance = Array.new(nb, Array.new(nb))
+k = 0
+(0...nb).each do |i|
+  (0...nb).each do |j|
+    distance[j][i] = k +=1
+  end
+end
+
+puts distance.inspect
+</pre>
+<p>This code should generate: <span class='term'>[[1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,13,19,25], [5,10,15,20,25]]</span></p>
+
+<p>But generates: <span class='term'>[[5,10,15,20,25], [5,10,15,20,25], [5,10,15,20,25], [5,10,15,20,25], [5,10,15,20,25]]</span></p>
+
+<p>I learned why today, and I wonder if anyone else knows.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

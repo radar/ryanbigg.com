@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2007/06/when-dchp-goes-bad"><header>When DCHP goes bad!</header></a>
+        <p>I couldn&#8217;t find anything similar to this on Google, maybe I just wasn&#8217;t googling the right things.</p>
+
+<p>So at work they installed some new computers recently which both have one network interface each and both are set to dhcp and both are running Ubuntu 7.04.</p>
+
+<p>At work they have two connections to the outside world, one is a Telstra link (192.168.0.9 -&gt; 192.168.0.82 -&gt; Internet), and the other is an Internode connection (192.168.0.254).</p>
+
+<p>The first two addresses in both sets of brackets are gateways. 192.168.0.9 is the DHCP server for the whole 192.168.0.* network, as well as the first gateway. 192.168.0.254 is a router which connects to Internode. 192.168.0.82 is another router, which the DHCP server (192.168.0.9) uses as it&#8217;s default gateway. This means that every computer that 192.168.0.9 assigns an IP address to, it will set it&#8217;s default gateway to 192.168.0.9 which forwards to 192.168.0.82, which is the wrong connection! Confused yet?</p>
+
+<p>Shortly after realising this we noticed that if we did: <span>term</span> route del default gw 192.168.0.9 route add default gw 192.168.0.254 <span>/term</span></p>
+
+<p>&#8230;it would set the default gateway to 192.168.0.254, the correct one! We figured that if we rebooted it would remember this setting. We were wrong. Upon rebooting it reverts back to 192.168.0.9 and we were back at square one.</p>
+
+<p>Anuj suggested that we make an init.d script and Adam suggested using update-rc.d to get it to run on startup. So that&#8217;s what we did. (Ours was originally named &#8220;route_del&#8221;, I thought I&#8217;d give it a better name here.</p>
+
+<p><span>code=&#8217;/etc/init.d/fix_routes&#8217;</span></p>
+
+<h1 id='binbash'>!/bin/bash</h1>
+
+<p>route del default gw 192.168.0.9 route add default gw 192.168.0.254 <span>/code</span></p>
+
+<p>And then entered the command:</p>
+
+<p><span>code</span> sudo update-rc.d fix_routes defaults <span>/code</span></p>
+
+<p>And rebooted. Upon rebooting the computer the default route was set at 192.168.0.254 and we weren&#8217;t connected to crappy Telstra any more!</p>
+
+<p>Edit: Adam, the guy who basically runs <span>url=http://offbeat-zero.net/pulse</span>WSI<span>/url</span>, has informed me that if I add the lines: <span>code</span> up route del gw 192.168.0.82 up route add gw 192.168.0.254 down route del gw 192.168.0.254 down route add gw 192.168.0.82 <span>/code</span> to /etc/network/interfaces just under the definition of my network interface (eth0) it will do the same thing and is much less of a hack than our solution.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

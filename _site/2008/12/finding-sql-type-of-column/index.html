@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2008/12/finding-sql-type-of-column"><header>Finding SQL Type of Column </header></a>
+        <a href='http://rails.loglibrary.com/chats/15238428/excerpt'>exlibris</a><ul>
+	<li>Precision (integer, notes the precision of the column if it's decimal-based)</li>
+	<li>Primary (boolean, identifies if column is primary key)</li>
+	<li>default</li>
+	<li>limit (integer, denotes how long the field can be)</li>
+	<li>type (symbol, the class type in lowercase)</li>
+	<li>name (string, fairly obvious)</li>
+	<li>null (boolean, identifies if column can be set to null)</li>
+	<li>scale (integer, does something)</li>
+	<li>sql_type (returns the sql type of the column)</li>
+</ul>
+<p>That final column is the magic attribute we&#8217;re looking for. To get to it we access it like <span class='term'>Model.columns_hash["attribute"].sql_type</span></p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

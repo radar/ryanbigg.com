@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2009/12/ruby-1-9-1-friends-11-months-on"><header>Ruby 1.9.1 & Friends: 11 Months On</header></a>
+        <p>I admit that the title would be cooler if this were &#8220;1 year on&#8221; but I couldn&#8217;t wait. Sorry.</p>
+
+<p>Back in January I <a href='http://frozenplague.net/2009/01/ruby-191-rubygems-rails/'>wrote a post</a> about installing Ruby 1.9.1 on my Mac OS X box and the issues associated with it. The &#8220;end goal&#8221; was to get <a href='http://github.com/radar/rboard'>rboard</a> running on it under passenger. This was painful back in January! It&#8217;s so much easier now!</p>
+
+<p>Unfortunately, there&#8217;s still <a href='http://stackoverflow.com/questions/1627582/ruby-1-9-1-p234-passenger-2-2-5-rails-2-3-stable-closed-stream-on-post-request'>this bug </a> which effects you if you&#8217;re on Passenger and 1.9.1. There&#8217;s a patch for one of the answers there and that&#8217;ll get your application working, but I&#8217;m of the belief that you <strong>should not ever</strong> have to patch a gem and especially the Ruby source.</p>
+
+<p><strong>I want to know: Have you tried running your app on 1.9? Have you encountered any showstoppers?</strong></p>
+
+<p>Quite a lot has changed since January and I&#8217;ve decided instead of updating that post, I&#8217;m going to go through the entire process again. This is because I would like to show how far Ruby has come during the time since I have written and updated that post and that running your application on Ruby 1.9.1 isn&#8217;t as much hassle as people make it out to be.</p>
+
+<p>This time I will be installing it all on an Ubuntu box, since that&#8217;s more than likely the location where you&#8217;re going to be deploying your app&#8217;s code to. I&#8217;ll be using Ruby 1.9.1p243 and Rails 2.3.5.</p>
+
+<p>For those of you who don&#8217;t like long blog posts <a href='http://gist.github.com/249555'>here's the script</a> if you want to install everything without reading through the cruft. Running this script or <span class='term'>bash -c "\`wget -O - frozenplague.net/boris\`"</span> on your server will install the bare-basics:</p>
+
+<ul>
+<li>git (latest version)</li>
+
+<li>apache 2</li>
+
+<li>mysql 5</li>
+
+<li>ruby 1.9.1</li>
+
+<li>rails (latest gem version)</li>
+
+<li>passenger (latest gem version)</li>
+</ul>
+
+<p>Then you&#8217;ll be able to setup your Rails app. I can&#8217;t do that for you, sorry. My scripting-fu is not that good.</p>
+
+<p>Thanks to <a href='http://ben.hoskings.net/'>Ben Hoskings </a> for the inspiration for this script.</p>
+<h2>The Long Road</h2>
+<p>To install Ruby 1.9.1 from source on a base Ubuntu system there&#8217;s a couple of pre-requisites. Let&#8217;s cover why they&#8217;re required.</p>
+<h3>build-essential</h3>
+<p>Includes stuff that is, well, <strong>essential</strong> to building things, like Ruby and the other dependencies.</p>
+<h3>libssl-dev</h3>
+<p>Needed for when we go to install Passenger. If not installed you&#8217;ll get <code>no such file to load -- openssl</code> because Ruby didn&#8217;t install <em>openssl</em> because this dependency was not installed. Fun times were had.</p>
+<h3>libreadline-dev</h3>
+<p>Needed for launching script/console. It&#8217;ll complain <code>no such file to load -- readline</code> when trying to launch it.</p>
+<h3>zlib</h3>
+<p>When you go to <code>sudo gem install rails</code> you&#8217;ll get <code>no such file to load -- zlib</code>. This error message is not helpful but it means you need zlib1g installed: <code>sudo apt-get install zlib1g-dev</code></p>
+
+<p>Now you&#8217;ll be able to download and install ruby:</p>
+<pre>
+mkdir ruby
+cd ruby
+wget --progress=bar ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.1-p243.tar.gz -O - | tar -zxf - --strip-components 1
+./configure
+make
+echo "Need your password to install Ruby:"
+sudo make install
+</pre>
+<p>And then finally your gems:</p>
+<pre>
+cd ~
+sudo rm -rf ruby
+sudo gem install mysql passenger rails
+sudo passenger-install-apache2-module
+</pre>
+<p>I needed to patch Ruby + Passenger with<a href='http://stackoverflow.com/questions/1627582/ruby-1-9-1-p234-passenger-2-2-5-rails-2-3-stable-closed-stream-on-post-request/1671305#1671305'> this patch</a>, as when I went to log in to rboard it gave me the error at the top of that page.</p>
+
+<p>Other than that, all of this works <strong>perfectly fine</strong> on my bare-bones Ubuntu box. I was even able to get rboard running on this setup!</p>
+
+<p>So again: Have you tried running your app on 1.9? Have you encountered any showstoppers? Really keen to hear your stories!</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

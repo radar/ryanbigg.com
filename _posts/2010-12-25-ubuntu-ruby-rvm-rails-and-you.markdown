@@ -4,9 +4,9 @@ layout: post
 title: Ubuntu, Ruby, RVM, Rails, and You
 wordpress_url: http://ryanbigg.com/?p=1215
 ---
-**This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for Ubuntu 10.10, but will probably work on many other operating systems. YMMV.**
+<strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for Ubuntu 10.10, but will probably work on many other operating systems. YMMV.</strong>
 
-## Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
+<h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 
 Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.
 
@@ -16,7 +16,7 @@ By the end of this guide, you will have these things installed and have some ver
 
 We assume you have `sudo` access to your machine, and that you have an understanding of the basic concepts of Ruby, such as "What is Rubygems?" and more importantly "How do I turn this computer-thing on?". This knowledge can be garnered by reading the first chapter of <a href='http://manning.com/black2'>any Ruby book</a>.
 
-### Housekeeping
+<h3>Housekeeping</h3>
 
 First of all, we're going to run `sudo apt-get update` so that we have the latest sources on our box so that we don't run into any package-related issues, such as not being able to install some packages. 
 
@@ -24,7 +24,7 @@ Next, we're going to install <a href='http://git-scm.org'>Git (a version control
 
     sudo apt-get install build-essential git-core curl
 
-### RVM
+<h3>RVM</h3>
 
 RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.2) for one of your newer projects. This is a problem that RVM solves beautifully. 
 

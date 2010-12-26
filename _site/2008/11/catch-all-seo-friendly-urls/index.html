@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2008/11/catch-all-seo-friendly-urls"><header>Catch-All SEO-Friendly URLs</header></a>
+        <p>This tutorial was written using Ruby 1.8.6, Rails 2.2.2 and Rubygems 1.3.1.</p>
+
+<p>This question has been coming up a lot recently. People want urls like http://domain.com/frozenplague-rules-my-world but they don&#8217;t know how to do it.</p>
+
+<p>Let&#8217;s say you have a model called Blog and this is what you want to match to http://domain.com/frozenplague-rules-my-world. In this model you define:</p>
+<b>app/models/blog.rb</b><pre lang='rails'>
+def to_param
+  "#{id}-#{title.parameterize}"
+end
+</pre>
+<p>And then this in your config/routes.rb <pre lang='rails'>
+map.connect ':slug', :controller => "blogs", :action => "show"
+</pre></p>
+
+<p>And now you should be able to access blogs through http://domain.com/frozenplague-rules-my-world.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

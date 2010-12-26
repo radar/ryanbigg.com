@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2008/04/epic-fail-from-epic"><header>Epic fail from Epic</header></a>
+        <pre lang='ruby'>"The quick brown fox jumped over the lazy dog".split("").each do |a|
+string &lt;&lt; "0" if a[0] &lt; 100
+string += a[0].to_s &lt;&lt; "000"
+end</pre>
+<p>The above code is probably similar to what Epic uses to generate the server descriptions of their UT3 servers. My friend Devastator ranted about how bad these servers were to configure, thanks mainly to the ServerDescription and the insanely crappy way of configuring the entire server, containing the whole configuration in a .bat file (see bottom of post)</p>
+
+<p>So I begun to write him a ruby program that would do it. At the top of the post is my code that works out the correct server description code for UT3 servers. What almost <strong>looks like UTF16</strong> is actually anything but. Let&#8217;s go through what it does: <ol>
+	<li>Iterates through all the characters and does this:</li>
+	<li>Finds the ascii value.</li>
+	<li>If the ascii value is less than 100, it will add a zero (0) to the string.</li>
+	<li>It then adds the ascii value to the string.</li>
+	<li>It then adds three zeroes (000) to the string.</li>
+	<li>Repeat until all characters are done.</li>
+</ol> Then it gives you something like this:</p>
+
+<p>084000104000101000032000113000117000105000099000107000032000098 000114000111000119000110000032000102000111000120000032000106000 117000109000112000101000100000032000111000118000101000114000032 000116000104000101000032000108000097000122000121000032000100000 111000103000</p>
+
+<p>I added line breaks so it wouldn&#8217;t break my blog. Did I mention the whole config file has to be on one line? No? Well guess what? It HAS to be on one line, else you break it. Want to know what it looks like? <pre>D:
+cd "Games\Unreal Tournament 3\Binaries\"start UT3.exe server DM-Deck?Game=UTGame.UTDuelGame?GameMode=0?minnetplayers=2?maxplayers=2?
+mutator=utcomp3v02b.UTMutator_utcomp3v02b?PureServer=0?timelimit=10?goalscore=0?
+ServerDescription=08600009700010800010400009700010800010800009700003200008500
+0084000051000032000083000101000114000118000101000114000032000049000?
+bPlayersMustBeReady=True?bAllowJoinInProgress=True?bAllowInvites=False?bUsesPresence=False?
+bIsLanMatch=True?bIsDedicated=True?bShouldAdvertise=True -Port=7777 -nohomedir -unattended</pre> Line breaks added again for non-breakage.</p>
+
+<p>Ugly, huh?</p>
+
+<p>Oh, by the way if you want to the generator, <strong><a href='http://frozenplague.net/files/ut3-config-generator.rb' title='UT3 Config Generator'>CLICK ME</a>. </strong>You&#8217;ll need Ruby to run it, type <span class='term'>ruby ut3-config-generator.rb</span> to run it.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

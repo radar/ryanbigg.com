@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2009/06/sql-display"><header>SQL Display</header></a>
+        <p>Sometimes you want to see a query (or queries) that were executed by a model call that you just did. To do this you have to either set up some hax in your irb configuration or you could now use <a href='http://github.com/radar/sql_display'>SQL Display</a>.</p>
+
+<p>SQL Display&#8217;s been an idea that has been thrown around in the Mocra offices for a while and after Bo Jeanes&#8217; and Ben Hoskings&#8217; conversation on twitter last night about the syntax I decided to try my hand at it. The code itself is&#8230; not pretty. I warn you of this now before you go trumping through the source code and discover something analogous to a large heap of elephant dung; but it&#8217;s functional!</p>
+
+<p>One of the fun things about implementing this plugin was how ActiveRecord implements its logger. When it initialises a new connection it passes the logger object at the time to the connection adapter object so it&#8217;s set there For All Time.</p>
+
+<p>SQL Display works by storing what the old logger was, setting the new logger to a file called <em>tmp/sql_display.log</em>, re-establishing the connection, running your query, removing all the colour &amp; extraneous crap from the logs and stores it, removes the log, sets the logger back and again re-establishes the connection.</p>
+
+<p>Patches welcome.</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>

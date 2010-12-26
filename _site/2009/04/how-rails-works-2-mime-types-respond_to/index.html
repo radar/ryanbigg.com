@@ -1,0 +1,341 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='/css/style.css'>
+  <body>
+    <h1 align='center'>The Life of a Radar</h1>
+    <div id='page'>
+      <article>
+        <a href="/2009/04/how-rails-works-2-mime-types-respond_to"><header>How Rails Works #2: Mime Types & respond_to</header></a>
+        <strong>THIRD COPY</strong><a href='http://github.com/radar/how-rails-works'>This guide is available on Github</a><h3>A Refresher</h3>
+<p><code>respond_to</code> is a method that defines different formats that your actions, well, respond to. For those who are unfamiliar with <code>respond_to</code> or simply forgot about it, here&#8217;s a refresher.</p>
+
+<p>Take this example:</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre&gt;
+class BlogsController &lt; ApplicationController
+  def index
+    @blogs = Blog.all(:limit =&gt; 10)
+    respond_to do |format|
+      format.html
+      format.xml
+    end
+  end
+end
+&lt;/pre&gt;</pre>
+<p>It&#8217;s an index action in a controller called <code>BlogsController</code> and we have a collection of <code>Blog</code> objects stored in <code>@blogs</code>. We then call <code>respond_to</code> and specify the block with a single argument of <code>format</code>. On <code>format</code> we call <code>html</code> and <code>xml</code> which will render <em>app/views/blogs/index.html.erb</em> and <em>app/views/blogs/index.xml.erb</em> respectively. In those templates we can iterate over the <code>@blogs</code> collection and do whatever with it that we fancy. There&#8217;s a shorter way to write the <code>respond_to</code> for this:</p>
+<pre>
+respond_to :html, :xml
+</pre>
+<p>If we want some formats to respond one way, and some others to respond another way we can do this:</p>
+<pre>
+respond_to do |format|
+  format.html { @blogs = Blog.all(:limit => 10) }
+  format.any(:atom, :rss) { @blogs = Blog.all }
+end
+</pre>
+<p>In this example <em>index.html.erb</em>&#8217;s <code>@blogs</code> will contain 10 objects, where <em>index.atom.erb</em>&#8217;s and <em>index.rss.erb</em>&#8217;s <code>@blogs</code> will contain all the blogs record.</p>
+<h3>Diving In</h3>
+<p>My first post in this series was my Timezone Overview for Rails 2.2. Today I would like to cover how mime types and <code>respond_to</code> work in Rails 2.3. The reason I choose both of these instead of just <code>respond_to</code> is because they tie in close together.</p>
+
+<p>I&#8217;ve tried to make all the methods in this guide clickable with links to the source on Github.</p>
+
+<p>Firstly I&#8217;ll talk about <a href='http://en.wikipedia.org/wiki/MIME_type'>MIME types</a> in Rails.</p>
+
+<p>The default MIME types are loaded when Rails starts up by <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_type.rb#L212'>the final line in <em>actionpack/lib/action_controller/mime_type.rb</em></a>:</p>
+<pre>
+require 'action_controller/mime_types'
+</pre>
+<p>This loads the <em><a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_types.rb#L4-21'>actionpack/lib/action_controller/mime_types.rb</a></em> file and registers the default MIME types:</p>
+<pre>
+Mime::Type.register "*/*", :all
+Mime::Type.register "text/plain", :text, [], %w(txt)
+Mime::Type.register "text/html", :html, %w( application/xhtml+xml ), %w( xhtml )
+Mime::Type.register "text/javascript", :js, %w( application/javascript application/x-javascript )
+Mime::Type.register "text/css", :css
+Mime::Type.register "text/calendar", :ics
+Mime::Type.register "text/csv", :csv
+Mime::Type.register "application/xml", :xml, %w( text/xml application/x-xml )
+Mime::Type.register "application/rss+xml", :rss
+Mime::Type.register "application/atom+xml", :atom
+Mime::Type.register "application/x-yaml", :yaml, %w( text/yaml )
+
+Mime::Type.register "multipart/form-data", :multipart_form
+Mime::Type.register "application/x-www-form-urlencoded", :url_encoded_form
+
+# http://www.ietf.org/rfc/rfc4627.txt
+# http://www.json.org/JSONRequest.html
+Mime::Type.register "application/json", :json, %w( text/x-json application/jsonrequest )  
+</pre>
+<p>You may recognise the syntax used in <em>mime_types.rb</em> from your app&#8217;s <em>config/initializers/mime_types.rb</em>. This file is used to define new MIME types for your application and is loaded on initialization of your application by <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/railties/lib/initializer.rb#L174'>this line in initializer.rb</a></p>
+<pre>load_application_initializers</pre>
+<p>and <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/railties/lib/initializer.rb#L597-603'>the corresponding `load_application_initializers` method</a>:</p>
+<pre>
+def load_application_initializers
+  if gems_dependencies_loaded
+    Dir["#{configuration.root_path}/config/initializers/**/*.rb"].sort.each do |initializer|
+      load(initializer)
+    end
+  end
+end
+</pre>
+<p>which is responsible for loading all your application&#8217;s initializers, including <em>config/initializers/mime_types.rb</em>.</p>
+
+<p>The MIME types defined by Rails and your initializers are the methods that you call on the block object <code>format</code> or the symbols that you pass to respond_to. You may recognise these from the symbols passed to the <code>Mime::Type.register</code> calls earlier.</p>
+<a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_responds.rb#L102-109'>`respond_to`</a><pre>
+def respond_to(*types, &amp;block)
+  raise ArgumentError, "respond_to takes either types or a block, never both" unless types.any? ^ block
+  block ||= lambda { |responder| types.each { |type| responder.send(type) } }
+  responder = Responder.new(self)
+  block.call(responder)
+  responder.respond
+end
+</pre>
+<p>If we use the block syntax this will just <code>call</code> the <code>block</code> object with the argument of <code>responder</code> which is defined as <code>Responder.new</code>.</p>
+
+<p>If we use the single line syntax. this will just pass in the types as an array. This method then defines a <code>lambda</code> which is a <code>Proc</code> object just like a usual block. This takes one argument, called <code>responder</code> and then calls the types on the responder object.</p>
+
+<p>The <code>||=</code> on the block definition means &#8220;set this variable only if it hasn&#8217;t been set already&#8221;. The next line is defining the <code>responder</code> object which triggers <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_responds.rb#L102-109'>`initialize` method for `Responder`</a>:</p>
+<pre>
+class Responder
+  def initialize(controller)
+    @controller = controller
+    @request    = controller.request
+    @response   = controller.response
+  
+    if ActionController::Base.use_accept_header
+      @mime_type_priority = Array(Mime::Type.lookup_by_extension(@request.parameters[:format]) || @request.accepts)
+    else
+      @mime_type_priority = [@request.format]
+    end
+
+    @order     = []
+    @responses = {}
+  end
+  ...
+end
+</pre>
+<p>This defines a couple of key variables, namely <code>@mime_type_priority</code> and <code>@responses</code>.</p>
+
+<p>The first, <code>@mime_type_priorty</code> calls <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/mime_type.rb#L69-71'>`Mime::Type.lookup_by_extension(@request.parameters[:format])`</a> which looks like:</p>
+<pre>
+def lookup_by_extension(extension)
+  EXTENSION_LOOKUP[extension]
+end
+</pre>
+<p><code>EXTENSION_LOOKUP</code> is <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/mime_type.rb#L5'>defined on line #5 of mime_type.rb</a> as a hash:</p>
+<pre>
+EXTENSION_LOOKUP = Hash.new { |h, k| h[k] = Type.new(k) unless k.blank? }
+</pre>
+<p>What happens when a key is looked for on this hash it calls <code>Mime::Type.new(key)</code> which calls the <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/mime_type.rb#L147-150'>`initialize`</a> method for <code>Mime::Type</code>:</p>
+<pre>
+def initialize(string, symbol = nil, synonyms = [])
+  @symbol, @synonyms = symbol, synonyms
+   @string = string
+end
+</pre>
+<p>We eventually understand that all our original <code>@mime_type_priority</code> is simply a <code>Mime::Type</code> object. If we requested HTML, the MIME type would be: <code>#&amp;lt;Mime::Type:0x2624380 @synonyms=[&quot;application/xhtml+xml&quot;], @symbol=:html, @string=&quot;text/html&quot;&amp;gt;</code>. This element is made into an array and then used in the <code>respond</code> method.</p>
+
+<p>The second variable, <code>@responses</code> is defined as an empty hash. The magic happens in the <code>respond</code> method:</p>
+<pre>
+def respond
+  for priority in @mime_type_priority
+    if priority == Mime::ALL
+      @responses[@order.first].call
+      return
+    else
+      if @responses[priority]
+        @responses[priority].call
+        return # mime type match found, be happy and return
+      end
+    end
+  end
+
+  if @order.include?(Mime::ALL)
+    @responses[Mime::ALL].call
+  else
+    @controller.send :head, :not_acceptable
+  end
+end
+</pre>
+<p>This method iterates over <code>@mime_type_priority</code> and then checks firstly if the element is a <code>Mime::ALL</code> This can be achieved by making the format of the URL &#8220;all&#8221;, such as <em>http://localhost:3000/blogs.all</em>. If the element is not <code>Mime::ALL</code> this continues iterating through until it finds a format that is defined. It does this by checking if there is a key in the <code>@responses</code> hash&#8230; but it&#8217;s empty. So I first thought, too. <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_responds.rb#L157-159'>Buried just over halfway is this method</a> which is called when the file is loaded and this calls <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_responds.rb#L147-155'>`generate_method_for_mime`</a> which does some funky <code>class_eval</code>&#8216;ing:</p>
+<pre>
+def self.generate_method_for_mime(mime)
+  sym = mime.is_a?(Symbol) ? mime : mime.to_sym
+  const = sym.to_s.upcase
+  class_eval &lt;&lt;-RUBY, __FILE__, __LINE__ + 1
+    def #{sym}(&amp;block)                # def html(&amp;block)
+      custom(Mime::#{const}, &amp;block)  #   custom(Mime::HTML, &amp;block)
+    end                               # end
+  RUBY
+end
+</pre>
+<p>Remember back when we were calling <code>responder.send(type)</code>? This is what it calls, this generated method.</p>
+
+<p>The generated methods take an optional block, as shown by the code for <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_controller/mime_responds.rb#L127-137'>`custom`</a>:</p>
+<pre>
+def custom(mime_type, &amp;block)
+  mime_type = mime_type.is_a?(Mime::Type) ? mime_type : Mime::Type.lookup(mime_type.to_s)
+
+  @order &lt;&lt; mime_type
+
+  @responses[mime_type] ||= Proc.new do
+    @response.template.template_format = mime_type.to_sym
+    @response.content_type = mime_type.to_s
+    block_given? ? block.call : @controller.send(:render, :action => @controller.action_name)
+  end
+end
+</pre>
+<p>If the first argument given to custom is not a <code>Mime::Type</code> object then it will do a lookup and find it. The method will then concatenate into <code>@order</code> <code>mime_type</code>. This variable is used for when <code>Mime::ALL</code> is specified as the mime type, it will use the first one in this list, which will be the first one you&#8217;ve called in your <code>respond_to</code>. If you&#8217;ve define your respond_to like this:</p>
+<pre>
+def index
+  @blogs = Blog.all(:limit => 10)
+  respond_to do |format|
+    format.html 
+    format.json { render :json => @blogs }
+    format.any(:atom, :xml) { @blogs = Blog.all }
+  end
+end
+</pre>
+<p>The <code>all</code> will call <code>html</code> because it was defined first. Following on with this example, the <code>format.html</code> method isn&#8217;t passed a block, but the <code>format.xml</code> is. This determines what this line does in <code>custom</code>:</p>
+<pre>
+block_given? ? block.call : @controller.send(:render, :action => @controller.action_name)
+</pre>
+<p>When we don&#8217;t pass a block for the <code>format.html</code> it will render the action, looking for <em>index.html.erb</em> which, in the default scaffold, will list all the blogs. Rails does this by calling:</p>
+<pre>
+@controller.send(:render, :action => @controller.action_name)
+</pre>
+<p>It calls <code>send</code> because <code>render</code> is a protected method. This passes a single argument to render, <code>{ :action =&gt; @controller.action_name }</code> which in this example is &#8220;index&#8221;. <a href='>http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/base.rb#L859-946'>`render` is a pretty heavy method</a>, weighing in at close to 100 lines, so I won&#8217;t bore you with all the details of this method in this post. What I will show you is the part where it processes our <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/base.rb#L907-908'>`:action`</a> option:</p>
+<pre>
+elsif action_name = options[:action]
+  render_for_file(default_template(action_name.to_s), options[:status], layout)
+</pre>
+<p>The method we&#8217;re interested here is not <code>render_for_file</code> but <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/base.rb#L1318-1320'>`default_template`</a>:</p>
+<pre>
+def default_template(action_name = self.action_name)
+  self.view_paths.find_template(default_template_name(action_name), default_template_format)
+end
+</pre>
+<p>This calls a number of methods, but what we&#8217;re interested in here firsty is the <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/layout.rb#L276-278'>`default_template_format`</a> method. This method looks like this:</p>
+<pre>
+def default_template_format
+  response.template.template_format
+end
+</pre>
+<p>and <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_view/base.rb#L265-273'>`template_format`</a> looks like:</p>
+<pre>
+def template_format
+  if defined? @template_format
+    @template_format
+  elsif controller &amp;&amp; controller.respond_to?(:request)
+    @template_format = controller.request.template_format.to_sym
+  else
+    @template_format = :html
+  end
+end
+</pre>
+<p>Our request will match the <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_view/base.rb#L268-269'>`elsif`</a> in this code which will call another <a href='http://github.com/rails/rails/blob/a2270ef2594b97891994848138614657363f2806/actionpack/lib/action_controller/request.rb#L193-203'>`template_format`</a> method, this time on the <code>request</code> object of our controller. This method looks like this:</p>
+<pre>
+def template_format
+  parameter_format = parameters[:format]
+  if parameter_format
+    parameter_format
+  elsif xhr?
+    :js
+  else
+    :html
+  end
+end
+</pre>
+<p>Yes! After all this time it does call <code>parameters[:format]</code>! This is also known as <code>params[:format]</code> and, to the well trained <code>&quot;html&quot;</code>. So way back in our initial <code>default_template</code> call:</p>
+<pre>
+def default_template(action_name = self.action_name)
+  self.view_paths.find_template(default_template_name(action_name), default_template_format)
+end
+</pre>
+<p>We were firstly interested in <code>default_template_format</code> which is what we just covered. Now we&#8217;re interested in <a href='http://github.com/rails/rails/blob/35c5727acea882f4cef2a8a2d12d87a8fda045c8/actionpack/lib/action_view/paths.rb#L43-67'>`find_template`</a>:</p>
+<pre>
+def find_template(original_template_path, format = nil, html_fallback = true)
+  return original_template_path if original_template_path.respond_to?(:render)
+  template_path = original_template_path.sub(/^\//, '')
+
+  each do |load_path|
+    if format &amp;&amp; (template = load_path["#{template_path}.#{I18n.locale}.#{format}"])
+      return template
+    elsif format &amp;&amp; (template = load_path["#{template_path}.#{format}"])
+      return template
+    elsif template = load_path["#{template_path}.#{I18n.locale}"]
+      return template
+    elsif template = load_path[template_path]
+      return template
+    # Try to find html version if the format is javascript
+    elsif format == :js &amp;&amp; html_fallback &amp;&amp; template = load_path["#{template_path}.#{I18n.locale}.html"]
+      return template
+    elsif format == :js &amp;&amp; html_fallback &amp;&amp; template = load_path["#{template_path}.html"]
+      return template
+    end
+  end
+
+  return Template.new(original_template_path) if File.file?(original_template_path)
+
+  raise MissingTemplate.new(self, original_template_path, format)
+end
+</pre>
+<p>Nothing inside the <code>each</code> block will match, so it will not return anything. Instead, what is returned is the line after the each block:</p>
+<pre>
+  return Template.new(original_template_path) if File.file?(original_template_path)
+</pre>
+<p>This returns a Template object like this:</p>
+<pre>
+#&lt;ActionView::Template:0x2193258 @format=nil, @base_path=nil, @template_path="blogs/", @extension=nil, @locale=nil, @name=nil, @load_path=nil&gt;
+</pre><a href='http://github.com/rails/rails/blob/8fa4275a72c334fe945dada6113fa0153ca28c87/actionpack/lib/action_controller/base.rb#L1239-1243'>`render_for_file`</a>
+<p>When we do pass a block to our <code>format.xml</code>, this is much simpler in the call to <a href='http://github.com/rails/rails/blob/8fa4275a72c334fe945dada6113fa0153ca28c87/actionpack/lib/action_controller/base.rb#L945-947'>`render`</a>:</p>
+<pre>
+elsif xml = options[:xml]
+  response.content_type ||= Mime::XML
+  render_for_text(xml.respond_to?(:to_xml) ? xml.to_xml : xml, options[:status])
+end
+</pre>
+<p>This code calls <a href='http://github.com/rails/rails/blob/dd2ed32418a74ca9126834f98a1b0bca926c0c4f/activerecord/lib/active_record/serializers/xml_serializer.rb#L154-157'>`to_xml`</a> on our collection and converts it to an XML document.</p>
+
+<p>Finally, the <a href='http://github.com/rails/rails/blob/4b68debb1c4d3d272b237049c88d01b1eceb58f0/actionpack/lib/action_controller/mime_responds.rb#L139-145'>`any`</a> is another method defined on the <code>Responder</code> object. You can pass to this a collection of mime types and for these mime types it will perform the block. In this example we&#8217;ve used:</p>
+<pre lang='rails'>
+  format.any(:atom, :xml) { @blogs = Blog.all }
+</pre>
+<p>but you can also do:</p>
+<pre lang='rails'>
+  format.any { @blogs = Blog.all }
+</pre>
+<p>which will define the response for all currently undefined mime types.</p>
+
+<p><code>any</code> goes a bit like this:</p>
+<pre lang='rails'>
+def any(*args, &amp;block)
+  if args.any?
+    args.each { |type| send(type, &amp;block) }
+  else
+    custom(@mime_type_priority.first, &amp;block)
+  end
+end 
+</pre>
+<p>We&#8217;ve passed args to ours, so it&#8217;ll just call the methods <code>atom</code> and <code>xml</code> on the <code>Responder</code> object and then render the appropriate views for these.</p>
+
+<p>If we don&#8217;t pass arguments to <code>any</code>, any MIME type that we don&#8217;t have a <code>respond_to</code> line for will call the <code>any</code> block instead. Take for example, if we had this:</p>
+<pre>
+def index
+  @blogs = Blog.all(:limit => 10)
+  respond_to do |format|
+    format.html 
+    format.json { render :json => @blogs }
+    format.any { @blogs = Blog.all }
+  end
+end
+</pre>
+<p>And we requested an XML page, http://localhost:3000/blogs.xml, this will trigger the code in the <code>any</code> block to be ran.</p>
+
+<p>So that wraps up this guide on respond_to. Thanks for reading!</p>
+      </article>
+    </div>
+    <div id="recentcomments" class="dsq-widget"><h2 class="dsq-widget-title">Recent Comments</h2><script type="text/javascript" src="http://ryanbigg.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=200"></script></div>
+  </body>
+</html>
