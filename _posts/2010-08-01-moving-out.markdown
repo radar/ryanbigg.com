@@ -17,7 +17,7 @@ I come back this afternoon from a shopping trip and the conversation goes like t
 
 <blockquote>
 Housemates: "Ryan, our cousin is being kicked out because he had an argument with her housemate and we're thinking of letting her move in here."<br>
-Me: "That's OK, we have the spare bed."<br.
+Me: "That's OK, we have the spare bed."<br>
 Housemates: "No... could you leave in 4 weeks time so she could move in? She's family. Please?"<br>
 Me: "..." (but in my head there was <a href='http://hachidori.org/blog/images/fffuuuuuu.png'>this</a>)<br>
 Me: "Ok, I will see what I can do." (but in my head <a href='http://www.gymidiots.com/wp-content/uploads/2010/05/son-i-am-disappoint.gif'>this</a>)
