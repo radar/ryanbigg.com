@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <pre lang='rails'>
+  (Dir.entries("#{RAILS_ROOT}/app/models") - [".","..",".svn"]).each do |model|
+    has_many model.split(".").first.pluralize.to_sym, :foreign_key => "owner_id"
+  end
+</pre>
+<p>I tried adding:</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre lang=&apos;rails&apos;&gt;
+ if model.classify.is_a?(ActiveRecord::Base)
+      &lt;&lt;-EVAL
+      class #{model.classify}
+        belongs_to :owner
+      end
+      EVAL
+    end
+&lt;/pre&gt;</pre>
+<p>too, but Rails didn&#8217;t like that.</p>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <p>In today&#8217;s modern world we are not limited (cough, FORTRAN) to storing information in just a couple of bits. Some say that having pretty URLs is good SEO. I say it&#8217;s just common sense. I want the URL to tell a story, not give me some number that is only important to the system it&#8217;s coming from.</p>
+
+<p>This is where <code>to_param</code> comes in.</p>
+
+<p>By default this is defined like this:</p>
+<pre lang='ruby'>
+def to_param
+  id
+end
+</pre>
+<p>Pretty high-tech stuff there. I won&#8217;t explain it to you. Give it a moment to sink it. et-cetera. This method is called on an object when it is passed to a url helper such as <code>link_to</code> or <code>redirect_to</code>. It is important to note that you should NEVER call <code>@object.id</code> as that will give the id of the object, not the <code>to_param</code> version of that name.</p>
+
+<p>You can override this in your model in order to give you pretty urls! The way you do this is:</p>
+<pre lang='rails'>
+def to_param
+  "#{id}-#{name.parameterize}"
+end
+</pre>
+<p>Where <code>id</code> is the id of the model and <code>name</code> is the text you want into the URL. We call <code>parameterize</code> on this text in order to make it URL friendly.</p>
+
+<p>The reason why we put in the id in the URL is two-fold. Firstly, (<em>/forums/1-best-forum-ever</em>) is so that when it gets passed to our controller as <code>params[:id]</code> or similar, we&#8217;re able to pass it to a finder:</p>
+<pre lang='rails'>
+Forum.find(params[:id])
+# will be passed in as...
+Forum.find("1-best-forum-ever")
+</pre>
+<p>Now you may go &#8220;Hey&#8230; wait a second! I don&#8217;t have an ID in my database that says &#8216;1-best-forum-ever&#8217;!&#8221; and you&#8217;d be right, you don&#8217;t. But you <strong>do</strong> have an ID of 1 for a record somewhere. Rails will call <code>to_i</code> on this value and convert it simply down to <code>1</code> and you&#8217;ll be able to treat the pretty URL as if it were a real ID.</p>
+
+<p>Secondly, if two objects in your database have the same name they won&#8217;t clash for the parameterized versions, since the id will always be unique.</p>
+<h3>But I don't want my ID in my URL</h3>
+<p>Hey, that&#8217;s cool too! Just a little tougher&#8230; Before you save your records you&#8217;ll want to write out the permalink as a new field, so define a field called <code>permalink</code> in your table if you want to take this route. Then you do a <code>before_save</code> and define <code>to_param</code> like this:</p>
+<pre lang='rails'>
+before_create :set_permalink
+
+def set_permalink
+  self.permalink = name.parameterize
+end
+
+def to_param
+  permalink
+end
+</pre>
+<p>Now when you call the finder you&#8217;re going to need to <code>find_by_permalink!</code> instead of just <code>find</code>:</p>
+<pre lang='rails'>
+Forum.find_by_permalink!(params[:id])
+</pre>
+<p>We have to use the bang version of <code>find_by_permalink</code> because this will raise an <code>ActiveRecord::RecordNotFound</code> exception if the record is not found, just like <code>find</code>. (Thanks to <a href='http://frozenplague.net/2009/04/pretty-ifying-urls/comment-page-1/#comment-10583'>Yarsolav Markin</a> for mentioning this)</p>
+
+<p>So there you have it. <code>to_param</code> overriding for pretty URLs.</p>
+  </body>
+</html>

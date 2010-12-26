@@ -1,0 +1,24 @@
+--- 
+wordpress_id: 59
+layout: post
+title: August Lan Event
+wordpress_url: http://frozenplague.net/?p=59
+---
+Whilst this LAN was very close to the last one (almost exactly a month beforehand) attendance was good. Setup was done exceptionally quickly with, as Wookie stated "four times as many people as we needed", and was finished at around 10:30. I arrived with [url=http://www.frozenplague.net/images/valhalla/august/cameron.jpg]ShadowCamsy[/url] and [url=http://www.frozenplague.net/images/valhalla/august/devastator-lanning.jpg]Devastator[/url]. I helped Moogie set up the [url=http://www.frozenplague.net/images/valhalla/august/cool-poster.jpg]posters[/url] showing the details of the October 6th-7th LAN.
+
+We let the lanners in a few (2) minutes early for a change and I played door bitch for about half an hour handing out the pink wriststraps before substituting my position with [url=http://www.frozenplague.net/images/valhalla/august/the-aussie-bogan-sausages.jpg]TheAussieBogan[/url] who substituted his position with [url=http://www.frozenplague.net/images/valhalla/august/commander-el.jpg]CommanderEl.[/url] Before I could settle down my friend Paul called and wanted me to give him his ticket so he could get in.
+
+[url=http://www.frozenplague.net/images/valhalla/august/wookie.jpg]Wookie[/url] was his usual "sunshine and lollipops" self, issuing orders (and lollipops, I'm serious), and threatening physical violence upon those who dared to cross him. Then his computer decided to [url=http://www.frozenplague.net/images/valhalla/august/wookie-screen.jpg]screw itself over[/url] and eventually replaced the motherboard which was found to be faulty.
+
+[url=http://www.frozenplague.net/images/valhalla/august/sausages.jpg]Sausages[/url] were plentiful and free, with many lanners opting to have the non-charcoal sausages provided by TheAussieBogan and his minions. The St. Clair Recreation Centre's canteen also provided toasted ham & cheese sandwiches, which I suspect also contained epic win. Not bad for $2.50.
+
+[url=http://www.frozenplague.net/images/valhalla/august/red-bull-girls.jpg]The Redbull Girls[/url] also dropped in, doubling Valhalla's girl population with their presence. They handed out free Red Bull to all lanners. 
+
+There were [url=http://www.frozenplague.net/images/valhalla/august/prizes-1.jpg]many[/url] [url=http://www.frozenplague.net/images/valhalla/august/prizes-2.jpg]many[/url] [url=http://www.frozenplague.net/images/valhalla/august/prizes-3.jpg]prizes[/url].
+[url=http://www.frozenplague.net/images/valhalla/august/sub-1208.jpg]At 12:08pm, SuB-ZeRo (centre)[/url] was playing Tekken 5, [url=http://www.frozenplague.net/images/valhalla/august/sub-2048.jpg]and at 8:48pm (posing like a retard, center)[/url]Sub was still playing the PS3. [url=http://www.frozenplague.net/images/valhalla/august/sub-tekken-5.jpg]He won a Thermaltake Fan for the PS3 competition.[/url] [url=http://www.frozenplague.net/images/valhalla/august/garrys-mod.jpg]Some noobs played Garry's Mod, singleplayer.[/url][url=http://www.frozenplague.net/images/valhalla/august/random-won-something.jpg]Kyorisu won a competition, I don't know which one it was but he won something.[/url] Believe it or not, [url=http://www.frozenplague.net/images/valhalla/august/mittens.jpg]Mittens[/url] and [url=http://www.frozenplague.net/images/valhalla/august/unholee.jpg]Unholee[/url] both won at least one competition each. Also equally shocking was [url=http://www.frozenplague.net/images/valhalla/august/seq-won-css-for-the-billionth-time-in-a-row.jpg]sequential gaming[/url] taking out the CS:S competition for the "18th time in a row". The [url=http://www.frozenplague.net/images/valhalla/august/sic-guys-won-ut2k4.jpg]Sharing is Caring team[/url] took out the UT2k4 competition.
+
+I started playing QW:ET at 1pm and before I knew it people were asking me when I was going to get pizza, at 7:30. There needs to be a competition for this game once it comes out. Shame about the map repetitiveness. I went and got 25 pizzas for the lanners, during the course of which a girl at the pizza shop had a tantrum because she "couldn't pre-sauce that many pizzas". Arrived back with 25 pizzas which all disappeared pretty quickly.
+
+Basketball was played on the bigger courts with a bunch of noobs (seems I didn't get a picture!), taking that out and winning absolutely nothing.
+
+I ran a Soldat competition in which a whole 9 people played in, and Mittens took it out with a 20-something point lead over Tetsu and Cyanara.

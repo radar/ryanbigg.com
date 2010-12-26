@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <p>Today <a href='http://rails.loglibrary.com/chats/15273022'>keiran_nz</a> asked how to see SQL statements that occur when running code in script/console. After a little bit of mucking around in the terminal I worked it out to be:</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;span class=&apos;term&apos;&gt;tail -f log/development.log &amp; script/console&lt;/span&gt;</pre>
+<p>The first comment on this post Ashley Williams says you could do:</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;span class=&apos;term&apos;&gt;tail -f log/development.log &amp; clear &amp;&amp; script/console&lt;/span&gt;</pre>
+<p>instead, and then goes further and sticks it in an alias in your .bashrc file (presumably):</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;span class=&apos;term&apos;&gt;alias rcon=”tail -f log/development.log &amp; clear &amp;&amp; script/console”&lt;/span&gt;</pre>
+  </body>
+</html>

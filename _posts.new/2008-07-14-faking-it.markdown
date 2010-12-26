@@ -1,0 +1,18 @@
+--- 
+wordpress_id: 198
+layout: post
+title: Faking It
+wordpress_url: http://frozenplague.net/?p=198
+---
+Today I was doing the one thing I truly, truly love doing and that's complaining about writing RSpec tests. I came across a doozy of a problem involving RSpec testing and faking subdomains. Here's a stripped down version of what I did:
+
+<pre lang='rails'>
+def login_as(user)
+  session["user"] = users(user).id
+  request.host = User.find(session["user"]).company.domain + ".example.com"
+end
+</pre>
+
+Just pop that into your <em>spec/spec_helper.rb</em> and then you can use <span class='term'>login_as(:user)</span> which will find the fixture with the name of "user" and then go from there to setting your faked host as being from, for example, blah.example.com.
+
+Pretty simple, shame Google didn't turn up any relevant results without me having to dig deeper than usual.

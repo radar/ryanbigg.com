@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <p>In two projects now I&#8217;ve had to use code where I update a select box (machines) in regards to what&#8217;s selected in the first (customers). mark<span>oz</span> from #rubyonrails asked how to do this last week and I told him I would write a blog post the following night. 5 days later, here it is.</p>
+
+<p>I use this when I&#8217;m creating a new call and the user needs to select which customer and then which machine. I have the following in my CallsController: <pre lang='rails'>def new
+  @call = Call.new
+  @customers = Customer.find(:all, :order => "name ASC")
+end</pre> Relatively simple. We instantiate a new call object so the form knows where to go, and we define <span class='term'>@customers</span> so the first select box has some information.</p>
+
+<p>Of course in our Customer model we have: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre lang=&quot;rails&quot;&gt;class Customer &lt; ActiveRecord::Base
+  has_many :machines
+end&lt;/pre&gt;
+And the machine model:
+&lt;pre lang=&quot;rails&quot;&gt;class Machine &lt; ActiveRecord::Base
+  belongs_to :customer
+end&lt;/pre&gt;
+And the call model:
+&lt;pre lang=&quot;rails&quot;&gt;class Call &lt; ActiveRecord::Base
+  belongs_to :machine
+  belongs_to :customer
+&lt;/pre&gt;</pre></p>
+
+<p>These define the relationships used within the system.</p>
+
+<p>Next is the <span class='term'>new.html.erb</span> page itself. <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre lang=&quot;rails&quot;&gt;&lt;strong&gt;New Call&lt;/strong&gt;
+&lt;% form_for @call do |f| %&gt;
+  &lt;%= render :partial =&gt; &quot;form&quot; %&gt;
+  &lt;%= submit_tag &quot;Create&quot; %&gt;
+&lt;% end %&gt;&lt;/pre&gt;
+And a stripped-down version of the form partial:
+&lt;pre lang=&quot;rails&quot;&gt;&lt;%= f.label &quot;customer_id&quot; %&gt;
+&lt;%= f.select &quot;customer_id&quot;, @customers.map { |c| [c.name, c.id] }%&gt;
+&lt;%= observe_field &quot;call_customer_id&quot;, :url =&gt; by_customer_machines_path, :with =&gt; &quot;customer_id&quot; %&gt;
+&lt;%= f.label &quot;machine_id&quot; %&gt;
+&lt;%= f.select &quot;machine_id&quot;, &quot;Please select a customer&quot; %&gt;&lt;/pre&gt;
+Right now that we have the form all set up, lets set up our machines controller
+&lt;pre lang=&quot;rails&quot;&gt;class MachinesController </pre></p>
+
+<h1 id='crud_operations_go_here'>CRUD operations go here</h1>
+
+<p>def by_customer @machines = Machine.find_all_by_customer_id(params<span>:customer_id</span>) end end&lt;/pre&gt; And our <span class='term'>by_customer.rjs</span>: <pre lang='rails'>page.replace_html 'call_machine_id', options_from_collection_for_select(@machines, "id", "name")</pre> And finally the config/routes.rb: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre lang=&quot;rails&quot;&gt;map.resources :customers do |customer|
+  customer.resources :machines
+end</pre></p>
+
+<p>map.resources :machines, :collection =&gt; { :by_customer =&gt; :post }&lt;/pre&gt; Now when we select a customer from the top drop down, the machines drop down should be populated too.</p>
+  </body>
+</html>

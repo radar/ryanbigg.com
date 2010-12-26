@@ -1,0 +1,21 @@
+--- 
+wordpress_id: 39
+layout: post
+title: Error 21 - GRUB - SOLVED!
+wordpress_url: http://frozenplague.net/?p=39
+---
+On Friday afternoon at work I ran into an error 21 on one of the computers I had just installed Ubuntu onto. I googled what it meant and it said "device not found". So I wracked my brain (and google) during the spare moments of my weekend because it bothers me when I get a problem that I can't solve, and I couldn't find a good solution where I went "That must be it!". Also on this same computer I couldn't get the 7.04-desktop CD to launch into X, it was scrolling the screen with -bash: /dev/null permission denied errors, which the disk did not do on any other computer that I installed it with.
+
+Today at work I downloaded the absolute bare-minimum installer for Ubuntu and actually got that to boot AND install, and I was very happy about that. Then after the install I still had a big ugly grin on my face, thinking I'm top-shit and this bloody error message pops up, AGAIN! I threw the pen that I was spinning on my fingers across the desk and paced to my desk and back again. 
+
+Ran my hands through my hair and an abstract piece of a post I was reading on the weekends came to me. It had mentioned something about checking the cables and the drives making sure that they were set to master/slave and so on. But I wouldn't have that issue because the only hard drive in this machine was a SATA drive, which automatically detects(?) the configuration. Then I thought I would open the box up and make sure of that, so I went to the other building, grabbed a screwdriver, opened the case up and spotted the SIX sata connectors on the motherboard. I thought if I switched the cable over to another one, say from SATA 1 to SATA 2, it's something I haven't tried and it might work.
+
+I switched it over, left the sides off and booted, and saw the wonderful "Press ESC to go into menu" of grub.
+
+And then I saw another error! Something to do with IRQ, and apparently suffixing the kernel line in the bootloader with "irqpoll" fixes it, and so I did. Ubuntu is now running awesomely on that PC.
+
+So in short:
+Try swapping over the cable to another connector on the motherboard.
+
+Also if anyone knows how to get ATi cards working in harmony with Beryl, that would be nice to know. I've googled it and tried the examples and it errors, something about texture failing... I'll try writing down the message tomorrow.
+

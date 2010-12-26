@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <p>This is a story about my work with GetUp, in particular the past week. It&#8217;s about a problem that I&#8217;ve been putting off help one of the guys (James) solve, it didn&#8217;t seem all that important to me. So last night I kind of promised that I&#8217;d sit down with him this morning and help him work out what it was. Hopefully it was something silly either of us did and it would only take us an hour.</p>
+
+<p>You know how this story is going to end up already.</p>
+
+<p>It didn&#8217;t take us an hour. It&#8217;s now 5pm and I&#8217;ve only <em>just</em> figured out what it was.</p>
+<h3>Symptoms</h3>
+<p>We have two models who&#8217;s names aren&#8217;t important so excuse me if I use the name <code>Person</code> and <code>Address</code> to represent them. They are nothing of the sort. In their purest form to replicate this issue, they are defined like this:</p>
+
+<pre><code>class Address &lt; ActiveRecord::Base
+  has_and_belongs_to_many :people
+end
+
+class Person &lt; ActiveRecord::Base
+  has_and_belongs_to_many :addresses
+  accepts_nested_attributes_for :addresses</code></pre>
+
+<p>end</p>
+
+<p>When we go to <code>create</code> a new <code>Person</code> record:</p>
+
+<pre><code>Person.create(:addresses_attributes =&gt; { &quot;0&quot; =&gt; { :suburb =&gt; &quot;Camperdown&quot; } }) </code></pre>
+
+<p>It inserts <strong>1</strong> <code>Person</code> record, <strong>1</strong> <code>Address</code> record but <strong>2</strong> join table records.</p>
+<h3>So, wtf?</h3>
+<p>We originally thought it was a bug in our application. How, in all realities, could Rails have a bug, right?</p>
+<strong>Wrong!</strong>
+<p>I should know <a href='http://ryanbigg.com/2010/04/want-it-give/'>how many bugs Rails <strong>could</strong> have</a>. I should have been more wary. I was not. And it bit me in the arse. So out of curiosity I googled the issue and saw that others came across it and then I tried checking out to <code>v2.3.4</code>, which <strong>worked!</strong>. So there was a regression between <code>v2.3.5</code> and <code>v2.3.4</code>. A simple <code>git bisect bad v2.3.5</code> with <code>git bisect good v2.3.4</code> put me on the way to finding out what this was. A couple of <code>bisect</code>s later, I found the offending commit was <code>6b2291f3</code>, by Eloy Duran.</p>
+<h3>A "solution(?)"</h3>
+<p>So I <a href='http://github.com/radar/anaf'>generated an application</a> to simply demonstrate that this was a 2.3.5 regression. As I say in the README, I suggest using 2-3-stable if this bothers you. Alternatively there&#8217;s always Rails 3, or simply specifying the <code>:uniq =&gt; true</code> option on your <code>has_and_belongs_to_many</code>.</p>
+
+<p>That was a fun 7 hours.</p>
+
+<p>As I found out this (the next) morning and <a href='http://ryanbigg.com/2010/04/has_and_belongs_to_many-double-insert/#comment-36741'>Tim Riley points out in the comments</a> the ticket for this bug is <a href='https://rails.lighthouseapp.com/projects/8994/tickets/3575-multiple-join-records-when-using-nested_attributes-in-habtm'>#3575</a> and the related commit is <code>146a7505</code> by Eloy Duran also. Freezing rails to <code>v2.3.5</code> and <code>git cherry-pick</code>ing this commit into this frozen version fixes it.</p>
+  </body>
+</html>

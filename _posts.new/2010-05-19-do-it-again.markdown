@@ -1,0 +1,53 @@
+--- 
+wordpress_id: 968
+layout: post
+title: Do It Again
+wordpress_url: http://ryanbigg.com/?p=968
+---
+Today was utter crap.
+
+It wasn't crap when I woke up. It was just another day. What woke me up at the semi-pleasant hour of 5am was my publisher calling. We had scheduled a call for 6 but I think he may have suffered from an "off-by-one" error. People make mistakes and I silently forgave him for this and talked business for 21 minutes. We're making fantastic progress. I really felt good after this morning's conversation.
+
+Then I spent the next 3 and a half hours before work exhausting all my news sites and chatting with Sam Elliot (lenary) for an hour about a multitude of things. <a href='http://hypernumbers.com'>Hyper Numbers</a> came up. I wrote them <a href='http://gist.github.com/405662'> and <a href='http://www.reddit.com/r/programming/comments/c5p56/html_is_dead_spreadsheets_for_life/'>posted it on Reddit</a> and <a href='http://www.reddit.com/r/programming/comments/c5p56/html_is_dead_spreadsheets_for_life/c0qanc2'>they replied later on in the day</a>. I do see their point and I wish them well. Shame about the "code bukkake" though.
+
+Then I went to work on my boss's boss's bike (loaned to me last Friday) and ding'd my bell at a couple of pedestrians and had the usual "not looking where I'm going so I'm just going to walk straight towards your bike in the hope that you swerve and miss me" occasions. This is what happens when you ride on footpaths. Oh, I should ride <strong>on the road</strong>? Have you <strong>seen</strong> Sydney peak hour? I value my life.
+
+The first half of work, usually called "morning", was good. We finished a feature yesterday and begun working on a new one, refunding donations, today. New features are always good to get rolling. The idea was to have the full refund done by the end of the day. What we're currently working on is called "v3" or "version 3" or, if you're keen on the buzzwords, "MVP" for "Minimal viable product". What this acronym and term means varies from person to person, day to day and even weather condition to weather condition. It effectively means the application needs to be "good enough" for us to run an election campaign on. I won't bore you with the technical details and only mention that it's been in planning as early as January this year. With the election not yet having a set date (there's rumours which boss^2 likes parading about), it's hard to know when we're going to have to release this thing. For as long as I've worked there, it's been "before the election".
+
+Last week we were given a deadline. A specific time at the end of June. Right, that's still a while off, right? 
+
+Boss^2 looks panicky.
+
+"Are we going to get this done by that date?"
+
+"How long do you think this will take?"
+
+"What can we cut out of this to make it by then?"
+
+All questions he asks. As a developer, I can say "that's going to take <number> <timeframe>". 
+
+Boss^2 takes it as gospel. It has to be done by that date. Otherwise, disaster. The world is exploding. Next he knows, Tony Abbott will be PM.
+
+ Boss^1 acknowledges there is a deadline and also acknowledges that our estimates are... estimates, and that things can go wrong and things can get delayed and we can make up the time later on by developing it smarter (by writing tests). 
+
+I like Boss^1. 
+
+But Boss^2 is a realist. He feels that if this project doesn't get off the ground that he may have to scrap it. Yes, this project that I've worked so diligently on for the past 3 months will be scrapped in favour of their old, kludged-together (but functional, kinda like my old VL Commodore) PHP system. Yeah.
+
+So this afternoon we had an hour long meeting. An hour of time that could, in my opinion, have been better spent developing. We knew what needed to be done. We knew there was a deadline. All information conveyed in that meeting could have been done through an email exchange or, Hell, on Google Wave. I took notes. Especially of Boss^2's lines. Such as "let's assume we have design" and "let's just park that issue". Another golden one from this morning "I want you to work on that operationally". Speak. Clearly. Please.
+
+The other non-developer in the meeting, a senior campaigner, wore what I'll refer to as his "sadface" throughout the meeting. I don't like seeing people in that state. They want this new system, and we are working bloody hard to develop it.
+
+As for the first line: We <s><strong>cannot</strong></s> <strong>must not</strong> assume we have anything at the moment. What if our designer is unavailable?
+
+At the end of the meeting (at 5:15pm) I was drained. Did I mention I woke up at 5am? That probably didn't help things. So I packed my things and headed home, it was the end of my day. I wheeled out the bike and took it down the elevator. Then I rode down Foveaux Street and waited at the lights to cross to go past Central. I hopped the traffic island on my bike and the back tyre blew. I checked it and it was a clean tear. I hadn't bought a spare. Hindsight's a bitch.
+
+That was it. I'd had enough. I put the bike up against one of the columns and threw down my helmet and put both hands on the column and bowed my head for a couple of seconds. What a crap day. I phoned Francois (one of the ex-PHP coder's who's coming along well!) and thankfully he was still in the office. Took the bike back up Foveaux street (it's a hill) to the office and left it in the "foyer" and took the stairs down to ground. 
+
+Then I caught a cab from the taxi "station" nearby, only to realise peak hour traffic is crap. You'd think with me walking alongside a main road just about every night for the past couple of months I'd know this. I got the driver to drop me off near Broadway supermarket. There they have a butcher that sells a "New York" steak. It's the perfect size. I bought one and some potatoes, and now if you excuse me I'm going to go make the best fucking steak ever, eat it, and then just sit and think for some time. Think that, if I could do this day again with the knowledge I have now, what would I do differently? How can I make tomorrow better? And then just not think at all.
+
+tl;dr: Book is going awesome. This week: work has sucked. Boss^2 is great source of buzzwords. My bike back tyre blew. I'm eating awesome steak to recuperate.
+
+
+
+

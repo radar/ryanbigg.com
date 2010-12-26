@@ -1,0 +1,73 @@
+--- 
+wordpress_id: 1194
+layout: post
+title: The Writing Process
+wordpress_url: http://ryanbigg.com/?p=1194
+---
+It's been a while since I've videoblogged about the progress on Rails 3 in Action and I'm in that kind of mood tonight, but can't be bothered turning on the light and setting up for that, so instead you'll get it in text version. 
+
+This week on Tuesday, I caught up with Mark Ryall for lunch and he asked what the writing process was like. I explained it to him and that's definitely not the first time I've explained it to somebody, but nevertheless still tried to make it sound interesting. There's a couple of key points I'd like to use this post to go into greater detail about.
+
+<h3>There are no montages</h3>
+
+Ever seen Rocky I? It has a great training montage where through some clever cutting we see Rocky train for the big fight. He's running through fields, drinking raw eggs, and finally climbing a huge flight of stairs and then "dancing" because he was victorious.
+
+In the real world, there are no montages. I wake up in the morning and I think about how much I'd like to get done in a day. Sometimes I do that, sometimes I exceed expectation and sometimes I fail. But the main point is that I'm at least giving it a go, every single day. If I'm not writing, then I'm at least thinking about what I would write about, how the pieces all fit together. Perseverance is definitely a non-optional thing when it comes to writing a book. I focus on planning out a section and then writing it. Sometimes during the writing of it, I discover some oversight in a previous paragraph and jump back to fix it. If I don't fix it, then I've got my awesome review team which will point out mistakes, which takes me on to my second point.
+
+<h3>Get a posse</h3>
+
+The review team so far have filed 870 notes for the book. Now, whilst this may seem like a lot, there's a whole wall-o'-text there, some 130,000+ words so far. Many of these notes where stuff like places where I use "ran" rather than "run" or where sentences would have better wording. Then there were notes as well saying that the reviewer got lost in the text or that a code example is missing a character or overflows. Without these reviewers, I would not have been able to solve these notes as quickly as I have been, and I hope that they'll stick with me until it's over. 
+
+How do these reviewers file the notes? That's the third point.
+
+<h3>The tools for writing a programming book, suck</h3>
+
+Surely, somebody has solved this issue. Unfortunately for myself, that somebody isn't my publisher. I'm hand-writing the book in XML which goes a little like this:
+
+<pre>
+&lt;informalexample id="ch12_152"&gt;
+  &lt;programlisting id="ch12_153"&gt;
+    &lt;![CDATA[create_table :accounts_users, :id =&gt; false do |t|
+      t.string :account_id
+      t.string :user_id
+      t.boolean :admin, :default =&gt; false
+    end
+    
+    remove_column :users, :admin
+    ]]&gt;
+  &lt;/programlisting&gt;
+&lt;/informalexample&gt;
+</pre>
+
+I've got TextMate macros for that so I just type `in[tab]` for it to generate the <code>informalexample</code> and nested <code>programlisting</code> tags, with the <code>id</code> attributes filled in at a later time by <a href="https://gist.github.com/737322">a script I've written myself</a>.  That in itself was an interesting problem to solve. Each and every single element in the document needs a unique ID, but you can't just go ahead and number every single element in order: you have to be considerate of the fact that some elements may already have ids. If that's the case, then you find the "biggest" id and just add +1 to that for every single new element. 
+
+Why do these elements need IDs? Because of how Manning's review tool works. My editor and I both have access to a tool that we can log into and leave notes for the book. These notes relate to an element based on that element's ID so even if the *content* of the element changes after the note has been left, we still know what element that refers to. The IDs for that particular system are something like <code>_432_4125_3843</code>, where the first number is the book id, the second number the chapter id and the third number the element number for that chapter. I prefer my naming schema, to be perfectly honest.
+
+There's a small problem with the tool my editor and I use: only we have access to it. For very good reason too. Anybody who has access to it gets to see every single other book written by Manning, which is probably not the best for security reasons there. Also, this tool requires me to use SVN (wherein a part of me dies every time that happens), as well as <a href="https://skitch.com/ryanbigg/rrxji/a">an interface that is from many, many years ago.</a> To update a chapter, I must go into this interface and click on every chapter, scroll to the very bottom of the page, press the "Latest" radio button and press "Update". Then once the request is done, I get no clear notification if something has gone wrong. It's all very luck-based.
+
+One Saturday, I got tired of doing this. I knew I could code something far, far greater. Hell, I was/am writing a book on Rails 3, why not build another Rails application to help in that process? That's how Twist was born. On a single Saturday (ok, and some minor upkeep during some down time).
+
+<h3>Twist</h3>
+
+Twist is a Rails 3.0.3 application which currently has about 40 users. Each of these users can log into the system and leave notes for any element in any chapter and also see notes left by other users. Collaborative editing is the future, man. I can log into the system and see exactly what every other user sees, except I have one extra ability: I can close notes. Ideally I would like to have three stages for notes: Open, Complete and Closed so that people can check to see if the note is to their satisfaction, but I haven't seen any large use for that yet. It's just a nice-to-have.
+
+So how does Twist get the book then? That Saturday was fever-pitch coding. I host the book on GitHub (quite probably my favourite online service that's not a bank), and GitHub has Post-Receive Hooks which trigger when the repository is pushed to. With these, I can send a payload of a commit to any URL I desire. This payload contains information such as what files were added, modified or removed during the commits that have happened for that push. So that's what Twist uses. It parses the payload, downloads the XML for the chapters and parses it all and stores it in a database structure that, simply put, goes like this:
+
+<pre>
+  Book -> Chapters -> Revisions -> Sections -> Elements <- Notes <- Users
+</pre>
+
+Every time I push a change to GitHub, it's instantly available for the reviewers to see. No SVN or shitty interface bullshit. When reviewers visit a section it's rendered right from the database. If it had a lot of traffic, sure, I'd cache it. It just doesn't need it right now. One of my favourite features which I added recently was the ability to close notes through commit messages using a message such as "Fixed messed-up code sample - Finishes #711", ala GitHub Issues. Oh, and <a href='https://skitch.com/ryanbigg/rrxkb/twist.ryanbigg.com-1.2.4'>it looks like this</a>. Hat-tip to Ben Hoskings for the protips on things like the line and paragraph spacing.
+
+There's one thing I haven't been able to solve yet: testing the code samples.
+
+<h3>How do you know it works?</h3>
+
+One thing that bugs me with this writing process is that I have no solid clue if the code I'm writing actually works. A lo-fi way I've worked out of solving this is to write the code for the application as I'm writing the book. Make it work in the application and then it's a matter of simply copying over the code from the application into the book. My main problem with that is that code and output can both change. I don't know how yet to test this cleanly -- and I'm pretty sure Manning's XML format would prevent me from even trying -- but I know it's possible.
+
+
+<h3>Fin</h3>
+
+Anyway, long post is long and probably not that interesting to a normal reader. Still, it's fascinating for me. The whole process gives me this fuzzy, warm feeling. Made some good progress on Chapter 12 today, and I think I'm going to go push that to GitHub (and by extension, Twist) right now. Bye!
+
+

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <p>Angus asked me today to code him a method in Ruby to work out if a date is a leap year. He gave his example:</p>
+
+<p><span>code=&#8221;Angus&#8217;s Example&#8221;</span> if not (year % 4) and ((year % 100) or not ((year % 100) or (year % 400))) <span>/code</span></p>
+
+<p><em>tut tuts Angus, use ! instead of not, &amp;&amp; instead of and, and || instead of or!</em></p>
+
+<p>Ruby has this built in method called <span>term</span>leap?<span>/term</span> and its source looks like this:</p>
+
+<p><span>code=&#8221;Ruby&#8217;s Source&#8221;</span> def leap? self.class.jd_to_civil(self.class.civil_to_jd(year, 3, 1, ns?) - 1, ns?)<span>-1</span> == 29 end <span>/code</span></p>
+
+<p>Now I&#8217;m sure there&#8217;s a reason they&#8217;re doing all that, but I have a shorter way:</p>
+
+<p><span>code=&#8221;My Code&#8221;</span> class Date def leap? yday != 60 end end <span>/code</span></p>
+
+<p><span>term</span>yday<span>/term</span> returns 60 on all years that are not leap years, so why not just check that value?</p>
+  </body>
+</html>

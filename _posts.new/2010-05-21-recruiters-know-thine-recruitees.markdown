@@ -1,0 +1,132 @@
+--- 
+wordpress_id: 974
+layout: post
+title: "Recruiters: Know Thy Recruitees"
+wordpress_url: http://ryanbigg.com/?p=974
+---
+I suppose I'm well-known (at least in the Australian community) on <a href='http://groups.google.com/group/adelaiderug/browse_thread/thread/4f237e79bd9872c0/2da2cfe763287585'>my stance on bad recruiters</a>. To me, their job is to perform the most minimalistic effort possible to get people for other companies and in doing so, they line their pockets with a nice pay packet. I even <a href='http://ryanbigg.com/job-postings/'>wrote what I look for in a job posting</a>. It's not difficult to "bait the line". Spend that little bit of effort.
+
+Recruiting sounds like quite the fantastic job and I'm sure that if I wasn't teaching/coding at GetUp or writing a book,  I would be "farming" people and then getting them hired at companies looking for developers and getting a nice pay packet from these companies from providing them with valuable people. In theory, anyway. I really feel there is a nice market here. It would be a bridge between those looking for Ruby on Rails training and those looking for experienced people. 
+
+I honestly appreciate those companies that have gone out of their way to contact me personally with job advertisements or offers. These companies know that if they want the best talent, that they're not going to get it through some recruitment firm. The company knows what they are looking for, and therefore will (or at least, should) be actively involved enough in the community to know who's available when. Sometimes I have not been able to consider them because I have been employed at the time, and others would have caused large changes, such as moving to another continent! When I announced I left Mocra, I had a lot of people contact me directly for job offers. I'm sure that if, today, I was to announce that I'm leaving GetUp (clarification: I'm not. At least not in the next month.), these same people and perhaps more would contact me with further work. Being in demand is a great feeling. I haven't had to stress about job security because I know that if one job doesn't work out, there's always more. 
+
+You're probably thinking I'm not very loyal. I am, but there are certain conditions that apply. For instance, you cannot buy my loyalty. If your job sucks, then I'm not going to enjoy myself doing it and will probably be looking for a way out. Give me something to do that I enjoy along with enough money for me to be able to pay the rent and enjoy my chosen lifestyle, and that's how you can have my loyalty. Mocra kind of did this (I hear the situation has improved). GetUp does this.
+
+So why don't recruiters bait their lines when they go fishing for new people? Take this email I received on the 18th of May from a recruiter from an American recruiting company:
+
+<blockquote>
+Hi Ryan,
+
+I'm recruiting for [list of big companies], and others. I ran across some of your Open Source work and wondered if you would be interested in chatting about a new opportunity.
+
+Having published open source code is a big plus for all of these companies! If you're interested in discussing, please let me know.
+</blockquote>
+
+Where's the bait? What in this email is supposed to make me want to drop absolutely everything I'm doing now, start hyperventilating and type a response to this email? It's sadly absent. I sent a reply anyway (typical nerd, desperate for more human interaction).
+
+<blockquote>Yes I'm interested in discussing this with you, always good to talk to people who know what's out there. When would you like to talk?</blockquote>
+
+I say I'm interested (just window shopping for now) and ask when would be an appropriate time for <strong>them</strong> to speak to <strong>me</strong>. Business 101: cater to the other person. Think of what you can do to benefit them and then go about doing it.
+
+So by now you may have realised that the 18th of May was 3 days ago. Which is ancient in email world. It had scrolled right to the precipice of my inbox and last night I saw it sitting there, mixed in with all the lighthouse notifications. They hadn't replied in those 3 days. Maybe they sent it out to a lot of people and were busy. Whatever the reason, I decided to write again:
+
+<blockquote>
+Hi [name], I'm still interested in discussing this with you. I am disappointed that you have not yet gotten back to me. Hope to hear from you soon, Ryan Bigg
+</blockquote>
+
+And within 4 hours of my reply, they wrote back:
+
+<blockquote>
+My apologies for not getting back to you.  Are you interested in relocating out to Silicon Valley, or for a telecommuting opportunity?  
+</blockquote>
+
+I sleep with my iPhone in my bed running the Sleep Cycle app. I'm a stats fanatic. This morning I slept well. But I digress. Because my iPhone is so accessible and my computer is all the way on the other side of the room (about 1m from the end of my bed), I read my emails on my phone. The email that they wrote fit all on one "screen". Again. No bait. Oh, "Silicon Valley" is supposed to be bait? Nah uh. I leapt (well, more of a roll) out of bed and almost tore open my macbook lid. I am in the mood for writing. Can you tell? So I wrote them back the kind of sized reply which I think is reasonable.
+
+<blockquote>
+Hi there,
+
+<p>
+I am going to need more information before I can give a solid reply on that. Here's some thing's I am interested in about finding out about a job before making any decisions:
+</p>
+
+<p>
+* The name of the company interested in hiring me. Unless [their company] is going to hire me to work for them directly, this is not you. It could be one of the companies you are doing the recruiting for, in which case I scouts-honor-cross-my-heart-and-hope-to-die promise you I won't give away the name.
+</p>
+<p>
+* What kind of work I would be required to do (For example, I am more keen on teaching people who are new to Ruby on Rails more than doing the coding myself. The open source work I have done is because it was something I was interested in at the time and I never intend for them to become successful viable products. Anyone who does open source and hopes for this to happen is, in my opinion, crazy.)
+<p>
+* The language I would be required to program in. I am proficient in Ruby on Rails (and therefore, by extension, just Ruby itself) but I am willing to learn other languages. If I had to learn another language would I be provided with on the job training?
+</p>
+<p>
+* Are there any other skills require to perform this task? For example, at my current job (a contract that expires next month, fyi) I simply do not just teach Ruby. This of course means that I have to have the ability to work closely and patiently with other people on a project in order to meet deadlines. Then there's the database work which involves data integrity, really fast database inserting and so on. Then there's the "magnum opus" of the system which is getting that data from the database and into 500,000 emails which are to be sent out in under an hour. All of which I feel I'm very capable of doing.
+</p>
+<p>
+* If I were to relocate to the Silcon Valley, would the company I relocated for cover my all my relocation costs, part of them, or none of them?
+</p>
+<p>
+And of course the final point which anyone would be stupid not to ask:
+</p>
+<p>
+* The fancy word is "remuneration package". I'd like to call this "The number that determines what can I afford to eat, do and play". I am of course talking about a salary. Would I be paid a competitive salary, or would I be on enough to afford half a packet of ramen noodles for dinner each night and maybe the flavour packet if I was feeling really hungry? If you are concerned that you cannot answer this question clearly, given that "competitive" means very little in this context, I am currently on around [pay]. Can you do that, or, preferably, better?
+</p>
+
+<p>
+Looking forward to hear back from you once more,<br>
+Ryan Bigg
+</p>
+</blockquote>
+
+All of this information should have been provided as the bait from the original email. Now I am slightly annoyed that I have had to spend time helping them do their job correctly.
+
+About an hour later, they replied with an email that answered my questions to the best of their ability. A nice big (seriously) non-sarcastic bravo! <strong>this</strong> is the kind of effort I'm talking about!
+
+<blockquote>
+Hey Ryan, good questions! I'll try to answer them all.
+<p>
+I mentioned the name of some of the companies in my first email. I am currently working with: [big companies]. I'm working with a few other companies as well but the ones mentioned are hiring the most. I look for the same thing for of these companies: Strong OO Development skills and a genuine interest in technology.
+</p>
+
+<p>
+What you would be doing depends on the company and position. My approach here is to get you in touch with company and the engineering teams directly. That way you can discuss your interests and their requirements without a non-technical recruiter (me) getting in the way! ;). Strong OO development skills, strong interest in technology, ability to write "elegant" code that scales. These are the same requirements I have from most of my clients. In the case of [big company] for example, what you would actually be working on is not pre-determined but will be figured out during the interview process.
+</p>
+
+<p>
+The languages vary. I will say that in the companies I've mentioned, none of the positions state Ruby or RoR as a requirement. C++/Python would be the most common combination in terms of requirements. Javascript is also pervasive throughout all of these companies. Most of these companies want people who can adapt quickly to new languages.
+</p>
+
+<p>
+Knowledge or understanding of what makes code expensive (in terms of resources) and how to make applications scale is the single most important additional skill. 
+</p>
+
+<p>
+Relocation expenses. This again depends. This is part of what we would help to negotiate for you. In most cases, some sort of relocation packing would be included.
+</p>
+
+<p>
+Compensation. Yes, if you were made an offer by one of these companies, I would expect it to exceed [rate] USD. Again, this will depend on your interview. Salary negotiations are something we can assist with as well. Average salary for a software engineer with 5+ years of experience is between $90,000 and $130,000 USD per year. 
+</p>
+
+<p>
+The next thing I would need is your CV/Resume. You're[sic] github profile looks great! Once I review your resume I can give you more specific info on what companies and positions I think would be best.
+</p>
+</blockquote>
+
+Now we're talking.
+
+When I was initially contacted to write this book, this is the email they sent me:
+
+<blockquote>
+<p>
+I am writing you as an [position] with [company]. We are currently looking for a writer to [contribute to] our book on Rails 3. I came across your blog and thought you might be a good fit.
+</p>
+
+<p>[redacted awesome things that may give away too much information]</p>
+
+<p>Would you have any interest in joining this project? Please let me know. I look forward to hearing back from you, and would be happy to speak with you further about the book.</p>
+</blockquote>
+
+Bam! Straight to the point! I just about damn near well bounced off the walls when I read this email the first time. I still get giddy now reading it. We played email ping pong for about 5 volleys with the slowest turnaround being about 12 hours (because, occasionally, I sleep) This is the kind of recruitment I want to see more of! Be proactive and entice the people you want to hire. Bait the line.
+
+Recruiters: know thine recruitees. When you go looking for new hires, give them a reason to leap out of bed and feverishly reply to your email. Just FYI: if I receive another email of this first email's "standard" again, I'm not going to feel like replying as quickly as I did when I read the book email. If you're not going to spend the time to write something detailed, then I am not going to spend the effort to write something back.
+
+Do your job, and do it well or go away.

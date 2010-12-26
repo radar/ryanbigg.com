@@ -1,0 +1,39 @@
+--- 
+wordpress_id: 934
+layout: post
+title: by_star
+wordpress_url: http://ryanbigg.com/?p=934
+---
+It's plugin / gem pimping time!
+
+I started writing <a href='http://github.com/radar/by_star'>by\_star</a> back in November 2008 when Thomas Sinclair asked me if I could write a method that could find records for a given month. I was in my gem creating phase then so I created a gem called by\_month and Thomas paid me for it (the sucker!).
+
+Later on, I realised that by\_month wasn't good enough so I added a couple more finders to it. Then I added some more. Now you can find by all of these things:
+
+* A given year
+* A given month
+* A given fortnight
+* A given week
+* A given weekend
+* A given day
+* The current weekend
+* The current work week
+* The Past
+* The Future
+* Between certain times
+* As of a certain time
+* Up to a certain time
+* Before a specific record
+* After a specific record
+
+So if you're ever doing anything in your application where you need to find by dates / times, why are you not using <a href='http://github.com/radar/by_star'>by\_star</a>? Here's a good reason you should be using by\_star:
+
+<strong>Before by\_star</strong>
+    
+     Post.all(:conditions => ["created_at >= ? AND created_at <= ?", "01/01/#{Time.now.year}".to_time, "31/01/#{Time.now.year}"])
+
+<strong>After by\_star</strong>
+
+    Post.by_month(1)
+
+This is only a <strong>taste</strong> of the shiny things in by\_star! Use it!

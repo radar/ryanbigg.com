@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel='stylesheet' href='css/style.css'>
+  <body>
+    <p>You can call <span class='term'>establish_connection</span> with the key that points to another database config in your <em>config/database.yml file</em></p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre&gt;
+class Person &lt; ActiveRecord::Base
+  establish_connection(:hr)
+end
+&lt;/pre&gt;</pre><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre&gt;
+class Ticket &lt; ActiveRecord::Base
+  establish_connection(:bug_tracker)
+end
+&lt;/pre&gt;</pre>
+<p>If you have a whole bunch of models that need to connect to another database:</p>
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+&lt;pre&gt;
+class HR &lt; ActiveRecord::Base
+  establish_connection(:hr)
+end
+
+class People &lt; HR
+  # ...
+end
+
+class Resource &lt; HR
+  # ...
+end
+&lt;/pre&gt;</pre>
+  </body>
+</html>

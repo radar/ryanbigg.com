@@ -1,0 +1,26 @@
+--- 
+wordpress_id: 958
+layout: post
+title: "Rails 3 Book: Staying Focussed"
+wordpress_url: http://ryanbigg.com/?p=958
+---
+Sometimes I have difficulty focussing on tasks and getting things done. I think that this is part of being human. There are some times where I will concentrate on a task so fiercely that I will ignore other things, such as that bad smell coming from the laundry basket in the back corner of my room. Then there are the times where I'm as apathetic to the task as a teenager to homework. I've been asked by a couple of people how I stay so focussed.
+
+What's my secret?
+
+I break everything down into tiny chunks so my tiny brain can understand that, in order for there to be "happy happy joy joy fun time" this one little task needs to be done. In the process of writing, I've broken the book down into individual stories, just as a real app would be broken down. Each chapter can (and so far, all of them do) contain many stories. So far the average is 4, but with only two "storied" chapters written, this is an unfair average. The purpose for breaking it down into stories is two fold:
+<ol>
+  <li>As mentioned before, it demonstrates to the reader how a real application would be developed using BDD. Story by story.</li>
+  <li>It "forces" the user to concentrate on just getting one "puzzle piece" done at a time</li>
+</ol>
+
+There's also the top-secret 3rd "fold": It helps me focus when I'm writing. If I know that there's writing to be done (and boy (and girl), there's writing to be done!) and I'm going "*groan* more writing!" I have the willpower to convince myself that if I can write a well-done story tonight it is one more story closer to completion than if I had not. That is enough to convince me that I should probably do some writing. I don't have to write the WHOLE chapter in this one sitting. Just this one story. Then I can take a break and give it a skim-through to see if there's any glaring omissions and fix them. Then I may even be eager enough after that to take <strong>another</strong> break, perhaps to go to the toilet or grab some food or do that washing that's creating that God-awful smell. Anything that let's me <strong>just think</strong> about what I'm doing for a moment, that's a good thing. That's one less distraction that I'm going to have when I enter the zone. I'm not going to think "I should eat", because I already have. Deal with the distractions, then get on with it.
+
+With this "technique" applied three weekends ago (a long weekend in Aussie-land) I managed to write nearly 16,000 words. Two weekends ago was my brother's birthday, which was fantastic to see him and the rest of the family again. Nothing got done that weekend besides awesome catch up. Then this weekend, I wrote <strong>another</strong> 14,000 words. Between these periods I've been doing some self-editing and editing based on the suggestion of Others Who Cannot Be Named. This has left the total word count at 29,101 as of tonight.
+
+Tomorrow night is the Ruby on Rails Sydney meetup which I'll be at so there'll be no writing done then, but it's <strong>extremely</strong> likely that I'll be at the magical 30,000 word mark come headdown (the time when my head hits my pillow) on Wednesday. And then beyond that. Eventually though, there will come a time where I will get to release this to you guys. That's when I feel I won't be writing as much, just fixing up what's already been written. We'll see. Perhaps I'll feel ultra-motivated and get to that mystical target I've set myself of 20,000 words in a weekend. It's a nice sounding number.
+
+So in order to be ultra-focussed I deal with all possible distractions before starting tasks. I'm finding this is an effective way of being able to stay focussed for long periods of time, and I'm curious if this works for you too. I know other people use techniques like timeboxing and Pomodoro.
+
+What works for you?
+

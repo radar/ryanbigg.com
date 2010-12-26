@@ -1,0 +1,46 @@
+--- 
+wordpress_id: 836
+layout: post
+title: Starsigns & Dreams
+wordpress_url: http://ryanbigg.com/?p=836
+---
+Now I know that you guys expect this to be like... pure technological content since I'm a technological kind of guy, but sometimes I do break the rules. This is one of those more of a "blog" and less of a "tutorial" or "code" post. Sorry. Just something strange has been going on. Oh, and it contains profanity. Sorry.
+
+I'm not one who believes in fortune-telling, I think it's a complete and utter scam. These people will tell you precisely what you want to hear so they and their brethren can get precisely what they want: your money. They tell you all these good things and to pay attention to your horoscopes and star signs and so on and so forth, so you'll go out and buy all these books about it and effectively dedicate your entire life to knowing about what's going to happen in your future.
+
+Fuck you.
+
+No, really. Do you think that you're such <a href='http://www.imdb.com/title/tt0137523/quotes'>"a beautiful or unique snowflake"</a> that the stars, balls of burning Helium, Hydrogen and whatever the fuck else are actually representing your fate? That they are able to correctly predict what will happen to you in terms of life (love and not), money and well-being? Jesus H. Christ you people are fucked in the head. You are not <a href='http://www.imdb.com/title/tt0137523/quotes'>"a beautiful or unique snowflake"</a>. Your fate is entirely dependent on <strong>your actions</strong>. If you want something positive to happen: work the fuck towards it.
+
+Do not get me started on Numerology, either.
+
+My (read: your) God.
+
+Now that I've got that whole little blurb out of the way I can go on telling a story of two exceptionally strange coincidences that have happened within the past week. Yes, I view them as "coincidences", not as "messages from the stars" or whatever you loonies want to call them. Although occasionally I feel that *something* is causing these to happen but then I have a nice hard-dose of a little thing us sane-folk like to call "Reality" and I'm right as rain.
+
+Coincidence #1.
+
+A girl at work asked me if my Paypal account had any money in it, I thought it didn't but I checked anyway. There was some in there and she asked if I could use $1 for it to test some of the site's donation functionality as it was misbehaving. I did, and it was. Then I thought that the money would be best out of the hands of Paypal and better in the hands of my bank so I "wrote" a mental note to transfer it when I got home. I didn't.
+
+That night I dreamed of a person or people putting money into my Paypal account. I quite often dream of things related to the previous day, almost like it's a consequence of them being committed to my long term memory or something. So in the dream as I receive the money and go to transfer it, naturally I wake up. I always wake up from dreams when it gets to the good part.
+
+So I get out of bed and onto my computer and as soon as I open up IRC I receive a IRC private message from Zarathu who says that he appreciates all my help that I give him and others and would like to show his respect in monetary format. He sends me $100.
+
+Go figure.
+
+Coincidence #2.
+
+I have flu-like symptoms and to help me sleep through them I'm taking Codral day & night tablets. When I take the night tablets I have really, really vivid and sometimes whack(er than usual) dreams. Last night's major consisted of myself and an unknown person really agreeing on something, we were having a discussion about something but there were no details. But we shared a common idea. 
+
+Tonight Marcelo & his girlfriend cooked dinner for us all and Marcelo's mother came over. We talk about what I do and Marcelo's girlfriend asks if I do iPhone development. I say that I tried to get into it but I needed an app idea in order to learn the language. She says she has an idea but she won't tell me it because she fears I will steal it. There's this one application I've been looking for (and I won't say it because <strong>YOU</strong> will steal it :)) since the iPhone came out and I ask "Is it something to do with ...?"
+
+Silence.
+
+"How'd you do that?", she asks.<br>
+"Do what?"<br>
+"Read my mind."
+
+We spend the next hour talking about how awesome this idea is.
+
+So, I still view these as coincidences, but for something like this to happen twice in a week is kind of freaky.
+
