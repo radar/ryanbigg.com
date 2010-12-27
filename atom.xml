@@ -1,7 +1,9 @@
 ---
 layout: nil
+title: atom feed
 ---
-<?xml version="1.0" encoding="utf-8"?>
+
+<?xml version="1.0" encoding="iso-8859-1"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
  
  <title>The Life of a Radar</title>
@@ -14,7 +16,7 @@ layout: nil
    <email>radarlistener@gmail.com</email>
  </author>
 
- {% for post in site.posts %}
+ {% for post in site.posts limit:20 %}
  <entry>
    <title>{{ post.title | xml_escape }}</title>
    <link href="http://ryanbigg.com{{ post.url }}"/>
