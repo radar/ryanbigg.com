@@ -78,7 +78,7 @@ This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go o
 Are we using 1.9.2? You betcha:
 
     ruby -v
-    ruby 1.9.2p0 (2010-08-18 revision 29036) [x86_64-linux]
+    ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes!
 
