@@ -57,6 +57,6 @@ The main benefit is the speed. On the vanilla WordPress install I had I was luck
 
 I also get to write my posts the way I like to: Markdown + HTML. No crummy little editor window, I can do it all from within TextMate.
 
-I'm really liking Jekyll as lightweight alternative to WordPress and it's great to finally be off a PHP-based system. I mean, if Ruby is so good <a href='http://en.wikipedia.org/wiki/Not_Invented_Here'>why would I be using a PHP based system?</a>.
+I'm really liking Jekyll as lightweight alternative to WordPress and it's great to finally be off a PHP-based system. I mean, if Ruby is so good <a href='http://en.wikipedia.org/wiki/Not_Invented_Here'>why would I be using a PHP based system?</a>
 
 
