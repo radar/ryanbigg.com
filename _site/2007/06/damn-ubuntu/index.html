@@ -7,6 +7,7 @@
     <div id='page'>
       <article>
         <a href="/2007/06/damn-ubuntu"><header>Damn Ubuntu!</header></a>
+        <small>13 Jun 2007</small><br>
         <p>&#8220;Yeah, it&#8217;s a tomorrow problem.&#8221; I said yesterday in regards to installing Ubuntu on the development server at work. Little did I know that it would cause so many hassles.</p>
 
 <p>First of all the mirror at http://au.archive.ubuntu.org didn&#8217;t have some packages, so I changed that to mirror.internode.on.net and that seemed to fix everything except for the nginx package. So I changed &#8220;dapper&#8221; to &#8220;feisty&#8221; in /etc/apt/sources.list and it found it and installed it. Then it decided to remove/alter some key features. That wasn&#8217;t good. I tried compiling imagemagick, and that failed with a &#8220;cannot compile executable&#8221; error (which there are only ~700,000 results for on Google!). Then I tried doing apt-get install build-essential. That needed libc-dev which needed lib6c-dev, which needed gcc, which needed libc-dev. See my conundrum?</p>

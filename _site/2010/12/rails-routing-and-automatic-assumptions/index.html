@@ -7,6 +7,7 @@
     <div id='page'>
       <article>
         <a href="/2010/12/rails-routing-and-automatic-assumptions"><header>Rails routing and automatic assumptions</header></a>
+        <small>19 Dec 2010</small><br>
         <p>Last night while working on chapter 12 for <a href='http://manning.com/katz'>Rails 3 in Action</a> I stumbled across an interesting problem detailed in <a href='https://gist.github.com/746414'>this gist</a>. The problem I was seeing is that the <code>edit_admin_user_path</code> route <em>was not</em> failing, while the <code>admin_user_permissions_path</code> path <em>was</em> failing.</p>
 
 <p>I had my suspicions to why the first link worked and spent the remainder of last night digging through my favourite bit of Rails and Rails related source(ry): Action Dispatch and rack-mount. I didn&#8217;t figure it all completely out until after a good night&#8217;s sleep. It wasn&#8217;t until I saw pixeltrix&#8217;s comment on the Gist this morning that it all clicked.</p>

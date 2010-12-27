@@ -7,6 +7,7 @@
     <div id='page'>
       <article>
         <a href="/2009/10/size-count"><header>Size != Count</header></a>
+        <small>30 Oct 2009</small><br>
         <p>When using a has_many :through in Rails with a counter_cache an interesting thing can occur. When you call <code>size</code> on the association, it can return a seemingly incorrect number. This is caused by the following code in <em>activerecord/lib/has\_many\_through\_association.rb</em>:</p>
 <pre>
 def size

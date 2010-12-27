@@ -7,6 +7,7 @@
     <div id='page'>
       <article>
         <a href="/2008/07/stop-being-so-self-centered"><header>Stop Being So Self-Centered!</header></a>
+        <small>29 Jul 2008</small><br>
         <p>I&#8217;ve seen so many examples of people being self-centered in their code, always calling their methods on <span class='term'>self</span> when they don&#8217;t need to!</p>
 
 <p>self is a handy reference to the current object (or class) depending on how the method is defined. In a class that inherits from ActiveRecord for example, calling self before defining a method will define that method on that class, rather than the objects of that class. Once inside of the method, you are free to go about as you will; Ruby will know what you mean when you call other methods inside that method.</p>
