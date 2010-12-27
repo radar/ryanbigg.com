@@ -45,6 +45,10 @@ I wanted to keep the comments from the WordPress site and Rohit recommended Disq
 
 To convert over the pages from WordPress that weren't posts I've copied the source of them (such as the <a href='http://ryanbigg.com/about-me.html'>About me</a> page) and put them as static HTML files in the root of the project. When Jekyll compiles the site, these are copied over to the `_site` directory.
 
+### Deployment
+
+Currently going via the low-tech method of an SSH + `git pull` on the server, but hoping to switch to a commit hook in the future.
+
 ### Benefits
 
 The benefits are many. My posts are now <a href='http://github.com/radar/ryanbigg.com'>open source</a> which means that if people find problems with them that can send in pull requests, but that's just a pipe dream probably. 
