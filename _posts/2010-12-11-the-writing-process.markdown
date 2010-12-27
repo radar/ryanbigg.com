@@ -54,7 +54,7 @@ Twist is a Rails 3.0.3 application which currently has about 40 users. Each of t
 So how does Twist get the book then? That Saturday was fever-pitch coding. I host the book on GitHub (quite probably my favourite online service that's not a bank), and GitHub has Post-Receive Hooks which trigger when the repository is pushed to. With these, I can send a payload of a commit to any URL I desire. This payload contains information such as what files were added, modified or removed during the commits that have happened for that push. So that's what Twist uses. It parses the payload, downloads the XML for the chapters and parses it all and stores it in a database structure that, simply put, goes like this:
 
 <pre>
-  Book -> Chapters -> Revisions -> Sections -> Elements <- Notes <- Users
+  Book -&lt; Chapters -&lt; Revisions -&lt; Sections -&lt; Elements &gt;- Notes &gt;- Users
 </pre>
 
 Every time I push a change to GitHub, it's instantly available for the reviewers to see. No SVN or shitty interface bullshit. When reviewers visit a section it's rendered right from the database. If it had a lot of traffic, sure, I'd cache it. It just doesn't need it right now. One of my favourite features which I added recently was the ability to close notes through commit messages using a message such as "Fixed messed-up code sample - Finishes #711", ala GitHub Issues. Oh, and <a href='https://skitch.com/ryanbigg/rrxkb/twist.ryanbigg.com-1.2.4'>it looks like this</a>. Hat-tip to Ben Hoskings for the protips on things like the line and paragraph spacing.

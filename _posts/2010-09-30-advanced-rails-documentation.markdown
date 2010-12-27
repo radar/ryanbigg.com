@@ -22,7 +22,7 @@ So I've been thinking for quite a while that it'd be nice to work on Rails docum
   <li>Action Dispatch, receiving + serving requests</li>
   <li>Action Pack, finding controllers and response rendering</li>
   <li>Active Model, the different modules and how you can create your own ORM-like system</li>
-  <li>Active Record, ARel & things such as associations and dynamic finders</li>
+  <li>Active Record, ARel &amp; things such as associations and dynamic finders</li>
 </ul>
 
 Besides the "big picture", I have no solid idea of precisely what would go in these guides, or even if they're interesting to people outside the world of my own head. 

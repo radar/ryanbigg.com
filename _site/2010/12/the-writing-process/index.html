@@ -45,10 +45,9 @@
 <p>Twist is a Rails 3.0.3 application which currently has about 40 users. Each of these users can log into the system and leave notes for any element in any chapter and also see notes left by other users. Collaborative editing is the future, man. I can log into the system and see exactly what every other user sees, except I have one extra ability: I can close notes. Ideally I would like to have three stages for notes: Open, Complete and Closed so that people can check to see if the note is to their satisfaction, but I haven&#8217;t seen any large use for that yet. It&#8217;s just a nice-to-have.</p>
 
 <p>So how does Twist get the book then? That Saturday was fever-pitch coding. I host the book on GitHub (quite probably my favourite online service that&#8217;s not a bank), and GitHub has Post-Receive Hooks which trigger when the repository is pushed to. With these, I can send a payload of a commit to any URL I desire. This payload contains information such as what files were added, modified or removed during the commits that have happened for that push. So that&#8217;s what Twist uses. It parses the payload, downloads the XML for the chapters and parses it all and stores it in a database structure that, simply put, goes like this:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre&gt;
-  Book -&gt; Chapters -&gt; Revisions -&gt; Sections -&gt; Elements &lt;- Notes &lt;- Users
-&lt;/pre&gt;</pre>
+<pre>
+  Book -&lt; Chapters -&lt; Revisions -&lt; Sections -&lt; Elements &gt;- Notes &gt;- Users
+</pre>
 <p>Every time I push a change to GitHub, it&#8217;s instantly available for the reviewers to see. No SVN or shitty interface bullshit. When reviewers visit a section it&#8217;s rendered right from the database. If it had a lot of traffic, sure, I&#8217;d cache it. It just doesn&#8217;t need it right now. One of my favourite features which I added recently was the ability to close notes through commit messages using a message such as &#8220;Fixed messed-up code sample - Finishes #711&#8221;, ala GitHub Issues. Oh, and <a href='https://skitch.com/ryanbigg/rrxkb/twist.ryanbigg.com-1.2.4'>it looks like this</a>. Hat-tip to Ben Hoskings for the protips on things like the line and paragraph spacing.</p>
 
 <p>There&#8217;s one thing I haven&#8217;t been able to solve yet: testing the code samples.</p>
