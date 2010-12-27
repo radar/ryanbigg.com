@@ -1,0 +1,14 @@
+---
+layout: default
+title: The Blogography of a Radar
+---
+
+<div id='archive'>
+  <h2>{{ page.title }}</h2>
+  <p>The formatting for earlier posts may be a little skewiff. If you find something like that, <a href='http://github.com/radar/ryanbigg.com'>patches are very welcome</a>.</p>
+  <ul>
+    {% for post in site.posts %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a><abbr>{{ post.date | date_to_string }}</abbr></li>
+  {% endfor %}
+  </ul>
+</div>
