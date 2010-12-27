@@ -71,6 +71,20 @@ $ ruby -r &#39;~/Sites/gems/jekyll/lib/jekyll/migrators/wordpress&#39; -e &#39;J
 <h3 id='wordpress_pages'>WordPress pages</h3>
 
 <p>To convert over the pages from WordPress that weren&#8217;t posts I&#8217;ve copied the source of them (such as the <a href='http://ryanbigg.com/about-me.html'>About me</a> page) and put them as static HTML files in the root of the project. When Jekyll compiles the site, these are copied over to the <code>_site</code> directory.</p>
+
+<h3 id='deployment'>Deployment</h3>
+
+<p>Currently going via the low-tech method of an SSH + <code>git pull</code> on the server, but hoping to switch to a commit hook in the future.</p>
+
+<h3 id='benefits'>Benefits</h3>
+
+<p>The benefits are many. My posts are now <a href='http://github.com/radar/ryanbigg.com'>open source</a> which means that if people find problems with them that can send in pull requests, but that&#8217;s just a pipe dream probably.</p>
+
+<p>The main benefit is the speed. On the vanilla WordPress install I had I was lucky to get 2 requests per second for the home page. With Jekyll, I&#8217;m getting about 2,300 reqests per second. This is due to the fact all my posts are static assets now. I think I could double this if I <a href='http://ryanbigg.com/2009/06/how-to-make-your-rails-application-578-times-faster/'>switched to Nginx</a>, which I plan on doing when I don&#8217;t have a use for the PHP version anymore.</p>
+
+<p>I also get to write my posts the way I like to: Markdown + HTML. No crummy little editor window, I can do it all from within TextMate.</p>
+
+<p>I&#8217;m really liking Jekyll as lightweight alternative to WordPress and it&#8217;s great to finally be off a PHP-based system. I mean, if Ruby is so good <a href='http://en.wikipedia.org/wiki/Not_Invented_Here'>why would I be using a PHP based system?</a>.</p>
   </article>
 </div>
 
