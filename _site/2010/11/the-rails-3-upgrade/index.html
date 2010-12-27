@@ -255,7 +255,7 @@ end</code></pre>
 
 <p>We had some features that used the <code>WildcardSearch</code> module that were failing, even though we were <em>positive</em> it was correct. Turns out it wasn&#8217;t case-insensitive! Also turns out that Rails 3.0.1 (well, actually the version of ARel that <em>comes with</em> Rails 3.0.1), doesn&#8217;t support case-insensitive matching with the <em>matches</em> method. Thankfully there&#8217;s a smart-cookie out there who&#8217;s written <a href='https://rails.lighthouseapp.com/projects/8994/tickets/3174-add-support-for-postgresql-citext-column-type'>a beautiful patch</a> for it, <strong>but it only works with PostgreSQL</strong>. That&#8217;s fine, we&#8217;re smart so we use PostgreSQL. We used the patch&#8217;s code in an initializer and it worked flawlessly.</p>
 
-<p>During the running of our tests, we used <code>Then show me the page</code> <strong>a lot</strong>. This resulted in lots of <em>capybara-<span>timestamp</span></em> files in the root directory. To fix this little problem, we put this code in our <em>features/support/app.rb</em> file:</p>
+<p>During the running of our tests, we used <code>Then show me the page</code> <strong>a lot</strong>. This resulted in lots of <em>capybara-[timestamp]</em> files in the root directory. To fix this little problem, we put this code in our <em>features/support/app.rb</em> file:</p>
 
 <pre><code>Capybara.save_and_open_page_path = Rails.root + &#39;tmp&#39;</code></pre>
 
