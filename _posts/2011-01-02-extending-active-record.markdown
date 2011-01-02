@@ -6,6 +6,8 @@ title: Extending Active Record
 
 This guide was originally posted in my [guides](http://github.com/radar/guides) repository, but I thought I would cross-post it on the blog too to increase exposure. I hope it helps some who are trying to figure this kind of thing out.
 
+If you want to see more guides like this, [donate to me!](http://pledgie.com/campaigns/14034). I'm thinking of doing one on Rails engines after I finish the [initialization guide](http://ryanbigg.com/guides/initialization.html)
+
 This guide will demonstrate how we can extend Active Record's functionality to provide a couple of new methods on our models which will allow us to find records based on a specified month or year, implementing the same functionality as found in the [by_star](http://github.com/radar/by_star) gem, but in a modern Rails 3 way using the features that Active Record and ARel provide.
 
 This guide assumes you've read the "[Gem Development](http://github.com/radar/guides/blob/master/gem-development.md)" guide which introduces how to develop a basic gem with Bundler. We extensively use the skills learned in that guide in this guide to build this gem, including Bundler and RSpec. 
@@ -294,4 +296,4 @@ In this guide you have learned how to extend Active Record to have a `by_year` m
 
 I hope you've learned something by reading this, and thanks for doing so! You can find the end-result of this gem in the [extending-active-record directory](https://github.com/radar/guides/tree/master/extending-active-record) on [this project](http://github.com/radar/guides).
 
-If you like my work, [donate to me!](http://pledgie.com/campaigns/14034).
+If you like my work, [donate to me!](http://pledgie.com/campaigns/14034)
