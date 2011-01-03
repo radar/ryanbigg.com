@@ -25,301 +25,37 @@
      http://litanyagainstfear.com -->
 <div id='page'>
   <article>
-    <a href="/2011/01/extending-active-record"><header>Extending Active Record</header></a>
-    <small>02 Jan 2011</small><br>
-    <p>This guide was originally posted in my <a href='http://github.com/radar/guides'>guides</a> repository, but I thought I would cross-post it on the blog too to increase exposure. I hope it helps some who are trying to figure this kind of thing out.</p>
+    <a href="/2011/01/why-you-should-run-bundle-update"><header>Why you should run bundle update</header></a>
+    <small>04 Jan 2011</small><br>
+    <p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
 
-<p>If you want to see more guides like this, <a href='http://pledgie.com/campaigns/14034'>donate to me!</a>. I&#8217;m thinking of doing one on Rails engines after I finish the <a href='http://ryanbigg.com/guides/initialization.html'>initialization guide</a></p>
+<h3 id='a_story_on_gem_versioning'>A story on gem versioning</h3>
 
-<p>This guide will demonstrate how we can extend Active Record&#8217;s functionality to provide a couple of new methods on our models which will allow us to find records based on a specified month or year, implementing the same functionality as found in the <a href='http://github.com/radar/by_star'>by_star</a> gem, but in a modern Rails 3 way using the features that Active Record and ARel provide.</p>
+<p>Generally speaking, there&#8217;s three parts of a version for a gem: the major, the minor and the tiny. For example, Rails right now has a major version of 3, a minor version of 0 and a tiny version of 3, making the full version <code>3.0.3</code> currently.</p>
 
-<p>This guide assumes you&#8217;ve read the &#8221;<a href='http://github.com/radar/guides/blob/master/gem-development.md'>Gem Development</a>&#8221; guide which introduces how to develop a basic gem with Bundler. We extensively use the skills learned in that guide in this guide to build this gem, including Bundler and RSpec.</p>
+<p>The &#8220;rule&#8221; (or perhaps it&#8217;s more of a guideline) of gem versioning is that any subsequent releases for the <em>same</em> minor version, but a newer, higher tiny version number should fix any bugs that existed in the previous version, without breaking any functionality. Therefore you should be able to have a gem dependency like this in your <code>Gemfile</code> without any fear that it would break:</p>
 
-<p>When we&#8217;re done here, we&#8217;ll have a gem that we can add into a Rails application and then be able to call methods on the Active Record models in the application, such as these <code>by_year</code> permutations which will find records based on the year passed in:</p>
+<pre><code>gem &#39;rails&#39;, &#39;~&gt; 3.0.0&#39;</code></pre>
 
-<pre><code>Invoice.by_year
-Invoice.by_year(2010, :field =&gt; :sent_at)</code></pre>
+<p>The <code>~&gt;</code> part of the version indicates that we want the latest version in the series that we&#8217;ve specified. Because we&#8217;ve specified a major, minor and tiny version here, we&#8217;ll get the latest tiny release of the <code>3.0</code> series (<code>3.0.3</code> at current writing) when we run <code>bundle install</code>. In a new tiny release, there should be <em>no breaking changes</em>, only patches. Therefore, specifying versions like this is considered the safest method.</p>
 
-<p>Lastly, we&#8217;ll add a method which we can call inside classes to set up a default for this gem:</p>
+<p>For minor and major releases, things can be broken and so developers should take care when running any kind of task that updates their gems to the latest version.</p>
 
-<pre><code>by_star do
-  field :sent_at
-end</code></pre>
+<h3 id='when_gem_dependencies_go_bad'>When gem dependencies go bad</h3>
 
-<h3 id='the_beginning'>The Beginning</h3>
+<p>In Alex&#8217;s case, formtastic has declared it depends on <code>i18n &gt;= 0.4.0</code> which is how <em>gem dependencies go bad</em>. In new minor or major releases of <code>i18n</code>, it&#8217;s just about guaranteed that shit will be broke, and that&#8217;s exactly what&#8217;s going to be installed when an unwitting person runs <code>bundle update</code>. As gem authors (and I&#8217;m probably guilty of this myself), we should be specifying <code>~&gt;</code> for their own gem dependencies. And we as application developers should be doing for our own gem dependencies in our <code>Gemfile</code> files. This is the way to be safe against breaking changes from a new minor or major gem version. I&#8217;m not saying that <em>every</em> new major/minor release has breaking changes, but rather to be wary when you&#8217;re upgrading.</p>
 
-<p>To begin with, we&#8217;re going to generate a new gem using the <code>bundle gem</code> command:</p>
+<h3 id='staying_safe'>Staying safe</h3>
 
-<pre><code>bundle gem by_star</code></pre>
+<p>If we follow these simple guidelines then we can live a peaceful life of Gem Dependency Heaven instead of Gem Dependency Hell (think pre-Bundler days).</p>
 
-<p>This command generates the beginning scaffold, but there&#8217;s something missing&#8230; tests! We&#8217;ll add RSpec to the <code>by_star.gemspec</code> file that was generated as a development dependency, changing our development dependencies to now contain both the <code>bundler</code> and <code>rspec</code> gems:</p>
+<p>Whilst it&#8217;s probably not a good idea to run <code>bundle update</code> (and Alex used stronger wording with the &#8220;ever&#8221; word), it&#8217;s still useful in some contexts. Recently, David Chelimsky released a new tiny version of rspec-rails (2.4.1) which fixed a single bug. If I had <code>gem &#39;rspec-rails&#39;, &#39;~&gt; 2.4.0&#39;</code> and had <code>rspec-rails 2.4.0</code> installed but wanted to use the newest gem, I could update it by running a simple command:</p>
 
-<pre><code>s.add_development_dependency &quot;bundler&quot;, &quot;&gt;= 1.0.0&quot;
-s.add_development_dependency &quot;rspec&quot;, &quot;~&gt; 2.3&quot;</code></pre>
+<pre><code>bundle update rspec-rails</code></pre>
 
-<p>We&#8217;ll also need to add a development dependency for sqlite3-ruby as we&#8217;ll be using an SQLite3 database for our tests:</p>
+<p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
 
-<pre><code>s.add_development_dependency &quot;sqlite3-ruby&quot;</code></pre>
-
-<p>Whilst we&#8217;re in this file we&#8217;ll add a dependency for Active Record 3, given that we&#8217;re going to be extending it:</p>
-
-<pre><code>s.add_dependency &quot;activerecord&quot;, &quot;~&gt; 3.0&quot;</code></pre>
-
-<p>To make sure all these gems are now installed we can run <code>bundle install</code>.</p>
-
-<h3 id='setting_up_the_first_test'>Setting up the first test</h3>
-
-<p>Our first test is going to implement the first version of the <code>by_year</code> method. Let&#8217;s create the file that will include this test at <code>spec/lib/by_star_spec.rb</code> now:</p>
-
-<pre><code>require &#39;spec_helper&#39;
-
-describe &quot;by_star&quot; do
-  context &quot;by_year&quot; do
-    it &quot;current year&quot; do
-      Post.by_year.map(&amp;:text).should include(&quot;First post!&quot;)
-    end
-  end
-
-end</code></pre>
-
-<p>For this test to begin to run, we&#8217;ll need to create the <code>spec_helper</code> file it requires on the first line. This file will be responsible for setting up the environment and test data so that our test will run. The first thing this file needs to do is exist at <code>spec/spec_helper.rb</code> and the second thing is to set up the test data. We&#8217;re going to need a database where we can execute queries. We&#8217;ll begin this file like this:</p>
-
-<pre><code>require &#39;by_star&#39;
-
-ActiveRecord::Base.establish_connection(:adapter =&gt; &quot;sqlite3&quot;, 
-                                       :database =&gt; File.dirname(__FILE__) + &quot;/by_star.sqlite3&quot;)</code></pre>
-
-<p>The <code>require</code> here to the <code>by_star</code> (<code>lib/by_star.rb</code>) file should load everything that this gem needs to run, including Active Record. We&#8217;ll modify <code>lib/by_star.rb</code> to have a require to load Active Record as its first line now:</p>
-
-<pre><code>require &#39;active_record&#39;</code></pre>
-
-<p>With Active Record required, <code>spec/spec_helper.rb</code> will be able to use <code>ActiveRecord::Base.establish_connection</code> to create a new database located at <code>spec/by_star.sqlite3</code>. It&#8217;s in this database that we&#8217;ll set up our test data, but to do that we&#8217;re first going to need to set up the schema for the tables. Underneath the <code>establish_connection</code> line in <code>spec/spec_helper.rb</code> we&#8217;ll now put this:</p>
-
-<pre><code>load File.dirname(__FILE__) + &#39;/support/schema.rb&#39;</code></pre>
-
-<p>This will load the file at <code>spec/support/schema.rb</code> which should define the schema for our tables. In this file, we&#8217;ll put this:</p>
-
-<pre><code>ActiveRecord::Schema.define do
-  self.verbose = false
-
-  create_table :posts, :force =&gt; true do |t|
-    t.string :text
-    t.timestamps
-  end
-end</code></pre>
-
-<p>This piece of code will define the schema that we need in our database for us, using the syntax we&#8217;re familiar with from Rails migrations. Now we&#8217;ll define the data in a file also in the <code>spec/support</code> file, but this time we&#8217;ll call it <code>spec/support/data.rb</code>. We&#8217;ll keep the data separate because it&#8217;s easier to manage these two separate from one another. In this file we&#8217;ll put this:</p>
-
-<pre><code>Post.create(:text =&gt; &quot;First post!&quot;)</code></pre>
-
-<p>To define the model, we&#8217;ll create one more final file at <code>spec/support/models.rb</code> and define the <code>Post</code> model in this:</p>
-
-<pre><code>class Post &lt; ActiveRecord::Base
-
-end</code></pre>
-
-<p>To load this file and <code>spec/support/data.rb</code> we&#8217;ll put these lines in <code>spec/spec_helper.rb</code>, right under the other <code>load</code>:</p>
-
-<pre><code>load File.dirname(__FILE__) + &#39;/support/models.rb&#39;
-load File.dirname(__FILE__) + &#39;/support/data.rb&#39;</code></pre>
-
-<p>With the schema, models and data now all set up we should be able run our spec and have it fail because it&#8217;s missing the <code>by_year</code> method now:</p>
-
-<pre><code>$ bundle exec rspec spec
-F
-
-Failures:
-
-  1) by_star by_year current year
-     Failure/Error: Post.by_year.map(&amp;:text).should include(&quot;First post!&quot;)
-     undefined method `by_year&#39; for #&lt;Class:0x00000101febfd0&gt;
-     # ./spec/lib/by_star_spec.rb:6:in `block (3 levels) in &lt;top (required)&gt;&#39;</code></pre>
-
-<p>Ah, now it can&#8217;t find the <code>by_year</code> method, so now we get to the extending part.</p>
-
-<h3 id='implementing_'>Implementing <code>by_year</code></h3>
-
-<p>To add these methods to Active Record, we&#8217;ll use the <code>extend</code> method which will add methods from the module to the class, there by <em>extending</em> it. Get it? Good. At the bottom of <code>lib/by_star.rb</code> we&#8217;ll add this line:</p>
-
-<pre><code>ActiveRecord::Base.extend ByStar</code></pre>
-
-<p>Now we just need to define the <code>by_year</code> method inside the <code>ByStar</code> module now. This method should return all objects that are in the given year. For now, we&#8217;ll just get it to do objects in the current year. Let&#8217;s define the <code>by_year</code> method in the module now:</p>
-
-<pre><code>module ByStar
-  def by_year
-    start_time = Time.now.beginning_of_year
-    end_time = Time.now.end_of_year
-    where(self.arel_table[:created_at].in(start_time..end_time))
-  end
-end</code></pre>
-
-<p>Here we get the times at both ends of the year, the very first microsecond and the very last microsecond. Then we call <code>self.arel_table</code> which returns an <code>ARel::Table</code> object which we can then use to build our queries. We call the <code>[]</code> method and pass in <code>:created_at</code> as the key and then call the <code>in</code> method on that, passing in the beginning and the end of the year. This will construct a <code>BETWEEN</code> SQL query for us for the <code>created_at</code> column in our <code>posts</code> table:</p>
-
-<pre><code>SELECT &quot;posts&quot;.* FROM &quot;posts&quot; WHERE (&quot;posts&quot;.&quot;created_at&quot; BETWEEN &#39;2011-01-01 00:00:00.000000&#39; AND &#39;2011-12-31 23:59:59.999999&#39;)</code></pre>
-
-<p>That time should be precise enough for anyone! The <code>by_year</code> method will return an <code>ActiveRecord::Relation</code> object which can then be used for further scoping if the people using our gems want to do something else to it, such as limiting it to return only 5 records by calling it like this:</p>
-
-<pre><code>Post.by_year.limit(5)</code></pre>
-
-<p>Such is the power of Active Record 3.</p>
-
-<p>With this method defined, let&#8217;s see if we can have one passing spec now:</p>
-
-<pre><code>$ bundle exec rspec spec/
-.
-
-Finished in 0.00169 seconds
-1 example, 0 failures</code></pre>
-
-<p>Cool! Next, we&#8217;ll get it to work with a numbered year and a time object, and then we&#8217;ll get to passing options to this method.</p>
-
-<h3 id='a_numbered_year'>A numbered year</h3>
-
-<p>We need a new test that will let <code>by_year</code> now take a year. Let&#8217;s add one to the the <code>context &quot;by_year&quot;</code> in <code>spec/lib/by_star_spec.rb</code>:</p>
-
-<pre><code>it &quot;a specified year&quot; do
-  Post.by_year(Time.now.year - 1).map(&amp;:text).should include(&quot;So last year!&quot;)
-end</code></pre>
-
-<p>To test this, we&#8217;re going to need a post from last year. We&#8217;ll add one to <code>spec/support/data.rb</code> now:</p>
-
-<pre><code>Post.create(:text =&gt; &quot;So last year!&quot;, :created_at =&gt; Time.now - 1.year)</code></pre>
-
-<p>To get <code>by_year</code> to support this we will change the method to now take one argument which, defaults to the current year, and use it to construct a <code>Time</code> object to use in the method itself.</p>
-
-<pre><code>def by_year(year=Time.now.year)
-  start_time = Date.strptime(&quot;#{year}-01-01&quot;, &quot;%Y-%m-%d&quot;).to_time
-  end_time = start_time.end_of_year
-  where(self.arel_table[:created_at].in(start_time..end_time))
-end</code></pre>
-
-<p>The <code>Date.strptime</code> call here will convert the year into a <code>Date</code> object, and then we call <code>to_time</code> on it to get a <code>Time</code> object, just like the one we got from <code>Time.now</code>. Let&#8217;s see if this makes our spec run now:</p>
-
-<pre><code>$ bundle exec rspec spec/
-..
-
-Finished in 0.00358 seconds
-2 examples, 0 failures</code></pre>
-
-<p>We&#8217;re just flying through these. The final modification we&#8217;ll make to how this method is called is get it to take options which will customise what field it does the searching on.</p>
-
-<h3 id='methods_and_options_sitting_in_a_tree'>Methods and options, sitting in a tree</h3>
-
-<p>We&#8217;re going to get the <code>by_year</code> method to take a set of options which will modify its behaviour. This set of options will only contain one key, but as it will be a <code>Hash</code> object, it leaves it open to taking multiple options at a later stage. Options that are not <code>:field</code> (or <code>&#39;field&#39;</code> if people feel so inclined) will do nothing. Let&#8217;s write a new spec for this now in <code>spec/lib/by_star_spec.rb</code>:</p>
-
-<pre><code>it &quot;a specified year, with options&quot; do
-  published_posts = Post.by_year(Time.now.year, :field =&gt; &quot;published_at&quot;)
-  published_posts.map(&amp;:text).should include(&quot;First published post!&quot;)
-  published_posts.map(&amp;:text).should_not include(&quot;First post!&quot;)
-end</code></pre>
-
-<p>Here the options are going to be <code>{ :field =&gt; &quot;published_at&quot; }</code> and this will modify the <code>by_year</code> method to look up based on this field instead. We ensure that we don&#8217;t see the &#8220;First post!&#8221; post because this doesn&#8217;t have a <code>published_at</code> field set, and shouldn&#8217;t show up in our test if the options are being interpreted as they should be. The <code>published_at</code> field doesn&#8217;t exist in our database&#8217;s schema yet, so we&#8217;ll add it to the <code>spec/support/schema.rb</code> file, changing our <code>posts</code> table definition to this:</p>
-
-<pre><code>ActiveRecord::Schema.define do
-  self.verbose = false
-
-  create_table :posts, :force =&gt; true do |t|
-    t.string :text
-    t.timestamps
-    t.datetime :published_at
-  end
-end</code></pre>
-
-<p>When we re-run our tests, the <code>posts</code> table will be re-created with this new field. To get a record with the <code>published_at</code> attribute set to something, we&#8217;ll set one up in <code>spec/support/data.rb</code>:</p>
-
-<pre><code>Post.create(:text =&gt; &quot;First published post!&quot;, :published_at =&gt; Time.now)</code></pre>
-
-<p>Now to get this variety of the <code>by_year</code> method to work, we&#8217;ll convert the method to this:</p>
-
-<pre><code>def by_year(year=Time.now.year, options={ :field =&gt; &quot;created_at&quot; })
-  start_time = Date.strptime(&quot;#{year}-01-01&quot;, &quot;%Y-%m-%d&quot;).to_time
-  end_time = start_time.end_of_year
-  field = options[:field]
-  
-  where(self.arel_table[field].in(start_time..end_time))
-end</code></pre>
-
-<p>There we have the <code>options</code> defaulting to a hash with the <code>:field</code> key set to &#8220;created_at&#8221;. If we pass through another field, like we do in the test, then it will alter the field used to do the lookup. So, does this test pass? Let&#8217;s find out:</p>
-
-<pre><code>$ bundle exec rspec spec/
-...
-
-Finished in 0.0049 seconds
-3 examples, 0 failures</code></pre>
-
-<p>There we go, passing too! One final thing: the class configuration.</p>
-
-<h3 id='configuring_the_gem_in_the_class'>Configuring the gem in the class</h3>
-
-<p>If we&#8217;ve got a model that doesn&#8217;t have a <code>created_at</code> field, but does have another field, then we don&#8217;t want to always be passing in the <code>:field</code> option everywhere. Instead, we want to configure this option on a per-class basis like this:</p>
-
-<pre><code>class Event &lt; ActiveRecord::Base
-  by_star do
-    field :date
-  end
-end</code></pre>
-
-<p>To test this implementation, we&#8217;ll define a new model called <code>Event</code> in <code>spec/support/models.rb</code> using exactly the same code as above. Then we&#8217;ll need to add the table for this to <code>spec/support/schema.rb</code>:</p>
-
-<pre><code>create_table :events, :force =&gt; true do |t|
-  t.string :name
-  t.date :date
-end</code></pre>
-
-<p>And then finally, to test that this actually works, we need to add data to <code>spec/support/data.rb</code>:</p>
-
-<pre><code>Event.create(:name =&gt; &quot;The Party&quot;, :date =&gt; Time.now)</code></pre>
-
-<p>Oh, and yes we&#8217;ll need to add a test for this too in <code>spec/lib/by_star_spec.rb</code>:</p>
-
-<pre><code>it &quot;pre-configured field&quot; do
-  Event.by_year.map(&amp;:name).should include(&quot;The Party&quot;)
-end</code></pre>
-
-<p>Let&#8217;s run our specs now:</p>
-
-<pre><code>$ bundle exec rspec spec
-... undefined method `by_star&#39; for Event(Table doesn&#39;t exist):Class</code></pre>
-
-<p>There&#8217;s currently no <code>by_star</code> method defined on the <code>Event</code> class&#8230; because we&#8217;re still yet to define it. This method takes a block which we&#8217;ll use to configure the gem for this model and we&#8217;ll now place it inside the <code>ByStar</code> module inside <code>lib/by_star.rb</code>:</p>
-
-<pre><code>def by_star(&amp;block)
-  @config ||= ByStar::Config.new
-  @config.instance_eval(&amp;block) if block_given?
-  @config
-end
-
-class Config
-  def field(value=nil)
-    @field = value if value
-    @field
-  end
-end</code></pre>
-
-<p>When the <code>by_star</code> method is called, it will get a new <code>ByStar::Config</code> object and evaluate the block it&#8217;s given within the context of that object, so that any method called inside the block is now called on the <code>ByStar::Config</code> object itself. In the <code>Config</code> class, we define a <code>field</code> method which will set <code>@field</code> to a value if one&#8217;s given and return it, or if no value is given then simply return the set value. Using this, we can reference the field as <code>by_star.field</code> in our <code>by_year</code> method. But we must take care to recognise that the passed option to the method should have precedence over the class&#8217;s default. Therefore, our <code>by_year</code> method should now look like this:</p>
-
-<pre><code> def by_year(year=Time.now.year, options = {})
-   beginning_of_year = Date.strptime(&quot;#{year}-01-01&quot;, &quot;%Y-%m-%d&quot;).beginning_of_year
-   end_of_year = beginning_of_year.end_of_year
-   field = options[:field] || by_star.field || &quot;created_at&quot;
-   where(self.arel_table[field].in(beginning_of_year..end_of_year))
- end</code></pre>
-
-<p>We&#8217;ve taken out the default in the <code>options</code> argument for the method, because if it defaulted to <code>created_at</code> then we wouldn&#8217;t know if that was what was passed in or if that was the default. So instead, on the second-to-last line for this method, we check if the <code>:field</code> key in <code>options</code> is set and if it isn&#8217;t then fall back to <code>by_star.field</code> and if that&#8217;s not set then finally <code>created_at</code> becomes our default once more. One more run of our specs and everything should now be peachy:</p>
-
-<pre><code> $ bundle exec rspec spec/
- ....
-
- Finished in 0.01141 seconds
- 4 examples, 0 failures</code></pre>
-
-<h3 id='conclusion'>Conclusion</h3>
-
-<p>In this guide you have learned how to extend Active Record to have a <code>by_year</code> method which finds records based on the current year, or one that was passed in. The lookup field is configurable by passing in a <code>:field</code> option to the method. Finally, we set up a way to configure the options for our method using a class method called <code>by_star</code>.</p>
-
-<p>I hope you&#8217;ve learned something by reading this, and thanks for doing so! You can find the end-result of this gem in the <a href='https://github.com/radar/guides/tree/master/extending-active-record'>extending-active-record directory</a> on <a href='http://github.com/radar/guides'>this project</a>.</p>
-
-<p>If you like my work, <a href='http://pledgie.com/campaigns/14034'>donate to me!</a></p>
+<p>So it&#8217;s <em>potentially unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but this should be a rare occasion because your gem versions should be specified as <code>~&gt; &lt;a tiny version&gt;</code>, and if the authors of the gems are as smart as they should be, tiny versions should only contain bug fixes.</p>
   </article>
 </div>
 
@@ -327,6 +63,8 @@ end</code></pre>
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2011/01/extending-active-record">Extending Active Record</a><abbr>02 Jan 2011</abbr></li>
+  
       <li><a href="/2010/12/converting-from-wordpress-to-jekyll">Converting from WordPress to Jekyll</a><abbr>27 Dec 2010</abbr></li>
   
       <li><a href="/2010/12/ubuntu-ruby-rvm-rails-and-you">Ubuntu, Ruby, RVM, Rails, and You</a><abbr>25 Dec 2010</abbr></li>
@@ -374,8 +112,6 @@ end</code></pre>
       <li><a href="/2010/08/moving-out-for-reals">Moving Out: For Reals</a><abbr>09 Aug 2010</abbr></li>
   
       <li><a href="/2010/08/moving-out-the-reckoning">Moving Out: The Reckoning</a><abbr>07 Aug 2010</abbr></li>
-  
-      <li><a href="/2010/08/moving-out">Moving out</a><abbr>01 Aug 2010</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

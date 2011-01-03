@@ -4,13 +4,49 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-01-03T22:49:34+10:00</updated>
+ <updated>2011-01-04T08:54:33+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Why you should run bundle update</title>
+   <link href="http://ryanbigg.com/2011/01/why-you-should-run-bundle-update"/>
+   <updated>2011-01-04T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2011/01/why-you-should-run-bundle-update</id>
+   <content type="html"><![CDATA[<p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
+
+<h3 id='a_story_on_gem_versioning'>A story on gem versioning</h3>
+
+<p>Generally speaking, there&#8217;s three parts of a version for a gem: the major, the minor and the tiny. For example, Rails right now has a major version of 3, a minor version of 0 and a tiny version of 3, making the full version <code>3.0.3</code> currently.</p>
+
+<p>The &#8220;rule&#8221; (or perhaps it&#8217;s more of a guideline) of gem versioning is that any subsequent releases for the <em>same</em> minor version, but a newer, higher tiny version number should fix any bugs that existed in the previous version, without breaking any functionality. Therefore you should be able to have a gem dependency like this in your <code>Gemfile</code> without any fear that it would break:</p>
+
+<pre><code>gem &#39;rails&#39;, &#39;~&gt; 3.0.0&#39;</code></pre>
+
+<p>The <code>~&gt;</code> part of the version indicates that we want the latest version in the series that we&#8217;ve specified. Because we&#8217;ve specified a major, minor and tiny version here, we&#8217;ll get the latest tiny release of the <code>3.0</code> series (<code>3.0.3</code> at current writing) when we run <code>bundle install</code>. In a new tiny release, there should be <em>no breaking changes</em>, only patches. Therefore, specifying versions like this is considered the safest method.</p>
+
+<p>For minor and major releases, things can be broken and so developers should take care when running any kind of task that updates their gems to the latest version.</p>
+
+<h3 id='when_gem_dependencies_go_bad'>When gem dependencies go bad</h3>
+
+<p>In Alex&#8217;s case, formtastic has declared it depends on <code>i18n &gt;= 0.4.0</code> which is how <em>gem dependencies go bad</em>. In new minor or major releases of <code>i18n</code>, it&#8217;s just about guaranteed that shit will be broke, and that&#8217;s exactly what&#8217;s going to be installed when an unwitting person runs <code>bundle update</code>. As gem authors (and I&#8217;m probably guilty of this myself), we should be specifying <code>~&gt;</code> for their own gem dependencies. And we as application developers should be doing for our own gem dependencies in our <code>Gemfile</code> files. This is the way to be safe against breaking changes from a new minor or major gem version. I&#8217;m not saying that <em>every</em> new major/minor release has breaking changes, but rather to be wary when you&#8217;re upgrading.</p>
+
+<h3 id='staying_safe'>Staying safe</h3>
+
+<p>If we follow these simple guidelines then we can live a peaceful life of Gem Dependency Heaven instead of Gem Dependency Hell (think pre-Bundler days).</p>
+
+<p>Whilst it&#8217;s probably not a good idea to run <code>bundle update</code> (and Alex used stronger wording with the &#8220;ever&#8221; word), it&#8217;s still useful in some contexts. Recently, David Chelimsky released a new tiny version of rspec-rails (2.4.1) which fixed a single bug. If I had <code>gem &#39;rspec-rails&#39;, &#39;~&gt; 2.4.0&#39;</code> and had <code>rspec-rails 2.4.0</code> installed but wanted to use the newest gem, I could update it by running a simple command:</p>
+
+<pre><code>bundle update rspec-rails</code></pre>
+
+<p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
+
+<p>So it&#8217;s <em>potentially unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but this should be a rare occasion because your gem versions should be specified as <code>~&gt; &lt;a tiny version&gt;</code>, and if the authors of the gems are as smart as they should be, tiny versions should only contain bug fixes.</p>]]></content>
+ </entry>
  
  <entry>
    <title>Extending Active Record</title>
@@ -1212,26 +1248,6 @@ kit = PDFKit.new(render_to_string)</code></pre>
 <p>In return, I&#8217;m told I give good, manly handshakes. I may give you one too. Alternatively if you prefer the whole monetary system, I will pay you the cost of the PDF / book and then maybe <strong>some more</strong>.</p>
 
 <p>Who&#8217;s up for this? <strong>If you want to help, buy a copy of <a href='http://manning.com/katz'>Rails 3 in Action</a>, have a read and post any issues you encounter on the forums! Thanks!</strong></p>]]></content>
- </entry>
- 
- <entry>
-   <title>The Fake Update</title>
-   <link href="http://ryanbigg.com/2010/09/the-fake-update"/>
-   <updated>2010-09-17T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2010/09/the-fake-update</id>
-   <content type="html"><![CDATA[<p>Here&#8217;s a fake update I emailed to my mum earlier today:</p>
-
-<p>Last couple of days have been great :)</p>
-
-<p>Caught up with some strangers who I met online, they lured me into a non-descript white van and blindfolded me and we are somewhere warm underground. The candy was delicious and they say they have more.</p>
-
-<p>But first I have to go and run some &#8220;errands&#8221; for them around San Francisco which they say involves something called &#8220;weed&#8221; (I recommended they go down to the hardware store and get some spray, works well. They laughed.) and some other thing about &#8220;popping caps&#8221; into peoples asses. I&#8217;m no proctologist but they said they would give me training and the tools to do it. Not looking forward to that part but apparently that&#8217;s business.</p>
-
-<p>There&#8217;s this one guy here who people are telling me he&#8217;s &#8220;the man&#8221; (at first I thought they were saying he is &#8220;a man&#8221; and I was all &#8220;duh, have you SEEN his Adams apple?&#8221; and they clarified that they meant he was a &#8220;pig&#8221;. Again I was all &#8220;duh, have you seen him eat?&#8221; and they just rolled their eyes and walked away) I am not sure why he is the man, I was just told never to say it to his face.</p>
-
-<p>Anyway, gotta roll out now. Love you heaps and will send back some presents for you when I get some time off.</p>
-
-<p>(and if it isn&#8217;t obvious yet, this is a big joke and shouldn&#8217;t believed by anyone to be real. I&#8217;ll send you a real update later on :)</p>]]></content>
  </entry>
  
  
