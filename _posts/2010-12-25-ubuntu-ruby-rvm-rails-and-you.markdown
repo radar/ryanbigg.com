@@ -4,7 +4,7 @@ layout: post
 title: Ubuntu, Ruby, RVM, Rails, and You
 wordpress_url: http://ryanbigg.com/?p=1215
 ---
-<strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for Ubuntu 10.10, but will probably work on many other operating systems. YMMV.</strong>
+<strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu. YMMV.</strong>
 
 <h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 
