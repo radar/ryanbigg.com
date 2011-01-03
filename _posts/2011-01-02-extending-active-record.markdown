@@ -1,5 +1,5 @@
 --- 
-wordpress_id: RB-293
+wordpress_id: RB-294
 layout: post
 title: Extending Active Record
 ---
