@@ -1,7 +1,7 @@
---- 
+---
 wordpress_id: RB-296
 layout: post
-title: Rails 3 in Action: SaaS
+title: "Rails 3 in Action: SaaS"
 ---
 
 I've been writing the 12th chapter for Rails 3 in Action for about a month now. It's been a tough process because I haven't felt sold on the idea or the "flow" of the chapter since I begun writing it. It's a chapter about Software as a Service (SaaS), mainly covering letting users sign up for an account on a monthly subscription that has different limits depending on the plans they picked. My main thought has been "What does this have to do with Rails 3?". Sure, there's some elements of it such as using the `scope` method in routes to change the URLs from `/projects/1/tickets/2` to `/[account_name]/projects/1/tickets/2`, (which by the way I hear the [API's got a pretty good example of](http://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-scope)) but as for introducing new features, it's a pretty barren chapter.
@@ -14,4 +14,6 @@ I will be taking the SaaS stuff out of Rails 3 in Action to reduce page count an
 
 I'm sorry to anybody who expected the final release to contain the SaaS chapter, but I think it's best if we let that one simmer for the time whilst we cook up something more exciting, such as how to write an API.
 
-Thanks for reading!
+Thanks for reading the book so far, I really hope you've enjoyed it. If you've got any qualms or queries, you can reach me through [email](mailto:radarlistener@gmail.com), [twitter](http://twitter.com/ryanbigg) or GTalk at radarlistener@gmail.com.
+
+I've put a Chapter 12 related question [on Stack Overflow](http://stackoverflow.com/questions/4613996/implementing-account-scoping) that somebody may know the answer to. It's to do with the routing helpers, which was the main headache with this chapter.
