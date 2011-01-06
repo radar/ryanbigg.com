@@ -25,37 +25,19 @@
      http://litanyagainstfear.com -->
 <div id='page'>
   <article>
-    <a href="/2011/01/why-you-should-run-bundle-update"><header>Why you should run bundle update</header></a>
-    <small>04 Jan 2011</small><br>
-    <p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
+    <a href="/2011/01/rails-3-in-action-saas"><header>Rails 3 In Action Saas</header></a>
+    <small>06 Jan 2011</small><br>
+    <p>I&#8217;ve been writing the 12th chapter for Rails 3 in Action for about a month now. It&#8217;s been a tough process because I haven&#8217;t felt sold on the idea or the &#8220;flow&#8221; of the chapter since I begun writing it. It&#8217;s a chapter about Software as a Service (SaaS), mainly covering letting users sign up for an account on a monthly subscription that has different limits depending on the plans they picked. My main thought has been &#8220;What does this have to do with Rails 3?&#8221;. Sure, there&#8217;s some elements of it such as using the <code>scope</code> method in routes to change the URLs from <code>/projects/1/tickets/2</code> to <code>/[account_name]/projects/1/tickets/2</code>, (which by the way I hear the <a href='http://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-scope'>API&#8217;s got a pretty good example of</a>) but as for introducing new features, it&#8217;s a pretty barren chapter.</p>
 
-<h3 id='a_story_on_gem_versioning'>A story on gem versioning</h3>
+<p>Plus, it&#8217;s long. Simply implementing that scope breaks a whole bunch of functionality in the application and the chapter (in its current form) goes through covering how to fix that up. Most of it is the same two fixes. Not all that terribly exciting. I had planned to put the fixing-everything-up into one chapter (12) and then the actual SaaS stuff into the next chapter (13). However, tonight the fixing-everything-up chapter has gotten too long and it just feels tedious writing it.</p>
 
-<p>Generally speaking, there&#8217;s three parts of a version for a gem: the major, the minor and the tiny. For example, Rails right now has a major version of 3, a minor version of 0 and a tiny version of 3, making the full version <code>3.0.3</code> currently.</p>
+<p>That&#8217;s not what I want a chapter of Rails 3 in Action to feel like. It should be showing you features of Rails 3 that will help you along in your daily life. It should be exciting, not the same landscape for section after section after section. SaaS, to me, just doesn&#8217;t seem to fit in the book, but that isn&#8217;t to say that I&#8217;m scrapping my work entirely on this.</p>
 
-<p>The &#8220;rule&#8221; (or perhaps it&#8217;s more of a guideline) of gem versioning is that any subsequent releases for the <em>same</em> minor version, but a newer, higher tiny version number should fix any bugs that existed in the previous version, without breaking any functionality. Therefore you should be able to have a gem dependency like this in your <code>Gemfile</code> without any fear that it would break:</p>
+<p>I will be taking the SaaS stuff out of Rails 3 in Action to reduce page count and I will complete it and release it as a separate guide when the book is complete. This wouldn&#8217;t be such a pain if refactoring a Rails application to have all its routes under a scope was so difficult.</p>
 
-<pre><code>gem &#39;rails&#39;, &#39;~&gt; 3.0.0&#39;</code></pre>
+<p>I&#8217;m sorry to anybody who expected the final release to contain the SaaS chapter, but I think it&#8217;s best if we let that one simmer for the time whilst we cook up something more exciting, such as how to write an API.</p>
 
-<p>The <code>~&gt;</code> part of the version indicates that we want the latest version in the series that we&#8217;ve specified. Because we&#8217;ve specified a major, minor and tiny version here, we&#8217;ll get the latest tiny release of the <code>3.0</code> series (<code>3.0.3</code> at current writing) when we run <code>bundle install</code>. In a new tiny release, there should be <em>no breaking changes</em>, only patches. Therefore, specifying versions like this is considered the safest method.</p>
-
-<p>For minor and major releases, things can be broken and so developers should take care when running any kind of task that updates their gems to the latest version.</p>
-
-<h3 id='when_gem_dependencies_go_bad'>When gem dependencies go bad</h3>
-
-<p>In Alex&#8217;s case, formtastic has declared it depends on <code>i18n &gt;= 0.4.0</code> which is how <em>gem dependencies go bad</em>. In new minor or major releases of <code>i18n</code>, it&#8217;s just about guaranteed that shit will be broke, and that&#8217;s exactly what&#8217;s going to be installed when an unwitting person runs <code>bundle update</code>. As gem authors (and I&#8217;m probably guilty of this myself), we should be specifying <code>~&gt;</code> for their own gem dependencies. And we as application developers should be doing for our own gem dependencies in our <code>Gemfile</code> files. This is the way to be safe against breaking changes from a new minor or major gem version. I&#8217;m not saying that <em>every</em> new major/minor release has breaking changes, but rather to be wary when you&#8217;re upgrading.</p>
-
-<h3 id='staying_safe'>Staying safe</h3>
-
-<p>If we follow these simple guidelines then we can live a peaceful life of Gem Dependency Heaven instead of Gem Dependency Hell (think pre-Bundler days).</p>
-
-<p>Whilst it&#8217;s probably not a good idea to run <code>bundle update</code> (and Alex used stronger wording with the &#8220;ever&#8221; word), it&#8217;s still useful in some contexts. Recently, David Chelimsky released a new tiny version of rspec-rails (2.4.1) which fixed a single bug. If I had <code>gem &#39;rspec-rails&#39;, &#39;~&gt; 2.4.0&#39;</code> and had <code>rspec-rails 2.4.0</code> installed but wanted to use the newest gem, I could update it by running a simple command:</p>
-
-<pre><code>bundle update rspec-rails</code></pre>
-
-<p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
-
-<p>So it&#8217;s <em>potentially unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but this should be a rare occasion because your gem versions should be specified as <code>~&gt; &lt;a tiny version&gt;</code>, and if the authors of the gems are as smart as they should be, tiny versions should only contain bug fixes.</p>
+<p>Thanks for reading!</p>
   </article>
 </div>
 
@@ -63,6 +45,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2011/01/why-you-should-run-bundle-update">Why you should run bundle update</a><abbr>04 Jan 2011</abbr></li>
+  
       <li><a href="/2011/01/extending-active-record">Extending Active Record</a><abbr>02 Jan 2011</abbr></li>
   
       <li><a href="/2010/12/converting-from-wordpress-to-jekyll">Converting from WordPress to Jekyll</a><abbr>27 Dec 2010</abbr></li>
@@ -110,8 +94,6 @@
       <li><a href="/2010/08/irl-help">IRL Help</a><abbr>17 Aug 2010</abbr></li>
   
       <li><a href="/2010/08/moving-out-for-reals">Moving Out: For Reals</a><abbr>09 Aug 2010</abbr></li>
-  
-      <li><a href="/2010/08/moving-out-the-reckoning">Moving Out: The Reckoning</a><abbr>07 Aug 2010</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
