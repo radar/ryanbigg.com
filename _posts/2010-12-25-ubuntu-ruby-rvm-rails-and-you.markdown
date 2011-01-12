@@ -57,11 +57,12 @@ The next command we run will tell us what other packages we need to install for 
 
 A couple of these packages we've already installed, such as `git-core` and `curl`. They won't be re-installed again. 
 
-These packages will lessen the pain when we're working with Ruby. For example, the `libssl-dev` package will make OpenSSL support in Ruby work, `libsqlite3-0` and `libsqlite3-dev` are required for the `sqlite3-ruby` gem and the `libxml2-dev` and `libxslt-dev` packages are required for the `nokogiri` gem. Let's install all these packages now using this command written all on a single line:
+These packages will lessen the pain when we're working with Ruby. For example, the `libssl-dev` package will make OpenSSL support in Ruby work, `libsqlite3-0` and `libsqlite3-dev` are required for the `sqlite3-ruby` gem and the `libxml2-dev` and `libxslt-dev` packages are required for the `nokogiri` gem. Let's install all these packages now using this command:
 
     sudo aptitude install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g
     zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
-
+    
+<strong>This command *must* be written on a single line, otherwise some of the packages will not install.</strong>
 
 Now our Ruby lives will be as painless as possible.
 

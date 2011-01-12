@@ -57,11 +57,11 @@ libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf</code></pre>
 
 <p>A couple of these packages we&#8217;ve already installed, such as <code>git-core</code> and <code>curl</code>. They won&#8217;t be re-installed again.</p>
 
-<p>These packages will lessen the pain when we&#8217;re working with Ruby. For example, the <code>libssl-dev</code> package will make OpenSSL support in Ruby work, <code>libsqlite3-0</code> and <code>libsqlite3-dev</code> are required for the <code>sqlite3-ruby</code> gem and the <code>libxml2-dev</code> and <code>libxslt-dev</code> packages are required for the <code>nokogiri</code> gem. Let&#8217;s install all these packages now using this command written all on a single line:</p>
+<p>These packages will lessen the pain when we&#8217;re working with Ruby. For example, the <code>libssl-dev</code> package will make OpenSSL support in Ruby work, <code>libsqlite3-0</code> and <code>libsqlite3-dev</code> are required for the <code>sqlite3-ruby</code> gem and the <code>libxml2-dev</code> and <code>libxslt-dev</code> packages are required for the <code>nokogiri</code> gem. Let&#8217;s install all these packages now using this command:</p>
 
 <pre><code>sudo aptitude install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g
 zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf</code></pre>
-
+<strong>This command *must* be written on a single line, otherwise some of the packages will not install.</strong>
 <p>Now our Ruby lives will be as painless as possible.</p>
 <h3>Ruby</h3>
 <p>With RVM and these packages we can install Ruby 1.9.2:</p>
