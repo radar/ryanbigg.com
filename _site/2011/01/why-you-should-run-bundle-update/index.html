@@ -11,7 +11,28 @@
       <article>
         <a href="/2011/01/why-you-should-run-bundle-update"><header>Why you should run bundle update</header></a>
         <small>04 Jan 2011</small><br>
-        <p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
+        <h3 id='prelude'>Prelude</h3>
+
+<p><code>bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code>Gemfile.lock</code> pre-existing, running <code>bundle install</code> will only install the versions specified in the <code>Gemfile.lock</code> and will complain that you have incompatible versions:</p>
+
+<pre><code>Bundler could not find compatible versions for gem &quot;activesupport&quot;:
+  In snapshot (Gemfile.lock):
+    activesupport (3.0.0)
+
+  In Gemfile:
+    rails (= 3.0.3) depends on
+      activesupport (= 3.0.3)
+
+Running `bundle update` will rebuild your snapshot from scratch, using only
+the gems in your Gemfile, which may resolve the conflict.</code></pre>
+
+<p>This command advises you to run <code>bundle update</code> which &#8220;will rebuild your snapshot from scratch&#8221;, or in layman&#8217;s terms: throw out the <code>Gemfile.lock</code> file and start again, finding <em>newer</em> versions of gems if they are available and building a bundle for those.</p>
+
+<p>Beneath is an example of just this happening, and an argument as to why you should run it, but carefully.</p>
+
+<h3 id='alexs_tale'>Alex&#8217;s Tale</h3>
+
+<p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
 
 <h3 id='a_story_on_gem_versioning'>A story on gem versioning</h3>
 

@@ -4,6 +4,27 @@ layout: post
 title: Why you should run bundle update
 ---
 
+### Prelude
+
+`bundle update` is a command provided by the Bundler gem which will update *all* your gem dependencies to their latest versions. Providing you have a `Gemfile.lock` pre-existing, running `bundle install` will only install the versions specified in the `Gemfile.lock` and will complain that you have incompatible versions:
+
+    Bundler could not find compatible versions for gem "activesupport":
+      In snapshot (Gemfile.lock):
+        activesupport (3.0.0)
+
+      In Gemfile:
+        rails (= 3.0.3) depends on
+          activesupport (= 3.0.3)
+
+    Running `bundle update` will rebuild your snapshot from scratch, using only
+    the gems in your Gemfile, which may resolve the conflict.
+
+This command advises you to run `bundle update` which "will rebuild your snapshot from scratch", or in layman's terms: throw out the `Gemfile.lock` file and start again, finding *newer* versions of gems if they are available and building a bundle for those.
+
+Beneath is an example of just this happening, and an argument as to why you should run it, but carefully.
+
+### Alex's Tale
+
 There's [a post by Alex from OptimisDev](http://optimisdev.com/posts/don-t-ever-run-bundle-update) that basically says: "Don't even run bundle update". That's even the title of the post. His argument is that by running `bundle update` his I18n version changed from `0.4.0` to `0.5.0` which caused his translations to break. This is because in `i18n 0.5.0` the translation syntax has changed _from_ `\{\{key\}\}` _to_ `%{key}`. Why did this happen? He was using the [`formtastic` gem](http://rubygems.org/gems/formtastic/versions/1.2.3.beta) which had specified a dependency on `i18n` of `>= 0.4.0` which will install any version of i18n that is `0.4.0` or greater, a category that `i18n 0.5.0` with its breaking API changes falls into.
 
 ### A story on gem versioning
