@@ -53,5 +53,4 @@ Whilst it's probably not a good idea to run `bundle update` (and Alex used stron
 
 This command updates the `rspec-rails` gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.
 
-So it's *potentially unsafe* to run `bundle update` because new versions of gems could break your application, but this should be a rare occasion because your gem versions should be specified as `~> <a tiny version>`, and if the authors of the gems are as smart as they should be, tiny versions should only contain bug fixes.
-
+So it's *almost always unsafe* to run `bundle update` because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.

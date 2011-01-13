@@ -60,7 +60,7 @@ the gems in your Gemfile, which may resolve the conflict.</code></pre>
 
 <p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
 
-<p>So it&#8217;s <em>potentially unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but this should be a rare occasion because your gem versions should be specified as <code>~&gt; &lt;a tiny version&gt;</code>, and if the authors of the gems are as smart as they should be, tiny versions should only contain bug fixes.</p>
+<p>So it&#8217;s <em>almost always unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.</p>
       </article>
     </div>
     <div id='disqus_thread'></div>
