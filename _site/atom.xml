@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-01-06T20:47:03+10:00</updated>
+ <updated>2011-01-20T15:20:26+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,9 +13,23 @@
 
  
  <entry>
+   <title>Why Pivotal now charging for Tracker is a good thing</title>
+   <link href="http://ryanbigg.com/2011/01/why-pivotal-now-charging-for-tracker-is-a-good-thing"/>
+   <updated>2011-01-20T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2011/01/why-pivotal-now-charging-for-tracker-is-a-good-thing</id>
+   <content type="html"><![CDATA[<p>Today, Pivotal Labs has announced that they <a href='http://pivotallabs.com/users/dan/blog/articles/1537-introducing-pivotal-tracker-pricing'>will start charging people to use (Pivotal) Tracker</a>, but only if their project is not public, for-profit or not for education. As they explain in the article, they&#8217;ve been working on Tracker now for 5 years.</p>
+
+<p>5 years (or around 1,826 days) is immensely long time for a <em>Rails</em> project to have been around. 5 years ago, Rails was at 0.9.4, very nearly at 0.9.5. This project was before Rials was mainstream. The Pivotal Labs crew have done a tremendous job on it, constantly upgrading its features and most recently overhauling the UI to something very, very hot. For 5 years, it&#8217;s been free to use for anyone and everyone, but now they would like to start charging for it and I think this is a great idea. With the Pivotal Labs team now electing to transform Tracker to a paid service, they&#8217;ll be able to dedicate more people to work on it and maintain it, leading to a better experience overall.</p>
+
+<p>There&#8217;s quite a lot of people who are already using the service (including myself) and love it. $50 a month for 10 collaborators is a good price point and one I&#8217;m sure any company I&#8217;d work for would be willing to pay. Pivotal Tracker has played, ahem, a pivotal role in many projects I have been on and it&#8217;s only fair that we continue to use their service and pay their toll to show our respect for 5 years of good, hard work that they&#8217;ve put into it. There&#8217;s 180,000 users (an astonishing figure for a (previously) non-commercial software), of Pivotal Tracker today, so they must be doing something right.</p>
+
+<p>Please don&#8217;t abandon Pivotal Tracker now because they&#8217;re asking for money. How would you feel if you worked on something for that long only for the people to abandon you? You&#8217;d feel used by those people. Support Pivotal, as they have provided a kick ass project management tool (publicly) for near on two and a half years now.</p>]]></content>
+ </entry>
+ 
+ <entry>
    <title>Rails 3 in Action: SaaS</title>
    <link href="http://ryanbigg.com/2011/01/rails-3-in-action-saas"/>
-   <updated>2011-01-06T00:00:00+10:00</updated>
+   <updated>2011-01-06T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/01/rails-3-in-action-saas</id>
    <content type="html"><![CDATA[<p>I&#8217;ve been writing the 12th chapter for Rails 3 in Action for about a month now. It&#8217;s been a tough process because I haven&#8217;t felt sold on the idea or the &#8220;flow&#8221; of the chapter since I begun writing it. It&#8217;s a chapter about Software as a Service (SaaS), mainly covering letting users sign up for an account on a monthly subscription that has different limits depending on the plans they picked. My main thought has been &#8220;What does this have to do with Rails 3?&#8221;. Sure, there&#8217;s some elements of it such as using the <code>scope</code> method in routes to change the URLs from <code>/projects/1/tickets/2</code> to <code>/[account_name]/projects/1/tickets/2</code>, (which by the way I hear the <a href='http://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-scope'>API&#8217;s got a pretty good example of</a>) but as for introducing new features, it&#8217;s a pretty barren chapter.</p>
 
@@ -35,9 +49,30 @@
  <entry>
    <title>Why you should run bundle update</title>
    <link href="http://ryanbigg.com/2011/01/why-you-should-run-bundle-update"/>
-   <updated>2011-01-04T00:00:00+10:00</updated>
+   <updated>2011-01-04T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/01/why-you-should-run-bundle-update</id>
-   <content type="html"><![CDATA[<p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
+   <content type="html"><![CDATA[<h3 id='prelude'>Prelude</h3>
+
+<p><code>bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code>Gemfile.lock</code> pre-existing, running <code>bundle install</code> will only install the versions specified in the <code>Gemfile.lock</code> and will complain that you have incompatible versions:</p>
+
+<pre><code>Bundler could not find compatible versions for gem &quot;activesupport&quot;:
+  In snapshot (Gemfile.lock):
+    activesupport (3.0.0)
+
+  In Gemfile:
+    rails (= 3.0.3) depends on
+      activesupport (= 3.0.3)
+
+Running `bundle update` will rebuild your snapshot from scratch, using only
+the gems in your Gemfile, which may resolve the conflict.</code></pre>
+
+<p>This command advises you to run <code>bundle update</code> which &#8220;will rebuild your snapshot from scratch&#8221;, or in layman&#8217;s terms: throw out the <code>Gemfile.lock</code> file and start again, finding <em>newer</em> versions of gems if they are available and building a bundle for those.</p>
+
+<p>Beneath is an example of just this happening, and an argument as to why you should run it, but carefully.</p>
+
+<h3 id='alexs_tale'>Alex&#8217;s Tale</h3>
+
+<p>There&#8217;s <a href='http://optimisdev.com/posts/don-t-ever-run-bundle-update'>a post by Alex from OptimisDev</a> that basically says: &#8220;Don&#8217;t even run bundle update&#8221;. That&#8217;s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href='http://rubygems.org/gems/formtastic/versions/1.2.3.beta'><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
 
 <h3 id='a_story_on_gem_versioning'>A story on gem versioning</h3>
 
@@ -65,13 +100,13 @@
 
 <p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
 
-<p>So it&#8217;s <em>potentially unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but this should be a rare occasion because your gem versions should be specified as <code>~&gt; &lt;a tiny version&gt;</code>, and if the authors of the gems are as smart as they should be, tiny versions should only contain bug fixes.</p>]]></content>
+<p>So it&#8217;s <em>almost always unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.</p>]]></content>
  </entry>
  
  <entry>
    <title>Extending Active Record</title>
    <link href="http://ryanbigg.com/2011/01/extending-active-record"/>
-   <updated>2011-01-02T00:00:00+10:00</updated>
+   <updated>2011-01-02T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/01/extending-active-record</id>
    <content type="html"><![CDATA[<p>This guide was originally posted in my <a href='http://github.com/radar/guides'>guides</a> repository, but I thought I would cross-post it on the blog too to increase exposure. I hope it helps some who are trying to figure this kind of thing out.</p>
 
@@ -371,7 +406,7 @@ end</code></pre>
  <entry>
    <title>Converting from WordPress to Jekyll</title>
    <link href="http://ryanbigg.com/2010/12/converting-from-wordpress-to-jekyll"/>
-   <updated>2010-12-27T00:00:00+10:00</updated>
+   <updated>2010-12-27T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/12/converting-from-wordpress-to-jekyll</id>
    <content type="html"><![CDATA[<p>Yesterday I converted this blog from WordPress to Jekyll, thanks to some prompting from <a href='http://twitter.com/lenary'>Sam Elliott</a> and <a href='http://twitter.com/rohitarondekar'>Rohit Arondekar</a>. All in all, the process wasn&#8217;t actually all that painful. What triggered this whole thing was three factors:</p>
 
@@ -436,7 +471,7 @@ $ ruby -r &#39;~/Sites/gems/jekyll/lib/jekyll/migrators/wordpress&#39; -e &#39;J
  <entry>
    <title>Ubuntu, Ruby, RVM, Rails, and You</title>
    <link href="http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you"/>
-   <updated>2010-12-25T00:00:00+10:00</updated>
+   <updated>2010-12-25T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you</id>
    <content type="html"><![CDATA[<strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu. YMMV.</strong><h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 <p>Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.</p>
@@ -484,11 +519,11 @@ libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf</code></pre>
 
 <p>A couple of these packages we&#8217;ve already installed, such as <code>git-core</code> and <code>curl</code>. They won&#8217;t be re-installed again.</p>
 
-<p>These packages will lessen the pain when we&#8217;re working with Ruby. For example, the <code>libssl-dev</code> package will make OpenSSL support in Ruby work, <code>libsqlite3-0</code> and <code>libsqlite3-dev</code> are required for the <code>sqlite3-ruby</code> gem and the <code>libxml2-dev</code> and <code>libxslt-dev</code> packages are required for the <code>nokogiri</code> gem. Let&#8217;s install all these packages now using this command written all on a single line:</p>
+<p>These packages will lessen the pain when we&#8217;re working with Ruby. For example, the <code>libssl-dev</code> package will make OpenSSL support in Ruby work, <code>libsqlite3-0</code> and <code>libsqlite3-dev</code> are required for the <code>sqlite3-ruby</code> gem and the <code>libxml2-dev</code> and <code>libxslt-dev</code> packages are required for the <code>nokogiri</code> gem. Let&#8217;s install all these packages now using this command:</p>
 
 <pre><code>sudo aptitude install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g
 zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf</code></pre>
-
+<strong>This command *must* be written on a single line, otherwise some of the packages will not install.</strong>
 <p>Now our Ruby lives will be as painless as possible.</p>
 <h3>Ruby</h3>
 <p>With RVM and these packages we can install Ruby 1.9.2:</p>
@@ -567,7 +602,7 @@ details.  You may need configuration options.</code></pre>
  <entry>
    <title>Rails routing and automatic assumptions</title>
    <link href="http://ryanbigg.com/2010/12/rails-routing-and-automatic-assumptions"/>
-   <updated>2010-12-19T00:00:00+10:00</updated>
+   <updated>2010-12-19T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/12/rails-routing-and-automatic-assumptions</id>
    <content type="html"><![CDATA[<p>Last night while working on chapter 12 for <a href='http://manning.com/katz'>Rails 3 in Action</a> I stumbled across an interesting problem detailed in <a href='https://gist.github.com/746414'>this gist</a>. The problem I was seeing is that the <code>edit_admin_user_path</code> route <em>was not</em> failing, while the <code>admin_user_permissions_path</code> path <em>was</em> failing.</p>
 
@@ -593,7 +628,7 @@ details.  You may need configuration options.</code></pre>
  <entry>
    <title>Asking Questions The Right Way</title>
    <link href="http://ryanbigg.com/2010/12/asking-questions-the-right-way"/>
-   <updated>2010-12-16T00:00:00+10:00</updated>
+   <updated>2010-12-16T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/12/asking-questions-the-right-way</id>
    <content type="html"><![CDATA[<p>I spend a lot of time on <a href='http://stackoverflow.com/users/15245/ryan-bigg'>Stack Overflow</a> answering Ruby and Rails questions, but also venturing into other areas such as git or html and so on. I&#8217;ve answered over 400 questions on there and recently broke 8,000 reputation points. As of this posting, I&#8217;ve been there 32 days in a row.</p>
 
@@ -621,7 +656,7 @@ details.  You may need configuration options.</code></pre>
  <entry>
    <title>The Writing Process</title>
    <link href="http://ryanbigg.com/2010/12/the-writing-process"/>
-   <updated>2010-12-11T00:00:00+10:00</updated>
+   <updated>2010-12-11T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/12/the-writing-process</id>
    <content type="html"><![CDATA[<p>It&#8217;s been a while since I&#8217;ve videoblogged about the progress on Rails 3 in Action and I&#8217;m in that kind of mood tonight, but can&#8217;t be bothered turning on the light and setting up for that, so instead you&#8217;ll get it in text version.</p>
 
@@ -676,7 +711,7 @@ details.  You may need configuration options.</code></pre>
  <entry>
    <title>Commit it, or else!</title>
    <link href="http://ryanbigg.com/2010/12/commit-it-or-else"/>
-   <updated>2010-12-09T00:00:00+10:00</updated>
+   <updated>2010-12-09T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/12/commit-it-or-else</id>
    <content type="html"><![CDATA[<p>I&#8217;ve seen the same question pop up a couple of times now:</p>
 <blockquote>
@@ -712,7 +747,7 @@ details.  You may need configuration options.</code></pre>
  <entry>
    <title>Paths vs Subdomains</title>
    <link href="http://ryanbigg.com/2010/11/paths-vs-subdomains"/>
-   <updated>2010-11-28T00:00:00+10:00</updated>
+   <updated>2010-11-28T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/11/paths-vs-subdomains</id>
    <content type="html"><![CDATA[<p>Earlier today I put out <a href='http://twitter.com/ryanbigg/status/8747010869956608'>a tweet</a> which asked:</p>
 <blockquote>
@@ -734,7 +769,7 @@ site.com/account (Github) or account.site.com (Basecamp) style for per-account U
  <entry>
    <title>Dollars to Documentation</title>
    <link href="http://ryanbigg.com/2010/11/dollars-to-documentation"/>
-   <updated>2010-11-25T00:00:00+10:00</updated>
+   <updated>2010-11-25T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/11/dollars-to-documentation</id>
    <content type="html"><![CDATA[<p>Last week I wrote a post called <a href='http://ryanbigg.com/2010/11/looking-for-sponsors/'>"Looking for Sponsors"</a> where I asked if anyone would be interested in donating to a project where I worked full-time on doing documentation for Rails.</p>
 
@@ -750,7 +785,7 @@ site.com/account (Github) or account.site.com (Basecamp) style for per-account U
  <entry>
    <title>Looking for Sponsors</title>
    <link href="http://ryanbigg.com/2010/11/looking-for-sponsors"/>
-   <updated>2010-11-19T00:00:00+10:00</updated>
+   <updated>2010-11-19T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/11/looking-for-sponsors</id>
    <content type="html"><![CDATA[<p>Back in September I wrote a post called <a href='http://ryanbigg.com/2010/09/advanced-rails-documentation/'>"Advanced Rails Documentation"</a>, which talked about there being a dearth of advanced Ruby on Rails documentation about the place.</p>
 
@@ -768,7 +803,7 @@ site.com/account (Github) or account.site.com (Basecamp) style for per-account U
  <entry>
    <title>The Rails 3 Upgrade</title>
    <link href="http://ryanbigg.com/2010/11/the-rails-3-upgrade"/>
-   <updated>2010-11-07T00:00:00+10:00</updated>
+   <updated>2010-11-07T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/11/the-rails-3-upgrade</id>
    <content type="html"><![CDATA[<p>During the interim between GetUp and my-next-big-job I&#8217;ve spent the week at a place in Brisbane called <a href='http://ennova.com.au'>Ennova</a> hanging out with such talented people as <a href='http://twitter.com/ltw_'>Lucas Willett</a> and <a href='http://twitter.com/jasoncodes'>Jason Weathered</a>. During my brief stint I was <s>roped into</s> asked to help out with a Rails 3 upgrade. Here&#8217;s a semi-detailed list of what we did in order to upgrade the existing Rails 2.3.8 application to Rails 3.0.1.</p>
 <h3>The Rails 3 Upgrade Handbook</h3><a href='http://railsupgradehandbook.com'>The Rails 3 Upgrade Handbook</a>
@@ -1055,7 +1090,7 @@ kit = PDFKit.new(render_to_string)</code></pre>
  <entry>
    <title>Gone from GetUp</title>
    <link href="http://ryanbigg.com/2010/10/gone-from-getup"/>
-   <updated>2010-10-30T00:00:00+10:00</updated>
+   <updated>2010-10-30T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/10/gone-from-getup</id>
    <content type="html"><![CDATA[<p>Yesterday was my last day at GetUp. I&#8217;m moving on to bigger and better things now.</p>
 
@@ -1091,7 +1126,7 @@ kit = PDFKit.new(render_to_string)</code></pre>
  <entry>
    <title>Writing isn't all rainbows</title>
    <link href="http://ryanbigg.com/2010/10/writing-isnt-all-rainbows"/>
-   <updated>2010-10-19T00:00:00+10:00</updated>
+   <updated>2010-10-19T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/10/writing-isnt-all-rainbows</id>
    <content type="html"><![CDATA[<p>There, I said it and I&#8217;ll say it again.</p>
 
@@ -1121,7 +1156,7 @@ kit = PDFKit.new(render_to_string)</code></pre>
  <entry>
    <title>Lighthouse has problems, but they're fixing them</title>
    <link href="http://ryanbigg.com/2010/10/lighthouse-has-problems-but-theyre-fixing-them"/>
-   <updated>2010-10-11T00:00:00+10:00</updated>
+   <updated>2010-10-11T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/10/lighthouse-has-problems-but-theyre-fixing-them</id>
    <content type="html"><![CDATA[<p>After I wrote my <a href='http://ryanbigg.com/2010/10/lighthouse-has-problems/'>Lighthouse has problems</a> post last week, I was contacted by ENTP who asked to speak to me regarding some clarifications, and now I&#8217;ve finally gotten around to posting them.</p>
 
@@ -1141,7 +1176,7 @@ kit = PDFKit.new(render_to_string)</code></pre>
  <entry>
    <title>Lighthouse has problems</title>
    <link href="http://ryanbigg.com/2010/10/lighthouse-has-problems"/>
-   <updated>2010-10-06T00:00:00+10:00</updated>
+   <updated>2010-10-06T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2010/10/lighthouse-has-problems</id>
    <content type="html"><![CDATA[<p>Once again, the Rails lighthouse is chockas. 944 open tickets as of this post.</p>
 
@@ -1212,40 +1247,6 @@ kit = PDFKit.new(render_to_string)</code></pre>
 
 <p>The second question: Is there a large enough audience interested in documentation in a similar vein to the <a href='http://guides.rubyonrails.org/initialization.html'>Initialization Guide</a>? Is that the &#8220;correct&#8221;/sensible way to do that? Is it useful?</p>
 <strong>As a Rails programmer, what guides would you like to see written about Rails? It could just be about the ecosystem, not neccesarily the framework's code itself. Let me know in the comments.</strong>]]></content>
- </entry>
- 
- <entry>
-   <title>You suck.</title>
-   <link href="http://ryanbigg.com/2010/09/you-suck"/>
-   <updated>2010-09-24T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2010/09/you-suck</id>
-   <content type="html"><![CDATA[<p>The tense of the phrase &#8220;You suck&#8221; may not be the present. It may be the past. It may even be the future.</p>
-
-<p>But face it: You suck. Right now.</p>
-
-<p>I&#8217;m facing it too. I see people doing amazing things. Things like Facebook and LinkedIn know that, through some kind of complex association somebody who I&#8217;ve said as much as &#8220;hey&#8221; to could potentially be my friend. I don&#8217;t know how to do this, therefore I suck.</p>
-
-<p>But let&#8217;s get back to you. At one point in the past, you decided you wanted to learn a language. Let&#8217;s, for the sake of the argument, say that this language is Ruby. You wrote a blogging application in Ruby on Rails and you thought you were top shit.</p>
-
-<p>Then somebody else took a look at your code and their first reaction was to commit Seppuku.</p>
-
-<p>Ok, maybe not that severe. But they didn&#8217;t have kind words.</p>
-
-<p>A programming community is one of the harshest (non-weather-based) environments on the planet when you&#8217;re getting started. Just about everybody knows more than you do. They&#8217;ve been doing it for what seems like millennia and they&#8217;ve got the answer to every question you throw at them. If they&#8217;re patient, they&#8217;ll help you get going and perhaps give you pointers from time to time.</p>
-
-<p>You&#8217;re still going to suck. You&#8217;ll gradually pick up things as you progress. Perseverance pays off in the end, but it&#8217;s a long way to travel. People will condemn and criticise you, your code and your coding practices. Others will be gentler. Stick with it.</p>
-
-<p>So let&#8217;s say you&#8217;re a little peeved at the massive goliath that is Facebook and you want to create your own social networking application, but you&#8217;re going to make it distributed. Through some kind of magical process, you manage to acquire $200,000+ in funding to develop this from people just like you who don&#8217;t like Facebook and want an alternative.</p>
-
-<p>Then, with this money, you develop it. You give it a cool name and the Internet Hype Machine does its thing. They expect it to be perfect, flawless in every way, shape and form. They expect you to be professional because they threw money at you. Little did they know that you don&#8217;t have all that much experience in developing. Your idea is solid, and you&#8217;ll learn what you need to as you go along.</p>
-
-<p>Eventually you release a &#8220;Developer Preview&#8221; and that&#8217;s when things start looking stormy. People use words like &#8220;cesspool&#8221; to describe the quality of your code. Haters gonna hate.</p>
-
-<p>Of course, by this point, you understand that I&#8217;m talking about Diaspora. There is <strong>so much hate</strong> on the intertubes about Diaspora right now. These four guys are not big players in the Ruby community. Their GitHub profiles have only a few projects on them. They are newbies to this wonderful world of Ruby and we, as stalwarts, need to play nice with the new kids on the block.</p>
-
-<p>So how about this: instead of putting so much energy into hating Diaspora, how about you volunteer to help out? Oh, you don&#8217;t have time for that? Then shut the fuck up, armchair critic. These guys are working hard on their project, much like you are on yours.</p>
-
-<p>At least, you would be if you weren&#8217;t hating on the new kids.</p>]]></content>
  </entry>
  
  
