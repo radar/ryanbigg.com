@@ -4,9 +4,13 @@ layout: post
 title: Ubuntu, Ruby, RVM, Rails, and You
 wordpress_url: http://ryanbigg.com/?p=1215
 ---
-<strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu. YMMV.</strong>
+<p>
+  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu. YMMV.</strong>
+</p>
 
+<p>
 <strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.2p136 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
+</p>
 
 <h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 
