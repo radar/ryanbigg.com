@@ -1,7 +1,7 @@
 --- 
 wordpress_id: RB-298
 layout: post
-title: Rails 3 in Action: 50% off
+title: Rails 3 in Action: 50\% off
 ---
 
 From now until the 23rd of February, <a href='http://manning.com/katz/'>Rails 3 in Action</a> is 50% off when you use the code <strong>rails350</strong>. This means you get the book for a discounted price of only $17.50.
