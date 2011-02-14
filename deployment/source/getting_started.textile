@@ -1,0 +1,39 @@
+h2. Getting Started
+
+This guide provides a starting point for understanding these guides, explaining the "why" and the "how" about hosting Rails applications. 
+
+endprologue.
+
+h3. Common terms
+
+Below is a list of common terms used in this guide.
+
+**Application**: Reference to the application provided by the Rails 3 in Action. The application is freely available at http://github.com/rails3book/ticketee.
+
+h3. The players
+
+h4. Rails
+
+h4. Capistrano
+
+h4. Bundler
+
+h4. Passenger
+
+
+h3. Why host?
+
+h3. Branching
+
+NOTE: This section assumes you're using the Git version control system and have read Chapter 3 of the Pro Git book: http://progit.org/book/ch3-0.html.
+
+When we're working alone on a project we'll usually be committing to a single branch named +master+. If we're working in a group of people we may each have our own branch, named something like +ryan-account-scoping+, indicating the name of the person who's working on it and the topic of that branch, causing the repository to look something like this (assuming we've got all the branches locally):
+
+[images of branches]
+
+The +master+ branch is generally kept in a pristine state, with everybody ensuring that the code is working perfectly (with tests, of course) before merging back into this branch, however mistakes do happen and sometimes the +master+ branch is left in a dirty state.
+
+When we want to deploy our application, we would like an as-perfect-as-possible branch to deploy from, right? To do this, we should use a separate branch called +production+ which is based off only clean versions of +master+. 
+
+
+h3. Setting up guides
