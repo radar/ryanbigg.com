@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Rails Deploy Guides: Getting Started</title>
+
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+<link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+
+
+<link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+<link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shThemeRailsGuides.css" />
+</head>
+<body class="guide">
+  <div id="topNav">
+    <div class="wrapper">
+      
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Rails Deploy Guides</a></h1>
+      <p class="hide"><a href="#mainCol">Skip navigation</a>.</p>
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li class="index"><a href="index.html" onclick="guideMenu(); return false;" id="guidesMenu">Guides Index <span id="guidesArrow">&#9656;</span></a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+            <dl class="L">
+    <dt>Ubuntu</dt>
+      <dd><a href="getting_started_ubuntu.html">Getting Started</a></dd>
+</dl>
+<dl class="R">
+</dl>
+
+
+          </div>
+        </li>
+        <li><a href="contribute.html">Contribute</a></li>
+        <li><a href="credits.html">Credits</a></li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Getting Started</h2>
+<p>This guide provides a starting point for understanding these guides, explaining the &#8220;why&#8221; and the &#8220;how&#8221; about hosting Rails applications.</p>
+            <div id="subCol">
+        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+        <ol class="chapters">
+<li><a href="#common-terms">Common terms</a></li><li><a href="#the-players">The players</a><ul><li><a href="#rails">Rails</a></li> <li><a href="#capistrano">Capistrano</a></li> <li><a href="#bundler">Bundler</a></li> <li><a href="#passenger">Passenger</a></li></ul></li><li><a href="#why-host">Why host?</a></li><li><a href="#branching">Branching</a></li><li><a href="#setting-up-guides">Setting up guides</a></li></ol></div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="common-terms">1 Common terms</h3>
+<p>Below is a list of common terms used in this guide.</p>
+<p><b>Application</b>: Reference to the application provided by the Rails 3 in Action. The application is freely available at http://github.com/rails3book/ticketee.</p>
+<h3 id="the-players">2 The players</h3>
+<h4 id="rails">2.1 Rails</h4>
+<h4 id="capistrano">2.2 Capistrano</h4>
+<h4 id="bundler">2.3 Bundler</h4>
+<h4 id="passenger">2.4 Passenger</h4>
+<h3 id="why-host">3 Why host?</h3>
+<h3 id="branching">4 Branching</h3>
+<div class='note'><p>This section assumes you&#8217;re using the Git version control system and have read Chapter 3 of the Pro Git book: http://progit.org/book/ch3-0.html.</p></div>
+<p>When we&#8217;re working alone on a project we&#8217;ll usually be committing to a single branch named <tt>master</tt>. If we&#8217;re working in a group of people we may each have our own branch, named something like <tt>ryan-account-scoping</tt>, indicating the name of the person who&#8217;s working on it and the topic of that branch, causing the repository to look something like this (assuming we&#8217;ve got all the branches locally):</p>
+<p>[images of branches]</p>
+<p>The <tt>master</tt> branch is generally kept in a pristine state, with everybody ensuring that the code is working perfectly (with tests, of course) before merging back into this branch, however mistakes do happen and sometimes the <tt>master</tt> branch is left in a dirty state.</p>
+<p>When we want to deploy our application, we would like an as-perfect-as-possible branch to deploy from, right? To do this, we should use a separate branch called <tt>production</tt> which is based off only clean versions of <tt>master</tt>.</p>
+<h3 id="setting-up-guides">5 Setting up guides</h3>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      
+    </div>
+  </div>
+
+  <script type="text/javascript" src="javascripts/guides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>
