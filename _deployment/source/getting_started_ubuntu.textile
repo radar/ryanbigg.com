@@ -148,20 +148,7 @@ Once this script has finished executing we should see a lot of output, and part 
   sudo aptitude install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev
 </pre>
 
-The next step is making sure that the RVM directories are owned by the +root+ user and the +rvm+ group which we should create now and make ourselves a part of by using this:
-
-<pre>
-sudo groupadd rvm
-sudo usermod -g rvm
-</pre>
-
-With this group added and ourselves a part of it, we can switch the ownership of the rvm directories and files to be owned by the +root+ user and the +rvm+ group:
-
-<pre>
-sudo chown -R root:rvm /usr/local/rvm /usr/local/bin /etc/rvmrc
-</pre>
-
-This will allow us to install gems using +gem install+, such as Bundler and Rails, while leaving the gems in a read-only state for other users. 
+With these packages installed, we'll have the minimum hassle possible when we go to install a Ruby version.
 
 We'll now need to add the RVM script to +/etc/profile+ so that when new terminal sessions are launched for any user the +rvm+ command will be available, allowing us to install Ruby. We'll use the +root+ user temporarily to do this:
 
@@ -195,10 +182,10 @@ A better idea would be to make this the default Ruby for this user, so that when
 rvm use --default 1.9.2
 </pre>
 
-Next, we'll need to install the +rails+ as this is absolutely required to get our Rails application running:
+Next, we'll need to install the +bundler+ gem which will be used to set up the gems, such as Rails, for our application when we deploy it:
 
 <pre>
-gem install rails
+gem install bundler
 </pre>
 
 Of course we need the +rails+ gem to run our Rails application, and because we're using Rails 3 and it uses Bundler, we'll obviously need the +bundler+ gem.
@@ -217,11 +204,15 @@ Capistrano provides an easy way to configure and deploy versions of an applicati
 
 h4. Installation and setup
 
-The +capistrano+ gem must be installed on all computers which will be used to deploy the application, but _not_ the servers where the applications are deployed to. To install this gem we will run this command:
+The +capistrano+ gem must be installed on all computers which will be used to deploy the application, but _not_ the servers where the applications are deployed to. To make this happen rather than using the +gem install+ command we'll put this inside the +development+ group of our application's +Gemfile+:
 
-<pre>
-gem install capistrano
-</pre>
+<ruby>
+group :development do
+  gem 'capistrano'
+end
+</ruby>
+
+To install this gem, we (and other developers of our application) are able to run +bundle install+. In this case, they'll be up-to-date with all gems rather than +gem install capistrano+ which would only update them with Capistrano.
 
 When the gem is installed we can set it up inside a Rails application by running this command from the root of the application:
 
@@ -344,11 +335,9 @@ The basic directories required for Capistrano. The first directory acts as a bas
 
 Whenever we deploy using Capistrano, a new release is created in the +releases+ directory, timestamped to the current time using the same time format as migrations within Rails (e.g. 20110205225746, or YYYYMMDDHHmmSS). The latest release of course would be the final one in this directory.
 
-The +shared+ directory is the directory where files can be shared across releases, such as uploads that would usually go in the +public/system+ directory, which would now be placed in +shared/system+. 
+The +shared+ directory is the directory where files can be shared across releases, such as uploads that would usually go in the +public/system+ directory, which would now be placed in +shared/system+.
 
-(Perhaps explain "symbolically linked")
-
-The +shared/log+ directory is symbolically linked to the current release's +log+ directory when we run a deploy. This is so that all logs will be kept in the +shared/log+ directory, rather than in each release.
+The +shared/log+ directory is "symbolically linked":http://en.wikipedia.org/wiki/Symbolic_link to the current release's +log+ directory when we run a deploy. This is so that all logs will be kept in the +shared/log+ directory, rather than in each release.
 
 The +shared/pids+ directory is symbolically linked to the current release's +tmp/pids+ up on deploy. This folder is used for ...
 
@@ -607,6 +596,10 @@ These instructions at the bottom of the output here tell us what we need to put 
    </Directory>
 </VirtualHost>
 </pre>
+
+TIP: A good idea would be to add a +ServerAlias+ underneath the +ServerName+ in this block, so that we can have other aliases to our server such as +www.our-server.com+. To do this, we'd write +ServerAlias www.our-server.com+. Other aliases go directly after, separated with a space: +ServerAlias www.our-server.com web.our-server.com+.
+
+TIP: For Passenger configuration options, consult "the Passenger documentation":http://www.modrails.com/documentation/Users%20guide%20Apache.html.
 
 We've changed the +DocumentRoot+ of this +VirtualHost+ to point to the +current/public+ directory of our application's deployment. Apache will serve all requests that match to files in this directory and then will hand-off requests it can't resolve to a file to Passenger, which will spool up an instance of our application and then serve the request.
 
