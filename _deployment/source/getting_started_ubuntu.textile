@@ -1,7 +1,5 @@
 h2. Getting Started with Ubuntu
 
-[TODO: aptitude instead of apt-get, is aptitude update the same as apt-get update?]
-
 This guide covers how to set up a new Ubuntu 10.10 in a manual fashion for a single application and provides the basics for hosting a Rails application.
 
 You will need sudo access on the server to set up some things in this guide.
@@ -25,7 +23,7 @@ WARNING: Under no circumstance should you log into a server as root. Use the per
 The majority of software packages are installed on Ubuntu using a system called Aptitude. We can also install packages from source if we wish (with the help of a package called +build_essential+ which contains the build tools we need). These Aptitude packages are downloaded from a source repository and then installed for us. To ensure that these sources are up-to-date we can run this command:
 
 <pre>
-  sudo apt-get update
+  sudo aptitude update
 </pre>
 
 This command goes through the list of sources, connecting to each of them and downloads a package list which is then cached by Ubuntu. When we go to install a package (our next step), Ubuntu will reference these lists to find the packages and the necessary dependencies for them.
@@ -33,7 +31,7 @@ This command goes through the list of sources, connecting to each of them and do
 Once this update command is complete then we're free to go about setting up this server using these packages, beginning with setting up a user with RVM. To use RVM we're going to need a couple of packages, so we'll install these first:
 
 <pre>
-  sudo apt-get install build-essential git-core curl
+  sudo aptitude install build-essential git-core curl
 </pre>
 
 The +build_essential+ package includes the required components for building code, such as the C code contained within Ruby. The +git-core+ package provides the base of the Git version control system, allowing us to use Git commands when we need them. The final package, +curl+ is required for the install of RVM, as we'll use it to download the script used to setup RVM. This package can be used to connect to a URL and stream its data into a file.
@@ -545,7 +543,7 @@ h5. Installation & Configuration
 To install Apache we'll run this command:
 
 <pre>
-  sudo apt-get install apache2
+  sudo aptitude install apache2
 </pre>
 
 We can see if this has been installed by going to http://our-server. We should see the following page:
@@ -560,17 +558,17 @@ Next, we need to install the Passenger module for this server which is possible 
 
 When we run this command we're told that a couple of things are missing:
 
-[TODO: place image here of missing packages]
+!images/apache-stuff-not-found.png(Apache needs these packages)!
 
 If we press enter again we're told how to install these packages. These packages are: +libcurl4-openssl-dev+, +apache2-prefork-dev+, +libapr1-dev+ and +libaprutil1-dev+. To install them we'll run this:
 
 <pre>
-  sudo apt-get install libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
+  sudo aptitude install libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
 </pre>
 
 Once this command has finished running we will have the necessary packages to install the Passenger Apache module. Let's run +passenger-install-apache2-module+ again. Give it a minute or two to install. At the end, we'll see these instructions:
 
-[TODO: Apache module install instructions]
+!images/apache2-module-instructions.png(Apache module instructions)!
 
 Copy these instructions into the clipboard and save them. Then press enter to complete the installation.
 
@@ -586,7 +584,7 @@ This command symbolically links this file into +/etc/apache2/mods-enabled+. We'r
 
 At the bottom of the Passenger output there's more instructions, this time on how to deploy our application using a +VirtualHost+ block in Apache [TODO: Explain what a VirtualHost in Apache is]
 
-[TODO: Apache virtual host install instructions]
+!images/apache-virtual-host-instructions.png(Apache virtual host instructions)!
 
 These instructions at the bottom of the output here tell us what we need to put into our Apache configuration to get this to run our application. Apache comes with a default file containing a +VirtualHost+ block, which just displays the welcome page we saw earlier. We're going to overwrite this file with our application's +VirtualHost+ configuration. We'll run +sudo nano /etc/apache2/sites-enabled/000-default+ and then delete every line in this file, replacing it with the following:
 

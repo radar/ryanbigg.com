@@ -51,7 +51,6 @@
   <div id="feature">
     <div class="wrapper">
       <h2>Getting Started with Ubuntu</h2>
-<p>[<span class="caps">TODO</span>: aptitude instead of apt-get, is aptitude update the same as apt-get update?]</p>
 <p>This guide covers how to set up a new Ubuntu 10.10 in a manual fashion for a single application and provides the basics for hosting a Rails application.</p>
 <p>You will need sudo access on the server to set up some things in this guide.</p>
 <ul>
@@ -76,12 +75,12 @@
 <div class='warning'><p>Under no circumstance should you log into a server as root. Use the personal account that was set up when the operating system was installed and <tt>sudo</tt> when necessary.</p></div>
 <p>The majority of software packages are installed on Ubuntu using a system called Aptitude. We can also install packages from source if we wish (with the help of a package called <tt>build_essential</tt> which contains the build tools we need). These Aptitude packages are downloaded from a source repository and then installed for us. To ensure that these sources are up-to-date we can run this command:</p>
 <pre>
-  sudo apt-get update
+  sudo aptitude update
 </pre>
 <p>This command goes through the list of sources, connecting to each of them and downloads a package list which is then cached by Ubuntu. When we go to install a package (our next step), Ubuntu will reference these lists to find the packages and the necessary dependencies for them.</p>
 <p>Once this update command is complete then we&#8217;re free to go about setting up this server using these packages, beginning with setting up a user with <span class="caps">RVM</span>. To use <span class="caps">RVM</span> we&#8217;re going to need a couple of packages, so we&#8217;ll install these first:</p>
 <pre>
-  sudo apt-get install build-essential git-core curl
+  sudo aptitude install build-essential git-core curl
 </pre>
 <p>The <tt>build_essential</tt> package includes the required components for building code, such as the C code contained within Ruby. The <tt>git-core</tt> package provides the base of the Git version control system, allowing us to use Git commands when we need them. The final package, <tt>curl</tt> is required for the install of <span class="caps">RVM</span>, as we&#8217;ll use it to download the script used to setup <span class="caps">RVM</span>. This package can be used to connect to a <span class="caps">URL</span> and stream its data into a file.</p>
 <p>Before we do that however we&#8217;ll need to set up a user which will act as the owner of our deployed application.</p>
@@ -475,7 +474,7 @@ cap deploy:migrations
 <h5 id="installation-configuration">7.2.1 Installation &amp; Configuration</h5>
 <p>To install Apache we&#8217;ll run this command:</p>
 <pre>
-  sudo apt-get install apache2
+  sudo aptitude install apache2
 </pre>
 <p>We can see if this has been installed by going to http://our-server. We should see the following page:</p>
 <p>[Show image of default apache page]</p>
@@ -484,13 +483,13 @@ cap deploy:migrations
   passenger-install-apache2-module
 </pre>
 <p>When we run this command we&#8217;re told that a couple of things are missing:</p>
-<p>[<span class="caps">TODO</span>: place image here of missing packages]</p>
+<p><img src="images/apache-stuff-not-found.png" title="Apache needs these packages" alt="Apache needs these packages" /></p>
 <p>If we press enter again we&#8217;re told how to install these packages. These packages are: <tt>libcurl4-openssl-dev</tt>, <tt>apache2-prefork-dev</tt>, <tt>libapr1-dev</tt> and <tt>libaprutil1-dev</tt>. To install them we&#8217;ll run this:</p>
 <pre>
-  sudo apt-get install libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
+  sudo aptitude install libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev
 </pre>
 <p>Once this command has finished running we will have the necessary packages to install the Passenger Apache module. Let&#8217;s run <tt>passenger-install-apache2-module</tt> again. Give it a minute or two to install. At the end, we&#8217;ll see these instructions:</p>
-<p>[<span class="caps">TODO</span>: Apache module install instructions]</p>
+<p><img src="images/apache2-module-instructions.png" title="Apache module instructions" alt="Apache module instructions" /></p>
 <p>Copy these instructions into the clipboard and save them. Then press enter to complete the installation.</p>
 <p>We need to add these <tt>LoadModule</tt> instructions into our Apache configuration so that the Passenger module which we just installed will be used. Apache has the configuration for several modules already in the <tt>/etc/apache2/mods-available</tt> directory which is just perfect for what we need. Each file in this directory contains configuration only for one module within Apache, allowing us to view just that configuration without it being thrown in with the rest.</p>
 <p>We&#8217;ll create a new file in this directory by using the <tt>nano /etc/apache2/mods-available/passenger.load</tt> command. Inside this file we&#8217;ll put the configuration for loading the module. To enable this configuration we need to use the <tt>a2enmod</tt> command like this:</p>
@@ -499,7 +498,7 @@ cap deploy:migrations
 </pre>
 <p>This command symbolically links this file into <tt>/etc/apache2/mods-enabled</tt>. We&#8217;re then prompted to restart Apache, which we can do with <tt>sudo /etc/init.d/apache2 restart</tt>.</p>
 <p>At the bottom of the Passenger output there&#8217;s more instructions, this time on how to deploy our application using a <tt>VirtualHost</tt> block in Apache [<span class="caps">TODO</span>: Explain what a VirtualHost in Apache is]</p>
-<p>[<span class="caps">TODO</span>: Apache virtual host install instructions]</p>
+<p><img src="images/apache-virtual-host-instructions.png" title="Apache virtual host instructions" alt="Apache virtual host instructions" /></p>
 <p>These instructions at the bottom of the output here tell us what we need to put into our Apache configuration to get this to run our application. Apache comes with a default file containing a <tt>VirtualHost</tt> block, which just displays the welcome page we saw earlier. We&#8217;re going to overwrite this file with our application&#8217;s <tt>VirtualHost</tt> configuration. We&#8217;ll run <tt>sudo nano /etc/apache2/sites-enabled/000-default</tt> and then delete every line in this file, replacing it with the following:</p>
 <pre>
   &lt;VirtualHost *:80&gt;
