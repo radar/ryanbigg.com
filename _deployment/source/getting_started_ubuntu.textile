@@ -12,6 +12,10 @@ This guide assumes that a version of Ubuntu (10.10 or greater) is installed on a
 
 The guide sets up a +deploy+ user and a system-level RVM (Ruby Version Manager) install which contains Ruby 1.9.2. This user's home directory (+/home/deploy+) will include the application which we're wishing to deploy and this folder will be set up to be owned by the +deploy+ user so to restrict what this user has access to. The user does not have to be called +deploy+, it is used only as an example throughout this guide.
 
+This guide is a basic instruction manual for getting a Rails application running on an Ubuntu 10.10 server. It covers the necessities of getting a server running, but it is not the "Everything You Ever Need To Deploy A Rails Application" guide.
+
+Remember, KISS (the acronym, not the band).
+
 endprologue.
 
 h3. First things first
@@ -112,9 +116,15 @@ We should not be prompted to enter a password, if we are then something's gone T
 chmod 0600 ~/.ssh/authorized_keys
 </pre>
 
+The +chmod+ command ensures that this file is protected from people who are not our users writing to it and (potentially) adding their own key.
+
 We should take care to run this on both user accounts and then test if we can log in still before continuing.
 
-If everything's working with the keys then it's safe to turn off password authentication in our SSH configuration. To do this we'll open +/etc/ssh/sshd_config+ using +nano /etc/ssh/sshd_config+ and add +PasswordAuthentication no+ to where it would otherwise say +#PasswordAuthentication yes+ (the +#+ indicates a commented line, just like Ruby), exiting out by pressing Ctrl\+X and then Y. We need to reload this configuration for the changes to take effect and the easiest way to do that would be to restart SSH, which can be done with this command:
+If everything's working with the keys then it's safe to turn off password authentication in our SSH configuration. To do this we'll open +/etc/ssh/sshd_config+ using +nano /etc/ssh/sshd_config+ and add +PasswordAuthentication no+ to where it would otherwise say +#PasswordAuthentication yes+ (the +#+ indicates a commented line, just like Ruby), exiting out by pressing Ctrl\+X and then Y.
+
+NOTE: There is also +/etc/ssh/ssh_config+, which is a little confusing... two files with nearly identical names. The file we're editing now is for the SSH *server* (or daemon, hence the +\d+), while the +ssh_config+ file is for the client. We should be making sure we're editing the right one.
+
+We need to reload this configuration for the changes to take effect and the easiest way to do that would be to restart SSH, which can be done with this command:
 
 <pre>
 sudo /etc/init.d/ssh restart
