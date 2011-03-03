@@ -29,7 +29,7 @@ Take this example: I want to create a feature for posting a new comment on a pos
       
 I've tried to keep it as simple as I can here, but it should demonstrate the point I am trying to make. The logic of how the "Given there is a post" step is defined something like this:
 
-   Given /^there is a post:$/ do |table|
+    Given /^there is a post:$/ do |table|
       hash = table.hashes.first
       @post = Post.create!(hash)
     end

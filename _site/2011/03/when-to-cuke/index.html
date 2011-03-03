@@ -36,7 +36,10 @@ Scenario: Creating a comment
 
 <p>I&#8217;ve tried to keep it as simple as I can here, but it should demonstrate the point I am trying to make. The logic of how the &#8220;Given there is a post&#8221; step is defined something like this:</p>
 
-<p>Given /^there is a post:$/ do |table| hash = table.hashes.first @post = Post.create!(hash) end</p>
+<pre><code>Given /^there is a post:$/ do |table|
+  hash = table.hashes.first
+  @post = Post.create!(hash)
+end</code></pre>
 
 <p>Where&#8217;s it defined? Well, it could be anywhere. That&#8217;s the problem! Usually, I&#8217;d define this in a file at <code>features/step_definitions/post_steps.rb</code> because it deals with <code>Post</code> objects, but that&#8217;s just me. People have different tastes and therefore, undoubtedly, will do it differently. Maybe I&#8217;ve been too mollycoddled by Rails, but this is completely arbitrarily decided by whoever&#8217;s writing the feature at the time. It gets to me.</p>
 
