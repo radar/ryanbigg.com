@@ -94,7 +94,7 @@ end</code></pre>
     fill_in &quot;Text&quot;, :with =&gt; &quot;I am posting a comment. Look at me go!&quot;
     click_button &quot;Post Comment&quot;
     within(&quot;#comments&quot;) do
-      page.has_content?(&quot;I am posting a comment. Look at me go!&quot;)
+      page.should have_content(&quot;I am posting a comment. Look at me go!&quot;)
     end
   end
 end</code></pre>

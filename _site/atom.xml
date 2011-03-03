@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-03-03T17:25:14+11:00</updated>
+ <updated>2011-03-03T17:36:02+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -84,7 +84,7 @@ end</code></pre>
     fill_in &quot;Text&quot;, :with =&gt; &quot;I am posting a comment. Look at me go!&quot;
     click_button &quot;Post Comment&quot;
     within(&quot;#comments&quot;) do
-      page.has_content?(&quot;I am posting a comment. Look at me go!&quot;)
+      page.should have_content(&quot;I am posting a comment. Look at me go!&quot;)
     end
   end
 end</code></pre>

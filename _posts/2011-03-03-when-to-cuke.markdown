@@ -72,7 +72,7 @@ Now let's see this *same* test, but written as a Capybara integration test:
         fill_in "Text", :with => "I am posting a comment. Look at me go!"
         click_button "Post Comment"
         within("#comments") do
-          page.has_content?("I am posting a comment. Look at me go!")
+          page.should have_content("I am posting a comment. Look at me go!")
         end
       end
     end
