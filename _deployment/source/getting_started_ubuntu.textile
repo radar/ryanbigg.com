@@ -14,7 +14,7 @@ The guide sets up a +deploy+ user and a system-level RVM (Ruby Version Manager) 
 
 This guide is a basic instruction manual for getting a Rails application running on an Ubuntu 10.10 server. It covers the necessities of getting a server running, but it is not the "Everything You Ever Need To Deploy A Rails Application" guide.
 
-Remember, KISS (the acronym, not the band).
+Remember, KISS (the acronym, not the band)
 
 endprologue.
 
@@ -200,15 +200,17 @@ gem install bundler
 
 Of course we need the +rails+ gem to run our Rails application, and because we're using Rails 3 and it uses Bundler, we'll obviously need the +bundler+ gem.
 
-So now we've got a pretty good environment set up for our application, but we don't have our application on the server yet. We can put it there with another gem called Capistrano.
+So now we've got a pretty good environment set up for our application, but we don't have our application on the server yet. To do this we need to undertake a process referred to as "deployment". It's with this process that we'll put our application's code on the server and be one step closer to letting people use the application.
+
+Programmers don't like doing things that they can automate, manually. So one guy called Jamis Buck came up with a gem to assist with deployment called Capistrano.
 
 h3. Capistrano
 
-Capistrano is a gem originally created by Jamis Buck but is now maintained by Lee Hambley and additional volunteers. It is designed for easy application deployment, not limited to Rails.
+Capistrano is a gem originally created by Jamis Buck but is now maintained by Lee Hambley and additional volunteers, as well as the growing community that use it. It is designed for easy application deployment with the initial goal of being usable for Rails applications but can now be used for other applications.
 
-In this guide, we'll be using the "Ticketee":http://github.com/rails3book/ticketee application from <a href='http://manning.com/katz'>Rails 3 in Action</a> as an example. The "application is freely available":https://github.com/rails3book/ticketee on GitHub.
+In this section, we'll be using the "Ticketee":http://github.com/rails3book/ticketee application from <a href='http://manning.com/katz'>Rails 3 in Action</a> as an example. The "application is freely available":https://github.com/rails3book/ticketee on GitHub.
 
-The majority of this guide is also covered in the "official Capistrano guide":https://github.com/capistrano/capistrano/wiki/2.x-From-The-Beginning, which may provide some additional insight. This guide provides a concise walkthrough of every command that we'll use to set up a server.
+The majority of this section is also covered in the "official Capistrano guide":https://github.com/capistrano/capistrano/wiki/2.x-From-The-Beginning, which may provide some additional insight. This guide provides a concise walkthrough of every command that we'll use to set up a server.
 
 Capistrano provides an easy way to configure and deploy versions of an application to one or many servers. Capistrano also allows us to roll back to a previous version of the application if we wish.
 
@@ -582,7 +584,7 @@ Copy these instructions into the clipboard and save them. Then press enter to co
 
 We need to add these +LoadModule+ instructions into our Apache configuration so that the Passenger module which we just installed will be used. Apache has the configuration for several modules already in the +/etc/apache2/mods-available+ directory which is just perfect for what we need. Each file in this directory contains configuration only for one module within Apache, allowing us to view just that configuration without it being thrown in with the rest. 
 
-We'll create a new file in this directory by using the +nano /etc/apache2/mods-available/passenger.load+ command. Inside this file we'll put the configuration for loading the module. To enable this configuration we need to use the +a2enmod+ command like this:
+We'll create a new file in this directory by using the +nano /etc/apache2/mods-available/passenger.load+ command (TODO: screenshot for nano?). Inside this file we'll put the configuration for loading the module. To enable this configuration we need to use the +a2enmod+ command like this:
 
 <pre>
 sudo a2enmod passenger
@@ -594,7 +596,7 @@ At the bottom of the Passenger output there's more instructions, this time on ho
 
 !images/apache-virtual-host-instructions.png(Apache virtual host instructions)!
 
-These instructions at the bottom of the output here tell us what we need to put into our Apache configuration to get this to run our application. Apache comes with a default file containing a +VirtualHost+ block, which just displays the welcome page we saw earlier. We're going to overwrite this file with our application's +VirtualHost+ configuration. We'll run +sudo nano /etc/apache2/sites-enabled/000-default+ and then delete every line in this file, replacing it with the following:
+These instructions at the bottom of the output here tell us what we need to put into our Apache configuration to get this to run our application. Apache comes with a default file containing a +VirtualHost+ block, which just displays the welcome page we saw earlier. We're going to overwrite this file with our application's +VirtualHost+ configuration. We'll run +sudo nano /etc/apache2/sites-enabled/000-default+ (TODO: screenshot with nano) and then delete every line in this file, replacing it with the following:
 
 <pre>
 <VirtualHost *:80>
@@ -637,13 +639,15 @@ The command that we'll run is this:
 sudo -i passenger-install-nginx-module
 </pre>
 
-When prompted to, we want to "download, compile and install" nginx which is the first option. Type "1" into the prompt and hit enter to get this command to do it for us. This command will then compile and install nginx, outputting each step of the way. 
+When prompted to, we want to "download, compile and install" nginx which is the first option. Type "1" into the prompt and hit enter to get this command to do it for us. This command will then compile and install nginx, outputting each step of the way.
+
+NOTE: We're installing nginx this way as it will get us the latest (and therefore most stable) nginx, whereas the one provided by Ubuntu's packaging system may be out of date. This alternative method will also set up the configuration, which we'll see in a minute.
 
 What we care about is when it stops, it will output this:
 
 [Screenshot nginx passenger http instructions]
 
-It even tells us what to edit ("probably +/opt/nginx/conf/nginx.conf+"). Genius! If we open this file now with +nano /opt/nginx/conf/nginx.conf+ we'll see at the top of the +http+ block... oh! What it tells us to put there is already there. That's some smart thinking!
+It even tells us what to edit ("probably +/opt/nginx/conf/nginx.conf+"). Genius! If we open this file now with +nano /opt/nginx/conf/nginx.conf+ (TODO: screenshot with nano) we'll see at the top of the +http+ block... oh! What it tells us to put there is already there. That's some smart thinking!
 
 So there we don't need to anything, which is always a good thing. Doing nothing helps us free up time do to more things including instances of potentially doing nothing. Let's press enter again to get the next set of instructions. They are:
 
@@ -694,3 +698,7 @@ If we were to reboot our server now, nginx would start automatically along with 
 With all of this nginx setup we'll now be able to view our application. Let's go to http://192.168.137.130 and we'll see this.
 
 [Screenshot for application homepage]
+
+h4. Passenger configuration
+
+Show example of RailsEnv and other useful options.
