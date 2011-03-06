@@ -4,13 +4,51 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-03-03T21:56:59+11:00</updated>
+ <updated>2011-03-06T20:19:32+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Code doesn't protect against stupid</title>
+   <link href="http://ryanbigg.com/2011/03/code-doesn-t-protect-against-stupid"/>
+   <updated>2011-03-06T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2011/03/code-doesn-t-protect-against-stupid</id>
+   <content type="html"><![CDATA[<p>Herein lies a tale of woe, heartache and eventual triumph over stupidity.</p>
+
+<p>I&#8217;ve been developing <a href='http://github.com/radar/forem'>forum engine</a> for the past week or so as part of my research for the engines chapter on Rails 3 in Action. It&#8217;s been an interesting experience.</p>
+
+<p>This afternoon, I was contacted by Adam McDonald who&#8217;s working with me on it as part of a learning exercise for him and free labour for myself. He asked questions about how to get the engine running so that he could see it and I told him to run <code>bundle exec rails s</code> and go to <code>http://localhost:3000/forem</code>. Only one of those two things worked. So I told him to instead just run the tests and I&#8217;d take a look at the issue later on, as I was completing Chapter 13 of the book.</p>
+
+<p>So now (actually, just previous to this post) I remembered the issue and tried it myself. It was still broken! This was simply because we didn&#8217;t have a <code>root</code> route defined in the routes file, like <a href='https://github.com/radar/forem/commit/f0d9f261d1ad4af2350c5c074b4767761f467070'>this commit adds</a>. So I added one.</p>
+
+<p>Then I saw <code>uninitialized constant Forem::ForumsController</code>.</p>
+
+<p>WHAT?! How <em>dare</em> code be broken on my watch! The tests passed, so this code had absolutely no reason to be broken. I thought it may have been because the engine wasn&#8217;t loading the controllers in that special mode of <code>bundle exec rails s</code>. It turns out I was almost right.</p>
+
+<p>So I got hacky and ended up doing a <code>require ENGINE_ROOT + &quot;app/controllers/forem/forums_controller&quot;</code> which just <em>didn&#8217;t</em> work. I checked that <code>ENGINE_ROOT + &quot;app/controllers/forem&quot;</code> was indeed the right path by using <code>File.expand_path</code> and then copy+pasting it to the command line and <code>cd</code>&#8216;ing into the directory. That god damned file was there.</p>
+
+<p>A moment of swearing took place where I ranted in IRC and to Adam about the lack of documentation on engines making things impossible.</p>
+
+<p>Then when I calmed down, I went back into the console and saw this.</p>
+
+<p><img src='https://img.skitch.com/20110306-dgugwhpaij8h38fjqifxbg42se.png' alt='Only one l' /></p>
+
+<p>The well-trained eye (not mine) would see quite immediately that <code>forums_controler.rb</code> is missing an l.</p>
+
+<h3 id='so_why_did_this_work_in_the_first_place'>So why did this work in the first place?</h3>
+
+<p>Oh my God. I was stunned. How could I be so stupid? I corrected it and sure enough the route worked. Major &#8220;oh durr&#8221; moment was had.</p>
+
+<p>This has worked all this time because I&#8217;ve been running only the tests (<code>bundle exec rspec spec</code>, for the curious), which run in the <code>test</code> environment. This environment dutifully duplicates the <code>production</code> environment habit of loading all the files in <code>app/**/*</code>, regardless of the names. That way when requests are made to the application, it doesn&#8217;t need to go looking for the files containing the right classes; everything should (and is) loaded by that point.</p>
+
+<p>When I run <code>bundle exec rails s</code>, Rails starts up in <code>development</code> mode instead! When we make a request to a route, Rails will go looking for the proper controller (in this case, <code>app/controllers/forem/forums_controller.rb</code>, with TWO l&#8217;s) and if it can&#8217;t find it then it will scream at you, claiming that you treated it wrong.</p>
+
+<p>Well, that was a fun experience. I don&#8217;t think I&#8217;ll ever do that again and I&#8217;ll be checking the dark corners of my applications for this little furry beast.</p>]]></content>
+ </entry>
  
  <entry>
    <title>When to Cuke</title>
@@ -1308,26 +1346,6 @@ kit = PDFKit.new(render_to_string)</code></pre>
 <p>That&#8217;s the &#8220;rainbows&#8221; I live for. That&#8217;s what I write for.</p>
 
 <p>Thanks for your support so far. It makes nights like this all that more tolerable.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>Lighthouse has problems, but they're fixing them</title>
-   <link href="http://ryanbigg.com/2010/10/lighthouse-has-problems-but-theyre-fixing-them"/>
-   <updated>2010-10-11T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2010/10/lighthouse-has-problems-but-theyre-fixing-them</id>
-   <content type="html"><![CDATA[<p>After I wrote my <a href='http://ryanbigg.com/2010/10/lighthouse-has-problems/'>Lighthouse has problems</a> post last week, I was contacted by ENTP who asked to speak to me regarding some clarifications, and now I&#8217;ve finally gotten around to posting them.</p>
-
-<p>Firstly: ENTP is working on a major upgrade of Lighthouse. They <a href='http://help.lighthouseapp.com/discussions/problems/1791-spammers-taking-over'>plan on fixing the spam issue </a>and will have trusted and untrusted user accounts, where trusted users can change the title and tags of a ticket. They will also implement rate limiting which will be a way to detect the spammers current tactics on LH. This fixes points #2 and #4 of my post.</p>
-
-<p>Secondly: there&#8217;s now less tickets for Rails itself with the <a href='https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/bins/5837'>"Open Tickets"</a> currently hovering around 753. This is because of the wonderful team of Lighthouse volunteers including David Trasbo, Rohit Arondekar who have been marking old tickets as stale and replying to those which need patches. If you have a ticket which you&#8217;d like some eyes on, assign it to one of us and we&#8217;ll take a peek.</p>
-
-<p>Thirdly: I wrote <a href='http://gist.github.com/617963'>a Mechanize script</a> to revert / delete the spam comments, which will stave off the problem until ENTP can get around to fixing their system. Myself and a couple of other volunteers run this whenever spammers are detected. Seems to do the trick quite nicely, but the code is ugly as all hell.</p>
-
-<p>I have to play the devil&#8217;s advocate here: Lighthouse doesn&#8217;t suck, entirely. It&#8217;s a bit rough around the edges but it&#8217;s no Trac. Remember Trac? Good times were had, and spam was a problem back then. It&#8217;s a tricky problem to solve and I hope that the Lighthouse guys can actually do some serious work on it, maybe even implement a <em>proper</em> spam filter, such as Akismet, but nothing is perfect.</p>
-
-<p>Lighthouse is serving us perfectly fine right now, it&#8217;s just a little cluttered. We&#8217;re working on that, and we&#8217;d like your help. If you could spend some of your time this week going through the <a href='https://rails.lighthouseapp.com/projects/8994-ruby-on-rails/tickets/bins/5837'>"Open Tickets"</a> and assigning old ones to one of either Rohit, David or myself, we&#8217;ll get right round to closing them up.</p>
-
-<p>I&#8217;d like to see it below 700 by the end of next weekend.</p>]]></content>
  </entry>
  
  
