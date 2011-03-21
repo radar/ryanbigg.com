@@ -74,4 +74,4 @@ The final game we placed an extra Seer card in the deck and then they acted as t
 
 ### Conclusion
 
-There's quite a lot you can get out of a Railscamp. I met a lot of people who I didn't know or had only known through the intertubes, talked about RubyX, Rails 3 in Action and whatever else came up. It's absolutely worth going to. The next one in the Oceanic region is going to be near Byron Bay in northern New South Wales in Australia at a place called Lake Ainsworth. You should come along!
+There's quite a lot you can get out of a Railscamp. I met a lot of people who I didn't know or had only known through the intertubes, talked about RubyX, Rails 3 in Action and whatever else came up. It's absolutely worth going to. The next one in the Oceanic region is going to be near Byron Bay in northern New South Wales in Australia at a place called Lake Ainsworth. <a href='http://railscamp9.eventbrite.com/'>You should come along!</a>
