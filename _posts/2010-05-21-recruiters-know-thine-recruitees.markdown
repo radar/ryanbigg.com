@@ -4,7 +4,7 @@ layout: post
 title: "Recruiters: Know Thy Recruitees"
 wordpress_url: http://ryanbigg.com/?p=974
 ---
-I suppose I'm well-known (at least in the Australian community) on <a href='http://groups.google.com/group/adelaiderug/browse_thread/thread/4f237e79bd9872c0/2da2cfe763287585'>my stance on bad recruiters</a>. To me, their job is to perform the most minimalistic effort possible to get people for other companies and in doing so, they line their pockets with a nice pay packet. I even <a href='http://ryanbigg.com/job-postings/'>wrote what I look for in a job posting</a>. It's not difficult to "bait the line". Spend that little bit of effort.
+I suppose I'm well-known (at least in the Australian community) on <a href='http://groups.google.com/group/adelaiderug/browse_thread/thread/4f237e79bd9872c0/2da2cfe763287585'>my stance on bad recruiters</a>. To me, their job is to perform the most minimalistic effort possible to get people for other companies and in doing so, they line their pockets with a nice pay packet. I even wrote what I look for in a job posting. It's not difficult to "bait the line". Spend that little bit of effort.
 
 Recruiting sounds like quite the fantastic job and I'm sure that if I wasn't teaching/coding at GetUp or writing a book,  I would be "farming" people and then getting them hired at companies looking for developers and getting a nice pay packet from these companies from providing them with valuable people. In theory, anyway. I really feel there is a nice market here. It would be a bridge between those looking for Ruby on Rails training and those looking for experienced people. 
 
@@ -44,36 +44,35 @@ I sleep with my iPhone in my bed running the Sleep Cycle app. I'm a stats fanati
 
 <blockquote>
 Hi there,
+  <p>
+  I am going to need more information before I can give a solid reply on that. Here's some thing's I am interested in about finding out about a job before making any decisions:
+  </p>
+  <p>
+  * The name of the company interested in hiring me. Unless [their company] is going to hire me to work for them directly, this is not you. It could be one of the companies you are doing the recruiting for, in which case I scouts-honor-cross-my-heart-and-hope-to-die promise you I won't give away the name.
+  </p>
+  <p>
+  * What kind of work I would be required to do (For example, I am more keen on teaching people who are new to Ruby on Rails more than doing the coding myself. The open source work I have done is because it was something I was interested in at the time and I never intend for them to become successful viable products. Anyone who does open source and hopes for this to happen is, in my opinion, crazy.)
+  </p>
+  <p>
+  * The language I would be required to program in. I am proficient in Ruby on Rails (and therefore, by extension, just Ruby itself) but I am willing to learn other languages. If I had to learn another language would I be provided with on the job training?
+  </p>
+  <p>
+  * Are there any other skills require to perform this task? For example, at my current job (a contract that expires next month, fyi) I simply do not just teach Ruby. This of course means that I have to have the ability to work closely and patiently with other people on a project in order to meet deadlines. Then there's the database work which involves data integrity, really fast database inserting and so on. Then there's the "magnum opus" of the system which is getting that data from the database and into 500,000 emails which are to be sent out in under an hour. All of which I feel I'm very capable of doing.
+  </p>
+  <p>
+  * If I were to relocate to the Silcon Valley, would the company I relocated for cover my all my relocation costs, part of them, or none of them?
+  </p>
+  <p>
+  And of course the final point which anyone would be stupid not to ask:
+  </p>
+  <p>
+  * The fancy word is "remuneration package". I'd like to call this "The number that determines what can I afford to eat, do and play". I am of course talking about a salary. Would I be paid a competitive salary, or would I be on enough to afford half a packet of ramen noodles for dinner each night and maybe the flavour packet if I was feeling really hungry? If you are concerned that you cannot answer this question clearly, given that "competitive" means very little in this context, I am currently on around [pay]. Can you do that, or, preferably, better?
+  </p>
 
-<p>
-I am going to need more information before I can give a solid reply on that. Here's some thing's I am interested in about finding out about a job before making any decisions:
-</p>
-
-<p>
-* The name of the company interested in hiring me. Unless [their company] is going to hire me to work for them directly, this is not you. It could be one of the companies you are doing the recruiting for, in which case I scouts-honor-cross-my-heart-and-hope-to-die promise you I won't give away the name.
-</p>
-<p>
-* What kind of work I would be required to do (For example, I am more keen on teaching people who are new to Ruby on Rails more than doing the coding myself. The open source work I have done is because it was something I was interested in at the time and I never intend for them to become successful viable products. Anyone who does open source and hopes for this to happen is, in my opinion, crazy.)
-<p>
-* The language I would be required to program in. I am proficient in Ruby on Rails (and therefore, by extension, just Ruby itself) but I am willing to learn other languages. If I had to learn another language would I be provided with on the job training?
-</p>
-<p>
-* Are there any other skills require to perform this task? For example, at my current job (a contract that expires next month, fyi) I simply do not just teach Ruby. This of course means that I have to have the ability to work closely and patiently with other people on a project in order to meet deadlines. Then there's the database work which involves data integrity, really fast database inserting and so on. Then there's the "magnum opus" of the system which is getting that data from the database and into 500,000 emails which are to be sent out in under an hour. All of which I feel I'm very capable of doing.
-</p>
-<p>
-* If I were to relocate to the Silcon Valley, would the company I relocated for cover my all my relocation costs, part of them, or none of them?
-</p>
-<p>
-And of course the final point which anyone would be stupid not to ask:
-</p>
-<p>
-* The fancy word is "remuneration package". I'd like to call this "The number that determines what can I afford to eat, do and play". I am of course talking about a salary. Would I be paid a competitive salary, or would I be on enough to afford half a packet of ramen noodles for dinner each night and maybe the flavour packet if I was feeling really hungry? If you are concerned that you cannot answer this question clearly, given that "competitive" means very little in this context, I am currently on around [pay]. Can you do that, or, preferably, better?
-</p>
-
-<p>
-Looking forward to hear back from you once more,<br>
-Ryan Bigg
-</p>
+  <p>
+  Looking forward to hear back from you once more,<br>
+  Ryan Bigg
+  </p>
 </blockquote>
 
 All of this information should have been provided as the bait from the original email. Now I am slightly annoyed that I have had to spend time helping them do their job correctly.
