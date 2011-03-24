@@ -18,6 +18,14 @@ Finally, I wrote another section of the basic performance enhancements chapter o
  
 Here's a mind dump of other observations about the camp, in no particular sensible order because I'm much too tired to do any serious editorial work.
 
+### Transport
+
+Transport to and from the venue was exceptionally easy. Tim McEwan, Gareth Stokes, Ivan Vanderbyl and I met Phil Arndt and David Jones from Christchurch in Wellington Airport then we got a shuttle directly to the train station which all up cost $40NZ. At Wellington's train station there's a grocery store where we picked up supplies (read: beer and cider) for the camp. Initially stunned by the prices of a 4 pack of cider, I did the conversion to AUD and found out it was actually cheaper. Phew.
+
+The camp organisers had organised a coach to take us to the camp grounds and I'd say that most of the people who attended the camp opted for this option. The trip to the campsite (Kaitoke) was about an hour from the city (due to peak hour traffic) and I spent a lot of it talking to a guy called Arthur Gunn about various things.
+
+A coach from a central transport hub is a brilliant idea. Previously, other camps have used cars to shuttle people around and I think that's just as fine as well, but this camp we needed a coach due to the sheer number of out-of-country-ers.
+
 ### The Hall
 
 The derth of powerpoints could have lead to some issues. Perhaps future Railscamps could consider a venue that offers 3-phase power if they wish to have a higher capacity, as I think that we'd be flipping some fuses trying to run more computers than we had off that many powerpoints.
