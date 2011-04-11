@@ -6,7 +6,7 @@ title: "Whodunit: Devise, OmniAuth, OAuth or GitHub?"
 
 (If it wasn't obvious enough: my previous blog post about Rails 3.1 in Action is an April Fools joke. If Rails 3.1 is released before Rails 3 in Action goes to print, Rails 3 in Action will most likely contain the 3.1 updates necessary)
 
-I'm currently writing what is the final chapter in Rails 3 in Action and I'm pretty excited about it. It's the "Alternative Authentication" chapter, Chapter 14. It's not to say there are 14 chapters in the book... there aren't. There's seventeen chapters two, maybe three appendicies. This happens to be the last chapter I have to work on and its number is 14.
+I'm currently writing what is the final chapter in Rails 3 in Action and I'm pretty excited about it. It's the "Alternative Authentication" chapter, Chapter 14. It's not to say there are 14 chapters in the book... there aren't. There's seventeen chapters and two, maybe three appendicies. This happens to be the last chapter I have to work on and its number is 14.
 
 When I begun writing the book back near the end of April last year I sketched out the idea of this chapter thinking it would be a good thing to show people because a lot of people seem to struggle (myself included) in setting up alternative means of authentication using OAuth (and OpenID, etc.) providers. I personally had no idea what I was going to do write in it at that point in time, but that's how I've been writing the book thus far and it's turned out pretty alright I hear.
 
