@@ -1,7 +1,7 @@
 --- 
 wordpress_id: RB-304
 layout: post
-title: Whodunit: Devise, OmniAuth, OAuth or GitHub?
+title: "Whodunit: Devise, OmniAuth, OAuth or GitHub?"
 ---
 
 (If it wasn't obvious enough: my previous blog post about Rails 3.1 in Action is an April Fools joke. If Rails 3.1 is released before Rails 3 in Action goes to print, Rails 3 in Action will most likely contain the 3.1 updates necessary)
