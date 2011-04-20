@@ -54,8 +54,6 @@ I submit to you that GitHub's OAuth 2 specification is broken, but the <a href='
 
 That was quite a lot of frustration caused by that one small little detail. This was very fun to track down and the high I got from solving it was well worth it. It's one of the things I enjoy most as a programmer is solving a difficult bug.
 
+<strong>Update:</strong> It was later <a href='https://github.com/intridea/oauth2/issues/44#issuecomment-993151'>found out</a> that <a href='http://tools.ietf.org/id/draft-ietf-oauth-v2-15.txt'>Draft 15 of the OAuth2 Specification</a> actually reverts that change, making it back to `access_token`, meaning that the `oauth2` gem is technically wrong in this case.
 
-
-
-
-
+The problem itself won't be fixed until the OAuth2 specification solidifies or `oauth2` hacks around it to support different services calling this parameter by different names.
