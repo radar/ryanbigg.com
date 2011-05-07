@@ -47,7 +47,7 @@ We're going to use it to install only one version of Ruby, but we can <a href='h
 
 With `git-core` and `curl` installed we'll be able to install RVM with this command:
 
-    bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
+    bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
 
 The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.
 
