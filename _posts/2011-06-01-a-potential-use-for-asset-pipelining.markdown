@@ -8,7 +8,7 @@ So I've been thinking a lot recently about the changes in Rails 3.1, particularl
 
 Anyway, asset pipelining! So I wanted to add theming support to forem because it's butt-ugly right now and I can't design for crap. Have you seen this blog? I wanted to make theming so dead-simple for forem that people just need to put one or two lines in their application and *BLAMMO* it would work.
 
-I have accomplished this goal tonight, in what was probably about 10 minutes of thinking, experimenting and going "holy fuck I can't believe it works" when it actually worked. To make theming work on forem, it's as simple as putting this line in your `Gemfile`:
+I have accomplished this goal tonight, in what was probably about 10 minutes of thinking, experimenting and going "holy fuck I can't believe it works" when it actually worked. To make theming work on forem, it's as simple as putting this line in your `Gemfile` (*after* the `forem` gem, as it needs to be loaded first):
 
     gem 'forem-theme-base', :git => "git://github.com/radar/forem-theme-base"
 
