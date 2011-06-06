@@ -34,9 +34,11 @@ First of all, we're going to need to install some package management script so t
 
     ruby -e "$(curl -fsSL https://gist.github.com/raw/323731/install_homebrew.rb)"
 
-Once it's installed, we'll be able to install other packages like Git by using a simple command like this:
+Once it's installed, we'll be able to install the package for <a href='http://git-scm.org'>Git</a> by using a simple command like this:
 
     brew install git
+
+We'll need Git to install RVM as it clones it from <a href='http://github.com/wayneeseguin/rvm'>RVM's GitHub repository</a>.
 
 <h3>RVM</h3>
 
