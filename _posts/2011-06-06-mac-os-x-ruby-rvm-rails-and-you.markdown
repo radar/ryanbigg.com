@@ -60,7 +60,7 @@ Once that's done, we're going to need to add a line to `~/.bashrc` file (the fil
 
 Then we'll need to reload the `~/.bashrc` file which we can do with this small command:
    
-    . ~/.bashrc
+    . ~/.bash_profile
 
 If we run `rvm notes` we'll be told the certain things that we need to have installed to install the different versions of Ruby:
 
