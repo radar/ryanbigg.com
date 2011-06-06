@@ -112,13 +112,23 @@ If you're planning on using the `mysql2` gem for your application then you'll wa
 
     brew install mysql
 
+If you're using Rails 3.0 then you'll need to specify a 0.2.x version of the `mysql2` gem in your Gemfile:
+
+    gem 'mysql2', '~> 0.2.7'
+
+If you're using Rails 3.1, then this line will get it:
+
+    gem 'mysql2'
+
 <h3>PostgreSQL</h3>
 
 If you want to use PostgreSQL instead of MySQL:
 
     brew install postgresql
 
-Then in the application use the `pg` gem.
+Then in the application's `Gemfile` use the `pg` gem:
+
+    gem 'pg'
 
 <h3>Fin.</h3>
 

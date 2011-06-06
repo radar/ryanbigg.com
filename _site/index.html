@@ -115,12 +115,22 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
 <p>If you&#8217;re planning on using the <code>mysql2</code> gem for your application then you&#8217;ll want to install the <code>mysql</code> Homebrew package using this command:</p>
 
 <pre><code>brew install mysql</code></pre>
+
+<p>If you&#8217;re using Rails 3.0 then you&#8217;ll need to specify a 0.2.x version of the <code>mysql2</code> gem in your Gemfile:</p>
+
+<pre><code>gem &#39;mysql2&#39;, &#39;~&gt; 0.2.7&#39;</code></pre>
+
+<p>If you&#8217;re using Rails 3.1, then this line will get it:</p>
+
+<pre><code>gem &#39;mysql2&#39;</code></pre>
 <h3>PostgreSQL</h3>
 <p>If you want to use PostgreSQL instead of MySQL:</p>
 
 <pre><code>brew install postgresql</code></pre>
 
-<p>Then in the application use the <code>pg</code> gem.</p>
+<p>Then in the application&#8217;s <code>Gemfile</code> use the <code>pg</code> gem:</p>
+
+<pre><code>gem &#39;pg&#39;</code></pre>
 <h3>Fin.</h3>
 <p>And that&#8217;s it! Now you&#8217;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project</p>
 
