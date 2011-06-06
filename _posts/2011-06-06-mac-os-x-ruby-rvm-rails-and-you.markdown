@@ -7,7 +7,7 @@ title: Mac OS X, Ruby, RVM, Rails and You
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you/'>Ubuntu, Ruby, RVM, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>

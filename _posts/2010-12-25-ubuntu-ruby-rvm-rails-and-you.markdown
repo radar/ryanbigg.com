@@ -7,7 +7,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
