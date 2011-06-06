@@ -1,5 +1,5 @@
 --- 
-wordpress_id: RB-307
+wordpress_id: RB-308
 layout: post
 title: Mac OS X, Ruby, RVM, Rails and You
 ---
