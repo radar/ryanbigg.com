@@ -26,7 +26,7 @@ Jammit is exceptionally well documented and has a group of people who are alread
 
 *[breath]*
 
-So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was [added by yours truly](https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4) earlier today. 
+So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was [added by yours truly](https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4) earlier today. I also wrote up [some notes](https://gist.github.com/1032696) just so I could understand how the `Sprockets::Railtie` works for myself. Thought others may find it useful too.
 
 Not documenting things makes it *incredibly* hard for anybody else to understand what the hell you're trying to do and provides no justification for anybody viewing your project as to why they should use it. Any single person can throw code up online. It takes someone special to make people understand why it's there and why they should *want* to use it.
 
