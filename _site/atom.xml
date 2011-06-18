@@ -4,13 +4,57 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-06-06T14:53:41+10:00</updated>
+ <updated>2011-06-18T15:45:02+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>The Asset Pipeline</title>
+   <link href="http://ryanbigg.com/2011/06/the-asset-pipeline"/>
+   <updated>2011-06-18T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2011/06/the-asset-pipeline</id>
+   <content type="html"><![CDATA[<p>Today I begun writing the section that I&#8217;ve deemed should be at the beginning of Appendix B (&#8220;Tidbits&#8221;) of Rails 3 in Action. It&#8217;s about the asset pipeline stuff that has been brought into Rails 3.1 with the aid of the Sprockets gem. I&#8217;ve decided to put it at the beginning of this Appendix as it&#8217;s probably the most interesting thing in the entire appendix and it hasn&#8217;t been written about in this much detail (at least, from what I&#8217;ve seen) before.</p>
+
+<p>So far, it&#8217;s looking good. I cover things like:</p>
+
+<ul>
+<li><code>image_tag</code> generating a URL such as <code>/assets/image.png</code> which actually is served through Sprockets.</li>
+
+<li>Assets can be at either <code>app/assets</code> or <code>vendor/assets</code>. No mention of <code>lib/assets</code> because I don&#8217;t think it&#8217;s sensible to put assets in <code>lib</code>. Maybe someone can explain that one to me.</li>
+
+<li>By inheriting from <code>Rails::Engine</code> within a gem, that gem&#8217;s <code>app/assets</code> subdirectories are now added to the load path for Sprockets. When Sprockets goes looking for an asset, it will look there, providing the directories exist. Also, <code>vendor/assets</code>, ditto.</li>
+
+<li>Sprockets directives. Not even the <em>Sprockets README, Wiki or <a href='http://getsprockets.org/'>site</a></em> cover this. You would have thought it&#8217;s kind of a, you know, <em>core behaviour that people would wet their pants over</em>, but obviously not given the lack of documentation.</li>
+
+<li>Pre-compiled Sass, SCSS and CoffeeScript and how their relative gems (<code>sass-rails</code> and <code>coffeescript</code>) aid in that purpose, and how they&#8217;re served through Sprockets.</li>
+</ul>
+
+<p>But the final thing that I want to cover is how it all works in the <code>production</code> environment. From what I can see, assets are given an MD5 identifier (<code>application.css</code> becomes <code>application-23daf...</code>) for some mysterious purpose and they are cached <em>somewhere</em>. So I went looking for information that explains it. Surely Sam Stephenson or <em>someone</em> else who&#8217;s worked on this <em>amazing new core feature</em> for Rails 3.1 has written <em>something</em> about it.</p>
+
+<p>Right?</p>
+
+<p>No. This is a feature that has been packed into Rails 3.1 with no rationale other than hearsay to back it up. The Rails Core team deemed it would be a fabulous idea to have an asset manager within Rails 3.1, and boom, there it was. I&#8217;m sure they would have gone with Jammit if only it had been created by a 37signals employee. Oh well, at least Sprockets is.</p>
+
+<p>Jammit is exceptionally well documented and has a group of people who are already using it. Again, this whole <em>rationale</em> business comes into play. There&#8217;s no clearly laid out rationale why the Rails Core Team chose to go with Sprockets rather than Jammit. We can circulate rumours and hearsay (like the one above about it being made by a 37signals employee being the reason it was picked) all we like, but it&#8217;s not until there&#8217;s an actual official piece of documentation that says &#8220;this is why things are the way they are&#8221; that we are (usually) satisfied.</p>
+
+<p><a href='http://gembundler.org'>Bundler&#8217;s site</a> is a <strong>fantastic</strong> example of great documentation. Hell, it even provides a <a href='http://gembundler.com/rationale.html'>rationale</a> that explains how it works and why it works in pretty easy-to-understand terms.</p>
+
+<p><em><span>breath</span></em></p>
+
+<p>So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was <a href='https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4'>added by yours truly</a> earlier today.</p>
+
+<p>Not documenting things makes it <em>incredibly</em> hard for anybody else to understand what the hell you&#8217;re trying to do and provides no justification for anybody viewing your project as to why they should use it. Any single person can throw code up online. It takes someone special to make people understand why it&#8217;s there and why they should <em>want</em> to use it.</p>
+
+<p>I think it&#8217;s great that there&#8217;s new features being added to Rails and old ones being reworked. But, I think it&#8217;s absolute crap that there&#8217;s no go-to source of explaining why these things exist and how they make our lives better. <em>I</em> certainly understand how Sprockets makes my life easier, but someone else <em>might not</em>. I don&#8217;t want to have to explain to those people every single time they ask &#8220;Why should I use sprockets?&#8221; my reason for using it. I want to be able to say &#8220;I read this guide <span>link</span> and it really helped me understand it. Perhaps you&#8217;ll understand too?&#8221;</p>
+
+<p>It&#8217;s just so incredibly hard trying to explain something in the book when there&#8217;s just <em>no</em> reference material to go by or anybody else to ask.</p>
+
+<p>For without this documentation / reference material, the people in search of it write ranty blog posts. And we don&#8217;t want that.</p>]]></content>
+ </entry>
  
  <entry>
    <title>Mac OS X, Ruby, RVM, Rails and You</title>
@@ -1297,42 +1341,6 @@ details.  You may need configuration options.</code></pre>
 <p>One thing that bugs me with this writing process is that I have no solid clue if the code I&#8217;m writing actually works. A lo-fi way I&#8217;ve worked out of solving this is to write the code for the application as I&#8217;m writing the book. Make it work in the application and then it&#8217;s a matter of simply copying over the code from the application into the book. My main problem with that is that code and output can both change. I don&#8217;t know how yet to test this cleanly &#8211; and I&#8217;m pretty sure Manning&#8217;s XML format would prevent me from even trying &#8211; but I know it&#8217;s possible.</p>
 <h3>Fin</h3>
 <p>Anyway, long post is long and probably not that interesting to a normal reader. Still, it&#8217;s fascinating for me. The whole process gives me this fuzzy, warm feeling. Made some good progress on Chapter 12 today, and I think I&#8217;m going to go push that to GitHub (and by extension, Twist) right now. Bye!</p>]]></content>
- </entry>
- 
- <entry>
-   <title>Commit it, or else!</title>
-   <link href="http://ryanbigg.com/2010/12/commit-it-or-else"/>
-   <updated>2010-12-09T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2010/12/commit-it-or-else</id>
-   <content type="html"><![CDATA[<p>I&#8217;ve seen the same question pop up a couple of times now:</p>
-<blockquote>
-  Should I commit the Gemfile.lock file that Bundler generates?
-</blockquote>
-<p>Yes. Do it. Do it now if you haven&#8217;t already.</p>
-
-<p>Another common question is:</p>
-<blockquote>
-  I always get conflicts in my db/schema.rb file, why should I commit that?
-</blockquote>
-<p>This post answers both.</p>
-<h3>"Why should I commit Gemfile.lock?"</h3>
-<p>When you run <code>bundle install</code> in your project, Bundler will download and install all the gems and their dependencies and their dependencies&#8217; dependencies (and so on) and then create a <code>Gemfile.lock</code> file based on what it installed.</p>
-
-<p>This file is incredibly important because it lists all the precise versions of everything that your project uses at that point in time. Of course, it&#8217;s up to you to ensure that the project is actually working at this point&#8230; something that you should be doing before you commit the <code>Gemfile</code> <strong>and</strong> the <code>Gemfile.lock</code> files. Whenever somebody else clones this project (say, in a couple of days after your setup) and runs <code>bundle install</code>, they will get the <strong>exact same</strong> versions of the gems. Without <code>Gemfile.lock</code>, dependencies will be re-resolved and versions could have been updated during that time. This can lead to undesired outcomes.</p>
-
-<p>Commit it, or else.</p>
-<h3>"Why should I commit schema.rb?</h3>
-<p>The <code>db/schema.rb</code> file in Rails plays a very similar role to that of the <code>Gemfile.lock</code>. Its purpose is to provide the schema for the database at the absolute latest point. This allows everybody who&#8217;s working on the project &#8211; regardless of what time they enter the project &#8211; to run <code>rake db:schema:load</code> to get the absolute latest schema.</p>
-
-<p>Now note here that I <strong>don&#8217;t</strong> recommend running <code>rake db:migrate</code> to get the latest database schema. There&#8217;s a couple of reasons why people may think this is a good idea, but let me tell you right now: it isn&#8217;t. If you&#8217;re getting started on a project, use <code>rake db:schema:load</code> to get set up (after, of course, setting up the database).</p>
-
-<p><code>rake db:migrate</code> will run <em>every single damn migration</em> in your project, creating tables in one &#8220;step&#8221; and then destroying them in a future step. This is an utter waste of time. <code>db/schema.rb</code> has the final outcome of it already there for you.</p>
-
-<p>Also, if you&#8217;re using <code>rake db:migrate</code> to insert data into your database: don&#8217;t. Use <code>db/seeds.rb</code> for that.</p>
-
-<p>On a similar train of thought: if you&#8217;re using migrations to execute queries that you can&#8217;t do using Rails helpers, perhaps that&#8217;s not such a good idea either. Think about it: the only way you&#8217;re going to be able to run those again on another machine is by running all the migrations again, which we&#8217;ve just established is a Terrible Idea. What may be less of a Terrible Idea is to have an alternative Rake task such as a <code>db:setup</code> script which runs <code>db:schema:load</code> and then executes those specific queries. Yes, it&#8217;s more files to maintain, but this would stop you from having to run <strong>all</strong> the migrations to get those specific queries to re-run. Migrations shouldn&#8217;t be used to do this kind of low-level activity; it just simply doesn&#8217;t fit.</p>
-
-<p>As for the conflicts in <code>db/schema.rb</code>? You&#8217;re a programmer for crying out loud. Suck it up and deal with it. Or <a href='http://tbaggery.com/2010/10/24/reduce-your-rails-schema-conflicts.html'>code up a solution</a>, at least.</p>]]></content>
  </entry>
  
  
