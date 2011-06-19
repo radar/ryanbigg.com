@@ -4,13 +4,213 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-06-18T21:48:46+10:00</updated>
+ <updated>2011-06-19T19:41:07+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Sprocket asset tags internals</title>
+   <link href="http://ryanbigg.com/2011/06/sprocket-asset-tags-internals"/>
+   <updated>2011-06-19T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2011/06/sprocket-asset-tags-internals</id>
+   <content type="html"><![CDATA[<p>Yesterday&#8217;s post and twitter bitching caught the eye of our <a href='http://twitter.com/dhh'>fearless leader</a> who basically claimed <a href='https://twitter.com/#!/dhh/status/81987522766450688'>that I've not made documentation patches recently</a>. I responded with a small reminder that I&#8217;ve done <a href='https://twitter.com/ryanbigg/status/81988004947828736'>some documentation work</a> and went a step further and begun an <a href='http://ryanbigg.com/guides/asset_pipeline.html'>Asset Pipeline Guide</a> because I could. I could have pulled the whole &#8220;Don&#8217;t you know who I am?!!&#8221; faux-lebrity deal, but I thought I would be humble. Append &#8220;for a change&#8221; to the end of the previous sentence, if you wish.</p>
+
+<p>That was incredibly fun. We should do it again some time. Have your people call my people, we&#8217;ll do lunch.</p>
+
+<p>Before all that went down, I created a short (by my standards, anyway) <a href='https://gist.github.com/1032696'>Gist about how the `Sprockets::Railtie` class is currently set up in Rails</a>. This little Gist begun as short note taking for myself and I thought that maybe other people would find the information helpful, so I formatted it all pretty like.</p>
+
+<p>After the <em>battle of the egos</em> took place, I delved a little deeper into the Sprockets rabbit hole, got defeated by some gnarly code and thought &#8220;fuck it dude, let&#8217;s go <s>bowling</s> to sleep&#8221;. I awoke this morning and delved a little deeper into exactly how all of this magic happens. So here goes.</p>
+
+<p>Hopefully with this information, somebody else besides Josh Peek, Sam Stephenson, Yehuda Katz and (partially) myself can begin to understand how Sprockets works.</p>
+
+<h3 id='sprockets_asset_helpers'>Sprockets Asset Helpers</h3>
+
+<p>Within Rails 3.1, the behaviour of <code>javascript_include_tag</code> and <code>stylesheet_link_tag</code> are modified by the <code>actionpack/lib/sprockets/rails_helper.rb</code> file which is required by <code>actionpack/lib/sprockets/railtie.rb</code>, which itself is required by <code>actionpack/lib/action_controller/railtie.rb</code> and so on, and so forth.</p>
+
+<p>This behaviour will be abstracted out into a gem called <code>sprockets-rails</code> by the time Rails 3.1 is released as final (or so I am informed by Yehuda), but the information within this short &#8220;note&#8221; / &#8220;guide&#8221; should not change in implementation at all.</p>
+
+<p>The <code>Sprockets::Helpers::RailsHelper</code> is included into ActionView through the process described in my earlier <a href='https://gist.github.com/1032696'>Sprockets Railtie Setup</a> internals doc. Once this is included, it will override the <code>stylesheet_link_tag</code> and <code>javascript_include_tag</code> methods originally provided by Rails itself. Of course, if assets were disabled (<code>Rails.application.config.assets.enabled = false</code>) then the original Rails methods would be used and JavaScript assets would then exist in <code>public/javascripts</code>, not <code>app/assets/javascripts</code>. Let&#8217;s just assume that you&#8217;re using Sprockets.</p>
+
+<p>Let&#8217;s take a look at the <code>stylesheet_link_tag</code> method from <code>Sprockets::Helpers::RailsHelper</code>. The <code>javascript_include_tag</code> method is very similar so if you want to know how that works, just replace <code>stylesheet_link_tag</code> with <code>javascript_include_tag</code> using your <em>mind powers</em> and I&#8217;m sure you can get the gist of it.</p>
+
+<h4 id='what____does'>What <code>stylesheet_link_tag</code> / <code>javascript_include_tag</code> does</h4>
+
+<p>This method begins like this:</p>
+
+<pre><code>def stylesheet_link_tag(source, options = {})
+  debug = options.key?(:debug) ? options.delete(:debug) : debug_assets?
+  body  = options.key?(:body)  ? options.delete(:body)  : false</code></pre>
+
+<p>The first argument for <code>stylesheet_link_tag</code> is <code>source</code> which specifies a file which can either be a straight CSS file or a manifest file which will be processed by Sprockets later. The method also takes some <code>options</code>, the two currently supported are <code>debug</code> and <code>body</code>.</p>
+
+<p>The <code>debug</code> option will expand any manifest file into its contained parts and render each file individually. For example, in a project I have here, this line:</p>
+
+<pre><code>&lt;%= stylesheet_link_tag &quot;application&quot; %&gt;</code></pre>
+
+<p>When a request is made to this page that uses this layout that renders this file, it will be printed as a single line:</p>
+
+<pre><code>&lt;link href=&quot;/assets/application.css&quot; media=&quot;screen&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot; /&gt; </code></pre>
+
+<p>Even though the file it&#8217;s pointing to contains <em>directives</em> to Sprockets to include everything in <code>app/assets/stylesheets</code>:</p>
+
+<pre><code>*= require_self
+*= require_tree .</code></pre>
+
+<p>What sprockets is doing here is reading this manifest file and compiling all the CSS assets specified into one big fuck-off file and serving just that instead of the *counts* 13 CSS files I&#8217;ve got in that directory.</p>
+
+<p>If <code>debug</code> is set to true for this though, either through <code>options[:debug]</code> being passed or by <code>debug_assets?</code> evaluating to <code>true</code>, this will happen:</p>
+
+<pre><code>if debug &amp;&amp; asset = asset_paths.asset_for(source, &#39;css&#39;)
+  asset.to_a.map { |dep|
+    stylesheet_link_tag(dep, :debug =&gt; false, :body =&gt; true)
+  }.join(&quot;\n&quot;).html_safe</code></pre>
+
+<p>The <code>debug_assets?</code> method by the way is defined like this:</p>
+
+<pre><code>def debug_assets?
+  params[:debug_assets] == &#39;1&#39; ||
+    params[:debug_assets] == &#39;true&#39;
+end</code></pre>
+
+<p>If <code>?debug_assets=1</code> or <code>?debug_assets=true</code> is appended to the page (or the parameter is set some other way) then the assets will be &#8220;debugged&#8221;.</p>
+
+<p>Back to the code within <code>stylesheet_link_tag</code>, this snippet will get all the assets specified in the manifest file, iterate over each of them and render a <code>stylesheet_link_tag</code> for each of them, ensuring that <code>:debug</code> is set to false for them.</p>
+
+<p>It&#8217;s important to note here that the CSS files that the original <code>app/assets/stylesheets/application.css</code> points to can each be their own manifest file, and so on and so forth.</p>
+
+<p>If the <code>debug</code> option isn&#8217;t specified and <code>debug_assets?</code> evaluates to <code>false</code> then the <code>else</code> for this <code>if</code> will be executed:</p>
+
+<pre><code>else
+  options = {
+    &#39;rel&#39;   =&gt; &quot;stylesheet&quot;,
+    &#39;type&#39;  =&gt; &quot;text/css&quot;,
+    &#39;media&#39; =&gt; &quot;screen&quot;,
+    &#39;href&#39;  =&gt; asset_path(source, &#39;css&#39;, body)
+  }.merge(options.stringify_keys)
+
+  tag &#39;link&#39;, options
+end</code></pre>
+
+<p>This calls the <code>asset_path</code> method which is defined like this:</p>
+
+<pre><code>def asset_path(source, default_ext = nil, body = false)
+  source = source.logical_path if source.respond_to?(:logical_path)
+  path = asset_paths.compute_public_path(source, &#39;assets&#39;, default_ext, true)
+  body ? &quot;#{path}?body=1&quot; : path
+end</code></pre>
+
+<p>(WIP: I don&#8217;t know what <code>logical_path</code> is for, so let&#8217;s skip over that for now. In my testing, <code>source</code> has always been a <code>String</code> object).</p>
+
+<p>This method then calls out to <code>asset_paths</code> which is defined at the top of this file:</p>
+
+<pre><code>def asset_paths
+  @asset_paths ||= begin
+    config     = self.config if respond_to?(:config)
+    controller = self.controller if respond_to?(:controller)
+    RailsHelper::AssetPaths.new(config, controller)
+  end
+end</code></pre>
+
+<p>This method (obviously) initializes a new instance of the <code>RailsHelper::AssetPaths</code> class defined later in this file, passing through the <code>config</code> and <code>controller</code> objects of the current content, which would be the same <code>self.config</code> and <code>self.controller</code> available within a view.</p>
+
+<p>This <code>RailsHelper::AssetPaths</code> inherits behaviour from <code>ActionView::AssetPaths</code>, which is responsible for resolving the paths to the assets for vanilla Rails. The <code>RailsHelper::AssetPaths</code> overrides some of the methods defined within its superclass, though.</p>
+
+<p>The next method is <code>compute_public_path</code> which is called on this new <code>RailsHelper::AssetPaths</code> instance. This is defined simply:</p>
+
+<pre><code>def compute_public_path(source, dir, ext=nil, include_host=true)
+  super(source, &#39;assets&#39;, ext, include_host)
+end</code></pre>
+
+<p>This calls back to the <code>compute_public_path</code> within <code>ActionView::AssetsPaths</code> which is defined like this:</p>
+
+<pre><code>def compute_public_path(source, dir, ext = nil, include_host = true)
+  source = source.to_s
+  return source if is_uri?(source)
+
+  source = rewrite_extension(source, dir, ext) if ext
+  source = rewrite_asset_path(source, dir)
+
+  if controller &amp;&amp; include_host
+    has_request = controller.respond_to?(:request)
+    source = rewrite_host_and_protocol(source, has_request)
+  end
+
+  source
+end</code></pre>
+
+<p>This method, unlike those in Sprockets, actually has decent documentation.</p>
+
+<blockquote>
+<p>Add the extension +ext+ if not present. Return full or scheme-relative URLs otherwise untouched. Prefix with <code>/dir/</code> if lacking a leading <code>/</code>. Account for relative URL roots. Rewrite the asset path for cache-busting asset ids. Include asset host, if configured, with the correct request protocol.</p>
+</blockquote>
+
+<p>In this case, let&#8217;s keep in mind that <code>source</code> is going to still be <code>&quot;application&quot;</code>. Therefore, the <code>rewrite_extension</code> and <code>rewrite_asset_path</code> methods will be called first.</p>
+
+<p>The <code>rewrite_extension</code> method is actually overridden in <code>Rails::AssetPaths</code> like this:</p>
+
+<pre><code>def rewrite_extension(source, dir, ext)
+  if ext &amp;&amp; File.extname(source).empty?
+    &quot;#{source}.#{ext}&quot;
+  else
+    source
+  end
+end</code></pre>
+
+<p>This method simply appends the correct extension to the end of the file (in this case, <code>ext</code> is set to <code>&quot;css&quot;</code> back in <code>stylesheet_link_tag</code>) if it doesn&#8217;t have one already. If it does, then the filename will be left as-is.</p>
+
+<p>The <code>rewrite_asset_path</code> method is also overridden in <code>Rails::AssetPaths</code>:</p>
+
+<pre><code>def rewrite_asset_path(source, dir)
+  if source[0] == ?/
+    source
+  else
+    assets.path(source, performing_caching?, dir)
+  end
+end</code></pre>
+
+<p>If the <code>source</code> argument (still <code>&quot;application&quot;</code>, remember?) begins with a forward slash, it&#8217;s returned as-is. If not, then the <code>assets</code> method is called and then the <code>path</code> method is called on that. First up though, <code>performing_caching?</code> is one of the arguments of this method, and is defined like this:</p>
+
+<pre><code>def performing_caching?
+  @config ?  @config.perform_caching : Rails.application.config.action_controller.perform_caching
+end</code></pre>
+
+<p>Basically, if the application is configured to perform caching, then the second argument sent to <code>path</code> will be <code>true</code> and this modifies how this method acts.</p>
+
+<p>The <code>assets</code> method is defined just above <code>performing_caching?</code> in the <code>Sprockets::Helpers::RailsHelper</code>:</p>
+
+<pre><code>def assets
+  Rails.application.assets
+end</code></pre>
+
+<p>This points to the <code>assets</code> method, defined by a simple <code>attr_accessor</code> in <code>railties/lib/rails/application.rb</code>, but actually set up in <code>actionpack/lib/sprockets/railtie.rb</code> by calling <code>asset_environment</code>. To find out the juicy details of how that method works, read <a href='https://gist.github.com/1032696'>the Gist I wrote yesterday</a>. Essentially, <code>assets</code> returns a <code>Sprockets::EnvironmentIndex</code> object.</p>
+
+<p>The <code>path</code> method defined on this object is defined like this:</p>
+
+<pre><code>def path(logical_path, fingerprint = true, prefix = nil)
+  if fingerprint &amp;&amp; asset = find_asset(logical_path.to_s.sub(/^\//, &#39;&#39;))
+    url = path_with_fingerprint(logical_path, asset.digest)
+  else
+    url = logical_path
+  end
+
+  url = File.join(prefix, url) if prefix
+  url = &quot;/#{url}&quot; unless url =~ /^\//
+
+  url
+end</code></pre>
+
+<p>If the file contains a &#8220;fingerprint&#8221; (an MD5 hash which is unique for this &#8220;version&#8221; of this file) then it will return a path such as <code>application-13e6dd6f2d0d01b7203c43a264d6c9ef.css</code>. We are operating in the development environment for now, and so this will simply return the <code>application.css</code> path we&#8217;ve come to know and love.</p>
+
+<p>The final three lines of this method will append the <code>assets</code> prefix which has been passed in, so that our path now becomes <code>assets/application.css</code> and this will also prefix a forward-slash to this path, turning it into <code>/assets/application.css</code>.</p>
+
+<p>This return value then bubbles up through <code>rewrite_asset_path</code> to <code>compute_public_path</code> to <code>asset_path</code> and finally back to the <code>stylesheet_link_tag</code> method where it&#8217;s then specified as the <code>href</code> to the <code>link</code> tag that it renders.</p>
+
+<p>And that, my friends, is all that is involved when you call <code>stylesheet_link_tag</code> within the development environment. It&#8217;s</p>]]></content>
+ </entry>
  
  <entry>
    <title>The Asset Pipeline</title>
@@ -1286,61 +1486,6 @@ details.  You may need configuration options.</code></pre>
 <p>With the <code>MethodError</code> StackOverflow question it would be helpful for a person wanting to help to know why that person wants a <code>MethodError</code> exception rather than a <code>NoMethodError</code> exception. What&#8217;s the end goal?</p>
 
 <p>By seeing these three simple things, we as helpers are more enabled to help those who are asking for our help.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>The Writing Process</title>
-   <link href="http://ryanbigg.com/2010/12/the-writing-process"/>
-   <updated>2010-12-11T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2010/12/the-writing-process</id>
-   <content type="html"><![CDATA[<p>It&#8217;s been a while since I&#8217;ve videoblogged about the progress on Rails 3 in Action and I&#8217;m in that kind of mood tonight, but can&#8217;t be bothered turning on the light and setting up for that, so instead you&#8217;ll get it in text version.</p>
-
-<p>This week on Tuesday, I caught up with Mark Ryall for lunch and he asked what the writing process was like. I explained it to him and that&#8217;s definitely not the first time I&#8217;ve explained it to somebody, but nevertheless still tried to make it sound interesting. There&#8217;s a couple of key points I&#8217;d like to use this post to go into greater detail about.</p>
-<h3>There are no montages</h3>
-<p>Ever seen Rocky I? It has a great training montage where through some clever cutting we see Rocky train for the big fight. He&#8217;s running through fields, drinking raw eggs, and finally climbing a huge flight of stairs and then &#8220;dancing&#8221; because he was victorious.</p>
-
-<p>In the real world, there are no montages. I wake up in the morning and I think about how much I&#8217;d like to get done in a day. Sometimes I do that, sometimes I exceed expectation and sometimes I fail. But the main point is that I&#8217;m at least giving it a go, every single day. If I&#8217;m not writing, then I&#8217;m at least thinking about what I would write about, how the pieces all fit together. Perseverance is definitely a non-optional thing when it comes to writing a book. I focus on planning out a section and then writing it. Sometimes during the writing of it, I discover some oversight in a previous paragraph and jump back to fix it. If I don&#8217;t fix it, then I&#8217;ve got my awesome review team which will point out mistakes, which takes me on to my second point.</p>
-<h3>Get a posse</h3>
-<p>The review team so far have filed 870 notes for the book. Now, whilst this may seem like a lot, there&#8217;s a whole wall-o&#8217;-text there, some 130,000+ words so far. Many of these notes where stuff like places where I use &#8220;ran&#8221; rather than &#8220;run&#8221; or where sentences would have better wording. Then there were notes as well saying that the reviewer got lost in the text or that a code example is missing a character or overflows. Without these reviewers, I would not have been able to solve these notes as quickly as I have been, and I hope that they&#8217;ll stick with me until it&#8217;s over.</p>
-
-<p>How do these reviewers file the notes? That&#8217;s the third point.</p>
-<h3>The tools for writing a programming book, suck</h3>
-<p>Surely, somebody has solved this issue. Unfortunately for myself, that somebody isn&#8217;t my publisher. I&#8217;m hand-writing the book in XML which goes a little like this:</p>
-<pre>
-&lt;informalexample id="ch12_152"&gt;
-  &lt;programlisting id="ch12_153"&gt;
-    &lt;![CDATA[create_table :accounts_users, :id =&gt; false do |t|
-      t.string :account_id
-      t.string :user_id
-      t.boolean :admin, :default =&gt; false
-    end
-    
-    remove_column :users, :admin
-    ]]&gt;
-  &lt;/programlisting&gt;
-&lt;/informalexample&gt;
-</pre>
-<p>I&#8217;ve got TextMate macros for that so I just type <code>in[tab]</code> for it to generate the <code>informalexample</code> and nested <code>programlisting</code> tags, with the <code>id</code> attributes filled in at a later time by <a href='https://gist.github.com/737322'>a script I've written myself</a>. That in itself was an interesting problem to solve. Each and every single element in the document needs a unique ID, but you can&#8217;t just go ahead and number every single element in order: you have to be considerate of the fact that some elements may already have ids. If that&#8217;s the case, then you find the &#8220;biggest&#8221; id and just add +1 to that for every single new element.</p>
-
-<p>Why do these elements need IDs? Because of how Manning&#8217;s review tool works. My editor and I both have access to a tool that we can log into and leave notes for the book. These notes relate to an element based on that element&#8217;s ID so even if the <em>content</em> of the element changes after the note has been left, we still know what element that refers to. The IDs for that particular system are something like <code>_432_4125_3843</code>, where the first number is the book id, the second number the chapter id and the third number the element number for that chapter. I prefer my naming schema, to be perfectly honest.</p>
-
-<p>There&#8217;s a small problem with the tool my editor and I use: only we have access to it. For very good reason too. Anybody who has access to it gets to see every single other book written by Manning, which is probably not the best for security reasons there. Also, this tool requires me to use SVN (wherein a part of me dies every time that happens), as well as <a href='https://skitch.com/ryanbigg/rrxji/a'>an interface that is from many, many years ago.</a> To update a chapter, I must go into this interface and click on every chapter, scroll to the very bottom of the page, press the &#8220;Latest&#8221; radio button and press &#8220;Update&#8221;. Then once the request is done, I get no clear notification if something has gone wrong. It&#8217;s all very luck-based.</p>
-
-<p>One Saturday, I got tired of doing this. I knew I could code something far, far greater. Hell, I was/am writing a book on Rails 3, why not build another Rails application to help in that process? That&#8217;s how Twist was born. On a single Saturday (ok, and some minor upkeep during some down time).</p>
-<h3>Twist</h3>
-<p>Twist is a Rails 3.0.3 application which currently has about 40 users. Each of these users can log into the system and leave notes for any element in any chapter and also see notes left by other users. Collaborative editing is the future, man. I can log into the system and see exactly what every other user sees, except I have one extra ability: I can close notes. Ideally I would like to have three stages for notes: Open, Complete and Closed so that people can check to see if the note is to their satisfaction, but I haven&#8217;t seen any large use for that yet. It&#8217;s just a nice-to-have.</p>
-
-<p>So how does Twist get the book then? That Saturday was fever-pitch coding. I host the book on GitHub (quite probably my favourite online service that&#8217;s not a bank), and GitHub has Post-Receive Hooks which trigger when the repository is pushed to. With these, I can send a payload of a commit to any URL I desire. This payload contains information such as what files were added, modified or removed during the commits that have happened for that push. So that&#8217;s what Twist uses. It parses the payload, downloads the XML for the chapters and parses it all and stores it in a database structure that, simply put, goes like this:</p>
-<pre>
-  Book -&lt; Chapters -&lt; Revisions -&lt; Sections -&lt; Elements &gt;- Notes &gt;- Users
-</pre>
-<p>Every time I push a change to GitHub, it&#8217;s instantly available for the reviewers to see. No SVN or shitty interface bullshit. When reviewers visit a section it&#8217;s rendered right from the database. If it had a lot of traffic, sure, I&#8217;d cache it. It just doesn&#8217;t need it right now. One of my favourite features which I added recently was the ability to close notes through commit messages using a message such as &#8220;Fixed messed-up code sample - Finishes #711&#8221;, ala GitHub Issues. Oh, and <a href='https://skitch.com/ryanbigg/rrxkb/twist.ryanbigg.com-1.2.4'>it looks like this</a>. Hat-tip to Ben Hoskings for the protips on things like the line and paragraph spacing.</p>
-
-<p>There&#8217;s one thing I haven&#8217;t been able to solve yet: testing the code samples.</p>
-<h3>How do you know it works?</h3>
-<p>One thing that bugs me with this writing process is that I have no solid clue if the code I&#8217;m writing actually works. A lo-fi way I&#8217;ve worked out of solving this is to write the code for the application as I&#8217;m writing the book. Make it work in the application and then it&#8217;s a matter of simply copying over the code from the application into the book. My main problem with that is that code and output can both change. I don&#8217;t know how yet to test this cleanly &#8211; and I&#8217;m pretty sure Manning&#8217;s XML format would prevent me from even trying &#8211; but I know it&#8217;s possible.</p>
-<h3>Fin</h3>
-<p>Anyway, long post is long and probably not that interesting to a normal reader. Still, it&#8217;s fascinating for me. The whole process gives me this fuzzy, warm feeling. Made some good progress on Chapter 12 today, and I think I&#8217;m going to go push that to GitHub (and by extension, Twist) right now. Bye!</p>]]></content>
  </entry>
  
  
