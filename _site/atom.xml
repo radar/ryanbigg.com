@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-06-19T19:41:07+10:00</updated>
+ <updated>2011-06-23T22:00:01+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -209,7 +209,208 @@ end</code></pre>
 
 <p>This return value then bubbles up through <code>rewrite_asset_path</code> to <code>compute_public_path</code> to <code>asset_path</code> and finally back to the <code>stylesheet_link_tag</code> method where it&#8217;s then specified as the <code>href</code> to the <code>link</code> tag that it renders.</p>
 
-<p>And that, my friends, is all that is involved when you call <code>stylesheet_link_tag</code> within the development environment. It&#8217;s</p>]]></content>
+<p>And that, my friends, is all that is involved when you call <code>stylesheet_link_tag</code> within the development environment. Now let&#8217;s look at what happens when we do the same thing, but in production.</p>
+
+<h4 id='later_in_production'>Later, in production</h4>
+
+<p>In production, things work very similarly to the process just described except for (obviously) some key differences. In the production environment, <code>performing_caching?</code> will return <code>true</code> and therefore the <code>path</code> method in <code>Sprockets::EnvironmentIndex</code> will receive it&#8217;s <code>fingerprint</code> argument as <code>true</code>, rather than <code>false</code>.</p>
+
+<p>This means that this code in <code>path</code> inside <code>Sprockets::Environment</code> will be called:</p>
+
+<pre><code>if fingerprint &amp;&amp; asset = find_asset(logical_path.to_s.sub(/^\//, &#39;&#39;))
+  url = path_with_fingerprint(logical_path, asset.digest)</code></pre>
+
+<p>In this case, <code>fingerprint</code> is going to be <code>true</code> so that part of the <code>if</code> will run. But what does <code>find_asset</code> do? Well, it takes the <code>logical_path</code> (in this case, just <code>application.css</code>), sans any single forward slash at the beginning.</p>
+
+<p>The <code>find_asset</code> method is defined in <code>sprockets/lib/environment.rb</code>:</p>
+
+<pre><code>def find_asset(logical_path, options = {})
+  logical_path = Pathname.new(logical_path)
+  index = options[:_index] || self.index
+
+  if asset = find_fresh_asset_from_cache(logical_path)
+    asset
+  elsif asset = index.find_asset(logical_path, options.merge(:_environment =&gt; self))
+    @cache[logical_path.to_s] = asset
+    asset.to_a.each { |a| @cache[a.pathname.to_s] = a }
+    asset
+  end
+end</code></pre>
+
+<p>The <code>logical_path</code> argument here is still going to be <code>&quot;application.css&quot;</code>. This method begins by converting <code>logical_path</code> into a <code>Pathname</code> object and setting up an <code>index</code> variable which is a <code>Sprockets::EnvironmentIndex</code> object.</p>
+
+<p>First the asset is searched for in a cache with the <code>find_fresh_asset_from_cache</code> method, which is passed the now-<code>Pathname</code>&#8216;d <code>logical_path</code> argument. We don&#8217;t know yet what this cache is, so let&#8217;s look at what <code>find_fresh_asset_from_cache</code> is defined as:</p>
+
+<pre><code>def find_fresh_asset_from_cache(logical_path)
+  if asset = @cache[logical_path.to_s]
+    if path_fingerprint(logical_path)
+      asset
+    elsif asset.stale?
+      nil
+    else
+      asset
+    end
+  else
+    nil
+  end
+end</code></pre>
+
+<p>This <code>@cache</code> variable method is set up in the <code>expire_index!</code> method which actually serves two purposes: one is to initialize this cache when the <code>initialize</code> method for <code>Sprockets::Environment</code> is called. This happened way back when the <code>Sprockets::Railtie</code>&#8217;s <code>after_initialize</code> hook ran). The second is to clear this cache.</p>
+
+<p>The moment, our <code>@cache</code> variable is going to be just an empty hash, and so the first <code>if</code> in this method will return nothing. The <code>asset</code> variable therefore won&#8217;t be set, and so it will fall to the <code>else</code> which just returns <code>nil</code></p>
+
+<p>So that clears the <code>if</code> in <code>find_asset</code>, so then it goes to the <code>elsif</code> which, as a reminder, is defined like this:</p>
+
+<pre><code>elsif asset = index.find_asset(logical_path, options.merge(:_environment =&gt; self))
+  @cache[logical_path.to_s] = asset
+  asset.to_a.each { |a| @cache[a.pathname.to_s] = a }
+  asset
+end</code></pre>
+
+<p>This then falls down to the <code>index</code> (it&#8217;s a <code>Sprockets::EnvironmentIndex</code> object, remember?) object, and the <code>find_asset</code> path defined on it. This is a <em>different</em> <code>find_asset</code> to the one that we saw before. That one was defined for <code>Sprockets::Environment</code> objects, where as this one is for a <code>Sprockets::EnvironmentIndex</code> object. This method is defined in <code>sprockets/lib/environment_index.rb</code> like this:</p>
+
+<pre><code>def find_asset(path, options = {})
+  options[:_index] ||= self
+
+  pathname = Pathname.new(path)
+
+  if pathname.absolute?
+    build_asset(detect_logical_path(path).to_s, pathname, options)
+  else
+    logical_path = path.to_s.sub(/^\//, &#39;&#39;)
+
+    if @assets.key?(logical_path)
+      @assets[logical_path]
+    else
+      @assets[logical_path] = find_asset_in_static_root(pathname) ||
+        find_asset_in_path(pathname, options)
+    end
+  end
+end</code></pre>
+
+<p>This method receives the <code>path</code> argument which is still the <code>String</code> <code>&quot;application.css&quot;</code>. This method makes a new <code>Pathname</code> object out of that <code>path</code> and then calls <code>absolute?</code> on it. The pathname is absolute if it begins with a preceding slash, but in this case it doesn&#8217;t have one, and so it will fall to the <code>else</code> in this method.</p>
+
+<p>This begins by removing any slash at the beginning of the path, but ours doesn&#8217;t have one and so it will be left as is. The <code>@assets</code> variable is set up in the <code>initialize</code> method of <code>Sprockets::EnvironmentIndex</code>, and is just an empty <code>Hash</code> object at this stage. This means that this <code>@assets</code> hash would not contain the key of <code>&quot;application.css&quot;</code> at this point, and so it will go to the <code>else</code> for <code>@assets.key?(logical_path)</code>.</p>
+
+<p>Inside this <code>else</code>, Sprockets sets that <code>@assets[logical_path]</code> variable so that it doesn&#8217;t have to find it again. To find that particular asset though, it first looks in a static root using <code>find_asset_in_static_root</code> and if it can&#8217;t find one there then looks for it using <code>find_asset_in_path</code>.</p>
+
+<p>Let&#8217;s see what <code>find_asset_in_static_root</code> does first. This method is actually defined in <code>sprockets/lib/static_compliation.rb</code> and begins with these two lines:</p>
+
+<pre><code>def find_asset_in_static_root(logical_path)
+  return unless static_root</code></pre>
+
+<p>If <code>static_root</code> isn&#8217;t set then this method will return nothing. So is this set? The method is defined at the top of <code>Sprockets::StaticCompilation</code> like this:</p>
+
+<pre><code>def static_root
+  @static_root
+end</code></pre>
+
+<p>But where is this <code>@static_root</code> variable set? If we look just underneath this <code>static_root</code> definition there&#8217;s a <code>static_root=</code> definition which cleans the index and sets this variable:</p>
+
+<pre><code>def static_root=(root)
+  expire_index!
+  @static_root = root
+end</code></pre>
+
+<p>This <code>static_root=</code> method is called when <code>Sprockets::EnvironmentIndex</code> is initialized, using this line:</p>
+
+<pre><code>  @static_root = static_root ? Pathname.new(static_root) : nil</code></pre>
+
+<p>The <code>EnvironmentIndex</code> object was initialized earlier when the <code>index</code> method was called on the <code>Sprockets::Environment</code> object. It does this:</p>
+
+<pre><code>def index
+  EnvironmentIndex.new(self, @trail, @static_root)
+end</code></pre>
+
+<p>This <code>@static_root</code> variable is set up when the <code>after_initialize</code> hook sets up the <code>Sprockets::Environment</code> object, in <code>Sprockets::Railtie</code> using this line:</p>
+
+<pre><code>env.static_root = File.join(app.root.join(&quot;public&quot;), assets.prefix)</code></pre>
+
+<p>The <code>assets</code> object here is the <code>Rails.application.config.assets</code> object set up in <code>railties/lib/rails/application/configuration.rb</code>, with the <code>prefix</code> method on it returning simply <code>/assets</code>. This means that the <code>env.static_root</code> will result in a path that points at the <code>public/assets</code> directory within the application.</p>
+
+<p>This means that the <code>static_root</code> method back in <code>find_asset_in_static_root</code> is actually going to return a value and so the method will continue past this point. The next two lines in this method are these:</p>
+
+<pre><code>pathname   = Pathname.new(static_root.join(logical_path))
+attributes = attributes_for(pathname)</code></pre>
+
+<p>The <code>logical_path</code> is still going to be <code>&quot;application.css&quot;</code>, and in this case it&#8217;s going to be appended to the end of <code>static_path</code>, making the output something like <code>[Rails.root]/public/assets/application.css</code> and turning that into a <code>Pathname</code> object.</p>
+
+<p>Next, the <code>attributes_for</code> method is called on this new <code>Pathname</code> object. This method is defined like this:</p>
+
+<pre><code>def attributes_for(path)
+  AssetAttributes.new(self, path)
+end</code></pre>
+
+<p>The <code>AssetAttributes</code> class is actually <code>Sprockets::AssetAttributes</code>. This class serves the purpose of providing several helper methods, some of them which we&#8217;ll see in just a bit, for the assets of this application. The <code>initialize</code> method for this class is defined like this:</p>
+
+<pre><code>def initialize(environment, path)
+  @environment = environment
+  @pathname = path.is_a?(Pathname) ? path : Pathname.new(path.to_s)
+end</code></pre>
+
+<p>The <code>environment</code> passed in is the <code>Sprockets::Environment</code> object we&#8217;ve been dealing with for a while now, and the <code>path</code> is the newly-initialized <code>Pathname</code> object set up just before <code>attributes_for</code> is called. No particularly big bit of magic going on here. Keep this little portion in mind for later on when this code is actually used.</p>
+
+<p>The next thing this <code>find_asset_in_static_root</code> method does is check the directory supposedly containing the assets for any entries by using this code:</p>
+
+<pre><code>entries = entries(pathname.dirname)
+
+if entries.empty?
+  return nil
+end</code></pre>
+
+<p>The <code>entries</code> method is defined like this:</p>
+
+<pre><code>def entries(pathname)
+  @entries[pathname.to_s] ||= pathname.entries.reject { |entry| entry.to_s =~ /^\.\.?$/ }
+rescue Errno::ENOENT
+  @entries[pathname.to_s] = []
+end</code></pre>
+
+<p>The little bonus thing here is that it caches the entries of a directory so that it doesn&#8217;t have to look them up. The little <code>reject</code> call on the end of things will reject the <code>.</code> and <code>..</code> entries that would normally appear on an entries listing of this directory. If the directory can&#8217;t be found (meaning an <code>Errno::ENOENT</code> exception is raised) then the cache for this directory is just set to an empty array.</p>
+
+<p>Obviously, if there&#8217;s no entries in this directory then <code>find_asset_in_static_root</code> will return <code>nil</code>. In this case, there are no files and therefore this method will indeed return <code>nil</code>, marking the end of <code>find_asset_in_static_root</code>.</p>
+
+<p>Now back in the <code>find_asset</code> method, it will next try the <code>find_asset_in_path</code> method. This method is called like this:</p>
+
+<pre><code>find_asset_in_path(pathname, options)</code></pre>
+
+<p>This method is defined in <code>Sprockets::EnvironmentIndex</code> and begins like this:</p>
+
+<pre><code>def find_asset_in_path(logical_path, options = {})
+  if fingerprint = path_fingerprint(logical_path)
+    pathname = resolve(logical_path.to_s.sub(&quot;-#{fingerprint}&quot;, &#39;&#39;))
+  else
+    pathname = resolve(logical_path)
+  end</code></pre>
+
+<p>The <code>path_fingerprint</code> method is defined inside <code>Sprockets::StaticCompilation</code> like this:</p>
+
+<pre><code>def path_fingerprint(path)
+  pathname = Pathname.new(path)
+  extensions = pathname.basename.to_s.scan(/\.[^.]+/).join
+  pathname.basename(extensions).to_s =~ /-([0-9a-f]{7,40})$/ ? $1 : nil
+end</code></pre>
+
+<p>This method takes an argument called <code>path</code> which is still just <code>&quot;application.css&quot;</code> at this point. From this specified path it attempts to grab a hexdigest at the end of this file, something like <code>&quot;0abf44c386f64e72197c68d2f0aea31f&quot;</code>, but if there isn&#8217;t one it will return <code>nil</code>. Because <code>&quot;applicaiton.css&quot;</code> doesn&#8217;t contain this hexdigest suffix, it will fall to the <code>else</code> in <code>find_asset_in_path</code> which calls the <code>resolve</code> method.</p>
+
+<p>Methods called <code>resolve</code> are defined in several spots in Sprockets, but this one is from <code>Sprockets::EnvironmentIndex</code> which contains this code:</p>
+
+<pre><code>def resolve(logical_path, options = {})
+  if block_given?
+    @trail.find(logical_path.to_s, logical_index_path(logical_path), options) do |path|
+      yield Pathname.new(path)
+    end
+  else
+    resolve(logical_path, options) do |pathname|
+      return pathname
+    end
+    raise FileNotFound, &quot;couldn&#39;t find file &#39;#{logical_path}&#39;&quot;
+  end
+end</code></pre>
+
+<p>In the first case, the <code>resolve</code> method is not passed a block and therefore it calls itself passing back through the <code>logical_path</code> and <code>options</code> it received, as well as a block. Now this goes back to the top of the method where the <code>if block_given?</code> statement evaluates to <code>true</code> and <code>@trail.find</code> is called.</p>
+
+<p>To be continued&#8230;</p>]]></content>
  </entry>
  
  <entry>

@@ -317,7 +317,7 @@ This `@static_root` variable is set up when the `after_initialize` hook sets up 
 
 The `assets` object here is the `Rails.application.config.assets` object set up in `railties/lib/rails/application/configuration.rb`, with the `prefix` method on it returning simply `/assets`. This means that the `env.static_root` will result in a path that points at the `public/assets` directory within the application.
 
-This means that the `static_root` method back in `find_asset_static_root` is actually going to return a value and so the method will continue past this point. The next two lines in this method are these:
+This means that the `static_root` method back in `find_asset_in_static_root` is actually going to return a value and so the method will continue past this point. The next two lines in this method are these:
 
     pathname   = Pathname.new(static_root.join(logical_path))
     attributes = attributes_for(pathname)
@@ -338,5 +338,66 @@ The `AssetAttributes` class is actually `Sprockets::AssetAttributes`. This class
     end
 
 
-The `environment` passed in is the `Sprockets::Environment` object we've been dealing with for a while now, and the `path` is the newly-initialized `Pathname` object set up just before `attributes_for` is called. No particularly big bit of magic going on here.
+The `environment` passed in is the `Sprockets::Environment` object we've been dealing with for a while now, and the `path` is the newly-initialized `Pathname` object set up just before `attributes_for` is called. No particularly big bit of magic going on here. Keep this little portion in mind for later on when this code is actually used.
 
+The next thing this `find_asset_in_static_root` method does is check the directory supposedly containing the assets for any entries by using this code:
+
+    entries = entries(pathname.dirname)
+
+    if entries.empty?
+      return nil
+    end
+
+The `entries` method is defined like this:
+
+    def entries(pathname)
+      @entries[pathname.to_s] ||= pathname.entries.reject { |entry| entry.to_s =~ /^\.\.?$/ }
+    rescue Errno::ENOENT
+      @entries[pathname.to_s] = []
+    end
+
+The little bonus thing here is that it caches the entries of a directory so that it doesn't have to look them up. The little `reject` call on the end of things will reject the `.` and `..` entries that would normally appear on an entries listing of this directory. If the directory can't be found (meaning an `Errno::ENOENT` exception is raised) then the cache for this directory is just set to an empty array.
+
+Obviously, if there's no entries in this directory then `find_asset_in_static_root` will return `nil`. In this case, there are no files and therefore this method will indeed return `nil`, marking the end of `find_asset_in_static_root`.
+
+Now back in the `find_asset` method, it will next try the `find_asset_in_path` method. This method is called like this:
+
+    find_asset_in_path(pathname, options)
+
+This method is defined in `Sprockets::EnvironmentIndex` and begins like this:
+
+    def find_asset_in_path(logical_path, options = {})
+      if fingerprint = path_fingerprint(logical_path)
+        pathname = resolve(logical_path.to_s.sub("-#{fingerprint}", ''))
+      else
+        pathname = resolve(logical_path)
+      end
+      
+The `path_fingerprint` method is defined inside `Sprockets::StaticCompilation` like this:
+
+    def path_fingerprint(path)
+      pathname = Pathname.new(path)
+      extensions = pathname.basename.to_s.scan(/\.[^.]+/).join
+      pathname.basename(extensions).to_s =~ /-([0-9a-f]{7,40})$/ ? $1 : nil
+    end
+
+This method takes an argument called `path` which is still just `"application.css"` at this point. From this specified path it attempts to grab a hexdigest at the end of this file, something like `"0abf44c386f64e72197c68d2f0aea31f"`, but if there isn't one it will return `nil`. Because `"applicaiton.css"` doesn't contain this hexdigest suffix, it will fall to the `else` in `find_asset_in_path` which calls the `resolve` method.
+
+Methods called `resolve` are defined in several spots in Sprockets, but this one is from `Sprockets::EnvironmentIndex` which contains this code:
+
+    def resolve(logical_path, options = {})
+      if block_given?
+        @trail.find(logical_path.to_s, logical_index_path(logical_path), options) do |path|
+          yield Pathname.new(path)
+        end
+      else
+        resolve(logical_path, options) do |pathname|
+          return pathname
+        end
+        raise FileNotFound, "couldn't find file '#{logical_path}'"
+      end
+    end
+
+In the first case, the `resolve` method is not passed a block and therefore it calls itself passing back through the `logical_path` and `options` it received, as well as a block. Now this goes back to the top of the method where the `if block_given?` statement evaluates to `true` and `@trail.find` is called.
+
+To be continued...
