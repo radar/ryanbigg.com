@@ -198,4 +198,145 @@ The final three lines of this method will append the `assets` prefix which has b
 
 This return value then bubbles up through `rewrite_asset_path` to `compute_public_path` to `asset_path` and finally back to the `stylesheet_link_tag` method where it's then specified as the `href` to the `link` tag that it renders.
 
-And that, my friends, is all that is involved when you call `stylesheet_link_tag` within the development environment. It's 
+And that, my friends, is all that is involved when you call `stylesheet_link_tag` within the development environment. Now let's look at what happens when we do the same thing, but in production.
+
+#### Later, in production
+
+In production, things work very similarly to the process just described except for (obviously) some key differences. In the production environment, `performing_caching?` will return `true` and therefore the `path` method in `Sprockets::EnvironmentIndex` will receive it's `fingerprint` argument as `true`, rather than `false`.
+
+This means that this code in `path` inside `Sprockets::Environment` will be called:
+
+    if fingerprint && asset = find_asset(logical_path.to_s.sub(/^\//, ''))
+      url = path_with_fingerprint(logical_path, asset.digest)
+
+In this case, `fingerprint` is going to be `true` so that part of the `if` will run. But what does `find_asset` do? Well, it takes the `logical_path` (in this case, just `application.css`), sans any single forward slash at the beginning. 
+
+The `find_asset` method is defined in `sprockets/lib/environment.rb`:
+
+    def find_asset(logical_path, options = {})
+      logical_path = Pathname.new(logical_path)
+      index = options[:_index] || self.index
+
+      if asset = find_fresh_asset_from_cache(logical_path)
+        asset
+      elsif asset = index.find_asset(logical_path, options.merge(:_environment => self))
+        @cache[logical_path.to_s] = asset
+        asset.to_a.each { |a| @cache[a.pathname.to_s] = a }
+        asset
+      end
+    end
+
+The `logical_path` argument here is still going to be `"application.css"`. This method begins by converting `logical_path` into a `Pathname` object and setting up an `index` variable which is a `Sprockets::EnvironmentIndex` object.
+
+First the asset is searched for in a cache with the `find_fresh_asset_from_cache` method, which is passed the now-`Pathname`'d `logical_path` argument. We don't know yet what this cache is, so let's look at what `find_fresh_asset_from_cache` is defined as:
+
+    def find_fresh_asset_from_cache(logical_path)
+      if asset = @cache[logical_path.to_s]
+        if path_fingerprint(logical_path)
+          asset
+        elsif asset.stale?
+          nil
+        else
+          asset
+        end
+      else
+        nil
+      end
+    end
+
+This `@cache` variable method is set up in the `expire_index!` method which actually serves two purposes: one is to initialize this cache when the `initialize` method for `Sprockets::Environment` is called. This happened way back when the `Sprockets::Railtie`'s `after_initialize` hook ran). The second is to clear this cache.
+
+The moment, our `@cache` variable is going to be just an empty hash, and so the first `if` in this method will return nothing. The `asset` variable therefore won't be set, and so it will fall to the `else` which just returns `nil`
+
+So that clears the `if` in `find_asset`, so then it goes to the `elsif` which, as a reminder, is defined like this:
+
+    elsif asset = index.find_asset(logical_path, options.merge(:_environment => self))
+      @cache[logical_path.to_s] = asset
+      asset.to_a.each { |a| @cache[a.pathname.to_s] = a }
+      asset
+    end
+
+This then falls down to the `index` (it's a `Sprockets::EnvironmentIndex` object, remember?) object, and the `find_asset` path defined on it. This is a *different* `find_asset` to the one that we saw before. That one was defined for `Sprockets::Environment` objects, where as this one is for a `Sprockets::EnvironmentIndex` object. This method is defined in `sprockets/lib/environment_index.rb` like this:
+
+    def find_asset(path, options = {})
+      options[:_index] ||= self
+
+      pathname = Pathname.new(path)
+
+      if pathname.absolute?
+        build_asset(detect_logical_path(path).to_s, pathname, options)
+      else
+        logical_path = path.to_s.sub(/^\//, '')
+
+        if @assets.key?(logical_path)
+          @assets[logical_path]
+        else
+          @assets[logical_path] = find_asset_in_static_root(pathname) ||
+            find_asset_in_path(pathname, options)
+        end
+      end
+    end
+
+This method receives the `path` argument which is still the `String` `"application.css"`. This method makes a new `Pathname` object out of that `path` and then calls `absolute?` on it. The pathname is absolute if it begins with a preceding slash, but in this case it doesn't have one, and so it will fall to the `else` in this method.
+
+This begins by removing any slash at the beginning of the path, but ours doesn't have one and so it will be left as is. The `@assets` variable is set up in the `initialize` method of `Sprockets::EnvironmentIndex`, and is just an empty `Hash` object at this stage. This means that this `@assets` hash would not contain the key of `"application.css"` at this point, and so it will go to the `else` for `@assets.key?(logical_path)`. 
+
+Inside this `else`, Sprockets sets that `@assets[logical_path]` variable so that it doesn't have to find it again. To find that particular asset though, it first looks in a static root using `find_asset_in_static_root` and if it can't find one there then looks for it using `find_asset_in_path`.
+
+Let's see what `find_asset_in_static_root` does first. This method is actually defined in `sprockets/lib/static_compliation.rb` and begins with these two lines:
+
+    def find_asset_in_static_root(logical_path)
+      return unless static_root
+
+If `static_root` isn't set then this method will return nothing. So is this set? The method is defined at the top of `Sprockets::StaticCompilation` like this:
+
+    def static_root
+      @static_root
+    end
+
+But where is this `@static_root` variable set? If we look just underneath this `static_root` definition there's a `static_root=` definition which cleans the index and sets this variable:
+
+    def static_root=(root)
+      expire_index!
+      @static_root = root
+    end
+
+This `static_root=` method is called when `Sprockets::EnvironmentIndex` is initialized, using this line:
+
+      @static_root = static_root ? Pathname.new(static_root) : nil
+
+The `EnvironmentIndex` object was initialized earlier when the `index` method was called on the `Sprockets::Environment` object. It does this:
+
+    def index
+      EnvironmentIndex.new(self, @trail, @static_root)
+    end
+
+This `@static_root` variable is set up when the `after_initialize` hook sets up the `Sprockets::Environment` object, in `Sprockets::Railtie` using this line:
+
+    env.static_root = File.join(app.root.join("public"), assets.prefix)
+
+The `assets` object here is the `Rails.application.config.assets` object set up in `railties/lib/rails/application/configuration.rb`, with the `prefix` method on it returning simply `/assets`. This means that the `env.static_root` will result in a path that points at the `public/assets` directory within the application.
+
+This means that the `static_root` method back in `find_asset_static_root` is actually going to return a value and so the method will continue past this point. The next two lines in this method are these:
+
+    pathname   = Pathname.new(static_root.join(logical_path))
+    attributes = attributes_for(pathname)
+ 
+The `logical_path` is still going to be `"application.css"`, and in this case it's going to be appended to the end of `static_path`, making the output something like `[Rails.root]/public/assets/application.css` and turning that into a `Pathname` object.
+
+Next, the `attributes_for` method is called on this new `Pathname` object. This method is defined like this:
+
+    def attributes_for(path)
+      AssetAttributes.new(self, path)
+    end
+
+The `AssetAttributes` class is actually `Sprockets::AssetAttributes`. This class serves the purpose of providing several helper methods, some of them which we'll see in just a bit, for the assets of this application. The `initialize` method for this class is defined like this:
+
+    def initialize(environment, path)
+      @environment = environment
+      @pathname = path.is_a?(Pathname) ? path : Pathname.new(path.to_s)
+    end
+
+
+The `environment` passed in is the `Sprockets::Environment` object we've been dealing with for a while now, and the `path` is the newly-initialized `Pathname` object set up just before `attributes_for` is called. No particularly big bit of magic going on here.
+
