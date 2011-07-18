@@ -44,7 +44,7 @@ Another situation could be that you want to have different sets of gems on the s
 
 We're going to use it to install only one version of Ruby, but we can <a href='http://rvm.beginrescueend.com'>consult the documentation</a> if we want to install a different version of Ruby. 
 
-With `git-core` and `curl` installed we'll be able to install RVM with this command:
+With `git` and `curl` installed we'll be able to install RVM with this command:
 
     bash < <(curl -s https://rvm.beginrescueend.com/install/rvm)
 
