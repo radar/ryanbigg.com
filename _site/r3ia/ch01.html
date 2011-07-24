@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Twist</title>
+    <link href="ch01/application.css" media="screen" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="chapter">
+  <h1>Rails 3 in Action - Chapter 1 - Ruby on Rails, the framework</h1>
+  <p id="ch01_3">
+    Welcome aboard! It's great to have you with us on this journey throughout the world of Ruby on Rails. Ruby on Rails is known throughout the lands as a powerful web framework that helps developers rapidly build modern web applications. In particular, it provides lots of niceties that will help us in our quest to develop a fully-featured "real world" application and be happy doing it. Great developers are happy developers. It's not only Ruby on Rails itself that provides all these things, there's much more to the Rails world than at first glance, but not overwhelmingly too much though. And what a first glance! Oh you two haven't met? Well, time for some introductions then!
+  </p><h2 id="ch01_5">1.1 What is Ruby on Rails?</h2><p id="ch01_8">
+      Ruby on Rails is a framework built on the Ruby language, hence the name "Ruby on Rails". The Ruby language was created back in 1993 by Yukihiro "Matz" Matsumuto of Japan. Ruby was released to the general public in 1995. Since then, it has earned both a reputation and an enthusiastic following for its clean design, elegant syntax, and wide selection of tools available in the standard library and via a package management system called <em>RubyGems</em>. It also has a worldwide community and many active contributors constantly improving the language and the ecosystem around it.
+    </p><p id="ch01_10">
+      Ruby on Rails was created during 2004 by David Heinemeier Hansson during the development of 37signals' flagship product: Basecamp. When Rails was needed for other 37signals projects, the team extracted the Rails code from Basecamp and crafted the beginnings of the Rails framework, releasing it as open source under the MIT license<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_1" class="footnote"><sup>1</sup></a>. Since that date, Ruby on Rails has quickly progressed to become one of the leading web development frameworks. This is in no small part due to the large community surrounding it who are constantly working on submitting patches to add new features or to fix existing bugs. Version 3 of this framework indicates yet another significant milestone in the project's history and introduces some new concepts, but won't leave those already familiar with the framework in the dark. It's this latest version of Rails that will be the primary focus for this book.
+    </p><span class="footnote_container"><a name="footnote_1"></a><sup>1</sup> 
+<span class="footnote" id="ch01_11">The MIT license: <a href="http://en.wikipedia.org/wiki/MIT_License" id="ch01_797">http://en.wikipedia.org/wiki/MIT_License</a></span>
+<br></span><h3 id="ch01_13">1.1.1 Benefits</h3><p id="ch01_14">
+        Ruby on Rails allows for rapid development of applications by using a concept known as <em>convention over configuration</em>. When you begin writing a Ruby on Rails application you run an application generator which creates a basic skeleton of directories and files for your application. These files and directories provide categorization for pieces of your code, such as the <span class="filename" id="ch01_240">app/models</span> directory for containing files that interact with the database and <span class="filename" id="ch01_241">public/images</span> directory for images. Because all of this is already there for you, you're not going to be spending your time configuring the way your application is laid out. It's done for you. 
+      </p><p id="ch01_16">
+        How rapidly can you develop a Ruby on Rails application? Take the annual <em>Rails Rumble</em> event. This event aims to bring together small teams of 1-4 developers around the world to develop Ruby on Rails<a href="./Twist_files/Twist.html" class="footnote"><sup>2</sup></a> applications in a 48-hour period. Using Rails, these teams are able to deliver amazing web applications in just two days. <a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_3" class="footnote"><sup>3</sup></a> Another great example of rapid development of a Rails application would be the 20 minute blog screencast recorded by Yehuda Katz<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_4" class="footnote"><sup>4</sup></a>. This screencast takes you from a "no application" state, to having a basic blogging and commenting system.
+      </p><span class="footnote_container"><a name="footnote_2"></a><sup>2</sup> 
+<span class="footnote" id="ch01_18">and now other Ruby-based web frameworks, such as Sinatra</span>
+<br></span><span class="footnote_container"><a name="footnote_3"></a><sup>3</sup> 
+<span class="footnote" id="ch01_19">To see an example of what came out of the 2009 Rails Rumble, take a look at their leaderboard: <a href="http://r09.railsrumble.com/entries" id="ch01_799">http://r09.railsrumble.com/entries</a></span>
+<br></span><span class="footnote_container"><a name="footnote_4"></a><sup>4</sup> 
+<span class="footnote" id="ch01_20">20 minute blog screencast: <a href="http://vimeo.com/10732081" id="ch01_801">http://vimeo.com/10732081</a></span>
+<br></span><p id="ch01_21">
+        Ruby on Rails affords you a level of productivity that goes unheard of in other web frameworks. This is due to every Ruby on Rails application starting out the same way. Because the similarity between the applications is so close, the paradigm shift between different Rails applications is not tremendous. If and when you jump between Rails applications, you're not going to be learning how it all connects again. It's mostly the same.
+      </p><p id="ch01_24">
+        The core features of Rails are a conglomerate of many different parts called Railties (when said aloud it rhymes with "bowties") such as <em>Active Record</em>, <em>Active Support</em>, <em>Action Mailer</em> and <em>Action Pack</em>.<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_5" class="footnote"><sup>5</sup></a> These different Railties provide a large range of methods and classes that will help you develop your applications. They prevent you from performing boring, repetitive tasks -- such as coding how your application hooks into your database -- and lets you just get down to writing valuable code for your business from the word go.
+      </p><span class="footnote_container"><a name="footnote_5"></a><sup>5</sup> 
+<span class="footnote" id="ch01_242">These Railties share the same version number as Rails, which means when you're using Rails 3.0, you're using the 3.0 version of the Railtie. This is helpful to know for when you upgrade Rails because the version number of the installed Railties should be the same as the version number of Rails.</span>
+<br></span><p id="ch01_83">
+        Ever wished a way of writing automated tests for your web application was built in? Ruby on Rails has you covered by including part of Ruby's standard library called <em>Test::Unit</em>. It is incredibly easy to write automated test code for your application, as you'll see all the way throughout this book. It really does save your bacon in the long term, and that's a fantastic thing. We touch on Test::Unit in the next chapter before moving onto RSpec and Cucumber, two other test frameworks that are more preferred than Test::Unit, and a little easier on the eyes too.
+      </p><p id="ch01_785">
+        There's not just only testing frameworks that are available for your usage either. The Ruby community has produced several high-quality libraries (referred to as "RubyGems" or "gems" for short) which we can use in our day-to-day development with Ruby on Rails. Some of these provide additional features to the normal parts of Ruby on Rails, others provide ways to turn alternative markup languages such as Markdown and Textile into HTML. Usually, if you can think it there's a gem out there that will help you do it.
+      </p><p id="ch01_85">
+        Noticing a common pattern yet? Probably. As you can see, Ruby on Rails (and the great community surrounding it) have provided code that performs the trivial application tasks for you, all the way from setting up the foundations of your application to handling the delivering of email. The time that all these libraries save you is immense! And because the code is open source, you don't have to go to a specific vendor to get support. Anybody who knows Ruby can help you if you're stuck.
+      </p><h3 id="ch01_87">1.1.2 Common Terms</h3><p id="ch01_88">
+         There are a few common Ruby on Rails terms you will hear quite a bit. This section explains what they mean and how they relate to a Rails application.
+       </p><h4>MVC</h4><p id="ch01_91">
+             <span class="indexterm">
+               <primary id="ch01_803">MVC</primary>
+             </span>
+             The <em>M</em>odel-<em>V</em>iew-<em>C</em>ontroller (<em>MVC</em>) paradigm is not unique to Ruby on Rails, but provides much of the core foundation for a Ruby on Rails application. This paradigm is designed to keep the logically different parts of the application separate, while providing a way for data to flow between them.
+           </p><p id="ch01_951">
+             In applications that don't use MVC, the directory structure and how the different parts connect to each other is commonly left up to the original developer. Generally, this is a bad idea as different people have differing opinions on where things should go. In Rails, there's a specific directory structure that makes all developers conform to the same layout, putting all the parts of the application inside a <span class="filename" id="ch01_952">app</span> directory as shown in Figure 1.x:
+           </p><div class="figure"><img src="ch01/app.jpg"><br><span class="title">Figure 1.1 The app directory</span></div><p id="ch01_959">
+             There's three main directories in this application, <span class="filename" id="ch01_960">models</span>, <span class="filename" id="ch01_961">controllers</span> and <span class="filename" id="ch01_962">views</span>.
+           </p><p id="ch01_96">
+             Models are where the <em>domain logic</em> -- how the records in your database are retrieved -- is kept. In the case of Rails applications, models define the code that interacts with the database's tables to retrieve and set information in them. Domain logic also means things such as validations or particular actions to perform on the data.
+           </p><p id="ch01_98">
+             Controllers interact with the models to gather information to send to the view. They do this by calling methods on the model classes which can return single objects representing rows in our database, or collections (arrays) of these objects. Controllers will then take these objects and make them available to the view through instance variables. 
+           </p><p id="ch01_99">
+             Views display the information gathered by the controller, by referencing the instance variables set there, in a user-friendly manner. In Ruby on Rails, this is done by default with a templating language known as <em>E</em>mbedded <em>R</em>u<em>b</em>y (<em>ERB</em>). ERB allows us to embed Ruby (hence the name) into any kind of file we wish. This template is then pre-processed on the server side into the output which is shown to the user.
+           </p><p id="ch01_963">
+             The <span class="filename" id="ch01_964">assets</span>, <span class="filename" id="ch01_965">helpers</span> and <span class="filename" id="ch01_966">mailers</span> directories aren't part of the MVC paradigm, but they are important parts of Rails.
+           </p><p id="ch01_967">
+             The <span class="filename" id="ch01_968">assets</span> directory is for the static assets of the application, such as JavaScript files, images and CSS for making the application look pretty. We look more in-depth at this in Chapter 3.
+           </p><p id="ch01_969">
+             The <span class="filename" id="ch01_970">helpers</span> directory is a place to put Ruby code (specifically, modules) that provide helper methods for just the views. These helper methods can help with complex formatting that would otherwise be messy in the view or is used in more than one place.
+           </p><p id="ch01_971">
+             Finally, <span class="filename" id="ch01_972">mailers</span> is a home for the classes of our application that deal with sending out email. In previous versions of Rails, these were grouped with models but have since been given their own home. We look at these in Chapter 11.
+           </p><h4>REST</h4><p id="ch01_106">
+               <span class="indexterm">
+                 <primary id="ch01_805">REST</primary>
+               </span>
+               MVC in Rails is aided by REST, a routing paradigm. <em>Re</em>presentational <em>S</em>tate <em>T</em>ransfer (<em>REST</em>) is the convention for <em>routing</em> in Rails. When something adheres to this convention it is said to be <em>RESTful</em>. Routing in Rails refers to how requests are routed within the application itself. We will benefit greatly by adhering to these conventions, as Rails provides a lot of functionality around RESTful routing for free, such as determining where a form can, or will, send to.
+             </p><h3 id="ch01_113">1.1.3 Rails in the wild</h3><p id="ch01_114">
+         A question sometimes asked by people new to Rails is: "Is Rails ready?" Of course! The evidence is stacked mightily in Rails' favor with websites such as Twitter, Yellow Pages and of course Basecamp serving millions and millions of page requests daily <a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_6" class="footnote"><sup>6</sup></a>.
+       </p><span class="footnote_container"><a name="footnote_6"></a><sup>6</sup> 
+<span class="footnote" id="ch01_115">Some of the more well-known applications that run on Ruby on Rails can be found at <a href="http://rubyonrails.org/applications" id="ch01_807">http://rubyonrails.org/applications</a>.</span>
+<br></span><p id="ch01_116">
+         If any site is a testament to the power of Ruby on Rails, Twitter would be it. Even though Twitter suffered from scaling problems back in 2008 (due to its massive growth, and other technological problems, <em>not</em> due to Rails) it is now the 11<sup id="ch01_118">th</sup> most popular website according to Alexa and is exceptionally stable.
+       </p><p id="ch01_119">
+         Another well-known site that runs Ruby on Rails is GitHub, a hosting service for Git repositories. This site was launched in February 2008 and is now the leading Git web-hosting site online. GitHub's massive growth was in part due to the Ruby on Rails community quickly adopting it as their de facto repository hosting site. Now GitHub is home to over a million repositories for just about every single programming language on the planet. It's not exclusive to programming languages either; if it can go in a Git repository it can go on GitHub. As a matter of fact, this book is kept on GitHub!
+       </p><p id="ch01_120">
+         Now that we've seen what other people have accomplished with this framework, let's dive into creating an application for ourselves.
+       </p><h2 id="ch01_122">1.2 Developing your first application</h2><p id="ch01_123">
+      We've covered the theory behind Rails, and showed how quickly and easily you can develop an application. Now it's your turn to get an application going. 
+    </p><h3 id="ch01_271">1.2.1 Installing Rails</h3><p id="ch01_272">
+        In order to do this though, you must have these three things installed:
+      </p><ul id="ch01_124">
+        <li id="ch01_125"><span class="listitem" id="ch01_126">Ruby</span></li>
+        <li id="ch01_127"><span class="listitem" id="ch01_128">RubyGems</span></li>
+        <li id="ch01_129"><span class="listitem" id="ch01_130">Rails</span></li>
+      </ul><p id="ch01_131">
+        If you're on a UNIX-based system (Linux or Mac) we recommend that you use RVM (http://rvm.beginrescueend.com) to install Ruby and Rubygems. It is the preferred solution of the community as it just works so simply. Installing from a package management system such as Ubuntu's Aptitude has been known to be broken<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_7" class="footnote"><sup>7</sup></a> After installing RVM you will need to run this command to install a 1.9.2 version of Ruby:
+      </p><span class="footnote_container"><a name="footnote_7"></a><sup>7</sup> 
+<span class="footnote" id="ch01_808">Broken Ubuntu Ruby explained here: <a href="http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you/" id="ch01_810">http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you/</a></span>
+<br></span><pre>rvm install 1.9.2</pre><p id="ch01_813">
+        To use this version of Ruby we would need to use the <span class="command" id="ch01_814">rvm use 1.9.2</span> every time we wished to use it, or set up an <span class="filename" id="ch01_815">.rvmrc</span> file in the root of our project, which is explained on the RVM site in great detail. Alternatively, we could set this version of Ruby as the default using <span class="command" id="ch01_816">rvm use --default 1.9.2</span>, using <span class="command" id="ch01_817">rvm use system</span> if we ever wanted to swap back to the system-provided Ruby install, if there is one.
+      </p><p id="ch01_818">
+        If you're on Windows, you will not be able to use RVM and you will not be able to use a 1.9.* version of Ruby, but that's ok. Rails 3 will still work with Ruby 1.8 versions of Rails too. The Ruby-lang site (http://ruby-lang.org) has a Ruby 1.8.7-p334 Binary which we recommend using or alternatively the Rails installer (http://railsinstaller.org) from Engine Yard is also good. 
+      </p><p id="ch01_139">
+         Next, we will need to install the rails gem. The following command will not only install Rails, but its dependencies too.
+      </p><pre>gem install rails --pre</pre><h3 id="ch01_274">1.2.2 Generating an application</h3><p id="ch01_142">
+        Now with Rails installed, to generate an application we run the <span class="command" id="ch01_143">rails</span> command and pass it the <span class="command" id="ch01_144">new</span> argument and the name of the application we want to generate: <em>things_i_bought</em>. When we run this command it will create a new directory called <code id="ch01_795">things_i_bought</code> which is where all our application's code will go. We can call our application anything we wish, but it can't be given the same name as a reserved word in Rails <a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_8" class="footnote"><sup>8</sup></a>. For example, we wouldn't call our application "rails" because this defines a Rails <em>constant</em> which is already defined internally to Rails itself, and the two constants will clash.
+      </p><span class="footnote_container"><a name="footnote_8"></a><sup>8</sup> 
+<span class="footnote" id="ch01_259">http://wiki.rubyonrails.org/rails/pages/reservedwords</span>
+<br></span><p id="ch01_109">
+        The application that we're going to generate will be an application where we'll be able to record purchases we have made. We can generate this application by using this command.
+      </p><pre>rails new things_i_bought</pre><p id="ch01_149">
+        The output from this command may seem a bit overwhelming at first, but rest assured: it's for our own good. All of the directories and files that were generated here provide the building blocks for our application and we'll get to know each of them as we progress. For now, let's just get rolling and learn by doing, which is the best way of learning.
+      </p><h3 id="ch01_276">1.2.3 Starting the application</h3><p id="ch01_150">
+        To get the server running we must first change into the newly created application's directory and then run these commands to start the application server:
+      </p><pre>cd things_i_bought
+bundle install --binstubs
+rails server</pre><p id="ch01_748">
+        The <span class="command" id="ch01_749">bundle install</span> command here will install all the gems required for our application, including the executable files for them in the <span class="filename" id="ch01_977">bin</span> directory for our application, which is what the <code id="ch01_978">--binstubs</code> option does. This is explained in further detail in Chapter 3.
+      </p><p id="ch01_153">
+        This will start up a web server on your local address on port 3000 using a Ruby standard library web server known as WEBrick. To connect to this server, go to <a href="http://localhost:3000/" id="ch01_154">http://localhost:3000</a> in your favorite browser. Now, we'll see the "Welcome aboard" page which is so famous to Rails.
+      </p><div class="figure"><img src="ch01/welcome_aboard.png"><br><span class="title">Figure 1.2 Welcome aboard!</span></div><p id="ch01_160">
+        If we click "About your application's environment" we'll be told things like our Ruby, RubyGems, Ruby on Rails, Rack versions, and other environmental data. One of the things to note here is that the output for "Environment" is "development". There are three environments Rails provides for running our application: development, test and production. How our application functions can be dependent of the environment it is running in. For example, in the development environment classes are not cached. This means that if we make a change to a class when running an application in development mode we do not need to restart the server, but the same change in the production environment means we would.
+      </p><h3 id="ch01_278">1.2.4 Scaffolding</h3><p id="ch01_161">
+        To get started with this Rails application we'll generate a <em>scaffold</em>. Scaffolds in Rails provide us with a lot of basic functionality, but are generally not used for full-scale development as we may want something more custom. If this was the case, we wouldn't use scaffolding and we'd build it ourselves. But this time we want to see what Rails can do, so let's generate a scaffold by running this command:
+      </p><pre>rails generate scaffold purchase name:string cost:float</pre><p id="ch01_282">
+        When we used the <span class="command" id="ch01_168">rails</span> command before, it generated an entire Rails application for us. We can use this command inside of an application to generate a specific part of the application for us. The way to do this is to pass the <span class="command" id="ch01_169">generate</span> argument to the <span class="command" id="ch01_750">rails</span> command, followed by what it is we want to generate. 
+      </p><p id="ch01_283">
+        The <span class="command" id="ch01_284">scaffold</span> command generates a model, controller and views for us based on the name passed after "scaffold" in this command. These are the three important parts we need for our purchase tracking. The model provides a way for us to interact with a database. The controller interacts with the model to retrieve and format its information and defines different actions to perform on this data. The views display the information from the controller in a neat format for us.
+      </p><p id="ch01_751">
+        Everything after the name for the scaffold are the fields for the database table, as well as the <em>attributes</em> for the objects of this scaffold. Here we tell Rails that the table for our purchase scaffold will contain a <code id="ch01_753">name</code> and <code id="ch01_754">cost</code> field which are a string and a float<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_9" class="footnote"><sup>9</sup></a> To create this table the scaffold generator generates what's known as a <em>migration</em>. Let's have a look at what migrations are right now.
+      </p><span class="footnote_container"><a name="footnote_9"></a><sup>9</sup> 
+<span class="footnote" id="ch01_755">Usually you wouldn't use a float for storing monetary amounts because it can lead to incorrect rounding errors. Generally, you would store the amount in cents as an integer and then do the conversion back to a full dollar amount. In this example we'll be using float as it's easier for us to not have to define the conversion at this moment.</span>
+<br></span><h3 id="ch01_289">1.2.5 Migrations</h3><p id="ch01_290">
+        Migrations are used in Rails as a form of version control for the database, providing a way to implement incremental changes to the schema of the database. Each migration is timestamped right down to the second which provides you (and anybody else developing the application with you) an accurate timeline of your database. When two developers are working on separate features of an application and both generate a new migration, this timestamp will stop them from clashing. Let's open the only file in <span class="filename" id="ch01_291">db/migrate</span> now and see what it does. Its contents are shown in Listing 1.x.
+      </p><div class="example" id="ch01_292">
+        <span class="title" id="ch01_293">db/migrate/[date]_create_purchases.rb</span>
+        <pre>class CreatePurchases &lt; ActiveRecord::Migration
+  def self.up
+    create_table :purchases do |t|
+      t.string :name
+      t.float :cost
+
+      t.timestamps
+    end
+  end
+
+  def self.down
+    drop_table :purchases
+  end
+end
+        </pre>
+      </div><p id="ch01_295">
+        Migrations are Ruby classes that inherit from <code id="ch01_296">ActiveRecord::Migration</code>. Inside the class, there are two class methods defined: <code id="ch01_298">up</code> and <code id="ch01_299">down</code>. Inside the <code id="ch01_300">up</code> method is the code we want to be run when we run the migration, and inside the <code id="ch01_301">down</code> method is the code that will run when we roll the migration back.
+      </p><p id="ch01_302">
+        Inside both of these methods we use database-agnostic commands to create and drop a table. In the <code id="ch01_303">up</code> method, we create a table and we specify the fields we want in that table by calling methods on the <code id="ch01_304">t</code> block variable. The <code id="ch01_305">string</code> and <code id="ch01_306">float</code> methods will create fields of those particular types on any database system that's compatible with Rails<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_10" class="footnote"><sup>10</sup></a>. We specified these fields when we used the <span class="command" id="ch01_308">scaffold</span> command. The <code id="ch01_309">timestamps</code> method is special; it creates two fields called <code id="ch01_310">created_at</code> and <code id="ch01_311">updated_at</code> which will have their values set when records are created and updated automatically by Rails.
+      </p><span class="footnote_container"><a name="footnote_10"></a><sup>10</sup> 
+<span class="footnote" id="ch01_307">So far: MySQL, PostgreSQL, SQLite3, Oracle, Frontbase and IBM DB</span>
+<br></span><p id="ch01_312">
+        To run the migration we type this command into the console:
+      </p><pre>bin/rake db:migrate</pre><p id="ch01_760">
+        This command will run the <code id="ch01_314">self.up</code> part of this migration. Because this is our first time running migrations in our Rails application, and because we're using an SQLite3 database, Rails will first create the database in a new file at <span class="filename" id="ch01_761">db/development.sqlite3</span> and then create the <code id="ch01_762">purchases</code> table inside that. When we run <code id="ch01_763">bin/rake db:migrate</code> it doesn't just run the <code id="ch01_764">self.up</code> method from the latest migration, but runs any migration that hasn't yet been run allowing you to run multiple migrations sequentially.
+      </p><p id="ch01_765">
+        Our application is, by default, already set up to talk to this new database so we don't need to change anything to make it to do that. If we ever wanted to roll this migration back we would use <span class="command" id="ch01_317">bin/rake db:rollback</span>, which rolls back the latest migration by running the <code id="ch01_766">self.down</code> method of the migration.<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_11" class="footnote"><sup>11</sup></a> command which would roll back the latest 3 migrations.
+      </p><span class="footnote_container"><a name="footnote_11"></a><sup>11</sup> 
+<span class="footnote" id="ch01_767">If we wanted to rollback more than one migration we would use the <span class="command" id="ch01_769">bin/rake db:rollback STEP=3</span> command which would roll back the latest 3 migrations.</span>
+<br></span><p id="ch01_770">
+        Rails will keep track of the last migration that was ran by storing it using this line in the <span class="filename" id="ch01_771">db/schema.rb</span> file:
+      </p><pre>ActiveRecord::Schema.define(:version =&gt; [timestamp]) do</pre><p id="ch01_774">
+        This version should match the prefix of the migration that we just created<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_12" class="footnote"><sup>12</sup></a>, and Rails will use this value to know what migration it's up to. The remaining content of this file shows us the combined state of all the migrations up to this point. This file can be used to restore the last-known state of our database if we run the <span class="command" id="ch01_779">bin/rake db:schema:load</span> command.
+      </p><span class="footnote_container"><a name="footnote_12"></a><sup>12</sup> 
+<span class="footnote" id="ch01_775">where <code id="ch01_777">[timestamp]</code> in the above example is an actual timestamp formatted like <code id="ch01_778">YYYYmmddHHMMSS</code></span>
+<br></span><p id="ch01_780">
+        With our database set up with a <code id="ch01_781">purchases</code> table in it, let's look at how we can add rows to it through our application
+      </p><h3 id="ch01_319">1.2.6 Viewing &amp; creating purchases</h3><p id="ch01_320">
+        Let's start our browser now and go to http://localhost:3000/purchases. We will see the scaffolded screen for purchases, like what's shown in Listing 1.x.
+      </p><div class="figure"><img src="ch01/purchases.png"><br><span class="title">Figure 1.3 Purchases</span></div><p id="ch01_326">
+        At the moment we don't have any purchases listed, so let's add a new purchase by clicking "New Purchase".
+      </p><p id="ch01_327">
+      
+       Here we see two inputs for the fields we generated.
+      </p><div class="figure"><img src="ch01/new_purchase.png"><br><span class="title">Figure 1.4 A new purchase</span></div><p id="ch01_333">
+        This page is the result of <code id="ch01_334">new</code> action from the <classname id="ch01_782">PurchasesController</classname> controller. What we see on the page comes from the view located at <span class="filename" id="ch01_335">app/views/purchases/new.html.erb</span> and it looks like Listing 1.x.
+      </p><div class="example" id="ch01_336">
+        <span class="title" id="ch01_337"></span>
+        <pre>&lt;h1&gt;New purchase&lt;/h1&gt;
+
+&lt;%= render 'form' %&gt;
+
+&lt;%= link_to 'Back', purchases_path %&gt;
+        </pre>
+      </div><p id="ch01_339">
+        This is an ERB (Embedded Ruby) file. These files allow you to mix HTML and Ruby code to generate dynamic pages. The <code id="ch01_340">&lt;%=</code> beginning of an ERB tag indicates that the result of the code inside the tag will be output to the page. If we only wanted the code to be evaluated and not output, we would use the <code id="ch01_341">&lt;%</code> tag, like this:
+      </p><pre>&lt;% some_variable = "foo" %&gt;</pre><p id="ch01_743">
+        If we were to use &lt;%= some_variable = "foo" %&gt; here, the <code id="ch01_840">some_variable</code> variale would be set and the value output to the screen. By using <code id="ch01_841">&lt;%</code>, the Ruby code is evaluated but not output.
+      </p><p id="ch01_342">
+         The <code id="ch01_343">render</code> method here when passed a string -- such as in this example -- will render a <em>partial</em>, while the <code id="ch01_842">link_to</code> method will generate a link with the text of the first argument "Back" and with a <code id="ch01_843">href</code> attribute specified by the second argument (<code id="ch01_844">purchases_path</code>), which will be simply <code id="ch01_845">/purchases</code>.
+         <span class="indexterm">
+           <primary id="ch01_847">link_to</primary>
+         </span>
+         <span class="indexterm">
+           <primary id="ch01_849">render, partial</primary>
+         </span>
+      </p><p id="ch01_850">
+        This particular partial is at <span class="filename" id="ch01_345">app/views/purchases/_form.html.erb</span> and the first half of it looks like Listing 1.x.
+      </p><div class="example" id="ch01_346">
+        <span class="title" id="ch01_347">app/views/purchases/_form.html.erb</span>
+        <pre>&lt;%= form_for(@purchase) do |f| %&gt;
+  &lt;% if @purchase.errors.any? %&gt;
+    &lt;div id="error_explanation"&gt;
+      &lt;h2&gt;&lt;%= pluralize(@purchase.errors.count, "error") %&gt; prohibited this 
+        purchase from being saved:&lt;/h2&gt;
+
+      &lt;ul&gt;
+      &lt;% @purchase.errors.full_messages.each do |msg| %&gt;
+        &lt;li&gt;&lt;%= msg %&gt;&lt;/li&gt;
+      &lt;% end %&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;% end %&gt;
+        </pre>
+      </div><p id="ch01_349">
+        This half is responsible for defining the form by using the <code id="ch01_350">form_for</code><span class="indexterm">
+          <primary id="ch01_853">form_for</primary></span>helper. The <code id="ch01_744">form_for</code> method is passed one argument -- an instance variable called <code id="ch01_351">@purchase</code> -- and with <code id="ch01_352">@purchase</code> it generates a form. This variable comes from the <code id="ch01_353">PurchasesController</code>'s <code id="ch01_354">new</code> action which is shown in Listing 1.x.
+      </p><div class="example" id="ch01_355">
+        <span class="title" id="ch01_356">app/controllers/purchases_controller.rb</span>
+        <pre>def new
+  @purchase = Purchase.new
+
+  respond_to do |format|
+    format.html # new.html.erb
+    format.xml  { render :xml =&gt; @purchase }
+  end
+end
+        </pre>
+      </div><p id="ch01_358">
+        The first line in this action sets up a new <code id="ch01_855">@purchase</code> variable by calling the <code id="ch01_856">new</code> method on the <classname id="ch01_857">Product</classname> model, which initializes a new object of this model.<span class="indexterm"><primary id="ch01_859">new, ActiveRecord::Base</primary></span> The variable is then passed through to the view automatically by Rails.
+      </p><p id="ch01_361">
+        Next, in the controller there is the <code id="ch01_362">respond_to</code> <span class="indexterm"><primary id="ch01_861">respond_to</primary></span> method which defines what formats this action responds to. Here, our controller responds to the <code id="ch01_363">html</code> and <code id="ch01_364">xml</code> formats. The <code id="ch01_365">html</code> method here isn't given a block and so will render the template from <span class="filename" id="ch01_366">app/views/purchases/new.html.erb</span>, whereas the <code id="ch01_367">xml</code> method which is given a block, will execute the code inside the block and return an XML version of the <code id="ch01_368">@purchase</code> object. We'll be looking at what the <code id="ch01_783">html</code> response does from here on in as that is the default format requested.
+      </p><p id="ch01_369">
+        So far, all of this functionality is provided by Rails. We've coded nothing ourselves. With the <span class="command" id="ch01_370">scaffold</span> generator we get an awful lot for free.
+      </p><p id="ch01_371">
+        Going back to the view, the block for the <code id="ch01_862">form_for</code> is defined in between its <code id="ch01_372">do</code> and the <code id="ch01_373">&lt;% end %&gt;</code> at the end of the file. Inside this block, we check the <code id="ch01_374">@purchase</code> object for any errors by using the <code id="ch01_863">@purchase.errors.any?</code><span class="indexterm">
+          <primary id="ch01_865">errors, ActiveRecord::Base</primary>
+        </span> method. These errors will come from the model if the object did not pass the validation requirements set in the model. If there are any errors, they would be rendered by the content inside this <code id="ch01_866">if</code> statement. Validation is a concept we'll cover shortly.
+      </p><p id="ch01_376">
+        The second half of this partial looks like Listing 1.x.
+      </p><div class="example" id="ch01_377">
+        <span class="title" id="ch01_378">app/views/purchases/_form.html.erb</span>
+        <pre>  &lt;div class="field"&gt;
+    &lt;%= f.label :name %&gt;&lt;br /&gt;
+    &lt;%= f.text_field :name %&gt;
+  &lt;/div&gt;
+  &lt;div class="field"&gt;
+    &lt;%= f.label :cost %&gt;&lt;br /&gt;
+    &lt;%= f.text_field :cost %&gt;
+  &lt;/div&gt;
+  &lt;div class="actions"&gt;
+    &lt;%= f.submit %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+        </pre>
+      </div><p id="ch01_380">
+        Here, the <code id="ch01_381">f</code> object from the <code id="ch01_382">form_for</code> block is used to define labels and fields for our form. At the end of this partial, the <code id="ch01_383">submit</code> method provides us with a dynamic submit button.
+      </p><p id="ch01_384">
+        Let's fill in this form now and press the submit button. We should now see something similar to Figure 1.x.
+      </p><div class="figure"><img src="ch01/show_purchase.png"><br><span class="title">Figure 1.5 Our first purchase</span></div><p id="ch01_390">
+        What we are seeing here is the result of our posting; a successful creation of a <classname id="ch01_391">Purchase</classname>. Let's see how it got there. This submit button posts the data from the form to the <code id="ch01_392">create</code> action which looks like Listing 1.x.
+      </p><div class="example" id="ch01_393">
+        <span class="title" id="ch01_394">app/controllers/purchases_controller.rb</span>
+        <pre>def create
+  @purchase = Purchase.new(params[:purchase])
+
+  respond_to do |format|
+    if @purchase.save
+      format.html { redirect_to(@purchase, :notice =&gt; 'Purchase was successfully created.') }
+      format.xml  { render :xml =&gt; @purchase, :status =&gt; :created, :location =&gt; @purchase }
+    else
+      format.html { render :action =&gt; "new" }
+      format.xml  { render :xml =&gt; @purchase.errors, :status =&gt; :unprocessable_entity }
+    end
+  end
+end
+        </pre>
+      </div><p id="ch01_396">
+        Here, we use the <code id="ch01_397">Purchase.new</code> we first saw used in the <code id="ch01_398">new</code> action. But, this time we pass it an argument of <code id="ch01_399">params[:purchase]</code>. <code id="ch01_400">params</code><span class="indexterm"><primary id="ch01_870">params</primary></span> (short for "parameters") is a method which returns the parameters sent from our form in a <classname id="ch01_740">Hash</classname>-like object. By passing in this params hash into <code id="ch01_405">new</code>, Rails will set the <em>attributes</em><a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_13" class="footnote"><sup>13</sup></a> to the values from the form. 
+      </p><span class="footnote_container"><a name="footnote_13"></a><sup>13</sup> 
+<span class="footnote" id="ch01_407">The Rails word for "fields"</span>
+<br></span><p id="ch01_408">
+        Inside the <code id="ch01_409">respond_to</code> there's an <code id="ch01_410">if</code> statement which calls <code id="ch01_411">@purchase.save</code><span class="indexterm"><primary id="ch01_872">save, ActiveRecord::Base</primary></span>. This method will <em>validate</em> the record, and if it's valid, then it will save the record to the database and return <code id="ch01_414">true</code>.
+      </p><p id="ch01_873">
+        If this is the case, then the action will respond by redirecting to the new <code id="ch01_415">@purchase</code> object by using the <code id="ch01_416">redirect_to</code> <span class="indexterm"><primary id="ch01_875">redirect_to</primary></span> method which takes either a path or an object which it'll turn into a path (as seen in this example). The <code id="ch01_417">redirect_to</code> method interprets what the <code id="ch01_418">@purchase</code> object is and will determine the path required is <code id="ch01_876">purchase_path</code> because it's an object of the <classname id="ch01_877">Purchase</classname> model. This path will take us to the <code id="ch01_419">show</code> action for this controller. The <code id="ch01_420">:notice</code> option passed to the <code id="ch01_878">redirect_to</code> sets up a <em>flash message</em>.<span class="indexterm">
+          <primary id="ch01_880">redirect_to, :notice option</primary>
+        </span> A flash message is a message that can be displayed on the next request. This is the green text at the top of the previous figure, Figure 1.x.
+      </p><p id="ch01_422">
+        So, we've seen what happens when the purchase is valid, but what happens when it's invalid? Well, it uses the <code id="ch01_571">render</code> method to show us the <code id="ch01_572">new</code> action's template again. We should note here that this doesn't call the <code id="ch01_573">new</code> action / method again<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_14" class="footnote"><sup>14</sup></a> but rather only renders the template.
+      </p><span class="footnote_container"><a name="footnote_14"></a><sup>14</sup> 
+<span class="footnote" id="ch01_574">To do that, we'd call <code id="ch01_575">redirect_to new_purchase_path</code>, but that wouldn't persist the state of the <code id="ch01_784">@purchase</code> object to this new request without some seriously bad hackery. By re-rendering the template, we can display information about the object if the object is invalid.</span>
+<br></span><p id="ch01_576">
+        We can make the creation of the <code id="ch01_577">@purchase</code> object fail by adding a validation. Let's do that now.
+      </p><h3 id="ch01_424">1.2.7 Validations</h3><p id="ch01_425">
+        We can add validations to our model to ensure that the data conforms to certain rules, or, that data for a certain field has to be present, or a number we enter has to be above a certain other number. We're going to write our first code for this application and implement both of these things now.
+      </p><p id="ch01_426">
+        Let's open up our <classname id="ch01_427">Purchase</classname> model and change the whole file to what's shown in Listing 1.x.
+      </p><div class="example" id="ch01_428">
+        <span class="title" id="ch01_429">app/models/purchase.rb</span>
+        <pre>class Purchase &lt; ActiveRecord::Base
+  validates_presence_of :name
+  validates_numericality_of :cost, :greater_than =&gt; 0
+end
+        </pre>
+      </div><p id="ch01_431">
+        Here we use the <code id="ch01_432">validates_presence_of</code><span class="indexterm"><primary id="ch01_883">validates_presence_of</primary></span>method to define a validation that does what it says on the box: validates that the field has a value. The other validation method, <code id="ch01_884">validates_numericality_of</code><span class="indexterm"><primary id="ch01_886">validates_numericality_of</primary></span> we are using does more than what it initially claims: it validates that the <code id="ch01_667">cost</code> attribute is a number and that it is greater than 0.
+      </p><p id="ch01_438">
+        Let's test out these validations by going back to http://localhost:3000/purchases, clicking "New Purchase" and clicking "Create Purchase" right away. We should see the errors, as shown in Figure 1.x.
+      </p><div class="figure"><img src="ch01/purchase_errors.png"><br><span class="title">Figure 1.6 Errors on purchase</span></div><p id="ch01_444">
+        Great! Here, we're told that name can't be blank and that the value we entered for cost isn't a number. Let's see what happens now if we enter <code id="ch01_445">foo</code> for the name field, <code id="ch01_446">-100</code> for the cost fields, and press "Create Purchase". We should get a different error for the cost field now, as shown in Figure 1.x.
+      </p><div class="figure"><img src="ch01/purchase_errors_2.png"><br><span class="title">Figure 1.7 Cost must be greater than 0</span></div><p id="ch01_452">
+        Good to see! Both of our validations are working now. When we change cost to <code id="ch01_453">100</code> and press "Create Purchase" then it should be considered valid by the validations and take us to the <code id="ch01_454">show</code> action. Let's look at what this particular action does now.
+      </p><h3 id="ch01_456">1.2.8 Showing off</h3><p id="ch01_457">
+        So, we've seen that this action displays the content such as shown in Figure 1.x.
+      </p><div class="figure"><img src="ch01/purchases_show_with_url.png"><br><span class="title">Figure 1.8 A single purchase</span></div><p id="ch01_463">
+        The number at the end of the URL here is the unique numerical id for this particular purchase. But what does this mean? Let's look at the view for this <code id="ch01_464">show</code> action now, as shown in Listing 1.x.
+      </p><div class="example" id="ch01_465">
+        <span class="title" id="ch01_466">app/views/purchases/show.html.erb</span>
+        <pre>&lt;p id="notice"&gt;&lt;%= notice %&gt;&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;b&gt;Name:&lt;/b&gt;
+  &lt;%= @purchase.name %&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;b&gt;Cost:&lt;/b&gt;
+  &lt;%= @purchase.cost %&gt;
+&lt;/p&gt;
+
+
+&lt;%= link_to 'Edit', edit_purchase_path(@purchase) %&gt; |
+&lt;%= link_to 'Back', purchases_path %&gt;
+        </pre>
+      </div><p id="ch01_468">
+        On the first line there's the <code id="ch01_469">notice</code><span class="indexterm"><primary id="ch01_889">notice</primary></span> method which will display the <code id="ch01_470">notice</code> set on the <code id="ch01_471">redirect_to</code> from the <code id="ch01_472">create</code> action. After that, value for our fields are displayed in <code id="ch01_473">p</code> tags by simply calling them as methods on our <code id="ch01_474">@purchase</code> object. This object is defined in our <classname id="ch01_475">PurchasesController</classname>'s <code id="ch01_476">show</code> action, as shown in Listing 1.x.
+      </p><div class="example" id="ch01_477">
+        <span class="title" id="ch01_478">app/controllers/purchases_controller.rb</span>
+        <pre>def show
+  @purchase = Purchase.find(params[:id])
+
+  ...
+end
+        </pre>
+      </div><p id="ch01_480">
+        Here, the <code id="ch01_481">find</code><span class="indexterm">
+          <primary id="ch01_892">find, ActiveRecord::Base</primary></span> method of the <classname id="ch01_482">Purchase</classname> class is used to find the record with the id of <code id="ch01_578">params[:id]</code> and instantiate a new <classname id="ch01_579">Purchase</classname> object from it with <code id="ch01_580">params[:id]</code> as the number on the end of the URL.
+      </p><p id="ch01_484">
+        Going back to the view (<span class="filename" id="ch01_485">app/views/purchases/show.html.erb</span>) now and at the end of this file there is <code id="ch01_486">link_to</code> which will generate a link, using the first argument as the text for it and the second argument as the <code id="ch01_487">href</code> for that URL. The second argument for <code id="ch01_488">link_to</code> is a method itself: <code id="ch01_489">edit_purchase_path</code>. This method is provided by a method call in <span class="filename" id="ch01_490">config/routes.rb</span>, which we'll now look at.
+      </p><h3 id="ch01_492">1.2.9 Routing</h3><p id="ch01_493">
+        The <span class="filename" id="ch01_494">config/routes.rb</span> file of every Rails application is where the application routes are defined in a succint Ruby syntax. The methods used in this file define the pathways from requests to controllers. If we look in our <span class="filename" id="ch01_495">config/routes.rb</span> while ignoring the commented out lines for now, we'll see what's shown in Listing 1.x.<span class="indexterm">
+          <primary id="ch01_894">config/routes.rb</primary>
+        </span>
+      </p><div class="example" id="ch01_496">
+        <span class="title" id="ch01_497">config/routes.rb</span>
+        <pre>ThingsIBought::Application.routes.draw do
+  resources :purchases
+end
+        </pre>
+      </div><p id="ch01_499">
+        Inside the block for the <code id="ch01_500">draw</code> method, there's the <code id="ch01_501">resources</code> method. Collections of similar objects in Rails are referred to as <em>resources</em>. This method defines the routes and routing helpers (such as the <code id="ch01_503">edit_purchase_path</code> method) to our purchases resources for us. Look at Table 1.x for a list of the helpers and the routes they correspond to.
+      </p><div id="ch01_504" class="table">
+<span class="title">Routing helpers and their routes </span><table>
+        
+        
+          <thead id="ch01_507">
+          <tr id="ch01_508">
+            <td id="ch01_509"><p id="ch01_510">Helper</p></td>
+            <td id="ch01_511"><p id="ch01_512">Route</p></td>
+          </tr>
+          </thead>
+          <tbody id="ch01_513">
+          <tr id="ch01_514">
+            <td id="ch01_515"><p id="ch01_516"><code id="ch01_517">purchases_path</code></p></td>
+            <td id="ch01_518"><p id="ch01_519"><code id="ch01_520">/purchases</code></p></td>
+          </tr>
+
+          <tr id="ch01_521">
+            <td id="ch01_522"><p id="ch01_523"><code id="ch01_524">new_purchase_path</code></p></td>
+            <td id="ch01_525"><p id="ch01_526"><code id="ch01_527">/purchases/new</code></p></td>
+          </tr>
+
+          <tr id="ch01_528">
+            <td id="ch01_529"><p id="ch01_530"><code id="ch01_531">edit_purchase_path</code></p></td>
+            <td id="ch01_532"><p id="ch01_533"><code id="ch01_534">/purchases/:id/edit</code></p></td>
+          </tr>
+
+          <tr id="ch01_535">
+            <td id="ch01_536"><p id="ch01_537"><code id="ch01_538">purchase_path</code></p></td>
+            <td id="ch01_539"><p id="ch01_540"><code id="ch01_541">/purchases/:id</code></p></td>
+          </tr>
+          </tbody>
+        
+      </table>
+</div><p id="ch01_542">
+        In the above table, where there's <code id="ch01_543">:id</code> it can be substituted for the id of a record. Each routing helper has an alternative version which will give you the full URL to the resource. Simply use the <code id="ch01_668">_url</code> extension rather than <code id="ch01_669">_path</code> and you'll get a URL such as <code id="ch01_670">http://localhost:3000/purchases</code> for <code id="ch01_671">purchases_url</code>. 
+      </p><p id="ch01_544">
+        From this table, two of these routes will act differently depending on how they're requested. The first route, <code id="ch01_545">/purchases</code> will take us to the <code id="ch01_546">index</code> action of <classname id="ch01_547">PurchasesController</classname> if we do a GET request. GET requests are the standard type of requests for web browsers, and this is the first request we did to this application. However, if we do a POST request to this route it will go to the <code id="ch01_548">create</code> action of the controller. This is the case when we submit the form from the <code id="ch01_549">new</code> view. Let's go to <code id="ch01_550">http://localhost:3000/purchases/new</code> now and look at the source of the page. We should see the beginning tag for our form looking like Listing 1.x.
+      </p><div class="example" id="ch01_551">
+        <span class="title" id="ch01_552">The HTML source of app/views/purchases/new.html.erb</span>
+        <pre>&lt;form action="/purchases" class="new_purchase" id="new_purchase" method="post"&gt;
+        </pre>
+      </div><p id="ch01_554">
+        The two attributes to take note of here are the <code id="ch01_555">action</code> and <code id="ch01_556">method</code> attributes. The <code id="ch01_557">action</code> dictates the route to where this form goes and the <code id="ch01_558">method</code> tells the form what kind of HTTP request to make. 
+      </p><p id="ch01_559">
+        How'd this tag get rendered in the first place? Well, as we saw before, the <span class="filename" id="ch01_560">app/views/purchases/new.html.erb</span> template uses the form partial<span class="indexterm">
+          <primary id="ch01_904">form_partial</primary></span> from <span class="filename" id="ch01_561">app/views/purchases/_form.html.erb</span> which contains this as the first line:
+      </p><pre>&lt;%= form_for(@purchase) do |f| %&gt;</pre><p id="ch01_564">
+        It's this one simple line that will generate that form tag. When we look at the <code id="ch01_565">edit</code> action shortly we'll see that the output of this tag is different, and we'll see why. 
+      </p><p id="ch01_566">
+        The other route that will respond differently is the <code id="ch01_567">/purchases/{id}</code> route which acts in one of three ways. The first of these three ways we've seen: it's the <code id="ch01_568">show</code> action which we're redirected to (a GET request) after we create a purchase. The second of the three ways is when we edit  update a record, which we'll look at now.
+      </p><h3 id="ch01_570">1.2.10 Updating</h3><p id="ch01_581">
+        Let's change the cost of our "foo" purchase now. Perhaps it only cost 10. To do this, let's go back to http://localhost:3000/purchases and click on the "Edit" link next to our foo record. We should now see a page that looks similar to the <code id="ch01_582">new</code> page, shown in Figure 1.x.
+      </p><div class="figure"><img src="ch01/purchases_edit.png"><br><span class="title">Figure 1.9 Editing a purchase</span></div><p id="ch01_588">
+        The reason this page looks similar is because it re-uses the partial we used in the <code id="ch01_589">new</code> action. Such is the power of partials, that we're able to use the same code for two different requests to our application. The template for this action can be seen in Listing 1.x.
+      </p><div class="example" id="ch01_590">
+        <span class="title" id="ch01_591">app/views/purchases/edit.html.erb</span>
+        <pre>&lt;h1&gt;Editing purchase&lt;/h1&gt;
+
+&lt;%= render 'form' %&gt;
+
+&lt;%= link_to 'Show', @purchase %&gt; |
+&lt;%= link_to 'Back', purchases_path %&gt;
+        </pre>
+      </div><p id="ch01_593">
+        However for this action we're working with a pre-existing object, rather than a new object, which we used in <code id="ch01_594">new</code>. This pre-existing object is found by the <code id="ch01_595">edit</code> action in <classname id="ch01_596">PurchasesController</classname>, shown in Listing 1.x.
+      </p><div class="example" id="ch01_597">
+        <span class="title" id="ch01_598">app/controllers/purchases_controller.rb</span>
+        <pre># GET /purchases/1/edit
+def edit
+  @purchase = Purchase.find(params[:id])
+  ...
+end
+        </pre>
+      </div><p id="ch01_600">
+        The code to find the <code id="ch01_601">@purchase</code> object here is identical to what we've seen before in the <code id="ch01_602">show</code> action.
+      </p><p id="ch01_908">
+        Back in the view for a moment, at the bottom of it we can see two uses of <code id="ch01_909">link_to</code>. The first creates a "Show" link, linking to the <code id="ch01_910">@purchase</code> object which is set up in the <code id="ch01_911">edit</code> action of our controller. Clicking this link would take us to <code id="ch01_912">purchase_path(@purchase)</code> or <a href="http://localhost:3000/purchases/:id" id="ch01_913">/purchases/:id</a>. Rails will figure out where the link needs to go based on the class of the object. Using this syntax, it will attempt to call the <code id="ch01_914">purchase_path</code> method because the object has a class of <classname id="ch01_915">Purchase</classname> and will pass the object along to that call, generating the URL.<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_15" class="footnote"><sup>15</sup></a>
+      </p><span class="footnote_container"><a name="footnote_15"></a><sup>15</sup> 
+<span class="footnote" id="ch01_916">This syntax is exceptionally handy if we've got an object that we're not sure of the type but still want to generate a link for it. For example, if we had a different kind of object called "Order" and this was used instead, it would use <code id="ch01_918">order_path</code> rather than <code id="ch01_919">purchase_path</code>.</span>
+<br></span><div class="note" id="ch01_920">
+        <span class="title">In the beginning...</span>
+        <p id="ch01_922">
+          </p><div class="internalnote" id="ch01_923" style="display:none">Sidebar-ize</div>
+          In really early versions of Rails, we had to generate links like this:
+        <p></p>
+      
+        <p id="ch01_924">
+          </p><div class="informalexample" id="ch01_925">
+            <pre>link_to "Back", { :controller =&gt; "purchases", 
+                  :action =&gt; "show",
+                  :id =&gt; @purchase.id }
+            </pre>
+          </div>
+        <p></p>
+        
+        <p id="ch01_927">
+          This hash would then be interpreted and matched to a route, like <a href="http://localhost:3000/purchases/1" id="ch01_928">/purchases/1</a>. We can still use it today in Rails 3 if we wish, but it's not best practice. A little shorter:
+        </p>
+      
+        <p id="ch01_929">
+          </p><div class="informalexample" id="ch01_930">
+            <pre>link_to "Back", "/purchases/#{@purchase.id}"
+            </pre>
+          </div>
+        <p></p>
+        
+        <p id="ch01_932">
+          These days, this is best:
+        </p>
+        
+        <p id="ch01_933">
+          </p><div class="informalexample" id="ch01_934">
+            <pre>link_to "Back", @purchase
+            </pre>
+          </div>
+        <p></p>
+        
+        <p id="ch01_936">
+          By using the routing helpers introduced in Rails 2 and still available in Rails 3.1, we are able to have much shorter <code id="ch01_937">link_to</code> calls in our application increasing the readability of the code throughout.
+        </p>
+      </div><p id="ch01_938">
+        The second use of <code id="ch01_939">link_to</code> in this view generates a "Back" link which uses the routing helper <code id="ch01_940">purchases_path</code>. It cannot use an object here because it doesn't make sense to, calling <code id="ch01_941">purchases_path</code> is the easy way to go back to the index action here.
+      </p><p id="ch01_603">
+        Let's try filling in this form now, for example changing our cost from 100 to 10, and pressing "Update Purchase". We will now see the <code id="ch01_604">show</code> page, but with a different message, shown in Figure 1.x.
+      </p><div class="figure"><img src="ch01/updated_purchase.png"><br><span class="title">Figure 1.10 Viewing an updated purchase</span></div><p id="ch01_610">
+         So we pressed "Update Purchase" and we wound up back at the <code id="ch01_611">show</code> page. How did this happen? Well, let's press the back button on our browser and view the source of this page, specifically the <code id="ch01_612">form</code> tag and the tags directly underneath, shown in Listing 1.x.
+       </p><div class="example" id="ch01_613">
+         <span class="title" id="ch01_614">The HTML source of app/views/purchases/edit.html.erb</span>
+         <pre>form action="/purchases/2" class="edit_purchase" id="edit_purchase_2" method="post"
+   div style="margin:0;padding:0;display:inline"
+     input name="_method" type="hidden" value="put" / 
+   /div
+  ...
+         </pre>
+         <calloutlist id="ch01_745">
+           <callout arearefs="ch01_615_1 ch01_615_1a" id="ch01_746">The method input tag</callout>
+         </calloutlist>
+       </div><p id="ch01_616">
+         This <code id="ch01_617">form</code>'s <code id="ch01_618">action</code> points at <code id="ch01_619">/purchases/2</code> which we know to be the route to the <code id="ch01_620">show</code> action in <classname id="ch01_621">PurchasesController</classname>. However, we should also take note of two other things. The <code id="ch01_622">method</code> attribute of this form is a <code id="ch01_623">post</code>, but there's also the <code id="ch01_624">input</code> tag underneath.
+         
+       </p><p id="ch01_625">
+          The <code id="ch01_747">input</code> tag here  passes through the <code id="ch01_626">_method</code> parameter with the value set to "put". Rails catches this parameter and turns this request from a POST, into a PUT. This is the second (of three)  way which the <code id="ch01_627">/purchases/{id}</code> responds based on the method. By making a PUT request to this route we're taken to the <code id="ch01_628">update</code> action in <classname id="ch01_629">PurchasesController</classname>. Let's take a look at this now, it's shown in Listing 1.x.
+       </p><div class="example" id="ch01_630">
+         <span class="title" id="ch01_631">app/controllers/purchases_controller.rb</span>
+         <pre>def update
+  @purchase = Purchase.find(params[:id])
+
+  respond_to do |format|
+    if @purchase.update_attributes(params[:purchase])
+      format.html { redirect_to(@purchase, 
+                       :notice =&gt; 'Purchase was successfully updated.') }
+      format.xml  { head :ok }
+    else
+      format.html { render :action =&gt; "edit" }
+      format.xml  { render :xml =&gt; @purchase.errors, 
+                           :status =&gt; :unprocessable_entity }
+    end
+  end
+end
+         </pre>
+       </div><p id="ch01_633">
+         Just like in the <code id="ch01_634">show</code> and <code id="ch01_635">edit</code> actions, we fetch the object first by using the <code id="ch01_636">find</code> method. The parameters from the form are sent through in the same fashion as they were in the <code id="ch01_637">create</code> action -- coming through as <code id="ch01_638">params[:purchase]</code>. Rather than instantiating a new object by using the <code id="ch01_639">new</code> class method, we use <code id="ch01_640">update_attributes</code><span class="indexterm">
+           <primary id="ch01_945">update_attributes, ActiveRecord::Base</primary></span> on the <code id="ch01_641">@purchase</code> object. This will do what it says on the tin: update the attributes. What it doesn't say on the tin though is that it'll validate the attributes and then if it's valid, save the record and return <code id="ch01_642">true</code>. If it's not valid, then it'll return <code id="ch01_643">false</code>.
+       </p><p id="ch01_644">
+         When <code id="ch01_645">update_attributes</code> returns <code id="ch01_646">true</code> we're redirected back to the <code id="ch01_647">show</code> action for this particular purchase by using <code id="ch01_648">redirect_to</code>.
+        </p><p id="ch01_649">
+          If it returns <code id="ch01_650">false</code> then we're shown the <code id="ch01_651">edit</code> action's template again, just like back in the <code id="ch01_652">create</code> action where we were shown the <code id="ch01_653">new</code> template again. This works in the same fashion and will display errors if we enter something wrong. Let's try editing a purchase and setting the name to blank and then pressing "Update Purchase". It should error exactly like the <code id="ch01_654">create</code> method did, as shown in Figure 1.x.
+       </p><div class="figure"><img src="ch01/update_purchase_fail.png"><br><span class="title">Figure 1.11 Update fails!</span></div><p id="ch01_660">
+         As we can see by this example, the validations we've defined in our <classname id="ch01_661">Purchase</classname> model take effect for both the creation and updating of records automatically.
+       </p><p id="ch01_662">
+         Now what would happen if you wanted to rather than update a purchase, to delete it? Well, that's built-in to the scaffold too.
+       </p><h3 id="ch01_664">1.2.11 Deleting</h3><p id="ch01_665">
+        In Rails, delete is given a much more forceful name of "destroy". This is another sensible name because to destroy a record is to "put an end to the existence of"<a href="http://localhost:3000/books/rails-3-in-action/chapters/1#footnote_16" class="footnote"><sup>16</sup></a>. Once this record's gone, it's gone baby, gone.
+      </p><span class="footnote_container"><a name="footnote_16"></a><sup>16</sup> 
+<span class="footnote" id="ch01_672">Mac OS X dictionary</span>
+<br></span><p id="ch01_673">
+        We can destroy a record by going to http://localhost:3000/purchases and clicking the "Destroy" link shown in Listing 1.x and then clicking "OK" on the confirmation box that pops up.
+      </p><div class="figure"><img src="ch01/purchase_destroy.png"><br><span class="title">Figure 1.12 Destroy!</span></div><p id="ch01_679">
+        When that record's destroyed we're taken back to the "Listing purchases" page. We'll see that the record no longer exists. We should now only have one record as shown in Figure 1.x.
+      </p><div class="figure"><img src="ch01/purchase_listing.png"><br><span class="title">Figure 1.13 Last record standing</span></div><p id="ch01_685">
+        So how does all of this work? Let's look at the <code id="ch01_686">index</code> template to understand, specifically the part that's used to list the purchases. It's shown in Listing 1.x.
+      </p><div class="example" id="ch01_687">
+        <span class="title" id="ch01_688">app/views/purchases/index.html.erb</span>
+        <pre>
+
+&lt;% @purchases.each do |purchase| %&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;%= purchase.name %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= purchase.cost %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= link_to 'Show', purchase %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= link_to 'Edit', edit_purchase_path(purchase) %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= link_to 'Destroy', purchase, :confirm =&gt; 'Are you sure?', 
+                                         :method =&gt; :delete %&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;% end %&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+
+&lt;%= link_to 'New Purchase', new_purchase_path %&gt;
+        </pre>
+      </div><p id="ch01_690">
+        In this template, <code id="ch01_691">@purchases</code> is a collection of all the objects from the <classname id="ch01_692">Purchase</classname> model and <code id="ch01_693">each</code> is used to iterate over each, setting <code id="ch01_694">purchase</code> as the variable used in this block.
+      </p><p id="ch01_695">
+        In here the methods <code id="ch01_696">name</code> and <code id="ch01_697">cost</code> are the same methods used in <span class="filename" id="ch01_698">app/views/purchases/show.html.erb</span> to display the values for the fields. After these, we see the three uses of <code id="ch01_699">link_to</code>.
+      </p><p id="ch01_700">
+        The first <code id="ch01_701">link_to</code> passes in the <code id="ch01_702">purchase</code> object, which will link to the <code id="ch01_703">show</code> action of <classname id="ch01_704">PurchasesController</classname> by using a route such as <code id="ch01_705">/purchases/{id}</code>, where <code id="ch01_706">{id}</code> is the id for this <code id="ch01_707">purchase</code> object.
+      </p><p id="ch01_708">
+        The second <code id="ch01_709">link_to</code> links to the <code id="ch01_710">edit</code> action using <code id="ch01_711">edit_purchase_path</code> and passes the <code id="ch01_712">purchase</code> object as the argument to this method. This routing helper will determine the path is <code id="ch01_713">/purchases/{id}/edit</code>. 
+      </p><p id="ch01_714">
+        The third <code id="ch01_715">link_to</code> links seemingly to the <code id="ch01_716">purchase</code> object exactly like the first, but it doesn't go there. The <code id="ch01_717">:method</code> option on the end of this route specifies the method of <code id="ch01_718">:delete</code>, which is the third and final way the <code id="ch01_719">/purchases/{id}</code> route can be used. By specifying <code id="ch01_720">:delete</code> as the method of this <code id="ch01_721">link_to</code>, Rails will interpret this request and take us to the <code id="ch01_722">destroy</code> action in the <classname id="ch01_723">PurchasesController</classname>. This action is shown in Listing 1.x.
+      </p><div class="example" id="ch01_724">
+        <span class="title" id="ch01_725">app/controllers/purchases_controller.rb</span>
+        <pre>def destroy
+  @purchase = Purchase.find(params[:id])
+  @purchase.destroy
+
+  respond_to do |format|
+    format.html { redirect_to(purchases_url) }
+    format.xml  { head :ok }
+  end
+end
+        </pre>
+      </div><p id="ch01_727">
+        Just like in the <code id="ch01_728">show</code>, <code id="ch01_729">edit</code> and <code id="ch01_730">update</code> actions we've looked at before, this action also finds the <code id="ch01_731">@purchase</code> object by using <code id="ch01_732">Purchase.find</code> and then destroys the record by calling <code id="ch01_733">destroy</code><span class="indexterm"><primary id="ch01_949">destroy, ActiveRecord::Base</primary></span> on it, which permanently deletes the record. After that's done it uses <code id="ch01_734">redirect_to</code> to take us to the <code id="ch01_735">purchases_url</code>, which is the route helper defined to take us to <code id="ch01_736">http://localhost:3000/purchases</code> URL. Note that this action uses the <code id="ch01_737">purchases_url</code> method rather than <code id="ch01_738">purchases_path</code> which will generate a full URL back to the purchases listing, such as <a href="http://localhost:3000/purchases/1" id="ch01_950">http://localhost:3000/purchases/1</a>.
+      </p><p id="ch01_739">
+        That wraps up our application run-through!
+      </p><h2 id="ch01_230">1.3 Summary</h2><p id="ch01_231">
+      In this chapter we have learned what Rails is and how to get an application started with it, the absolute bare, bare, <em>bare</em> essentials of a Rails application. But look at how fast we got going! It was only a few simple commands and an entire two lines of our own code in order to get the bones of a Rails application going. From this basic skeleton we can keep adding on bits and pieces in order to develop our application and all the while we get things "for free" from Rails. We don't have to code the logic of what happens when Rails receives a request, or what query we have to execute on our database to insert a record, it does it for us.
+    </p><p id="ch01_233">
+      We also saw that some big name players -- such as Twitter and GitHub -- use Ruby on Rails. This clearly gives a positive answer to the "is Rails ready?" question: Yes, it very much is. There's a wide choice of companies that have built successful websites on the Rails framework, and a lot more to come.
+    </p><p id="ch01_234">
+      Still wondering if Ruby on Rails is right for you? Ask around. You'll hear a lot of people singing its praises. The Ruby on Rails community is passionate about not only Rails, but also community building. Events, conferences, user group meetings and even camps are held all around the world for Rails. Attend these and discuss Ruby on Rails with the people who know about it. If you're unable to, or if you are shy, or for any other reason, there's the IRC channel on Freenode <em>#rubyonrails</em>, the mailing list <em>rubyonrails-talk</em> on Google Groups, not to mention Stack Overflow and a multitude of other areas on the internet where you can discuss with experienced people what they think of Rails. Don't let this book be the only source for your knowledge. There's a whole world out there! No book could cover all of that! We do try, however.
+    </p><p id="ch01_237">
+      The best way to answer the "What is Rails?" question is to experience it for yourself. This book and your own exploration will answer that question, given a little time; nothing happens overnight.
+    </p><p id="ch01_238">
+      When we added validations to our application earlier, we manually tested that they were working. While this may seem like a good idea for now, when the application grows beyond something more than a couple of pages, it becomes cumbersome to manually test them. Wouldn't it be nice if we had some automated way of testing our application? Something to ensure that all the individual parts work always? Something to provide the peace of mind that you crave when you develop anything? You want to be sure that it's continuously working with the most minimal effort possible, right?
+    </p><p id="ch01_239">
+      Well, Ruby on Rails does that too. There are several testing frameworks for Ruby and Ruby on Rails and next up we will look at three of them: Test::Unit, RSpec and Cucumber.
+    </p>
+</div>
+
+  
+
+</body></html>
