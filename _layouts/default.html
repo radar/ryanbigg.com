@@ -23,15 +23,17 @@
       {{ content }}
     </div>
     <script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
     </script>
-    <script type="text/javascript">
-    try {
-    var pageTracker = _gat._getTracker("UA-396182-13");
-    pageTracker._setDomainName("none");
-    pageTracker._setAllowLinker(true);
-    pageTracker._trackPageview();
-    } catch(err) {}</script>
   </body>
 </html>

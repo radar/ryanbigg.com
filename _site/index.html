@@ -421,7 +421,31 @@ end</code></pre>
 
 <p>In the first case, the <code>resolve</code> method is not passed a block and therefore it calls itself passing back through the <code>logical_path</code> and <code>options</code> it received, as well as a block. Now this goes back to the top of the method where the <code>if block_given?</code> statement evaluates to <code>true</code> and <code>@trail.find</code> is called.</p>
 
-<p>To be continued&#8230;</p>
+<p>This <code>@trail</code> variable is set up when the <code>Sprockets::Environment</code> object is initialized with this line:</p>
+
+<pre><code>@trail = Hike::Trail.new(root)</code></pre>
+
+<p>The <code>Hike::Trail</code> class comes from the <code>hike</code> gem which <code>sprockets</code> depends on. The <code>root</code> passed in to this method is <code>Rails.application.root</code>. The <code>initialize</code> method in <code>Hike::Trail</code> is defined like this:</p>
+
+<pre><code>def initialize(root = &quot;.&quot;)
+  @root       = Pathname.new(root).expand_path
+  @paths      = Paths.new(@root)
+  @extensions = Extensions.new
+end</code></pre>
+
+<p>While the <code>find</code> method is defined this way:</p>
+
+<pre><code>def find(*args, &amp;block)
+  index.find(*args, &amp;block)
+end</code></pre>
+
+<p>The <code>index</code> method referenced here is defined in Hike also:</p>
+
+<pre><code>def index
+  Index.new(root, paths, extensions)
+end</code></pre>
+
+<p>The <code>Index</code> class is defined inside hike at <code>lib/hike/index.rb</code></p>
   </article>
 </div>
 
@@ -485,15 +509,17 @@ end</code></pre>
 
     </div>
     <script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
     </script>
-    <script type="text/javascript">
-    try {
-    var pageTracker = _gat._getTracker("UA-396182-13");
-    pageTracker._setDomainName("none");
-    pageTracker._setAllowLinker(true);
-    pageTracker._trackPageview();
-    } catch(err) {}</script>
   </body>
 </html>
