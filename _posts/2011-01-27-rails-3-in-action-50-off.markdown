@@ -4,6 +4,8 @@ layout: post
 title: "Rails 3 in Action: 50% off"
 ---
 
+<h1>This is a very old blog post. The discount code is no longer valid.</h1>
+
 From now until the 23rd of February, <a href='http://manning.com/katz/'>Rails 3 in Action</a> is 50% off when you use the code <strong>rails350</strong>. This means you get the book for a discounted price of only $17.50.
 
 Rails 3 in Action is a new breed of programming book; one that takes you on a journey of how you would develop an application in the real world, one step at a time. The book comes out of a collaboration between Yehuda Katz and Ryan Bigg (me1).
