@@ -10,7 +10,7 @@ I bought a real bicycle. I blame it for my lack of blog posts and increased fitn
 
 Then there was all this:
 
-<a href='http://weblog.rubyonrails.org/2011/8/31/rails-3-1-0-has-been-released'>Rails 3.1 was released</a> *on schedule*. Amazing work by amazing dudes. This means that...
+[Rails 3.1 was released](http://weblog.rubyonrails.org/2011/8/31/rails-3-1-0-has-been-released) *on schedule*. Amazing work by amazing dudes. This means that...
 
 I have finished writing <a href='http://manning.com/katz'>Rails 3 in Action</a> and there will be dead trees copies at StrangeLoop conference in St Louis, where I will be in attendance and signing it. (God, that sounds so pretentious.) I honestly don't think I've heard someone say "this is total bollocks" (or something along those lines), but perhaps I am selective of hearing.
 
