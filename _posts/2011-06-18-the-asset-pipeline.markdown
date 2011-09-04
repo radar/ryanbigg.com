@@ -24,7 +24,7 @@ Jammit is exceptionally well documented and has a group of people who are alread
 
 [Bundler's site](http://gembundler.org) is a **fantastic** example of great documentation. Hell, it even provides a [rationale](http://gembundler.com/rationale.html) that explains how it works and why it works in pretty easy-to-understand terms.
 
-*[breath]*
+*\[breath\]*
 
 So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was [added by yours truly](https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4) earlier today. I also wrote up [some notes](https://gist.github.com/1032696) just so I could understand how the `Sprockets::Railtie` works for myself. Thought others may find it useful too.
 
