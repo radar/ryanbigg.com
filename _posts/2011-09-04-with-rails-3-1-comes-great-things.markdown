@@ -1,5 +1,5 @@
 --- 
-wordpress_id: RB-310
+wordpress_id: RB-311
 layout: post
 title: With Rails 3.1, comes great things
 ---
