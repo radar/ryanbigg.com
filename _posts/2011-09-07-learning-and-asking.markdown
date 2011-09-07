@@ -19,7 +19,7 @@ Jared's post continues on by recommending to Google things:
 > Go to Google and start asking questions. You want to make a webpage? Ask. You want to know what the different coding languages are and which you should learn? Ask.
 
 Again, I "think differently". Going to Google and entering "Learn \[programming language\]" will give you *okay* results, but they won't be the *best*
-results you can get. This is what the people in the community will be able to tell you better than any search engine which is catering for the masses. For
+results you can get. This is what the people in the community will be able to tell you better than any search engine that is catering for the masses. For
 instance, the search engine doesn't know that you've got experience with another language, and so isn't catering for that. If you tell *real,
 knowledgable people* this, they'll probably recommend something different than if you were, say, a complete newbie to computer programming. 
 
