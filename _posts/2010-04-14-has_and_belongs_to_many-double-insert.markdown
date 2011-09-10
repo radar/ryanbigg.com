@@ -12,7 +12,7 @@ You know how this story is going to end up already.
 
 <h3>Symptoms</h3>
 
-We have two models who's names aren't important so excuse me if I use the name `Person` and `Address` to represent them. They are nothing of the sort. In their purest form to replicate this issue, they are defined like this:
+We have two models whose names aren't important so excuse me if I use the name `Person` and `Address` to represent them. They are nothing of the sort. In their purest form to replicate this issue, they are defined like this:
 
     class Address < ActiveRecord::Base
       has_and_belongs_to_many :people
