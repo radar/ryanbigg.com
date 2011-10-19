@@ -53,7 +53,7 @@ Create a new file called `spec/support/spec_logger.rb` and put this content in i
 
 What this does is that it inherits the standard green dots, red Fs and yellow stars from `RSpec::Core::Formatters::ProgressFormatter` and extends it with a bit of functionality that will log exactly what specs are being run during a test run.
 
-To use this formatter in your next (fast failing) test run, run it using `bundle exec rspec spec --require spec/support/spec_logger --formatter SpecLogger --fail-fast`.
+To use this formatter in your next (fast failing) test run, run it using `bundle exec rspec spec --require spec/support/spec_logger -f SpecLogger --fail-fast`.
 
 Once this command completes, you'll have a list of suspects in `specs.log` at the root of your project.
 

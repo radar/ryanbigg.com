@@ -56,7 +56,7 @@ end</code></pre>
 
 <p>What this does is that it inherits the standard green dots, red Fs and yellow stars from <code>RSpec::Core::Formatters::ProgressFormatter</code> and extends it with a bit of functionality that will log exactly what specs are being run during a test run.</p>
 
-<p>To use this formatter in your next (fast failing) test run, run it using <code>bundle exec rspec spec --require spec/support/spec_logger --formatter SpecLogger --fail-fast</code>.</p>
+<p>To use this formatter in your next (fast failing) test run, run it using <code>bundle exec rspec spec --require spec/support/spec_logger -f SpecLogger --fail-fast</code>.</p>
 
 <p>Once this command completes, you&#8217;ll have a list of suspects in <code>specs.log</code> at the root of your project.</p>
 <hr />
