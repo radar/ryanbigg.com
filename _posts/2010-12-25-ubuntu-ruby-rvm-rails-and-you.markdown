@@ -61,19 +61,21 @@ Then we'll need to reload the `~/.bashrc` file which we can do with this small c
 
 The next command we run will tell us what other packages we need to install for Ruby to work:
 
-    rvm notes
+    rvm requirements
     ...
-    # For Ruby (MRI & ree)  you should install the following OS dependencies:
-    ruby: aptitude install build-essential bison openssl libreadline6 libreadline6-dev
-    curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0
-    libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
+    # For Ruby / Ruby HEAD (MRI, Rubinius, & REE), install the following:
+    ruby: /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev 
+    curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev 
+    sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool 
+    bison subversion
 
 A couple of these packages we've already installed, such as `git-core` and `curl`. They won't be re-installed again. 
 
 These packages will lessen the pain when we're working with Ruby. For example, the `libssl-dev` package will make OpenSSL support in Ruby work, `libsqlite3-0` and `libsqlite3-dev` are required for the `sqlite3-ruby` gem and the `libxml2-dev` and `libxslt-dev` packages are required for the `nokogiri` gem. Let's install all these packages now using this command:
 
-    sudo aptitude install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g
-    zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf
+    sudo apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core 
+    zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev 
+    libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
     
 <strong>This command *must* be written on a single line, otherwise some of the packages will not install.</strong>
 
