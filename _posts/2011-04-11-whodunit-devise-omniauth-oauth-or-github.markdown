@@ -42,18 +42,18 @@ So my finger now switches for a second time to the oauth2 gem. I clone this into
 
 <a href='https://github.com/intridea/oauth2/commit/1dbfe18af997c45a69fdea29192f599f20d80879'>This commit.</a>
 
-It dutifully changes a small detail, the `@token_param` to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> "oauth\_token" rather than "access_token". This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, *like GitHub*, are left behind.
+It dutifully changes a small detail, the `@token_param` to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> "oauth\_token" rather than "access\_token". This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, *like GitHub*, are left behind.
 
 Ladies and gentleman, after my long story, let me present to you Exhibit A, direct from <a href='http://develop.github.com/p/oauth.html'>GitHub's OAuth documentation</a>:
 
 <img src='https://img.skitch.com/20110411-qn2ps6uckm4deq851ubydjtf71.png' />
 
-A keen eye, keener than my own, would notice here that the parameter is not called "oauth\_token" as is being supplied by the oauth2 gem now as of the afore-mentioned commit, but rather it's still called "access_token".
+A keen eye, keener than my own, would notice here that the parameter is not called "oauth\_token" as is being supplied by the oauth2 gem now as of the afore-mentioned commit, but rather it's still called "access\_token".
 
 I submit to you that GitHub's OAuth 2 specification is broken, but the <a href='http://support.github.com/discussions/site/3398-your-oauth-implementation-is-broken-but-heres-a-fix'>fix is extremely easy</a> and only GitHub (or a hack to oauth2) can fix it.
 
 That was quite a lot of frustration caused by that one small little detail. This was very fun to track down and the high I got from solving it was well worth it. It's one of the things I enjoy most as a programmer is solving a difficult bug.
 
-<strong>Update:</strong> It was later <a href='https://github.com/intridea/oauth2/issues/44#issuecomment-993151'>found out</a> that <a href='http://tools.ietf.org/id/draft-ietf-oauth-v2-15.txt'>Draft 15 of the OAuth2 Specification</a> actually reverts that change, making it back to `access_token`, meaning that the `oauth2` gem is technically wrong in this case.
+<strong>Update:</strong> It was later <a href='https://github.com/intridea/oauth2/issues/44#issuecomment-993151'>found out</a> that <a href='http://tools.ietf.org/id/draft-ietf-oauth-v2-15.txt'>Draft 15 of the OAuth2 Specification</a> actually reverts that change, making it back to `access\_token`, meaning that the `oauth2` gem is technically wrong in this case.
 
 The problem itself won't be fixed until the OAuth2 specification solidifies or `oauth2` hacks around it to support different services calling this parameter by different names.
