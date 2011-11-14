@@ -63,9 +63,11 @@ of <a href='http://twitter.com/joeybeninghove'>Joey Beninghove's</a> <a
 href='http://backbonescreencasts.com/'>great Backbone.js screencasts</a> and built this idea. There's also a bit
 of the Twitter Bootstrap in use, which makes things pretty.
 
-It's called <a href='http://radar.github.com/sume'>Sume</a>. It's just a proof-of-concept of this Rails API idea,
-allowing you to search for only a handful of classes and methods at the moment. But it presents it in a neat
-format.
+It's called <a href='http://radar.github.com/sume'>Sume</a> and looks like this:
+
+<img src='/images/sume.png'>
+
+It's just a proof-of-concept of this Rails API idea, allowing you to search for only a handful of classes and methods at the moment. But it presents it in a neat format.
 
 Ah, and one more thing: it gives you a unique URL for each page, which is something the current Rails API *doesn't
 do*. When you make a request to <a href='http://radar.github.com/sume/#search/ActiveSupport::Concern'>the link for
