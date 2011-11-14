@@ -7,7 +7,7 @@ title: The Rails API
 Recently, the Rails API got a facelift. Gone is the boring and dull blue four-frame-set API that once was. Now we
 have a dual-framed red API instead. The colours are good, I'll give it that. Take a look at it:
 
-<img src='images/rails-api/original.png' />
+<img src='/images/rails-api/original.png' />
 
 Notice anything wrong?
 
@@ -17,7 +17,7 @@ So let's take away some things until you start thinking it's wrong. How about we
 string -- both instances -- and we made the version more prominent? We'll also get rid of the last modified
 timestamp, as a date is more friendly to people. Making these simple changes, we'll get this:
 
-<img src='images/rails-api/title-changes.png'>
+<img src='/images/rails-api/title-changes.png'>
 
 Right. That's a little better now. It's clearer what the purpose of this page is and when it was last updated. We
 don't care that the README is in a file called "RDOC_MAIN.rdoc", and so we've removed it. Simple.
@@ -36,7 +36,7 @@ care about that? Isn't searching for something a much easier way to find it? I'd
 
 So we remove the README, we remove the menu, we make the search more prominent. What are we left with?
 
-<img src='images/rails-api/search-box.png' />
+<img src='/images/rails-api/search-box.png' />
 
 The title, the date the API was last updated and a box to search. There's no mystery to what this box does: it
 says "Search" on it. It could also say "Search the Rails API". Anybody should be able to figure out that you can search the API using this box.
