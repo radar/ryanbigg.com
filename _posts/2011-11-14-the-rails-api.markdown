@@ -69,10 +69,6 @@ allowing you to search for only a handful of classes and methods at the moment. 
 format.
 
 Ah, and one more thing: it gives you a unique URL for each page, which is something the current Rails API *doesn't
-do*. The URL *should* take you back to the part of the API you were looking at, but I've not worked out that part
-in Backbone-land yet.
-
-
-
-
-
+do*. When you make a request to <a href='http://radar.github.com/sume/#search/ActiveSupport::Concern'>the link for
+ActiveSupport::Concern</a> it actually takes you right to those docs. This makes it easy to link it to other
+people.
