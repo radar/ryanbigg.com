@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-11-06T14:05:22+02:00</updated>
+ <updated>2011-11-14T13:59:53+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,9 +13,49 @@
 
  
  <entry>
+   <title>The Rails API</title>
+   <link href="http://ryanbigg.com/2011/11/the-rails-api"/>
+   <updated>2011-11-14T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2011/11/the-rails-api</id>
+   <content type="html"><![CDATA[<p>Recently, the Rails API got a facelift. Gone is the boring and dull blue four-frame-set API that once was. Now we have a dual-framed red API instead. The colours are good, I&#8217;ll give it that. Take a look at it:</p>
+<img src='images/rails_api.png' />
+<p>Notice anything wrong?</p>
+
+<p>Probably not.</p>
+
+<p>So let&#8217;s take away some things until you start thinking it&#8217;s wrong. How about we take out that &#8220;RDOC_MAIN.rdoc&#8221; string &#8211; both instances &#8211; and we made the version more prominent? We&#8217;ll also get rid of the last modified timestamp, as a date is more friendly to people. Making these simple changes, we&#8217;ll get this:</p>
+<img src='images/rails-api-title-changes.png' />
+<p>Right. That&#8217;s a little better now. It&#8217;s clearer what the purpose of this page is and when it was last updated. We don&#8217;t care that the README is in a file called &#8220;RDOC_MAIN.rdoc&#8221;, and so we&#8217;ve removed it. Simple.</p>
+
+<p>Now what else don&#8217;t we need? Well, when we go to the API we&#8217;re most likely going to want to find information about the methods provided by Rails. So why have the README there at all? While it&#8217;s a good placeholder for the content, that&#8217;s all it is: a placeholder. The main focus of the API site should be what we want to do on it: search for things. If you want to read the README, there&#8217;s <a href='http://github.com/rails/rails'>better (and more standard) places for that</a>, quite simply.</p>
+
+<p>With the README gone, we&#8217;re going to have this gigantic void of empty, useless space. With this change, the main feature of the API, the searching, is almost hidden up in the top-left hand corner. So let&#8217;s make that more prominent.</p>
+
+<p>Is that menu underneath it really useful? It contains an awfully large amount of items in it. Do people really care about that? Isn&#8217;t searching for something a much easier way to find it? I&#8217;d say so.</p>
+
+<p>So we remove the README, we remove the menu, we make the search more prominent. What are we left with?</p>
+<img src='images/rails-api-search-box.png' />
+<p>The title, the date the API was last updated and a box to search. There&#8217;s no mystery to what this box does: it says &#8220;Search&#8221; on it. It could also say &#8220;Search the Rails API&#8221;. Anybody should be able to figure out that you can search the API using this box.</p>
+
+<p>But there&#8217;s no button! There doesn&#8217;t need to be a button, though. When a person searches, it will autocomplete their search and show the matching results from the API. You could even go a step further and weight certain results, so that things like <s>`ActiveRecord::Base`</s>, um, excuse me, <code>ActiveRecord::FinderMethods</code>&#8217;s <code>find</code> method appears before <code>ActiveResource::Base</code>.</p>
+
+<p>Further more, you could get a search for &#8220;match&#8221; to show the routing (<code>ActionDispatch::Routing::Mapper::Base</code>) <code>match</code> method prominently, and the other <code>match</code> (like the one in <code>HTML::Selector</code>) methods less prominently, perhaps in a grey colour instead of black.</p>
+
+<p>Anything wrong with this now? I think not. The API is less confusing and more prominently displays the function that most people use it for.</p>
+<hr />
+<p>That&#8217;s my vision for the future of the Rails API. I know it probably won&#8217;t get to that stage, as there&#8217;s large technical hurdles in the way (such as indexing the entire documentation for Rails into a searchable format), but I think that it&#8217;s still possible.</p>
+
+<p>So this weekend I dove into some <a href='http://documentcloud.github.com/backbone/'>Backbone.js</a> with the help of <a href='http://twitter.com/joeybeninghove'>Joey Beninghove's</a> <a href='http://backbonescreencasts.com/'>great Backbone.js screencasts</a> and built this idea. There&#8217;s also a bit of the Twitter Bootstrap in use, which makes things pretty.</p>
+
+<p>It&#8217;s called <a href='http://radar.github.com/sume'>Sume</a>. It&#8217;s just a proof-of-concept of this Rails API idea, allowing you to search for only a handful of classes and methods at the moment. But it presents it in a neat format.</p>
+
+<p>Ah, and one more thing: it gives you a unique URL for each page, which is something the current Rails API <em>doesn&#8217;t do</em>. The URL <em>should</em> take you back to the part of the API you were looking at, but I&#8217;ve not worked out that part in Backbone-land yet.</p>]]></content>
+ </entry>
+ 
+ <entry>
    <title>Going on a Spree</title>
    <link href="http://ryanbigg.com/2011/11/going-on-a-spree"/>
-   <updated>2011-11-03T00:00:00+02:00</updated>
+   <updated>2011-11-03T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/11/going-on-a-spree</id>
    <content type="html"><![CDATA[<p>When I was in America, I had the pleasure of talking to a lot of Americans. Americans are fun. As soon as they hear the Australian accent they say something along the lines of &#8220;Oh, you&#8217;re from Australia?! I <em>love</em> Australia!&#8221;.</p>
 
@@ -37,7 +77,7 @@
  <entry>
    <title>Screencast: Pilot</title>
    <link href="http://ryanbigg.com/2011/10/screencast-pilot"/>
-   <updated>2011-10-31T00:00:00+02:00</updated>
+   <updated>2011-10-31T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/10/screencast-pilot</id>
    <content type="html"><![CDATA[<p>Today I went out and got myself a microphone so I could begin to do some screencasting. I did some back in February for EngineYard and really enjoyed it and have been wanting to get back into it for a while, but I have been busy writing.</p>
 
@@ -51,7 +91,7 @@
  <entry>
    <title>That One Test</title>
    <link href="http://ryanbigg.com/2011/10/that-one-test"/>
-   <updated>2011-10-19T00:00:00+03:00</updated>
+   <updated>2011-10-19T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/10/that-one-test</id>
    <content type="html"><![CDATA[<p>Have you ever worked on a project that has tests? Probably. How about a project that has a test that runs fine by itself but fails when the whole suite runs? Maybe. That&#8217;s what I&#8217;m going to be talking about here today.</p>
 
@@ -130,7 +170,7 @@ end</code></pre>
  <entry>
    <title>Leaving Chicago</title>
    <link href="http://ryanbigg.com/2011/10/leaving-chicago"/>
-   <updated>2011-10-02T00:00:00+03:00</updated>
+   <updated>2011-10-02T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/10/leaving-chicago</id>
    <content type="html"><![CDATA[<p>I have just spent two weeks in America being reminded what such great people live outside my own country.</p>
 
@@ -228,7 +268,7 @@ end</code></pre>
  <entry>
    <title>Learning and Asking</title>
    <link href="http://ryanbigg.com/2011/09/learning-and-asking"/>
-   <updated>2011-09-07T00:00:00+03:00</updated>
+   <updated>2011-09-07T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/09/learning-and-asking</id>
    <content type="html"><![CDATA[<p>Today, I read <a href='http://495west.com/post/9885249988/the-wrong-question-i-want-to-learn-to-code-what?73331330'>this post</a> which discusses what the right question alternative to &#8220;I want to learn to code, what should I do?&#8221;. This post begins with this claim:</p>
 
@@ -260,7 +300,7 @@ end</code></pre>
  <entry>
    <title>With Rails 3.1, comes great things</title>
    <link href="http://ryanbigg.com/2011/09/with-rails-3-1-comes-great-things"/>
-   <updated>2011-09-04T00:00:00+03:00</updated>
+   <updated>2011-09-04T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/09/with-rails-3-1-comes-great-things</id>
    <content type="html"><![CDATA[<p>This is the first blog post I&#8217;ve put up here in nearly three months. Considering that I&#8217;ve posted <em>at least once a month</em> since May &#8216;07, that&#8217;s some sort of record. Since I last posted, a lot has happened. In no particular order&#8230;</p>
 
@@ -286,7 +326,7 @@ end</code></pre>
  <entry>
    <title>Sprocket asset tags internals</title>
    <link href="http://ryanbigg.com/2011/06/sprocket-asset-tags-internals"/>
-   <updated>2011-06-19T00:00:00+03:00</updated>
+   <updated>2011-06-19T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/06/sprocket-asset-tags-internals</id>
    <content type="html"><![CDATA[<p>Yesterday&#8217;s post and twitter bitching caught the eye of our <a href='http://twitter.com/dhh'>fearless leader</a> who basically claimed <a href='https://twitter.com/#!/dhh/status/81987522766450688'>that I've not made documentation patches recently</a>. I responded with a small reminder that I&#8217;ve done <a href='https://twitter.com/ryanbigg/status/81988004947828736'>some documentation work</a> and went a step further and begun an <a href='http://ryanbigg.com/guides/asset_pipeline.html'>Asset Pipeline Guide</a> because I could. I could have pulled the whole &#8220;Don&#8217;t you know who I am?!!&#8221; faux-lebrity deal, but I thought I would be humble. Append &#8220;for a change&#8221; to the end of the previous sentence, if you wish.</p>
 
@@ -302,7 +342,7 @@ end</code></pre>
  <entry>
    <title>The Asset Pipeline</title>
    <link href="http://ryanbigg.com/2011/06/the-asset-pipeline"/>
-   <updated>2011-06-18T00:00:00+03:00</updated>
+   <updated>2011-06-18T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/06/the-asset-pipeline</id>
    <content type="html"><![CDATA[<p>Today I begun writing the section that I&#8217;ve deemed should be at the beginning of Appendix B (&#8220;Tidbits&#8221;) of Rails 3 in Action. It&#8217;s about the asset pipeline stuff that has been brought into Rails 3.1 with the aid of the Sprockets gem. I&#8217;ve decided to put it at the beginning of this Appendix as it&#8217;s probably the most interesting thing in the entire appendix and it hasn&#8217;t been written about in this much detail (at least, from what I&#8217;ve seen) before.</p>
 
@@ -346,7 +386,7 @@ end</code></pre>
  <entry>
    <title>Mac OS X, Ruby, RVM, Rails and You</title>
    <link href="http://ryanbigg.com/2011/06/mac-os-x-ruby-rvm-rails-and-you"/>
-   <updated>2011-06-06T00:00:00+03:00</updated>
+   <updated>2011-06-06T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/06/mac-os-x-ruby-rvm-rails-and-you</id>
    <content type="html"><![CDATA[<p>
   <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
@@ -461,7 +501,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>A potential use for asset pipelining</title>
    <link href="http://ryanbigg.com/2011/06/a-potential-use-for-asset-pipelining"/>
-   <updated>2011-06-01T00:00:00+03:00</updated>
+   <updated>2011-06-01T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/06/a-potential-use-for-asset-pipelining</id>
    <content type="html"><![CDATA[<p>So I&#8217;ve been thinking a lot recently about the changes in Rails 3.1, particularly the asset pipelining stuff, engines and how magical precisely gems are. I&#8217;m combining these last two into a <a href='http://github.com/radar/forem'>kick-ass forum engine for Rails 3.1</a> that you may have heard about already. Its name is a terrible pun and I am proud of it. I do like puns.</p>
 
@@ -493,7 +533,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>The Richest</title>
    <link href="http://ryanbigg.com/2011/05/the-richest"/>
-   <updated>2011-05-23T00:00:00+03:00</updated>
+   <updated>2011-05-23T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/05/the-richest</id>
    <content type="html"><![CDATA[<p>Long, long ago in this very galaxy I used to write fiction. If you dig long enough and hard enough on the internet you&#8217;ll find it. I won&#8217;t link to it here because, to be honest, I am embarrassed by it for no particular reason. Some said it was good, but I think they were just being kind.</p>
 
@@ -583,7 +623,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>Whodunit: Devise, OmniAuth, OAuth or GitHub?</title>
    <link href="http://ryanbigg.com/2011/04/whodunit-devise-omniauth-oauth-or-github"/>
-   <updated>2011-04-11T00:00:00+03:00</updated>
+   <updated>2011-04-11T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2011/04/whodunit-devise-omniauth-oauth-or-github</id>
    <content type="html"><![CDATA[<p>(If it wasn&#8217;t obvious enough: my previous blog post about Rails 3.1 in Action is an April Fools joke. If Rails 3.1 is released before Rails 3 in Action goes to print, Rails 3 in Action will most likely contain the 3.1 updates necessary)</p>
 
@@ -621,7 +661,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
 
 <p>So my finger now switches for a second time to the oauth2 gem. I clone this into the <code>vendor/gems/oauth2</code> directory, update the <code>Gemfile</code> and do a git bisect on it. The <a href='https://gist.github.com/912926'>results</a> indicated a commit that I could blame for all my troubles.</p>
 <a href='https://github.com/intridea/oauth2/commit/1dbfe18af997c45a69fdea29192f599f20d80879'>This commit.</a>
-<p>It dutifully changes a small detail, the <code>@token_param</code> to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> &#8220;oauth_token&#8221; rather than &#8220;access_token&#8221;. This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, <em>like GitHub</em>, are left behind.</p>
+<p>It dutifully changes a small detail, the <code>@token\_param</code> to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> &#8220;oauth_token&#8221; rather than &#8220;access_token&#8221;. This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, <em>like GitHub</em>, are left behind.</p>
 
 <p>Ladies and gentleman, after my long story, let me present to you Exhibit A, direct from <a href='http://develop.github.com/p/oauth.html'>GitHub's OAuth documentation</a>:</p>
 <img src='https://img.skitch.com/20110411-qn2ps6uckm4deq851ubydjtf71.png' />
@@ -637,7 +677,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>Rails 3.1 in Action</title>
    <link href="http://ryanbigg.com/2011/04/rails-3-1-in-action"/>
-   <updated>2011-04-01T00:00:00+03:00</updated>
+   <updated>2011-04-01T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/04/rails-3-1-in-action</id>
    <content type="html"><![CDATA[<h1>THIS WAS MY APRIL FOOLS JOKE FOR 2011. DO NOT TAKE THIS SERIOUSLY.</h1>
 <p>I&#8217;m edging ever closer to finishing Rails 3 in Action with only 3 and a half chapters remaining (_Translations_, <em>Background Jobs</em>, <em>Alternative Authentication</em> and <em>Mounting Rack Applications</em> being the half). I&#8217;m hoping to knock them off on the next couple of weeks and then the book will be (besides the appendicies) content complete! Finally.</p>
@@ -654,7 +694,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>Railscamp NZ</title>
    <link href="http://ryanbigg.com/2011/03/railscamp-nz"/>
-   <updated>2011-03-22T00:00:00+02:00</updated>
+   <updated>2011-03-22T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/03/railscamp-nz</id>
    <content type="html"><![CDATA[<p>This weekend I was on the north island of New Zealand, counting sheep and attending the first Railscamp NZ. I&#8217;ve attended every Railscamp in AU since #2 and I&#8217;ve really enjoyed them and this one was no exception to that. Railscamps are just great all the time.</p>
 
@@ -740,7 +780,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>Code doesn't protect against stupid</title>
    <link href="http://ryanbigg.com/2011/03/code-doesn-t-protect-against-stupid"/>
-   <updated>2011-03-06T00:00:00+02:00</updated>
+   <updated>2011-03-06T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/03/code-doesn-t-protect-against-stupid</id>
    <content type="html"><![CDATA[<p>Herein lies a tale of woe, heartache and eventual triumph over stupidity.</p>
 
@@ -778,7 +818,7 @@ ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
  <entry>
    <title>When to Cuke</title>
    <link href="http://ryanbigg.com/2011/03/when-to-cuke"/>
-   <updated>2011-03-03T00:00:00+02:00</updated>
+   <updated>2011-03-03T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/03/when-to-cuke</id>
    <content type="html"><![CDATA[<p>I think <a href='http://github.com/aslakhellesoy/cucumber'>Cucumber</a> is great, but not great for everything. Many people (including myself) use it and swear by it. You get to write <em>features</em> in <em>English</em> (or other languages), man. It&#8217;s really awesome if you want to show these stories to people who you&#8217;re developing for as they can read it and understand it.</p>
 
@@ -864,7 +904,7 @@ end</code></pre>
  <entry>
    <title>RTFM</title>
    <link href="http://ryanbigg.com/2011/02/rtfm"/>
-   <updated>2011-02-01T00:00:00+02:00</updated>
+   <updated>2011-02-01T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/02/rtfm</id>
    <content type="html"><![CDATA[<p>A scene that plays out in every single programming languages&#8217; (oh, and let&#8217;s not forget the glorious #gentoo) IRC channel I&#8217;ve come across:</p>
 
@@ -889,7 +929,7 @@ end</code></pre>
  <entry>
    <title>Rails 3 in Action: 50% off</title>
    <link href="http://ryanbigg.com/2011/01/rails-3-in-action-50-off"/>
-   <updated>2011-01-27T00:00:00+02:00</updated>
+   <updated>2011-01-27T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/01/rails-3-in-action-50-off</id>
    <content type="html"><![CDATA[<h1>This is a very old blog post. The discount code is no longer valid.</h1>
 <p>From now until the 23rd of February, <a href='http://manning.com/katz/'>Rails 3 in Action</a> is 50% off when you use the code <strong>rails350</strong>. This means you get the book for a discounted price of only $17.50.</p>
@@ -930,7 +970,7 @@ end</code></pre>
  <entry>
    <title>Why Pivotal now charging for Tracker is a good thing</title>
    <link href="http://ryanbigg.com/2011/01/why-pivotal-now-charging-for-tracker-is-a-good-thing"/>
-   <updated>2011-01-20T00:00:00+02:00</updated>
+   <updated>2011-01-20T00:00:00+11:00</updated>
    <id>http://ryanbigg.com/2011/01/why-pivotal-now-charging-for-tracker-is-a-good-thing</id>
    <content type="html"><![CDATA[<p>Today, Pivotal Labs has announced that they <a href='http://pivotallabs.com/users/dan/blog/articles/1537-introducing-pivotal-tracker-pricing'>will start charging people to use (Pivotal) Tracker</a>, but only if their project is not public, for-profit or not for education. As they explain in the article, they&#8217;ve been working on Tracker now for 5 years.</p>
 
@@ -939,26 +979,6 @@ end</code></pre>
 <p>There&#8217;s quite a lot of people who are already using the service (including myself) and love it. $50 a month for 10 collaborators is a good price point and one I&#8217;m sure any company I&#8217;d work for would be willing to pay. Pivotal Tracker has played, ahem, a pivotal role in many projects I have been on and it&#8217;s only fair that we continue to use their service and pay their toll to show our respect for 5 years of good, hard work that they&#8217;ve put into it. There&#8217;s 180,000 users (an astonishing figure for a (previously) non-commercial software), of Pivotal Tracker today, so they must be doing something right.</p>
 
 <p>Please don&#8217;t abandon Pivotal Tracker now because they&#8217;re asking for money. How would you feel if you worked on something for that long only for the people to abandon you? You&#8217;d feel used by those people. Support Pivotal, as they have provided a kick ass project management tool (publicly) for near on two and a half years now.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>Rails 3 in Action: SaaS</title>
-   <link href="http://ryanbigg.com/2011/01/rails-3-in-action-saas"/>
-   <updated>2011-01-06T00:00:00+02:00</updated>
-   <id>http://ryanbigg.com/2011/01/rails-3-in-action-saas</id>
-   <content type="html"><![CDATA[<p>I&#8217;ve been writing the 12th chapter for Rails 3 in Action for about a month now. It&#8217;s been a tough process because I haven&#8217;t felt sold on the idea or the &#8220;flow&#8221; of the chapter since I begun writing it. It&#8217;s a chapter about Software as a Service (SaaS), mainly covering letting users sign up for an account on a monthly subscription that has different limits depending on the plans they picked. My main thought has been &#8220;What does this have to do with Rails 3?&#8221;. Sure, there&#8217;s some elements of it such as using the <code>scope</code> method in routes to change the URLs from <code>/projects/1/tickets/2</code> to <code>/[account_name]/projects/1/tickets/2</code>, (which by the way I hear the <a href='http://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-scope'>API&#8217;s got a pretty good example of</a>) but as for introducing new features, it&#8217;s a pretty barren chapter.</p>
-
-<p>Plus, it&#8217;s long. Simply implementing that scope breaks a whole bunch of functionality in the application and the chapter (in its current form) goes through covering how to fix that up. Most of it is the same two fixes. Not all that terribly exciting. I had planned to put the fixing-everything-up into one chapter (12) and then the actual SaaS stuff into the next chapter (13). However, tonight the fixing-everything-up chapter has gotten too long and it just feels tedious writing it.</p>
-
-<p>That&#8217;s not what I want a chapter of Rails 3 in Action to feel like. It should be showing you features of Rails 3 that will help you along in your daily life. It should be exciting, not the same landscape for section after section after section. SaaS, to me, just doesn&#8217;t seem to fit in the book, but that isn&#8217;t to say that I&#8217;m scrapping my work entirely on this.</p>
-
-<p>I will be taking the SaaS stuff out of Rails 3 in Action to reduce page count and I will complete it and release it as a separate guide when the book is complete. This wouldn&#8217;t be such a pain if refactoring a Rails application to have all its routes under a scope was so difficult.</p>
-
-<p>I&#8217;m sorry to anybody who expected the final release to contain the SaaS chapter, but I think it&#8217;s best if we let that one simmer for the time whilst we cook up something more exciting, such as how to write an API.</p>
-
-<p>Thanks for reading the book so far, I really hope you&#8217;ve enjoyed it. If you&#8217;ve got any qualms or queries, you can reach me through <a href='mailto:radarlistener@gmail.com'>email</a>, <a href='http://twitter.com/ryanbigg'>twitter</a> or GTalk at radarlistener@gmail.com.</p>
-
-<p>I&#8217;ve put a Chapter 12 related question <a href='http://stackoverflow.com/questions/4613996/implementing-account-scoping'>on Stack Overflow</a> that somebody may know the answer to. It&#8217;s to do with the routing helpers, which was the main headache with this chapter.</p>]]></content>
  </entry>
  
  

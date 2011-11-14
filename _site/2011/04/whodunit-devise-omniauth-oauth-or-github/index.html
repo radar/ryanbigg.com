@@ -47,7 +47,7 @@
 
 <p>So my finger now switches for a second time to the oauth2 gem. I clone this into the <code>vendor/gems/oauth2</code> directory, update the <code>Gemfile</code> and do a git bisect on it. The <a href='https://gist.github.com/912926'>results</a> indicated a commit that I could blame for all my troubles.</p>
 <a href='https://github.com/intridea/oauth2/commit/1dbfe18af997c45a69fdea29192f599f20d80879'>This commit.</a>
-<p>It dutifully changes a small detail, the <code>@token_param</code> to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> &#8220;oauth_token&#8221; rather than &#8220;access_token&#8221;. This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, <em>like GitHub</em>, are left behind.</p>
+<p>It dutifully changes a small detail, the <code>@token\_param</code> to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> &#8220;oauth_token&#8221; rather than &#8220;access_token&#8221;. This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, <em>like GitHub</em>, are left behind.</p>
 
 <p>Ladies and gentleman, after my long story, let me present to you Exhibit A, direct from <a href='http://develop.github.com/p/oauth.html'>GitHub's OAuth documentation</a>:</p>
 <img src='https://img.skitch.com/20110411-qn2ps6uckm4deq851ubydjtf71.png' />
