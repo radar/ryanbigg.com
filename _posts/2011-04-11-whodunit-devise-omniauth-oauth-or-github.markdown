@@ -4,7 +4,7 @@ layout: post
 title: "Whodunit: Devise, OmniAuth, OAuth or GitHub?"
 ---
 
-(If it wasn't obvious enough: my previous blog post about Rails 3.1 in Action is an April Fools joke. If Rails 3.1 is released before Rails 3 in Action goes to print, Rails 3 in Action will most likely contain the 3.1 updates necessary)
+\(If it wasn't obvious enough: my previous blog post about Rails 3.1 in Action is an April Fools joke. If Rails 3.1 is released before Rails 3 in Action goes to print, Rails 3 in Action will most likely contain the 3.1 updates necessary\)
 
 I'm currently writing what is the final chapter in Rails 3 in Action and I'm pretty excited about it. It's the "Alternative Authentication" chapter, Chapter 14. It's not to say there are 14 chapters in the book... there aren't. There's seventeen chapters two, maybe three appendicies. This happens to be the last chapter I have to work on and its number is 14.
 
@@ -42,7 +42,7 @@ So my finger now switches for a second time to the oauth2 gem. I clone this into
 
 <a href='https://github.com/intridea/oauth2/commit/1dbfe18af997c45a69fdea29192f599f20d80879'>This commit.</a>
 
-It dutifully changes a small detail, the `@token_param` to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> "oauth\_token" rather than "access\_token". This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, *like GitHub*, are left behind.
+It dutifully changes a small detail, the `@token\_param` to be the <a href='http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.2'>OAuth2 draft 10 specified (in section 5.1.2)</a> "oauth\_token" rather than "access\_token". This means that all providers who have updated to this draft specification are now supported by the oauth2 gem but those who have not, *like GitHub*, are left behind.
 
 Ladies and gentleman, after my long story, let me present to you Exhibit A, direct from <a href='http://develop.github.com/p/oauth.html'>GitHub's OAuth documentation</a>:
 
