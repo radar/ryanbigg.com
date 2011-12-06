@@ -4,13 +4,98 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2011-11-29T22:09:10+11:00</updated>
+ <updated>2011-12-06T17:44:54+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Deciding what tests to write</title>
+   <link href="http://ryanbigg.com/2011/12/deciding-what-tests-to-write"/>
+   <updated>2011-12-05T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2011/12/deciding-what-tests-to-write</id>
+   <content type="html"><![CDATA[<p>More people who are new to Ruby are getting into TDD and BDD thanks to the wonderful tools like RSpec and Cucumber that make it easy for them to do so. There&#8217;s no real public information on exactly <em>what</em> you should be testing, though.</p>
+
+<h3 id='testing_validations'>Testing Validations</h3>
+
+<p>RSpec supports the shoulda-matchers gem and I see a lot of people using this to test validations on their models, and this is the <em>first</em> test that they&#8217;re writing. I personally think that this is the wrong way of doing things.</p>
+
+<p>The first test should be one that follows the exact steps that the user would need to do in order to approve this functionality.</p>
+
+<p>In the example test (written in Capybara&#8217;s syntax) below, the user fills in the form (ignoring one of the required fields) and then should see that there&#8217;s an error on the page.</p>
+
+<pre><code>visit root_path
+click_link &quot;Posts&quot;
+click_link &quot;New Post&quot;
+
+fill_in &quot;Title&quot;, :with =&gt; &quot;Deciding what tests to write&quot;
+click_button &quot;Create Post&quot;
+
+within(&quot;#flash_alert&quot;) do
+  page.should have_content(&quot;Post could not be created.&quot;)
+end
+
+within(&quot;#post_form .errors&quot;) do
+  page.should have_content(&quot;Body cannot be blank&quot;)
+end</code></pre>
+
+<p>Or if you prefer Cucumber:</p>
+
+<pre><code>Given a user is creating a new post
+And the user leaves the post text blank
+When the user clicks &quot;Create Post&quot;
+Then they should see a validation error:
+  &quot;&quot;&quot;
+    Body cannot be blank
+  &quot;&quot;&quot;</code></pre>
+
+<p>You can imagine the steps that Cucumber would use, they&#8217;d use the Capybara methods just like the original example.</p>
+
+<p>The point is, this test is testing the user&#8217;s interaction with the page, which I think is the most <em>critical</em> part of the application. If the user cannot see this error message, why does it matter if the model validates the presence of this field? <em>It doesn&#8217;t.</em></p>
+
+<p>Testing that the model contains the validation is a secondary thing, and is generally something I skip doing. The test for at least one of the form&#8217;s validations goes into the request spec. If I&#8217;m feeling pedantic I&#8217;ll write another for the other validations, but I can <em>assume</em> that dynamic_form (the thing that provides <code>error_messages_for</code> is doing the right thing when it comes to its own methods. If one error message is showing up, good chance the others are.</p>
+
+<p>In the case where validation error messages <em>don&#8217;t</em> show up then I write a specific test for that inside the request spec before going on to fix it wherever I need to.</p>
+
+<h3 id='testing_complex_logic'>Testing Complex Logic</h3>
+
+<p>In <a href='http://spreecommerce.com'>Spree</a>, there&#8217;s complex logic involved around orders and tracking inventory. This is something I <em>could</em> test with a request spec, but how the system works is made up of so many little parts it makes it slow to test the whole thing:</p>
+
+<ul>
+<li>A product exists in the system, has a &#8220;count on hand&#8221; of 1.</li>
+
+<li>A user wants to buy this product, so clicks &#8220;Add to cart&#8221;</li>
+
+<li>A new order is created in the system, with this item</li>
+
+<li>User is prompted to sign in</li>
+
+<li>User is prompted for billing + shipping details.</li>
+
+<li>User is prompted for credit card details</li>
+
+<li>User clicks &#8220;Confirm&#8221; on order page</li>
+
+<li>Order goes through, deducting 1 from &#8220;count on hand&#8221; total, bringing it to 0.</li>
+</ul>
+
+<p>A huge portion of these steps aren&#8217;t even required to test the count on hand decreasing. What we care about is that when an order is placed in the system that the count on hand decreases by one. And so this is where a unit test would be better.</p>
+
+<p>This unit test would check that when an order is created, a method such as <code>unstock_items!</code> is called. There would then be another unit test for the actual function of the <code>unstock_items!</code> call, ensuring that it goes through the line items for the order and depletes the stock on the products as necessary.</p>
+
+<p>The unit test is going to be much lighter (and quicker to run!) than the request spec, which is just a massive win.</p>
+
+<h3 id='conclusion'>Conclusion</h3>
+
+<p>At the final retrospective at the CodeRetreat event on Saturday in Sydney, it was brought up that there&#8217;s no &#8220;right&#8221; way to test. Some people thought that testing from the &#8220;bottom-up&#8221; (unit test first, request specs or similar later) was better, but then they saw the merits of testing &#8220;top-down&#8221; (request specs or similar first, then unit tests for the fiddly bits) as well.</p>
+
+<p>I think liberal applications of both of these methodologies is <em>one</em> &#8220;right&#8221; way to test. The more I test, the more I find myself getting better at knowing what to test and how to test it. I can see the merits of both ways. I&#8217;m preferring top-down though, as that&#8217;s, in my opinion, testing what the client is going to be seeing, and that&#8217;s what matters most. If there&#8217;s a bit of gnarly code in there, like the order inventory tracking, then that&#8217;s when I&#8217;d dive down into unit testing.</p>
+
+<p>What are your thoughts on this?</p>]]></content>
+ </entry>
  
  <entry>
    <title>Don't print hard-copies</title>
@@ -1006,31 +1091,6 @@ end</code></pre>
 <p>Simple, elegant and effective. Yes please. Oh, and it&#8217;s shorter too. I&#8217;m using RSpec + Capybara to develop the <a href='http://github.com/radar/forem'>forem gem</a> (eventual aim: a decent forum engine for Rails 3) and I&#8217;m loving it. It just works, and there&#8217;s no extraneous syntax in my specs.</p>
 
 <p>If you&#8217;re working with people who aren&#8217;t technically-inclined then perhaps it would be easier to use Cucumber, as it is the easiest to read. But when working on a team of Ruby developers, developing something internal, I think Capybara is the way to go. If you&#8217;re looking for a way to combine the two techniques then I&#8217;d recommend taking a look at <a href='http://github.com/cavalle/steak'>cavalle's steak</a> gem, or <a href='http://jeffkreeftmeijer.com/2011/acceptance-testing-using-capybaras-new-rspec-dsl/'>this post by Jeff Kreeftmeijer</a>, showing how to do it with straight Capybara.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>RTFM</title>
-   <link href="http://ryanbigg.com/2011/02/rtfm"/>
-   <updated>2011-02-01T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2011/02/rtfm</id>
-   <content type="html"><![CDATA[<p>A scene that plays out in every single programming languages&#8217; (oh, and let&#8217;s not forget the glorious #gentoo) IRC channel I&#8217;ve come across:</p>
-
-<pre><code>&lt;new_guy&gt; How do I do x?
-&lt;old_hat&gt; omg noob RTFM plz</code></pre>
-
-<p>Or something to that degree.</p>
-
-<p>As Yehuda Katz <a href='http://yehudakatz.com/2010/02/09/the-blind-men-and-the-elephant-a-story-of-noobs/'>wrote nearly a year ago</a>:</p>
-<blockquote>
-  ... the "noob" can stare at "the f***ing manual" all day and simply fail to find something staring him in the face. Importantly, this does not reflect a failing on the part of the new developer.
-</blockquote>
-<p>When a person enters a channel and asks a question, our immediate reaction should not be one to shout at them to &#8220;RTFM&#8221;, but to point them to the specific point <em>in the manual</em> where they <em>may</em> find their answers. If they don&#8217;t happen to find the answer there, then either spend some time helping them or, if you&#8217;re thinking of something nasty to say, do nothing. Go surreptitiously tweet about it or something (but if you do that, you&#8217;re still a dick). Whatever you do, abusing the person who is coming to you, who is respecting your opinion on the topic, for <em>no apparent reason</em> is just not on.</p>
-
-<p>Ridiculing them will only lead them to hate you, hate the language that they&#8217;re trying so darn hard to learn and they will abandon it. They will tell their friends that the people in the channel are arrogant and unhelpful.</p>
-
-<p>In the Ruby channels, we must be better than #gentoo, better than ##php. We must strive to rise above being &#8220;holier-than-thou&#8221; and instead of getting on our high horse because we know everything we should share that knowledge with those who do not yet possess it.</p>
-
-<p>How else do you expect them to learn?</p>]]></content>
  </entry>
  
  
