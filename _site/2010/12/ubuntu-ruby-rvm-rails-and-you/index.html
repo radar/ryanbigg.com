@@ -12,9 +12,9 @@
         <a href="/2010/12/ubuntu-ruby-rvm-rails-and-you"><header>Ubuntu, Ruby, RVM, Rails, and You</header></a>
         <small>25 Dec 2010</small><br>
         <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.1.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p><p>
-<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p136 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
+<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p><p>
   If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.3.
 </p><h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
@@ -83,7 +83,7 @@ libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion</co
 <p>Are we using 1.9.3? You betcha:</p>
 
 <pre><code>ruby -v
-ruby 1.9.3p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
+ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]</code></pre>
 
 <p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes!</p>
 
@@ -93,7 +93,7 @@ ruby 1.9.3p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
 <h3>Rails</h3>
 <p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#8217;t need to use that nasty <code>sudo</code> to install things; we&#8217;ve got write-access! To install the Rails gem we&#8217;ll run this command:</p>
 
-<pre><code>gem install rails</code></pre>
+<pre><code>gem install rails -v 3.1.3</code></pre>
 
 <p>This will install the <code>rails</code> gem and the other 22 gems that it and its dependencies depend on, including Bundler.</p>
 <h3>MySQL</h3>
@@ -103,7 +103,7 @@ ruby 1.9.3p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
 ERROR:  Error installing mysql2:
 	ERROR: Failed to build gem native extension.
 
-/home/ryan/.rvm/rubies/ruby-1.9.3-p136/bin/ruby extconf.rb
+/home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
 checking for rb_thread_blocking_region()... yes
 checking for mysql_query() in -lmysqlclient... no
 checking for main() in -lm... yes
@@ -127,7 +127,7 @@ details.  You may need configuration options.</code></pre>
 ERROR:  Error installing pg:
 	ERROR: Failed to build gem native extension.
 
-/home/ryan/.rvm/rubies/ruby-1.9.3-p136/bin/ruby extconf.rb
+/home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
 checking for pg_config... no
 checking for libpq-fe.h... no
 Can&#39;t find the &#39;libpq-fe.h header

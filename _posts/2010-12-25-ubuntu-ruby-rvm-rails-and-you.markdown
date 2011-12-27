@@ -7,7 +7,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.1.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
@@ -106,7 +106,7 @@ Now whenever we open a new bash session for this user we'll have Ruby available 
 
 Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails
+    gem install rails -v 3.1.3
 
 This will install the `rails` gem and the other 22 gems that it and its dependencies depend on, including Bundler.
 
