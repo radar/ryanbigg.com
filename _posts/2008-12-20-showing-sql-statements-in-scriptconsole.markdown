@@ -14,5 +14,5 @@ The first comment on this post Ashley Williams says you could do:
 
 instead, and then goes further and sticks it in an alias in your .bashrc file (presumably):
 
-<span class='term'>alias rcon=”tail -f log/development.log & clear && script/console”</span>
+<span class='term'>alias rcon="tail -f log/development.log & clear && script/console"</span>
 

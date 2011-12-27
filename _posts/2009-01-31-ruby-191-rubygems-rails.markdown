@@ -136,52 +136,52 @@ creating Makefile
 make
 gcc -I. -I/usr/local/include/ruby1.9-1.9.1/i386-darwin9.7.0 -I/usr/local/include/ruby1.9-1.9.1/ruby/backward -I/usr/local/include/ruby1.9-1.9.1 -I. -DHAVE_MYSQL_SSL_SET -DHAVE_MYSQL_H -I/usr/local/mysql/include -I/usr/local/mysql/include  -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE   -fno-common  -O2 -g -Wall -Wno-parentheses -pipe -fno-common  -o mysql.o -c mysql.c
 mysql.c:6:21: error: version.h: No such file or directory
-mysql.c: In function ‘make_field_obj’:
-mysql.c:185: warning: unused variable ‘hash’
-mysql.c: In function ‘escape_string’:
-mysql.c:267: error: ‘struct RString’ has no member named ‘len’
-mysql.c:268: error: ‘struct RString’ has no member named ‘len’
-mysql.c:268: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:268: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:268: error: ‘struct RString’ has no member named ‘len’
-mysql.c: In function ‘real_escape_string’:
-mysql.c:401: error: ‘struct RString’ has no member named ‘len’
-mysql.c:402: error: ‘struct RString’ has no member named ‘len’
-mysql.c:402: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:402: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:402: error: ‘struct RString’ has no member named ‘len’
-mysql.c: In function ‘query’:
-mysql.c:710: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:710: error: ‘struct RString’ has no member named ‘len’
-mysql.c:729: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:729: error: ‘struct RString’ has no member named ‘len’
-mysql.c: In function ‘query_with_result_set’:
-mysql.c:882: warning: implicit declaration of function ‘TypeError’
-mysql.c: In function ‘fetch_field_direct’:
-mysql.c:960: warning: implicit declaration of function ‘Raise’
-mysql.c: In function ‘fetch_hash2’:
-mysql.c:1032: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:1033: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c: In function ‘field_inspect’:
-mysql.c:1157: error: ‘struct RString’ has no member named ‘len’
-mysql.c:1158: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:1158: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c: In function ‘stmt_bind_result’:
-mysql.c:1284: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c: In function ‘stmt_execute’:
-mysql.c:1346: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:1347: error: ‘struct RString’ has no member named ‘len’
-mysql.c:1348: error: ‘struct RString’ has no member named ‘len’
-mysql.c:1359: error: ‘struct RArray’ has no member named ‘ptr’
-mysql.c:1360: error: ‘struct RArray’ has no member named ‘ptr’
-mysql.c:1361: error: ‘struct RArray’ has no member named ‘ptr’
-mysql.c:1362: error: ‘struct RArray’ has no member named ‘ptr’
-mysql.c:1363: error: ‘struct RArray’ has no member named ‘ptr’
-mysql.c:1364: error: ‘struct RArray’ has no member named ‘ptr’
-mysql.c:1316: warning: unused variable ‘false’
-mysql.c: In function ‘stmt_prepare’:
-mysql.c:1584: error: ‘struct RString’ has no member named ‘ptr’
-mysql.c:1584: error: ‘struct RString’ has no member named ‘len’
+mysql.c: In function "make_field_obj":
+mysql.c:185: warning: unused variable "hash"
+mysql.c: In function "escape_string":
+mysql.c:267: error: "struct RString" has no member named "len"
+mysql.c:268: error: "struct RString" has no member named "len"
+mysql.c:268: error: "struct RString" has no member named "ptr"
+mysql.c:268: error: "struct RString" has no member named "ptr"
+mysql.c:268: error: "struct RString" has no member named "len"
+mysql.c: In function "real_escape_string":
+mysql.c:401: error: "struct RString" has no member named "len"
+mysql.c:402: error: "struct RString" has no member named "len"
+mysql.c:402: error: "struct RString" has no member named "ptr"
+mysql.c:402: error: "struct RString" has no member named "ptr"
+mysql.c:402: error: "struct RString" has no member named "len"
+mysql.c: In function "query":
+mysql.c:710: error: "struct RString" has no member named "ptr"
+mysql.c:710: error: "struct RString" has no member named "len"
+mysql.c:729: error: "struct RString" has no member named "ptr"
+mysql.c:729: error: "struct RString" has no member named "len"
+mysql.c: In function "query_with_result_set":
+mysql.c:882: warning: implicit declaration of function "TypeError"
+mysql.c: In function "fetch_field_direct":
+mysql.c:960: warning: implicit declaration of function "Raise"
+mysql.c: In function "fetch_hash2":
+mysql.c:1032: error: "struct RString" has no member named "ptr"
+mysql.c:1033: error: "struct RString" has no member named "ptr"
+mysql.c: In function "field_inspect":
+mysql.c:1157: error: "struct RString" has no member named "len"
+mysql.c:1158: error: "struct RString" has no member named "ptr"
+mysql.c:1158: error: "struct RString" has no member named "ptr"
+mysql.c: In function "stmt_bind_result":
+mysql.c:1284: error: "struct RString" has no member named "ptr"
+mysql.c: In function "stmt_execute":
+mysql.c:1346: error: "struct RString" has no member named "ptr"
+mysql.c:1347: error: "struct RString" has no member named "len"
+mysql.c:1348: error: "struct RString" has no member named "len"
+mysql.c:1359: error: "struct RArray" has no member named "ptr"
+mysql.c:1360: error: "struct RArray" has no member named "ptr"
+mysql.c:1361: error: "struct RArray" has no member named "ptr"
+mysql.c:1362: error: "struct RArray" has no member named "ptr"
+mysql.c:1363: error: "struct RArray" has no member named "ptr"
+mysql.c:1364: error: "struct RArray" has no member named "ptr"
+mysql.c:1316: warning: unused variable "false"
+mysql.c: In function "stmt_prepare":
+mysql.c:1584: error: "struct RString" has no member named "ptr"
+mysql.c:1584: error: "struct RString" has no member named "len"
 make: *** [mysql.o] Error 1
 
 
@@ -235,8 +235,8 @@ In file included from rb_utils.h:25,
                  from xslt.h:51,
                  from extfunc.c:19:
 /usr/local/include/ruby-1.9.1/ruby/backward/rubyio.h:2:2: warning: #warning use "ruby/io.h" instead of "rubyio.h"
-extfunc.c: In function ‘value2xpathObj’:
-extfunc.c:141: error: ‘struct RArray’ has no member named ‘len’
+extfunc.c: In function "value2xpathObj":
+extfunc.c:141: error: "struct RArray" has no member named "len"
 make: *** [extfunc.o] Error 1
 
 

@@ -40,7 +40,7 @@ No really?
 Rupees? Zimbabwean Dollars? Kroner? Helps to specify a currency... but I guess American is inferred. Also, "fee"? Do we owe you money if we refer our friends to you?
 
 <div class='quote'>
-  We know you'd send your pals for free, but that's how we roll :)
+  We know you'd send your pals for free, but that's how we roll :)
 </div>
 
 Ah, a smiley face. It makes me feel all warm and fuzzy. Also, respect goes out to the use of non-professional language here, makes it feel much better.

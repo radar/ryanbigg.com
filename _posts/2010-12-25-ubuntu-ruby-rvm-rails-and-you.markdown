@@ -7,15 +7,15 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
-<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.2p136 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
+<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p136 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p>
 
 <p>
-  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.2.
+  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.3.
 </p>
 
 
@@ -23,7 +23,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.
 
-This guide will go through installing the <a href='http://rvm.beginrescueend.com'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.2), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. 
+This guide will go through installing the <a href='http://rvm.beginrescueend.com'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. 
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once. 
 
@@ -39,7 +39,7 @@ Next, we're going to install <a href='http://git-scm.org'>Git (a version control
 
 <h3>RVM</h3>
 
-RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.2) for one of your newer projects. This is a problem that RVM solves beautifully. 
+RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully. 
 
 Another situation could be that you want to have different sets of gems on the same version of Ruby but don't want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn't have if you used the packaged Ruby</strong>.
 
@@ -83,22 +83,22 @@ Now our Ruby lives will be as painless as possible.
 
 <h3>Ruby</h3>
 
-With RVM and these packages we can install Ruby 1.9.2:
+With RVM and these packages we can install Ruby 1.9.3:
 
-    rvm install 1.9.2
+    rvm install 1.9.3
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 1.9.2 installed. To begin using it we can use this lovely command:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 1.9.3 installed. To begin using it we can use this lovely command:
 
-    rvm use 1.9.2
+    rvm use 1.9.3
 
-Are we using 1.9.2? You betcha:
+Are we using 1.9.3? You betcha:
 
     ruby -v
-    ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]
+    ruby 1.9.3p136 (2010-12-25 revision 30365) [x86_64-linux]
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes!
 
-    rvm --default use 1.9.2
+    rvm --default use 1.9.3
 
 Now whenever we open a new bash session for this user we'll have Ruby available for us to use! Yay!
 
@@ -118,7 +118,7 @@ If you're planning on using the `mysql2` gem for your application then you'll wa
     ERROR:  Error installing mysql2:
     	ERROR: Failed to build gem native extension.
 
-    /home/ryan/.rvm/rubies/ruby-1.9.2-p136/bin/ruby extconf.rb
+    /home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
     checking for rb_thread_blocking_region()... yes
     checking for mysql_query() in -lmysqlclient... no
     checking for main() in -lm... yes
@@ -144,7 +144,7 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
     ERROR:  Error installing pg:
     	ERROR: Failed to build gem native extension.
 
-    /home/ryan/.rvm/rubies/ruby-1.9.2-p136/bin/ruby extconf.rb
+    /home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
     checking for pg_config... no
     checking for libpq-fe.h... no
     Can't find the 'libpq-fe.h header
@@ -155,9 +155,9 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
 
 <h3>Fin.</h3>
 
-And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project
+And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project:
 
-    rvm use 1.9.2@rails3 --rvmrc
+    rvm use 1.9.3@rails3 --rvmrc
 
 RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.
 

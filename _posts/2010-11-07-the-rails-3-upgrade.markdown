@@ -200,12 +200,12 @@ If you wanted to add more directories to be autoloaded just add them to this arr
 The next problem was that we were getting this error in some of our views:
 
     undefined local variable or method `form_remote_tag'
-    
+
 In Rails 2 the `form_remote_tag` and related methods have been moved out into a plugin called `prototype_legacy_helper`. We installed this plugin using this command:
 
     rails plugin:install git://github.com/rails/prototype_legacy_helper
     
-After installing this plugin our tests were *still* failing. We later found out that it was a bug with `prototype_legacy_helper` itself so I asked José Valim (the Rails core member) who maintains it. He replied "I don't know". Uh oh. So Jason and I fixed the bug and in doing so I gained commit rights to the project. Therefore I suppose I'm now the maintainer of it. If you want a bug fixed in it send in a patch and I'll apply it.
+After installing this plugin our tests were *still* failing. We later found out that it was a bug with `prototype_legacy_helper` itself so I asked Jose Valim (the Rails core member) who maintains it. He replied "I don't know". Uh oh. So Jason and I fixed the bug and in doing so I gained commit rights to the project. Therefore I suppose I'm now the maintainer of it. If you want a bug fixed in it send in a patch and I'll apply it.
 
 That's how we wrapped up Tuesday.
 

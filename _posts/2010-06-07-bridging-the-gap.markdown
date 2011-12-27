@@ -4,7 +4,7 @@ layout: post
 title: Bridging the Gap
 wordpress_url: http://ryanbigg.com/?p=1010
 ---
-<strong>The question is: How do we bridge the gap between “newbie” and “experienced” in such a way that we won’t suffer the talent drought we are currently facing. What are your thoughts as to how we can fix this?</strong>
+<strong>The question is: How do we bridge the gap between "newbie" and "experienced" in such a way that we won't suffer the talent drought we are currently facing. What are your thoughts as to how we can fix this?</strong>
 
 <small>This post was intended as a script for a videocast, but I'm a horrible actor.</small>
 
@@ -33,10 +33,4 @@ I want to see that drive in people, that willingness to learn. Another example. 
 I know there's a vast group of these people out there, just looking for some company to give them a chance at developing Rails, but all the companies out there are hiring "experienced" developers. I haven't seen a single job posting in the past couple of months on the rails-oceanic list looking to hire people that they're willing to teach. Because everyone wants things done now. Nobody is willing to invest in the future of the community. What we need is some... group to invest time teaching these new people. That's what I'd love to do. I love seeing people's faces light up when they discover something or hearing that "oohhhhhhh" when something clicks. For now, I'm doing the best I can. I am personally considering after I've finished writing this book to approach some universities or TAFE colleges and asking them about how I can go about teaching them, hopefully they can give some pointers.
 
 So in summary: this has been a question that's been floating around in my head for ages: How do we bridge the gap between "newbie" and "experienced" in such a way that we won't suffer the talent drought we are currently facing.  What are your thoughts as to how we can fix this?
-
-
-
-
-
-
 
