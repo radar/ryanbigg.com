@@ -11,7 +11,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 </p>
 
 <p>
-<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p136 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
+<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p>
 
 <p>
@@ -94,7 +94,7 @@ This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go o
 Are we using 1.9.3? You betcha:
 
     ruby -v
-    ruby 1.9.3p136 (2010-12-25 revision 30365) [x86_64-linux]
+    ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes!
 
