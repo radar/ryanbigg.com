@@ -4,7 +4,7 @@ layout: post
 title: Don't print hard-copies
 ---
 
-<a href="http://www.manning-sandbox.com/thread.jspa?threadID=47354&tstart=0">What a fan-fucking-tastic way to end the day</a>. This honestly *really* upsets me, because I alone am powerless to do anything to fix this guy's problem.
+[What a fan-fucking-tasking way to end the day](http://www.manning-sandbox.com/thread.jspa?threadID=47354&tstart=0). This honestly *really* upsets me, because I alone am powerless to do anything to fix this guy's problem.
 
 You may know that I <a href='http://manning.com/katz'>wrote a book</a>. I may have written during the process
 about the difficulties faced and also about how much *it fucking rocks* to have a book published. I've never felt
