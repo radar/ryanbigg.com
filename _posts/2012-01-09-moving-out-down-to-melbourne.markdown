@@ -24,7 +24,8 @@ I was cooking dinner on the 29th and felt like I was doing nothing to further th
 plans weren't exactly conducive to that. So I thought "fuck it" and sent out a tweet asking if anyone had a place for me to
 (temporarily) stay in Melbourne.
 
-Tom replied and said I could stay at his. The very next day I drove the ~900km down to Melbourne and stayed at Tom's house.
+Tom replied with a half-joking, half-indignant tweet that I should have messaged him first and asked if I could stay there. I sent
+him a message and he replied and said I could stay at his. The very next day I drove the ~900km down to Melbourne to stay at Tom's house.
 
 ----
 
