@@ -7,7 +7,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.1.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.1 and is specifically written for a <em>development</em> environment on Ubuntu 11.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
@@ -15,7 +15,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 </p>
 
 <p>
-  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.3.
+  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets Rails 3.0.9 working for you, albeit with 1.9.1 rather than 1.9.3. But in this guide, we're going to want to use Ruby 1.9.3 and Rails 3.2.1.
 </p>
 
 
@@ -106,7 +106,7 @@ Now whenever we open a new bash session for this user we'll have Ruby available 
 
 Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 3.1.3
+    gem install rails -v 3.2.1
 
 This will install the `rails` gem and the other 22 gems that it and its dependencies depend on, including Bundler.
 
@@ -163,5 +163,5 @@ RVM is such a powerful tool and comes in handy for day-to-day Ruby development. 
 
 <h4>Credits</h4>
 
-Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm notes. He's got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were "inspired" by that post.
+Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm requirements. He's got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were "inspired" by that post.
 

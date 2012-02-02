@@ -12,11 +12,11 @@
         <a href="/2010/12/ubuntu-ruby-rvm-rails-and-you"><header>Ubuntu, Ruby, RVM, Rails, and You</header></a>
         <small>25 Dec 2010</small><br>
         <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.1.3 and is specifically written for a <em>development</em> environment on Ubuntu 10.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.1 and is specifically written for a <em>development</em> environment on Ubuntu 11.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p><p>
 <strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p><p>
-  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.3.
+  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets Rails 3.0.9 working for you, albeit with 1.9.1 rather than 1.9.3. But in this guide, we're going to want to use Ruby 1.9.3 and Rails 3.2.1.
 </p><h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 <p>Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.</p>
 
@@ -93,7 +93,7 @@ ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]</code></pre>
 <h3>Rails</h3>
 <p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#8217;t need to use that nasty <code>sudo</code> to install things; we&#8217;ve got write-access! To install the Rails gem we&#8217;ll run this command:</p>
 
-<pre><code>gem install rails -v 3.1.3</code></pre>
+<pre><code>gem install rails -v 3.2.1</code></pre>
 
 <p>This will install the <code>rails</code> gem and the other 22 gems that it and its dependencies depend on, including Bundler.</p>
 <h3>MySQL</h3>
@@ -142,7 +142,7 @@ details.  You may need configuration options.</code></pre>
 
 <p>RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 <h4>Credits</h4>
-<p>Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm notes. He&#8217;s got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were &#8220;inspired&#8221; by that post.</p>
+<p>Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm requirements. He&#8217;s got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were &#8220;inspired&#8221; by that post.</p>
       </article>
     </div>
     <div id='disqus_thread'></div>
