@@ -19,8 +19,7 @@ learned everything you're going to learn. Go forth and develop engines without a
 
 If you're staying for after-the-fold, then let me explain my reasonings for this.
 
-When we (Phil Arndt, Josh Adams and I) were developing Forem, we talked about what authentication engine we would support inside
-Forem. The issue was that different people have different opinions on what authentication system is "best". Some like <a href='https://github.com/technoweenie/restful_authentication'>Restful Authentication</a>, some like <a href='https://github.com/binarylogic/authlogic'>Authlogic</a>, others like <a href='https://github.com/thoughtbot/clearance'>Clearance</a>, others like <a href='https://github.com/NoamB/socery'>Sorcery</a>, and finally others like to build their own custom solution. That was something made easier with the inclusion of `has_secure_password` in Rails 3.1.
+When we (Phil Arndt, Josh Adams and I) were developing <a href='https://github.com/radar/forem'>Forem</a>, we talked about what authentication engine we would support inside Forem. The issue was that different people have different opinions on what authentication system is "best". Some like <a href='https://github.com/technoweenie/restful_authentication'>Restful Authentication</a>, some like <a href='https://github.com/binarylogic/authlogic'>Authlogic</a>, others like <a href='https://github.com/thoughtbot/clearance'>Clearance</a>, others like <a href='https://github.com/NoamB/sorcery'>Sorcery</a>, and finally others like to build their own custom solution. That was something made easier with the inclusion of `has_secure_password` in Rails 3.1.
 
 That's a lot of fragmentation!
 
