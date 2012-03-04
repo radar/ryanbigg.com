@@ -14,7 +14,7 @@
         <p>This tutorial was written using Ruby 1.8.6, Rails 2.1.</p>
 
 <p>A lot of the time I see people asking how they can do something like access levels for their Rails applications and this usually boils down to some STI (single table inheritance) love. You&#8217;ll need to have <a href='http://github.com/technoweenie/restful-authentication/tree/master'>restful_authentication</a> installed. <h3>What is Single Table Inhertiance?</h3> Single Table Inheritance is where you have multiple models that inherit from a single table, hence the name. It&#8217;s great for situations like this where we want multiple user access levels, but we don&#8217;t want to create multiple tables for the different kinds of users of our application. <h3>Okay.. so how do I use it?</h3> Firstly you start off with one model that inherits from <span class='term'>ActiveRecord::Base</span>, and I would advise running <span class='term'>script/generate authenticated person session</span> to get this:</p>
-<strong>app/models/person.rb</strong><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<strong>app/models/person.rb</strong><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class Person &lt; ActiveRecord::Base
 
 end&lt;/pre&gt;

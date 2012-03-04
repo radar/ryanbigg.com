@@ -57,7 +57,7 @@
 
 <p>Another thing we covered was Migrations. Migrations let you keep track of the versions of your database, and therefore allow you to revert changes if you manage, and apparently you will manage, to stuff something up.</p>
 
-<p>To generate a migration first of all you can run the &#8220;ruby script/generate migration <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p>To generate a migration first of all you can run the &#8220;ruby script/generate migration <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;name&gt;&quot;, where &lt;name&gt; is something logical, like create_tables. This will generate the first migration, or first version of your database. This file will be located at &quot;db/migrate/001_&lt;name&gt;.rb&quot;, go on and open it up to see something like this:</pre></p>
 
 <p><span>code</span> class CreateTables &lt; ActiveRecord::Migration def self.up end def self.down end end <span>/code</span></p>
@@ -78,10 +78,10 @@
 
 <p>In a hassle-free instant your tables are in your database raring to go.</p>
 
-<p>Now say that I forgot to put in the blog_id field for comments (which I intentionally did in the example), you need to create a new migration by performing &#8220;ruby script/generate migration <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p>Now say that I forgot to put in the blog_id field for comments (which I intentionally did in the example), you need to create a new migration by performing &#8220;ruby script/generate migration <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;another_name&gt;&quot; where another_name can be whatever you please.</pre></p>
 
-<p>Again you&#8217;ll see the familiar self.up and self.down methods if you open 002_<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p>Again you&#8217;ll see the familiar self.up and self.down methods if you open 002_<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;another_name&gt;.rb which we&apos;ll alter to make it become:</pre></p>
 
 <p><span>code</span> class add_blogid &lt; ActiveRecord::Migration def self.up add_column(&#8220;comments&#8221;,&#8221;blog_id&#8221;,:integer) end end</p>
@@ -94,7 +94,7 @@
 
 <p>Now what if you stuff something up?</p>
 
-<p>rake db:migrate VERSION=<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p>rake db:migrate VERSION=<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;version_number_you_want_to_revert_to&gt;</pre></p>
 
 <p>So say you want version 2 because you obliterated the users table in version 3,</p>

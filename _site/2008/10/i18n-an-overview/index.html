@@ -61,7 +61,7 @@ I18n.default_locale = "en-AU"
 <p>When I have a string I want translated in my app I will simply call stuff like <span class='term'>t(:author_heading)</span> and Rails will look up the correct translation for it, which in this case is just &#8220;Author&#8221;.</p>
 
 <p>Now if I had another translation file, say <i>locales/es.rb</i> and I had Spanish users on rboard they could select a locale from their profile page and that would store it as a string on their user record. To translate this, we can use a before_filter on the application controller:</p>
-<b>app/controllers/application.rb</b><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<b>app/controllers/application.rb</b><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 class ApplicationController &lt; ActionController::Base
   before_filter :set_locale
@@ -73,7 +73,7 @@ end
 <p>This will set the locale to whatever the user has set, providing that they are logged in.</p>
 <h3>Interpolation</h3>
 <p>If you wish to insert a value into a translation you can use interpolation. To do this you can specify the t method call like this:</p>
-<b>in a i18n-friendly file somewhere</b><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<b>in a i18n-friendly file somewhere</b><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 &lt;%= t(:welcome, :user =&gt; current_user.login) %&gt;
 &lt;/pre&gt;</pre>
@@ -84,7 +84,7 @@ end
 <p>And the output of the translation will now be &#8220;welcome Ryan!&#8221; or whatever the user login was.</p>
 <h3>Counting</h3>
 <p>If you have a translation such as <span class='term'>:x_new_messages</span> in your translation file and you want the output of this translation to be correctly pluralized you can pass the count option to this:</p>
-<b>In any <span class='term'>t</span> method supporting files</b><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<b>In any <span class='term'>t</span> method supporting files</b><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 &lt;%= t(:x_new_messages, :count =&gt; current_user.messages.size) %&gt;
 &lt;/pre&gt;</pre>
@@ -97,26 +97,26 @@ end
 <p>And depending on the value of count it will return one of those three outcomes.</p>
 <h3>Forcing a Locale</h3>
 <p>If you want to force a locale on a single translation you can do this by specifying the &lt;span class=&#8217;term&#8217;&gt;:locale&lt;/option&gt; to the t method call like so:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 &lt;%= t(:english, :locale =&gt; &quot;en-AU&quot;) %&gt;
 &lt;/pre&gt;</pre>
 <p>And this will always show the en-AU translation of the english key in the en-AU.rb locale file.</p>
 <h3>Alternative Translations</h3>
 <p>If one of your translations does not match like:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 &lt;%= t(:norsk) %&gt;
 &lt;/pre&gt;</pre>
 <p>You can have I18n fall back to any number of other translations:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 &lt;%= t(:norsk, :default =&gt; [:norwegian, :up_north, :northwards, &quot;norway&quot;]) %&gt;
 &lt;/pre&gt;</pre>
 <p>I18n will attempt to get a default translation from the options specified and will select the first one. If all translations failed then the string version, &#8220;norway&#8221; will be outputted.</p>
 <h3>Retrieving Multiple Translations</h3>
 <p>To get multiple translations back at the same time you can specify an array as the first argument to the t method.</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 &lt;%= t(:forums, :topics) %&gt;
 &lt;/pre&gt;</pre>

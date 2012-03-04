@@ -11,7 +11,7 @@
       <article>
         <a href="/2007/12/more-migration-sexiness-remove_columns"><header>More Migration Sexiness - remove_columns &amp; add_columns</header></a>
         <small>19 Dec 2007</small><br>
-        <p>After seeing <a href='http://errtheblog.com/posts/51-sexy-migrations'>a post on errtheblog</a> about them making migrations sexier, I was inspired on the train ride this morning to write something similar. I had a table and I wanted to drop many columns for it and I ended up writing something like: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+        <p>After seeing <a href='http://errtheblog.com/posts/51-sexy-migrations'>a post on errtheblog</a> about them making migrations sexier, I was inspired on the train ride this morning to write something similar. I had a table and I wanted to drop many columns for it and I ended up writing something like: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;ruby&quot;&gt; remove_column :table, :column_1</pre></p>
 
 <p>remove_column :table, :column_2</p>
@@ -20,7 +20,7 @@
 
 <p>remove_column :table, :column_4&#8230;&lt;/pre&gt; and by now you&#8217;re starting to get the idea. I have to not only type out remove_column four times, but also the table name! What a waste of time!</p>
 
-<p>So I hacked up some code and put it into lib/custom_methods.rb. <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p>So I hacked up some code and put it into lib/custom_methods.rb. <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;ruby&quot;&gt;module ActiveRecord
   module ConnectionAdapters
     class MysqlAdapter

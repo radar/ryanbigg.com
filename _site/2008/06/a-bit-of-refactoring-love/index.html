@@ -13,7 +13,7 @@
         <small>13 Jun 2008</small><br>
         <h3>Find, Find, Find, Find, I don't think so...</h3>
 <p>As explained in previous posts, Rails controllers have 7 default actions (index, new, create, show, edit, update, destroy). Four of these seven actions make the same find call, <span class='term'>Model.find(params[:id])</span> and this tutorial is to tidy that up so you&#8217;re not repeating yourself over four different actions. To clean this up we&#8217;ll just call a before filter:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&apos;rails&apos;&gt;
 class ForumsController &lt; ApplicationController
   before_filter :find_forum
@@ -86,7 +86,7 @@ end
 </pre><h3>Shorter Routing</h3>
 <p>One last thing that I&#8217;d like to show you is shorter routing. Ever since the restful routing helpers were added, routing to specific controllers and their actions has become easier and easier. Rails 2.0 makes it extremely easy, but first we&#8217;ll see how far we&#8217;ve come: &lt;ol&gt; &lt;li&gt;&lt;span class=&#8217;term&#8217;&gt;&lt;%= link_to @forum, { :controller =&gt; &#8220;forums&#8221;, :action =&gt; &#8220;show&#8221;, :id =&gt; @forum.id } %&gt;&lt;/span&gt;&lt;/li&gt; &lt;li&gt;&lt;span class=&#8217;term&#8217;&gt;&lt;%= link_to @forum, forum_path(@forum) %&gt;&lt;/span&gt;&lt;/li&gt; &lt;li&gt;&lt;span class=&#8217;term&#8217;&gt;&lt;%= link_to @forum, forum_path %&gt;&lt;/span&gt;&lt;/li&gt; &lt;li&gt;&lt;span class=&#8217;term&#8217;&gt;&lt;%= link_to @forum, @forum %&gt;&lt;/span&gt;&lt;/li&gt; &lt;li&gt;&lt;span class=&#8217;term&#8217;&gt;&lt;%= link_to @forum %&gt;&lt;/span&gt;&lt;/li&gt; &lt;/ol&gt;</p>
 
-<p>As long as there&#8217;s a <span class='term'>#to_s</span> method in the Forum model it will insert that as the phrase shown to the user for the link. All of the above should produce the same URL, with the exception of the first which will produce <span class='term'>/forums/show/1</span>, and going down the list they&#8217;re just shorter ways of writing the same thing. If you had nested routes such as <span class='term'>forum_topic_path(@forum, @topic)</span> you could do <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p>As long as there&#8217;s a <span class='term'>#to_s</span> method in the Forum model it will insert that as the phrase shown to the user for the link. All of the above should produce the same URL, with the exception of the first which will produce <span class='term'>/forums/show/1</span>, and going down the list they&#8217;re just shorter ways of writing the same thing. If you had nested routes such as <span class='term'>forum_topic_path(@forum, @topic)</span> you could do <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;span class=&apos;term&apos;&gt;</pre></p>
       </article>
     </div>

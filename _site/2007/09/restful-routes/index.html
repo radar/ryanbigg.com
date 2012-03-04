@@ -27,7 +27,7 @@
 
 <p>The line tells Rails that we want to make that controller RESTful. Previously, we have used <span>term</span>:controller =&gt; &#8220;blogs&#8221;, :action =&gt; &#8220;show&#8221;, :id =&gt; blog.id<span>/term</span> to go to a specific blog. Thanks to RESTful routing, all we now need to type is something like:</p>
 
-<p><span>code=&#8221;app/views/_blog.rhtml&#8221;</span> <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
+<p><span>code=&#8221;app/views/_blog.rhtml&#8221;</span> <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
 &lt;h2&gt;</pre></p>
 
 <p>This <span>term</span>link_to<span>/term</span> would use RESTful routing to take us to the blog. The way it does this is that it sees that it&#8217;s a standard link, so the HTTP request method is GET by default. It then sees that we want the path to a blog, defined by the singularisation of our controller which indicates we only want one blog. Finally, in the argument list after it we specify which blog. This can be the blog object itself (as shown in the example), or it could be <span>term</span>blog.id<span>/term</span>.</p>

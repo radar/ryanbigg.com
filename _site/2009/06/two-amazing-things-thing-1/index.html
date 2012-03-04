@@ -16,9 +16,9 @@
 <p>Today <a href='http://hamptoncatlin.com/'>Hampton Catlin</a> was talking with <a href='http://drnicwilliams'>Dr Nic</a> about Ruby 1.9 issues he was having with his <a href='http://github.com/hcatlin/wikimedia-mobile/tree/master'>wikimedia-mobile</a> project, specifically he was getting <span class='term'>incompatible character encodings: ASCII-8BIT and UTF-8</span>. This is a guy I admire and look up to and think he&#8217;s &#8220;the shit&#8221;. He came to my company looking for help and it was my (and Bo&#8217;s) task to help him figure out what&#8217;s going on. Honoured.</p>
 
 <p>The search box on his site was a bit wrong for fanciful languages like that German:</p>
-<img src='http://img.skitch.com/20090630-bfedm35y467ifgkdmxsjagqx56.png' alt='Wikipedia' />
+<img alt='Wikipedia' src='http://img.skitch.com/20090630-bfedm35y467ifgkdmxsjagqx56.png' />
 <p>and some pages threw some more interesting errors:</p>
-<img src='http://img.skitch.com/20090630-c94qy5kdspcm83n835yk63cawq.png' alt='Argument Error' />
+<img alt='Argument Error' src='http://img.skitch.com/20090630-c94qy5kdspcm83n835yk63cawq.png' />
 <p>I&#8217;d seen this error before in <a href='http://frozenplague.net/2009/01/ruby-191-rubygems-rails/'>my Ruby 1.9 testing</a>, but that was so long ago that I had forgotten what context or even if I fixed it. Probably not.</p>
 
 <p>I remembered someone linking to <a href='http://pragdave.blogs.pragprog.com/pragdave/2008/04/fun-with-ruby-1.html'>this post by Dave Thomas</a> a while ago but forgot the link, but thanks to <a href='http://google.com'>Google</a> I was able to enter &#8220;Ruby 1.9 encodings&#8221; and it knew <strong>exactly</strong> what I was after. I followed the &#8220;instructions&#8221; and put <span class='term'># encoding: utf-8</span> at the top of the merb executable and the <em>buffer.rb</em> file in HAML (which, it turns out had no bearing on the final result). No luck. Then Hampton mentioned he put -KU on the end of the ruby interpreter which randomly fixed/broke random things. So I tried that, and got a couple of degrees of success.</p>
