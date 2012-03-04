@@ -42,7 +42,7 @@ on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own r
 <hr />
 <p>If you&#8217;re staying for after-the-fold, then let me explain my reasonings for this.</p>
 
-<p>When we (Phil Arndt, Josh Adams and I) were developing Forem, we talked about what authentication engine we would support inside Forem. The issue was that different people have different opinions on what authentication system is &#8220;best&#8221;. Some like <a href='https://github.com/technoweenie/restful_authentication'>Restful Authentication</a>, some like <a href='https://github.com/binarylogic/authlogic'>Authlogic</a>, others like <a href='https://github.com/thoughtbot/clearance'>Clearance</a>, others like <a href='https://github.com/NoamB/socery'>Sorcery</a>, and finally others like to build their own custom solution. That was something made easier with the inclusion of <code>has_secure_password</code> in Rails 3.1.</p>
+<p>When we (Phil Arndt, Josh Adams and I) were developing <a href='https://github.com/radar/forem'>Forem</a>, we talked about what authentication engine we would support inside Forem. The issue was that different people have different opinions on what authentication system is &#8220;best&#8221;. Some like <a href='https://github.com/technoweenie/restful_authentication'>Restful Authentication</a>, some like <a href='https://github.com/binarylogic/authlogic'>Authlogic</a>, others like <a href='https://github.com/thoughtbot/clearance'>Clearance</a>, others like <a href='https://github.com/NoamB/sorcery'>Sorcery</a>, and finally others like to build their own custom solution. That was something made easier with the inclusion of <code>has_secure_password</code> in Rails 3.1.</p>
 
 <p>That&#8217;s a lot of fragmentation!</p>
 
@@ -52,7 +52,7 @@ on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own r
 
 <p>By having this authentication inside Spree, we are expressly stating that you <em>must</em> use Devise and have it as a dependency of your application, even if your application uses something completely different.</p>
 
-<p>A bigger problem comes up when your application is still using Devise. <code>spree_auth</code>&#8217;s configuration for Devise may cause slowdowns or conflict with the configuration set up in your application. This may not happen though, because the railtie&#8217;s (i.e. <code>spree_auth</code>&#8217;s) initializers are run before the application&#8217;s, and so it would take precedence.</p>
+<p>A bigger problem comes up when your application <em>is also</em> using Devise. <code>spree_auth</code>&#8217;s configuration combined with your application&#8217;s configuration for Devise may cause slowdowns or conflict with each other. This may not happen though, because the railtie&#8217;s (i.e. <code>spree_auth</code>&#8217;s) initializers are run before the application&#8217;s, and so it would take precedence.</p>
 
 <p>For instance, we&#8217;ve had a couple of reports where the Devise configuration in <a href='https://github.com/resolve/refinery'>Refinery</a> have been conflicting with Spree&#8217;s authentication.</p>
 
@@ -125,6 +125,8 @@ on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own r
       <li><a href="/2011/03/when-to-cuke">When to Cuke</a><abbr>03 Mar 2011</abbr></li>
   
       <li><a href="/2011/02/rtfm">RTFM</a><abbr>01 Feb 2011</abbr></li>
+  
+      <li><a href="/2011/01/rails-3-in-action-50-off">Rails 3 in Action: 50% off</a><abbr>27 Jan 2011</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

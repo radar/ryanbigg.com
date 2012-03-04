@@ -35,9 +35,7 @@ engine.
 By having this authentication inside Spree, we are expressly stating that you *must* use Devise and have it as a dependency of your
 application, even if your application uses something completely different.
 
-A bigger problem comes up when your application is still using Devise. `spree_auth`'s configuration for Devise may cause slowdowns or
-conflict with the configuration set up in your application. This may not happen though, because the railtie's (i.e. `spree_auth`'s)
-initializers are run before the application's, and so it would take precedence.
+A bigger problem comes up when your application *is also* using Devise. `spree_auth`'s configuration combined with your application's configuration for Devise may cause slowdowns or conflict with each other. This may not happen though, because the railtie's (i.e. `spree_auth`'s) initializers are run before the application's, and so it would take precedence.
 
 For instance, we've had a couple of reports where the Devise configuration in <a href='https://github.com/resolve/refinery'>Refinery</a> have been conflicting with Spree's authentication.
 

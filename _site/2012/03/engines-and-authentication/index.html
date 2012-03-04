@@ -30,7 +30,7 @@ on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own r
 
 <p>By having this authentication inside Spree, we are expressly stating that you <em>must</em> use Devise and have it as a dependency of your application, even if your application uses something completely different.</p>
 
-<p>A bigger problem comes up when your application is still using Devise. <code>spree_auth</code>&#8217;s configuration for Devise may cause slowdowns or conflict with the configuration set up in your application. This may not happen though, because the railtie&#8217;s (i.e. <code>spree_auth</code>&#8217;s) initializers are run before the application&#8217;s, and so it would take precedence.</p>
+<p>A bigger problem comes up when your application <em>is also</em> using Devise. <code>spree_auth</code>&#8217;s configuration combined with your application&#8217;s configuration for Devise may cause slowdowns or conflict with each other. This may not happen though, because the railtie&#8217;s (i.e. <code>spree_auth</code>&#8217;s) initializers are run before the application&#8217;s, and so it would take precedence.</p>
 
 <p>For instance, we&#8217;ve had a couple of reports where the Devise configuration in <a href='https://github.com/resolve/refinery'>Refinery</a> have been conflicting with Spree&#8217;s authentication.</p>
 
