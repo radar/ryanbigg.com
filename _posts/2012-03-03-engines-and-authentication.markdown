@@ -37,7 +37,7 @@ application, even if your application uses something completely different.
 
 A bigger problem comes up when your application *is also* using Devise. `spree_auth`'s configuration combined with your application's configuration for Devise may cause slowdowns or conflict with each other. This may not happen though, because the railtie's (i.e. `spree_auth`'s) initializers are run before the application's, and so it would take precedence.
 
-For instance, we've had a couple of reports where the Devise configuration in <a href='https://github.com/resolve/refinery'>Refinery</a> have been conflicting with Spree's authentication.
+For instance, we've had a couple of reports where the Devise configuration in <a href='https://github.com/resolve/refinerycms'>RefineryCMS</a> have been conflicting with Spree's authentication.
 
 Finally, by having two different User models (one in the application and one in the engine), it doesn't allow users to be shared
 across the two components. This means that you would need to modify Spree to work with your application or your application to work
@@ -70,5 +70,5 @@ I personally think Forem's approach is the best that we're going to get with eng
 provide the authentication engine and for the engine to hook into it easily enough.
 
 It's my thinking that we should remove the `spree_auth` gem entirely and then rely solely on the application to provide a `User` (or
-similar) class. The authentication parts of Refinery (and engines in similar situations) should also be removed. The application is
+similar) class. The authentication parts of RefineryCMS (and engines in similar situations) should also be removed. The application is
 what should have the say on what authentication engine to use, and not an engine.
