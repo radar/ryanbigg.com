@@ -30,8 +30,7 @@ And the people rejoiced a second time.
 
 > Any sufficiently advanced technology is indistinguishable from magic.
 
-While this seems like magic, it's not. What this is doing is actually very, very neat. The `redirect_to` method, much like it's
-cousins `link_to` and `form_for` all use a common method to build URLs, called `url_for`. The `url_for` method takes many different
+While this seems like magic, it's not. What this is doing is actually very, very neat. The `redirect_to` method, much like its cousins `link_to` and `form_for` all use a common method to build URLs, called `url_for`. The `url_for` method takes many different
 varieties of objects, such as strings, hashes or even instances of models, like in the example above.
 
 What it does with these objects then, is quite neat. In the case of the `redirect_to @post` call above, it inspects the `@post`

@@ -59,7 +59,7 @@
 <p>Any sufficiently advanced technology is indistinguishable from magic.</p>
 </blockquote>
 
-<p>While this seems like magic, it&#8217;s not. What this is doing is actually very, very neat. The <code>redirect_to</code> method, much like it&#8217;s cousins <code>link_to</code> and <code>form_for</code> all use a common method to build URLs, called <code>url_for</code>. The <code>url_for</code> method takes many different varieties of objects, such as strings, hashes or even instances of models, like in the example above.</p>
+<p>While this seems like magic, it&#8217;s not. What this is doing is actually very, very neat. The <code>redirect_to</code> method, much like its cousins <code>link_to</code> and <code>form_for</code> all use a common method to build URLs, called <code>url_for</code>. The <code>url_for</code> method takes many different varieties of objects, such as strings, hashes or even instances of models, like in the example above.</p>
 
 <p>What it does with these objects then, is quite neat. In the case of the <code>redirect_to @post</code> call above, it inspects the <code>@post</code> object, sees that it is an object of the <code>Post</code> class (we assume, anyway) and checks to see if that object has been persisted in a database somewhere by calling <code>persisted?</code> on it. If it has been persisted, then <code>url_for</code> knows that this object can be found somewhere, and that the place it can be found is most likely under a method called <code>post_path</code>. So it calls this method, and passes in the <code>to_param</code> value of this object which is usually the <code>id</code>.</p>
 
