@@ -20,7 +20,7 @@
 <p>It all starts with the good &#8216;ol config/routes.rb file. In here is where all the nice little routes live, from map.root all the way down to the map.connect &#8216;:controller/service.wsdl&#8217;, :action =&gt; &#8216;wsdl&#8217; that many people still leave in their routes file, thinking that if they remove it the entire world would collapse upon itself into one small quantum singularity. In here you&#8217;d place something similar to: <pre lang='rails'>
 map.resources :forums, :has_many => :topics
 map.resources :topics, :has_many => :posts
-map.resources :posts</pre> Not running on Rails 2.0? Then this is the code you want: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+map.resources :posts</pre> Not running on Rails 2.0? Then this is the code you want: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;
 map.resources :forums do |forum|
   forum.resources :topics, :name_prefix =&gt; &quot;forum_&quot;
@@ -30,7 +30,7 @@ end</pre></p>
 
 <p>map.resources :posts&lt;/pre&gt; This defines routes like: <pre>/forums/1</pre> - Show a forum <pre>/forums/1/topics</pre> - Index action for a single forum <pre>/forums/1/topics/1</pre> - showing a single topic <pre>/topics/1</pre> - Same thing <pre>/topics/1/posts/</pre> - I would imagine this would do a similar thing to /topics/1 <pre>/topics/1/posts/1/edit</pre> - Allows you to edit a single post <pre>/posts/1/edit</pre> - Same thing</p>
 
-<p>Now to define something like this without the magic of restful routing, one would have to be clinically insane: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>Now to define something like this without the magic of restful routing, one would have to be clinically insane: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;
 map.connect &quot;/forums/:id&quot;, :controller =&gt; &quot;forums&quot;, :action =&gt; &quot;show&quot;
 map.connect &quot;/forums/:forum_id/topics/&quot;, :controller =&gt; &quot;topics&quot;, :action =&gt; &quot;index&quot;
@@ -39,7 +39,7 @@ map.connect &quot;/topics/:id&quot;, :controller =&gt; &quot;topics&quot;, :acti
 
 <p>Seeing a pattern here? Restful routing gives you a whole heap of cool stuff, namely the 7 core methods that I&#8217;ll cover right after the models.</p>
 
-<p>A forum system has the following tables: forums, topics, posts and users, and the models would look something like the following: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>A forum system has the following tables: forums, topics, posts and users, and the models would look something like the following: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;
 class Forum &lt; ActiveRecord::Base
   has_many :topics
@@ -53,7 +53,7 @@ class Topic &lt; ActiveRecord::Base
   belongs_to :user
 end
 &lt;/pre&gt;</pre></p>
-<br /><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<br /><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;
 class Post &lt; ActiveRecord::Base
   belongs_to :topic

@@ -14,7 +14,7 @@
         <p>I&#8217;ve seen this question asked time and time again, so I&#8217;m going to write a short tutorial about how to do it. The question is self-refferential relationships for a model, often the User model to determine the relationship between two different users. I&#8217;ll assume that you&#8217;ve already got a Rails application and at least a User model for this. We&#8217;ll use a has_many :through relationship to define which users are related to who.</p>
 
 <p>Let&#8217;s generate a model for the relationship: <span class='term'>script/generate model relationship</span>. This will generate a migration which we&#8217;ll create our relationships table with.</p>
-<strong class='code-title'>db/migrate/xxx_create_relationships.rb</strong><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<strong class='code-title'>db/migrate/xxx_create_relationships.rb</strong><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class CreateRelationships &lt; ActiveRecord::Migration
   def self.up
     create_table :relationships do |t|

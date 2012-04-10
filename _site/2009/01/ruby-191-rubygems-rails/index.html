@@ -14,7 +14,7 @@
         <strong>I have <a href='http://ryanbigg.com/2009/12/ruby-1-9-1-friends-11-months-on/'>made a followup post</a>to this which contains more up-to-date information. This post is left here as an example of the state of Ruby 1.9 in January-July 2009.</strong><strong>Last updated: July 11th, 2009</strong><a href='http://eigenclass.org/hiki/Changes+in+Ruby+1.9'>For changes between Ruby 1.8 and Ruby 1.9, look here</a>
 <p>So this morning I sat down to give Ruby 1.9.1 a shot with my goal being to get at least the very, very basic Rails application running on it. I&#8217;ve run this guide on Mac OS X. Your mileage may vary.</p>
 <h2>Ruby 1.9.1</h2>
-<p>Download it from the <a href='http://ruby-lang.org'>ruby-lang.org website</a>, install it using <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>Download it from the <a href='http://ruby-lang.org'>ruby-lang.org website</a>, install it using <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;span class=&apos;term&apos;&gt;autoconf &amp;&amp; ./configure --with-readline-dir=/usr/local --program-suffix=1.9 &amp;&amp; make &amp;&amp; sudo make install&lt;/span&gt;</pre> and everything should be peachy. I&#8217;ve gone about installing Ruby 1.9.1 alongside my current installation of Ruby. If you wish to go the &#8220;whole hog&#8221; (and I don&#8217;t recommend that you do, unless you know how to revert it) don&#8217;t run the configure command with the <span class='term'>--program-suffix</span> option specified.</p>
 <h2>Rubygems</h2>
 <p>Since <a href='http://ryanbigg.com/2009/01/ruby-191-rubygems-rails/#comment-7575'>Ruby 1.9.1 comes with Rubygems now</a>, and this has been confirmed to Just Work (tm). The command used was <span class='term'>gem1.9</span>.</p>
@@ -36,7 +36,7 @@
 <p>So now I&#8217;ll try a <a href='http://github.com/radar/rboard'>real app</a>, rBoard.</p>
 
 <p>Upon trying to run <span class='term'>rake1.9 spec</span> it gives:</p>
-<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre&gt;
 frozenplague:rboard radar (master)$ rake1.9 spec --trace
 (in /Users/radar/Sites/rboard)
@@ -66,7 +66,7 @@ puts Gem::RubyGemsVersion.inspect
 <p>I&#8217;m serious. Go figure.</p>
 
 <p>Now we&#8217;ll run it again and we&#8217;ll get a slightly better error:</p>
-<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre&gt;
 frozenplague:rboard radar (master)$ rake1.9 spec --trace
 (in /Users/radar/Sites/rboard)
@@ -180,7 +180,7 @@ Results logged to /usr/local/lib/ruby1.9/gems/1.9.1/gems/mysql-2.7/gem_make.out
 <p>Lost cause, use Rack instead.</p>
 <h3>passenger (2.2.4)</h3>
 <p>Tested with passenger 2.2.4.</p>
-<a href='http://blog.phusion.nl/2009/02/02/getting-ready-for-ruby-191'>As stated here</a><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<a href='http://blog.phusion.nl/2009/02/02/getting-ready-for-ruby-191'>As stated here</a><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;h3&gt;&lt;a name=&apos;nokogiri&apos;&gt;nokigiri&lt;/a&gt; &amp; &lt;a name=&apos;ruby-xslt&apos;&gt;ruby-xslt&lt;/a&gt;&lt;/h3&gt;</pre>
 <p>Mac users apparently do not need to install ruby-xslt. Everyone else is not so lucky.</p>
 
@@ -209,7 +209,7 @@ make: *** [extfunc.o] Error 1
 
 Gem files will remain installed in /usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6 for inspection.
 </pre>
-<p>So we use <a href='#gem_solution'>the solution above</a> and we patch this gem to work by editing the <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt_lib/extfunc.c</em>, line 141. We&#8217;ll also need to edit <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt_lib/extfunc.c</em>, lines 504, 533 (two occurrences), parameters.c lines 42 and 43. Then run <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>So we use <a href='#gem_solution'>the solution above</a> and we patch this gem to work by editing the <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt_lib/extfunc.c</em>, line 141. We&#8217;ll also need to edit <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt_lib/extfunc.c</em>, lines 504, 533 (two occurrences), parameters.c lines 42 and 43. Then run <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;span class=&apos;term&apos;&gt;sudo ruby extconf.rb &amp;&amp; sudo make &amp;&amp; sudo make install&lt;/span&gt;</pre> and this gem should install.</p>
 
 <p>To install nokogiri, ensure you have followed the steps above and then <span class='term'>sudo gem1.9 install nokogiri</span>. Tested with nokogiri 1.2.3 and ruby-xslt 0.9.6.</p>

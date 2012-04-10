@@ -15,7 +15,7 @@
 
 <p>At my new job we signed up with <a href='http://zendesk.com'>ZenDesk</a>, which acts as our helpdesk/ticketing system for our clients who sign up to our site and buy our product. Because ZenDesk uses emails instead of plain ol&#8217; usernames for authentication, Ruby chucked a fit when we tried doing stuff like: <pre lang='rails'>class User &lt; ActiveResource::Base
 self.site = "http://ouremail@ourwebsite.com:ourpassword@ourplace.zendesk.com"
-end</pre> Ruby&#8217;s URI class just didn&#8217;t like that first @ sign in there! So Fred originally recommended we try to encode it, %40. That didn&#8217;t work. Then the next morning Fred suggests doing this: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+end</pre> Ruby&#8217;s URI class just didn&#8217;t like that first @ sign in there! So Fred originally recommended we try to encode it, %40. That didn&#8217;t work. Then the next morning Fred suggests doing this: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class User &amp;lt; ActiveResource::Base
 self.site = &quot;http://ourplace.zendesk.com&quot;</pre></p>
 
@@ -27,7 +27,7 @@ self.site = &quot;http://ourplace.zendesk.com&quot;</pre></p>
 
 <p>So for all you savvy kids using Rails&#8217; ActiveResource and trying to make it play nice with ZenDesk, that&#8217;s how we did it.</p>
 
-<p>Then I went a little further with the refactoring and just made a ZenDesk model: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>Then I went a little further with the refactoring and just made a ZenDesk model: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class ZenDesk &amp;lt; ActiveResource::Base</pre></p>
 
 <p>self.site = &#8220;http://ourplace.zendesk.com&#8221;</p>

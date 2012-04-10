@@ -27,7 +27,7 @@
 </li>
 </ol>
 
-<p>However, 2.3.6 broke HAML <a href='http://twitter.com/nex3/status/14549663207'>which Nathan Weizenbaum tweeted about</a>. He later said he had worked around it <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>However, 2.3.6 broke HAML <a href='http://twitter.com/nex3/status/14549663207'>which Nathan Weizenbaum tweeted about</a>. He later said he had worked around it <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;a href=&apos;http://twitter.com/nex3/status/14551076330&apos;&gt; and contributed back to Rails in &lt;a href=&apos;http://github.com/rails/rails/commit/e3f14d12cdad03a2294c8f7d4e170bbaecefe098&apos;&gt;these&lt;/a&gt; &lt;a href=&apos;http://github.com/rails/rails/commit/e53791f8c06cad94f69789143e442e9866f9dfe0&apos;&gt;three&lt;/a&gt; &lt;a href=&apos;http://github.com/rails/rails/commit/48fbe7b0d8fcecce200ea35f46a8716077e13aea&apos;&gt;commits&lt;/a&gt;. Jeremy Kemper (bitsweat) then thought that there should be a 2.3.7 release.</pre></p>
 
 <p>Unfortunately this <a href='http://github.com/rails/rails/commit/e3f14d12cdad03a2294c8f7d4e170bbaecefe098'>first commit</a> broke Rails view helpers &#8211; such as <code>form_tag</code> &#8211; for those who didn&#8217;t have the <em>rails-xss</em> plugin installed. Jeremy missed this, and I spoke with him earlier and from what I could determine he missed the bug because he had <em>rails-xss</em> installed. When people upgraded to 2.3.7, there was <a href='http://weblog.rubyonrails.org/2010/5/24/ruby-on-rails-2-3-7-released'>an outcry</a> started. A few people announced this issue, and therefore 2.3.7 was broken.</p>

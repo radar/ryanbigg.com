@@ -12,19 +12,19 @@
         <a href="/2009/10/connecting-to-multiple-databases-using-activerecord"><header>Connecting to Multiple Databases Using ActiveRecord</header></a>
         <small>17 Oct 2009</small><br>
         <p>You can call <span class='term'>establish_connection</span> with the key that points to another database config in your <em>config/database.yml file</em></p>
-<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre&gt;
 class Person &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
-&lt;/pre&gt;</pre><pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+&lt;/pre&gt;</pre><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre&gt;
 class Ticket &lt; ActiveRecord::Base
   establish_connection(:bug_tracker)
 end
 &lt;/pre&gt;</pre>
 <p>If you have a whole bunch of models that need to connect to another database:</p>
-<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre&gt;
 class HR &lt; ActiveRecord::Base
   establish_connection(:hr)

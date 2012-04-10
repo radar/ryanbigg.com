@@ -11,7 +11,7 @@
       <article>
         <a href="/2008/08/a-sense-of-belonging"><header>A Sense of Belonging</header></a>
         <small>29 Aug 2008</small><br>
-        <p>Numerous times I&#8217;ve needed and I&#8217;ve seen other people have needed the need to check whether an object belongs to the currently logged in user. I&#8217;ve worked out that something like this works: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+        <p>Numerous times I&#8217;ve needed and I&#8217;ve seen other people have needed the need to check whether an object belongs to the currently logged in user. I&#8217;ve worked out that something like this works: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class User &lt; ActiveRecord::Base
   has_many :posts
   def owns?(object)
@@ -21,7 +21,7 @@ end&lt;/pre&gt;
 This works when you have a currently logged in user and call it by using &lt;span class=&quot;term&quot;&gt;current_user.owns?(@post)&lt;/span&gt;. Now what if you wanted to do it the other way around? Well it&apos;s really as simple as this:
 &lt;pre lang=&quot;rails&quot;&gt;class Post </pre></p>
 
-<p>If you wanted to use either of these in the controller, it would be like this: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>If you wanted to use either of these in the controller, it would be like this: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class PostsController </pre></p>
 
 <p>def update @post = Post.find(params<span>:id</span>) if current_user.owns?(@post) # or @post.belongs_to?(current_user) # carry on&#8230; if @post.update_attributes(params<span>:post</span>) flash<span>:success</span> = &#8220;Post updated!&#8221; redirect_to topic_path(@topic) else flash<span>:error</span> = &#8220;Post could not be updated.&#8221; render :action =&gt; &#8220;edit&#8221; end else flash<span>:error</span> = &#8220;You do not own that post.&#8221; end end</p>

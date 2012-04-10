@@ -252,7 +252,7 @@ end</code></pre>
 <p>So what&#8217;s up?</p>
 
 <p>Well, as it turns out, when you try to go to the login page for an application that hasn&#8217;t yet been activated it just warns you that it hasn&#8217;t been activated. I&#8217;m not quite clear on how Facebooker works in this particular section, but it is my understanding that the login page is supposed to take you to the application page. Let me explain in step-by-step kind of way. &#8220;application&#8217;s page&#8221; means your site in this scenario. You&#8217;ve set this up by specifying the &#8220;Connect URL&#8221; in the &#8220;Connect&#8221; section of your Application Settings page to be the root-level of your site. So this is how Facebooker does its thing:</p>
-<pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;ol&gt;
 &lt;li&gt;Facebooker grabs an auth_token using the `facebook.Auth.createToken` API method. This returns something like `72a910e1f24eb6034549d23cd2245f28`&lt;/li&gt;
 &lt;li&gt; This `auth_token` is then passed to `http://facebook.com/login.php` as a parameter, which is rendered in whichever fashion you wish. For all intents and purposes, our application renders it in another browser window.&lt;/li&gt;

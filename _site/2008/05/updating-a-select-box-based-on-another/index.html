@@ -18,7 +18,7 @@
   @customers = Customer.find(:all, :order => "name ASC")
 end</pre> Relatively simple. We instantiate a new call object so the form knows where to go, and we define <span class='term'>@customers</span> so the first select box has some information.</p>
 
-<p>Of course in our Customer model we have: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>Of course in our Customer model we have: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;class Customer &lt; ActiveRecord::Base
   has_many :machines
 end&lt;/pre&gt;
@@ -34,7 +34,7 @@ And the call model:
 
 <p>These define the relationships used within the system.</p>
 
-<p>Next is the <span class='term'>new.html.erb</span> page itself. <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>Next is the <span class='term'>new.html.erb</span> page itself. <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;&lt;strong&gt;New Call&lt;/strong&gt;
 &lt;% form_for @call do |f| %&gt;
   &lt;%= render :partial =&gt; &quot;form&quot; %&gt;
@@ -51,7 +51,7 @@ Right now that we have the form all set up, lets set up our machines controller
 
 <h1 id='crud_operations_go_here'>CRUD operations go here</h1>
 
-<p>def by_customer @machines = Machine.find_all_by_customer_id(params<span>:customer_id</span>) end end&lt;/pre&gt; And our <span class='term'>by_customer.rjs</span>: <pre lang='rails'>page.replace_html 'call_machine_id', options_from_collection_for_select(@machines, "id", "name")</pre> And finally the config/routes.rb: <pre style='border: solid 3px red; background-color: pink' class='markdown-html-error'>REXML could not parse this XML/HTML: 
+<p>def by_customer @machines = Machine.find_all_by_customer_id(params<span>:customer_id</span>) end end&lt;/pre&gt; And our <span class='term'>by_customer.rjs</span>: <pre lang='rails'>page.replace_html 'call_machine_id', options_from_collection_for_select(@machines, "id", "name")</pre> And finally the config/routes.rb: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
 &lt;pre lang=&quot;rails&quot;&gt;map.resources :customers do |customer|
   customer.resources :machines
 end</pre></p>
