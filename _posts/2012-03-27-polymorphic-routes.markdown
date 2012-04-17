@@ -35,7 +35,18 @@ varieties of objects, such as strings, hashes or even instances of models, like 
 
 What it does with these objects then, is quite neat. In the case of the `redirect_to @post` call above, it inspects the `@post`
 object, sees that it is an object of the `Post` class (we assume, anyway) and checks to see if that object has been persisted in a
-database somewhere by calling `persisted?` on it. If it has been persisted, then `url_for` knows that this object can be found
+database somewhere by calling `persisted?` on it. 
+
+By "persisted", I mean that a Ruby object has a matching record in the database somewhere. The `persisted?` method in Active Record is implemented like this:
+
+    def persisted?
+      !(new_record? || destroyed?)
+    end
+
+If the object wasn't created through a call such as `Model.new` then it won't be a new record, and if it hasn't had the `destroy` method called on it won't be
+destroyed either. If both of these cases are true, then that makes the object has most likely been _persisted_ to the database in the form of a record.
+
+If it has been persisted, then `url_for` knows that this object can be found
 somewhere, and that the place it can be found is most likely under a method called `post_path`. So it calls this method, and passes
 in the `to_param` value of this object which is usually the `id`.
 
