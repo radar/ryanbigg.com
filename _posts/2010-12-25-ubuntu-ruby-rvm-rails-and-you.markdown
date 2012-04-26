@@ -89,16 +89,30 @@ This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go o
 
     rvm use 1.9.3
 
+Please note, using '1.9.3' as a default allows for when ruby is updated for that version then ALL projects using 1.9.3 
+as their string will be updated as well. This is a side affect people might not want. The preferred method is to include 
+the patch level to the '--default' parameter so that if 1.9.3 gets updated, other projects don't automatically have that 
+change applied to to them as well. If, say for example, for some reason some method/action gets deprecated in a patchlevel 
+or some method signature gets changed between patchlevels, this will affect _all_ projects defined using the '1.9.3' string.
+This may or may not be what people want. Please be aware of this! Now, to continue on..
+
 Are we using 1.9.3? You betcha:
 
     ruby -v
     ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]
 
-Or, even better, would be to make this the *default* for our user! Oooh, yes!
+Or, even better, would be to make this the *default* for our user! Oooh, yes! Noting the '1.9.3' side-note above, lets take note of the patchlevel, which in this case is '-p194' and add that to our default selection.
 
-    rvm --default use 1.9.3
+    rvm --default use 1.9.3-p194
 
 Now whenever we open a new bash session for this user we'll have Ruby available for us to use! Yay!
+
+As an additional side-note: Users can, and should, use a gemset when possible so that they don't pollute their 'default' 
+which is what is selected when a gemset is not specified in either a project's .rvmrc, or at the command-line.
+Each installed Ruby has a '@global' gemset. This is used to share gems with other gemsets created under that specific Ruby, 
+and with the 'default' gemset. This can be selected by running 'rvm gemset use global' and then installing the gems you wish 
+to share to other gemsets including 'default'. You can, of course simply install in each gemset but this will cause needless 
+duplication and use up more disk-space and bandwidth.
 
 <h3>Rails</h3>
 
