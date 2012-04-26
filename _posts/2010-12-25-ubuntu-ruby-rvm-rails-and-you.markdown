@@ -7,7 +7,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.1 and is specifically written for a <em>development</em> environment on Ubuntu 11.10, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.1 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
@@ -47,7 +47,7 @@ We're going to use it to install only one version of Ruby, but we can <a href='h
 
 With `git-core` and `curl` installed we'll be able to install RVM with this command:
 
-    bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer)
+   curl -L get.rvm.io | bash -s stable
 
 The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.
 
@@ -65,19 +65,17 @@ The next command we run will tell us what other packages we need to install for 
     ...
     # For Ruby / Ruby HEAD (MRI, Rubinius, & REE), install the following:
     ruby: /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev 
-    curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev 
-    sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool 
-    bison subversion
+    curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev
+    libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
 
 A couple of these packages we've already installed, such as `git-core` and `curl`. They won't be re-installed again. 
 
 These packages will lessen the pain when we're working with Ruby. For example, the `libssl-dev` package will make OpenSSL support in Ruby work, `libsqlite3-0` and `libsqlite3-dev` are required for the `sqlite3-ruby` gem and the `libxml2-dev` and `libxslt-dev` packages are required for the `nokogiri` gem. Let's install all these packages now using this command:
 
-    sudo apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core 
-    zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev 
-    libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
-    
-<strong>This command *must* be written on a single line, otherwise some of the packages will not install.</strong>
+    sudo apt-get install build-essential openssl libreadline6 libreadline6-dev \
+    curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 \
+    libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison  \
+    subversion
 
 Now our Ruby lives will be as painless as possible.
 
@@ -94,7 +92,7 @@ This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go o
 Are we using 1.9.3? You betcha:
 
     ruby -v
-    ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]
+    ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes!
 
@@ -106,9 +104,9 @@ Now whenever we open a new bash session for this user we'll have Ruby available 
 
 Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 3.2.1
+    gem install rails -v 3.2.3
 
-This will install the `rails` gem and the other 22 gems that it and its dependencies depend on, including Bundler.
+This will install the `rails` gem and the other 28 gems that it and its dependencies depend on, including Bundler.
 
 <h3>MySQL</h3>
 
