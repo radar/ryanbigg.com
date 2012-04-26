@@ -23,7 +23,7 @@ wordpress_url: http://ryanbigg.com/?p=1215
 
 Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.
 
-This guide will go through installing the <a href='http://rvm.beginrescueend.com'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. 
+This guide will go through installing the <a href='http://rvm.io'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. 
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once. 
 
@@ -39,15 +39,15 @@ Next, we're going to install <a href='http://git-scm.org'>Git (a version control
 
 <h3>RVM</h3>
 
-RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully. 
+RVM is a <a href='http://rvm.io'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully. 
 
-Another situation could be that you want to have different sets of gems on the same version of Ruby but don't want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn't have if you used the packaged Ruby</strong>.
+Another situation could be that you want to have different sets of gems on the same version of Ruby but don't want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.io/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn't have if you used the packaged Ruby</strong>.
 
-We're going to use it to install only one version of Ruby, but we can <a href='http://rvm.beginrescueend.com'>consult the documentation</a> if we want to install a different version of Ruby. 
+We're going to use it to install only one version of Ruby, but we can <a href='http://rvm.io'>consult the documentation</a> if we want to install a different version of Ruby. 
 
 With `git-core` and `curl` installed we'll be able to install RVM with this command:
 
-   curl -L get.rvm.io | bash -s stable
+    curl -L get.rvm.io | bash -s stable
 
 The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.
 
@@ -153,7 +153,7 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
 
 <h3>Fin.</h3>
 
-And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project:
+And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project:
 
     rvm use 1.9.3@rails3 --rvmrc
 
