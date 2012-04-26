@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2012-04-10T12:46:05-04:00</updated>
+ <updated>2012-04-26T10:24:12-05:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,9 +13,97 @@
 
  
  <entry>
+   <title>Integration testing engines</title>
+   <link href="http://ryanbigg.com/2012/04/integration-testing-engines"/>
+   <updated>2012-04-26T00:00:00-05:00</updated>
+   <id>http://ryanbigg.com/2012/04/integration-testing-engines</id>
+   <content type="html"><![CDATA[<p>I gave a lightning talk at Railsconf in response to a talk done by Andy Maleh about engines. His talk contained some content that I strongly disagreed with, and so I felt it necessary to set the record straight. You can see the <a href='http://speakerdeck.com/u/radar/p/integration-testing-engines'>slides for it here</a>. I will have a more thorough dissection of the talk once the video is online.</p>
+
+<p>To be perfectly honest, I am probably bitter because I <em>was</em> going to submit a talk about engines and then decided to submit another talk instead which ultimately didn&#8217;t get accepted. Nevertheless&#8230;</p>
+
+<h3 id='drawing_routes'>Drawing routes</h3>
+
+<p>The first thing that I <a href='https://twitter.com/ryanbigg/status/194501115524554754'>can recall disagreeing</a> with is Andy&#8217;s suggestion to draw routes for the engine on the <code>Rails.application.routes</code> object, by putting this code inside the <code>config/routes.rb</code> file of the engine:</p>
+
+<pre><code>Rails.application.routes.draw do
+  resources :people
+end</code></pre>
+
+<p>The problem with this is that if the application&#8217;s routes file has a catch-all route at the bottom, the route for the engine won&#8217;t get matched because it is drawn after the application.</p>
+
+<p>This leads to additional complexity as well, as by drawing these routes on the application like this, they would also correspond to a controller that&#8217;s at the top-level of the namespace, i.e. <code>PeopleController</code>. This can lead to confusion as to where the controller is located. How can someone know if <code>PeopleController</code> is inside the engine or is inside the application? Furthermore, the more engines that get added to this application, the more confusing such a thing would get.</p>
+
+<p>By namespacing the routes <em>properly</em> (as we do in <a href='https://spreecommerce.com'>Spree</a> and <a href='http://github.com/radar/forem'>Forem</a>) , like this:</p>
+
+<pre><code>Spree::Core::Engine.routes.draw do
+  resources :products
+end</code></pre>
+
+<p>And by using <code>isolate_namespace</code> inside your engine, the routes will be a completely separate entity for each engine, rather than one big &#8220;ball o&#8217; mud&#8221;. In Spree this namespace isolation is to the <code>Spree</code> module (i.e. <code>isolate_namespace Spree</code>), so that the controllers will be <code>Spree::ProductsController</code> and not <code>Spree::Core::ProductsController</code> and the like.</p>
+
+<p>By using a completely isolated namespace like this, your controller would end up being correctly namespaced and then there&#8217;s no confusion as to which engine the controller is located within. You can then mount your engine at whatever path you want inside your application by explicitly defining the mount point inside <code>config/application.rb</code> like this:</p>
+
+<pre><code>mount Spree::Core::Engine, :at =&gt; &quot;/&quot;</code></pre>
+
+<p>By mounting it at root, it will seem as if the engine were a part of the application itself. If you wanted to change where the engine was mounted, it&#8217;s a simple matter of changing the <code>:at</code>: option and you can carry on like normal.</p>
+
+<p>There&#8217;s a whole bunch of other stuff that <code>isolate_namespace</code> does as well, like namespacing of models and tables. It&#8217;s absolutely important that you namespace your engine to avoid confusion.</p>
+
+<p>Oh, and one more thing: by doing this namespacing, if you want to get to an engine route from inside the application, you&#8217;ll need to call the engine&#8217;s routing proxy method, like this:</p>
+
+<pre><code>spree.products_path</code></pre>
+
+<p>If you attempted to do <code>products_path</code> it would go to the application&#8217;s <code>products_path</code>, which may be undefined.</p>
+
+<p>Similarly, to get to the application&#8217;s routes from inside the engine, use <code>main_app</code>:</p>
+
+<pre><code>main_app.people_path</code></pre>
+
+<h3 id='switching_back_and_forth'>Switching back and forth</h3>
+
+<p>The second thing that I disagreed with during Andy&#8217;s talk was that he said that when developing an engine you needed to constantly switch back and forth between the application and the engine. This is simply not true. If you are developing your engine correctly, the development of it can be done in complete isolation from a real application and instead depend on a dummy application. It should not be a requirement for you to have two separate projects coupled together like this so you can test one or the other.</p>
+
+<p>How we do it in Forem is that we have a dummy application inside <code>spec/dummy</code> which is generated by running <code>bundle exec rake forem:dummy_app</code>. This command <a href='https://github.com/radar/forem/blob/master/spec/lib/generators/forem/dummy/dummy_generator.rb'>creates a new dummy application</a> with things like <code>User</code> model already set up inside it. Inside Spree, there&#8217;s a similar command called <code>bundle exec rake test_app</code> which <a href='https://github.com/spree/spree/blob/master/core/lib/generators/spree/dummy/dummy_generator.rb'>does basically the same thing</a>.</p>
+
+<p>With the dummy application inside the engine, the engine is mounted onto that application and the tests are then run against that application. No need to switch back and forth from application to engine.</p>
+
+<p>If you have modifications for the engine inside your application, there&#8217;s also a way to test that. With Spree, we provide a module called <code>Spree::Core::UrlHelpers</code> that you can include into your <code>RSpec.configure</code> block like this:</p>
+
+<pre><code>require &#39;spree/core/url_helpers&#39;
+RSpec.configure do |c|
+  c.include Spree::Core::UrlHelpers, :type =&gt; :integration
+end</code></pre>
+
+<p>Then in your integration tests it&#8217;s simply a matter of referencing the Spree routes like this:</p>
+
+<pre><code>visit spree.products_path</code></pre>
+
+<p>Now for when you want to test that a customization to a Spree controller is behaving as intended, we&#8217;ve got a module for that too. It&#8217;s called <code>Spree::Core::TestingSupport::ControllerRequests</code> and you can include it like this:</p>
+
+<pre><code>require &#39;spree/core/testing_support/controller_requests&#39;
+RSpec.configure do |c|
+  c.include Spree::Core::TestingSupport::ControllerRequests, :type =&gt; :controller
+end</code></pre>
+
+<p>Then you can write your controller specs like this:</p>
+
+<pre><code>describe Spree::ProductsController do
+  it &quot;can see all the products&quot; do
+    spree_get :index
+  end
+end</code></pre>
+
+<p>This will then allow you to make requests to the Spree engine from inside your application&#8217;s tests.</p>
+
+<h3 id='conclusion'>Conclusion</h3>
+
+<p>There&#8217;s absolutely no reason to mount engine routes directly on <code>Rails.application.routes</code>, nor is there a requirement to switch back and forth. Integration testing an engine is extremely easy once you know how to do it.</p>]]></content>
+ </entry>
+ 
+ <entry>
    <title>Polymorphic Routes</title>
    <link href="http://ryanbigg.com/2012/03/polymorphic-routes"/>
-   <updated>2012-03-27T00:00:00-04:00</updated>
+   <updated>2012-03-27T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2012/03/polymorphic-routes</id>
    <content type="html"><![CDATA[<p>Really early on in Rails, you would write routes like this:</p>
 
@@ -45,7 +133,17 @@
 
 <p>While this seems like magic, it&#8217;s not. What this is doing is actually very, very neat. The <code>redirect_to</code> method, much like its cousins <code>link_to</code> and <code>form_for</code> all use a common method to build URLs, called <code>url_for</code>. The <code>url_for</code> method takes many different varieties of objects, such as strings, hashes or even instances of models, like in the example above.</p>
 
-<p>What it does with these objects then, is quite neat. In the case of the <code>redirect_to @post</code> call above, it inspects the <code>@post</code> object, sees that it is an object of the <code>Post</code> class (we assume, anyway) and checks to see if that object has been persisted in a database somewhere by calling <code>persisted?</code> on it. If it has been persisted, then <code>url_for</code> knows that this object can be found somewhere, and that the place it can be found is most likely under a method called <code>post_path</code>. So it calls this method, and passes in the <code>to_param</code> value of this object which is usually the <code>id</code>.</p>
+<p>What it does with these objects then, is quite neat. In the case of the <code>redirect_to @post</code> call above, it inspects the <code>@post</code> object, sees that it is an object of the <code>Post</code> class (we assume, anyway) and checks to see if that object has been persisted in a database somewhere by calling <code>persisted?</code> on it.</p>
+
+<p>By &#8220;persisted&#8221;, I mean that a Ruby object has a matching record in the database somewhere. The <code>persisted?</code> method in Active Record is implemented like this:</p>
+
+<pre><code>def persisted?
+  !(new_record? || destroyed?)
+end</code></pre>
+
+<p>If the object wasn&#8217;t created through a call such as <code>Model.new</code> then it won&#8217;t be a new record, and if it hasn&#8217;t had the <code>destroy</code> method called on it won&#8217;t be destroyed either. If both of these cases are true, then that makes the object has most likely been <em>persisted</em> to the database in the form of a record.</p>
+
+<p>If it has been persisted, then <code>url_for</code> knows that this object can be found somewhere, and that the place it can be found is most likely under a method called <code>post_path</code>. So it calls this method, and passes in the <code>to_param</code> value of this object which is usually the <code>id</code>.</p>
 
 <p>In short, it&#8217;s effectively doing this:</p>
 
@@ -141,7 +239,7 @@
  <entry>
    <title>Please learn Rails</title>
    <link href="http://ryanbigg.com/2012/03/please-learn-rails"/>
-   <updated>2012-03-17T00:00:00-04:00</updated>
+   <updated>2012-03-17T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2012/03/please-learn-rails</id>
    <content type="html"><![CDATA[<p><em>Tyler Menezes wrote a blog post called <a href='https://tyler.menez.es/articles/i-will-not-learn-rails.html'>&#8220;I will not learn Rails&#8221;</a> which appeared on my Twitter timeline. After reading it, I felt like I needed to reply to it in long form. Here it is.</em></p>
 
@@ -319,7 +417,7 @@
  <entry>
    <title>Frontier, we need to talk</title>
    <link href="http://ryanbigg.com/2012/03/frontier-we-need-to-talk"/>
-   <updated>2012-03-14T00:00:00-04:00</updated>
+   <updated>2012-03-14T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2012/03/frontier-we-need-to-talk</id>
    <content type="html"><![CDATA[<p>Hi,</p>
 
@@ -357,7 +455,7 @@
  <entry>
    <title>Engines and Authentication</title>
    <link href="http://ryanbigg.com/2012/03/engines-and-authentication"/>
-   <updated>2012-03-03T00:00:00-05:00</updated>
+   <updated>2012-03-03T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2012/03/engines-and-authentication</id>
    <content type="html"><![CDATA[<p>I&#8217;ve been in America now longer than I&#8217;ve been in my new apartment, but it&#8217;s for very good reasons. The first of these was <a href='http://spreeconf.com'>SpreeConf</a>, which was held in New York City and the second was <a href='http://ruby.onales.com'>Ruby
 on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own reasons.</p>
@@ -402,7 +500,7 @@ on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own r
  <entry>
    <title>Free Help</title>
    <link href="http://ryanbigg.com/2012/01/free-help"/>
-   <updated>2012-01-31T00:00:00-05:00</updated>
+   <updated>2012-01-31T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2012/01/free-help</id>
    <content type="html"><![CDATA[<p>Sigh. Here I&#8217;m going to sound like one of <em>those</em> celebrities. But I thought I should lay down some ground rules, so here goes.</p>
 
@@ -442,7 +540,7 @@ on Ales</a>, held in Bend, Oregon. Both were amazing conferences for their own r
  <entry>
    <title>Moving Out: Down to Melbourne</title>
    <link href="http://ryanbigg.com/2012/01/moving-out-down-to-melbourne"/>
-   <updated>2012-01-09T00:00:00-05:00</updated>
+   <updated>2012-01-09T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2012/01/moving-out-down-to-melbourne</id>
    <content type="html"><![CDATA[<p>Oops, spoilers!</p>
 
@@ -479,7 +577,7 @@ Sydney</a> to a more remote suburb called Narwee. If you don&#8217;t know where 
  <entry>
    <title>Matt Lightner</title>
    <link href="http://ryanbigg.com/2011/12/matt-lightner"/>
-   <updated>2011-12-27T00:00:00-05:00</updated>
+   <updated>2011-12-27T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2011/12/matt-lightner</id>
    <content type="html"><![CDATA[<p>Matt Lightner &#8211; <a href='http://www.facebook.com/mlightner'>according to posts on his Facebook</a> &#8211; is dead. It apparently happened on Christmas day, which just adds supremely to the suckiness of it all.</p>
 
@@ -493,7 +591,7 @@ Sydney</a> to a more remote suburb called Narwee. If you don&#8217;t know where 
  <entry>
    <title>Deciding what tests to write</title>
    <link href="http://ryanbigg.com/2011/12/deciding-what-tests-to-write"/>
-   <updated>2011-12-05T00:00:00-05:00</updated>
+   <updated>2011-12-05T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2011/12/deciding-what-tests-to-write</id>
    <content type="html"><![CDATA[<p>More people who are new to Ruby are getting into TDD and BDD thanks to the wonderful tools like RSpec and Cucumber that make it easy for them to do so. There&#8217;s no real public information on exactly <em>what</em> you should be testing, though.</p>
 
@@ -578,7 +676,7 @@ Then they should see a validation error:
  <entry>
    <title>Don't print hard-copies</title>
    <link href="http://ryanbigg.com/2011/11/don-t-print-hard-copies"/>
-   <updated>2011-11-29T00:00:00-05:00</updated>
+   <updated>2011-11-29T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2011/11/don-t-print-hard-copies</id>
    <content type="html"><![CDATA[<p><a href='http://www.manning-sandbox.com/thread.jspa?threadID=47354&amp;tstart=0'>What a fan-fucking-tasking way to end the day</a>. This honestly <em>really</em> upsets me, because I alone am powerless to do anything to fix this guy&#8217;s problem.</p>
 
@@ -667,7 +765,7 @@ Errata</a>. Has yours been updated? No? Neither have the three sitting on my ben
  <entry>
    <title>Screencast: wrong argument type</title>
    <link href="http://ryanbigg.com/2011/11/screencast-wrong-argument-type"/>
-   <updated>2011-11-23T00:00:00-05:00</updated>
+   <updated>2011-11-23T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2011/11/screencast-wrong-argument-type</id>
    <content type="html"><![CDATA[<p>I am really surprised at how well-received my <a href='http://ryanbigg.com/2011/10/screencast-pilot/'>Conway's
 Game of Life</a> screencast was. Seems that everyone who watched it liked it, which is always a nice thing :)</p>
@@ -683,7 +781,7 @@ class)</code> error which was happening inside of the <code>spree_paypal_express
  <entry>
    <title>The Rails API</title>
    <link href="http://ryanbigg.com/2011/11/the-rails-api"/>
-   <updated>2011-11-14T00:00:00-05:00</updated>
+   <updated>2011-11-14T00:00:00-06:00</updated>
    <id>http://ryanbigg.com/2011/11/the-rails-api</id>
    <content type="html"><![CDATA[<p>Recently, the Rails API got a facelift. Gone is the boring and dull blue four-frame-set API that once was. Now we have a dual-framed red API instead. The colours are good, I&#8217;ll give it that. Take a look at it:</p>
 <img src='/images/rails-api/original.png' />
@@ -726,7 +824,7 @@ ActiveSupport::Concern</a> it actually takes you right to those docs. This makes
  <entry>
    <title>Going on a Spree</title>
    <link href="http://ryanbigg.com/2011/11/going-on-a-spree"/>
-   <updated>2011-11-03T00:00:00-04:00</updated>
+   <updated>2011-11-03T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/11/going-on-a-spree</id>
    <content type="html"><![CDATA[<p>When I was in America, I had the pleasure of talking to a lot of Americans. Americans are fun. As soon as they hear the Australian accent they say something along the lines of &#8220;Oh, you&#8217;re from Australia?! I <em>love</em> Australia!&#8221;.</p>
 
@@ -748,7 +846,7 @@ ActiveSupport::Concern</a> it actually takes you right to those docs. This makes
  <entry>
    <title>Screencast: Pilot</title>
    <link href="http://ryanbigg.com/2011/10/screencast-pilot"/>
-   <updated>2011-10-31T00:00:00-04:00</updated>
+   <updated>2011-10-31T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/10/screencast-pilot</id>
    <content type="html"><![CDATA[<p>Today I went out and got myself a microphone so I could begin to do some screencasting. I did some back in February for EngineYard and really enjoyed it and have been wanting to get back into it for a while, but I have been busy writing.</p>
 
@@ -762,7 +860,7 @@ ActiveSupport::Concern</a> it actually takes you right to those docs. This makes
  <entry>
    <title>That One Test</title>
    <link href="http://ryanbigg.com/2011/10/that-one-test"/>
-   <updated>2011-10-19T00:00:00-04:00</updated>
+   <updated>2011-10-19T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/10/that-one-test</id>
    <content type="html"><![CDATA[<p>Have you ever worked on a project that has tests? Probably. How about a project that has a test that runs fine by itself but fails when the whole suite runs? Maybe. That&#8217;s what I&#8217;m going to be talking about here today.</p>
 
@@ -841,7 +939,7 @@ end</code></pre>
  <entry>
    <title>Leaving Chicago</title>
    <link href="http://ryanbigg.com/2011/10/leaving-chicago"/>
-   <updated>2011-10-02T00:00:00-04:00</updated>
+   <updated>2011-10-02T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/10/leaving-chicago</id>
    <content type="html"><![CDATA[<p>I have just spent two weeks in America being reminded what such great people live outside my own country.</p>
 
@@ -939,7 +1037,7 @@ end</code></pre>
  <entry>
    <title>Learning and Asking</title>
    <link href="http://ryanbigg.com/2011/09/learning-and-asking"/>
-   <updated>2011-09-07T00:00:00-04:00</updated>
+   <updated>2011-09-07T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/09/learning-and-asking</id>
    <content type="html"><![CDATA[<p>Today, I read <a href='http://495west.com/post/9885249988/the-wrong-question-i-want-to-learn-to-code-what?73331330'>this post</a> which discusses what the right question alternative to &#8220;I want to learn to code, what should I do?&#8221;. This post begins with this claim:</p>
 
@@ -971,7 +1069,7 @@ end</code></pre>
  <entry>
    <title>With Rails 3.1, comes great things</title>
    <link href="http://ryanbigg.com/2011/09/with-rails-3-1-comes-great-things"/>
-   <updated>2011-09-04T00:00:00-04:00</updated>
+   <updated>2011-09-04T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/09/with-rails-3-1-comes-great-things</id>
    <content type="html"><![CDATA[<p>This is the first blog post I&#8217;ve put up here in nearly three months. Considering that I&#8217;ve posted <em>at least once a month</em> since May &#8216;07, that&#8217;s some sort of record. Since I last posted, a lot has happened. In no particular order&#8230;</p>
 
@@ -997,7 +1095,7 @@ end</code></pre>
  <entry>
    <title>Sprocket asset tags internals</title>
    <link href="http://ryanbigg.com/2011/06/sprocket-asset-tags-internals"/>
-   <updated>2011-06-19T00:00:00-04:00</updated>
+   <updated>2011-06-19T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/06/sprocket-asset-tags-internals</id>
    <content type="html"><![CDATA[<p>Yesterday&#8217;s post and twitter bitching caught the eye of our <a href='http://twitter.com/dhh'>fearless leader</a> who basically claimed <a href='https://twitter.com/#!/dhh/status/81987522766450688'>that I've not made documentation patches recently</a>. I responded with a small reminder that I&#8217;ve done <a href='https://twitter.com/ryanbigg/status/81988004947828736'>some documentation work</a> and went a step further and begun an <a href='http://ryanbigg.com/guides/asset_pipeline.html'>Asset Pipeline Guide</a> because I could. I could have pulled the whole &#8220;Don&#8217;t you know who I am?!!&#8221; faux-lebrity deal, but I thought I would be humble. Append &#8220;for a change&#8221; to the end of the previous sentence, if you wish.</p>
 
@@ -1013,7 +1111,7 @@ end</code></pre>
  <entry>
    <title>The Asset Pipeline</title>
    <link href="http://ryanbigg.com/2011/06/the-asset-pipeline"/>
-   <updated>2011-06-18T00:00:00-04:00</updated>
+   <updated>2011-06-18T00:00:00-05:00</updated>
    <id>http://ryanbigg.com/2011/06/the-asset-pipeline</id>
    <content type="html"><![CDATA[<p>Today I begun writing the section that I&#8217;ve deemed should be at the beginning of Appendix B (&#8220;Tidbits&#8221;) of Rails 3 in Action. It&#8217;s about the asset pipeline stuff that has been brought into Rails 3.1 with the aid of the Sprockets gem. I&#8217;ve decided to put it at the beginning of this Appendix as it&#8217;s probably the most interesting thing in the entire appendix and it hasn&#8217;t been written about in this much detail (at least, from what I&#8217;ve seen) before.</p>
 
@@ -1052,121 +1150,6 @@ end</code></pre>
 <p>It&#8217;s just so incredibly hard trying to explain something in the book when there&#8217;s just <em>no</em> reference material to go by or anybody else to ask.</p>
 
 <p>For without this documentation / reference material, the people in search of it write ranty blog posts. And we don&#8217;t want that.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>Mac OS X, Ruby, RVM, Rails and You</title>
-   <link href="http://ryanbigg.com/2011/06/mac-os-x-ruby-rvm-rails-and-you"/>
-   <updated>2011-06-06T00:00:00-04:00</updated>
-   <id>http://ryanbigg.com/2011/06/mac-os-x-ruby-rvm-rails-and-you</id>
-   <content type="html"><![CDATA[<p>
-  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
-</p><p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you/'>Ubuntu, Ruby, RVM, Rails and You</a> guide, but it's written primarily for Mac OS X.</p><p>
-  If you're looking for a quick-n-dirty way, then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.2.
-</p>
-<p>This guide will go through installing the <a href='http://rvm.beginrescueend.com'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.2), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>.</p>
-
-<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
-
-<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &#8220;What is Rubygems?&#8221; and more importantly &#8220;How do I turn this computer-thing on?&#8221;. This knowledge can be garnered by reading the first chapter of <a href='http://manning.com/black2'>any Ruby book</a>.</p>
-<h3>Housekeeping</h3>
-<p>The first thing we&#8217;re going to need to install is XCode, which can be found on the second DVD of your install disks or, alternatively, on the Mac App Store for $5. It&#8217;s a big download, so you may want to find the DVDs again. We&#8217;re going to need this for the build tools that it installs to install Ruby and other packages.</p>
-
-<p>First of all, we&#8217;re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href='https://github.com/mxcl/homebrew'>homebrew</a>. We can install this by using this command:</p>
-
-<pre><code>ruby -e &quot;$(curl -fsSL https://gist.github.com/raw/323731/install_homebrew.rb)&quot;</code></pre>
-
-<p>Once it&#8217;s installed, we&#8217;ll be able to install the package for <a href='http://git-scm.org'>Git</a> by using a simple command like this:</p>
-
-<pre><code>brew install git</code></pre>
-
-<p>We&#8217;ll need Git to install RVM as it clones it from <a href='http://github.com/wayneeseguin/rvm'>RVM's GitHub repository</a>.</p>
-<h3>RVM</h3>
-<p>RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.2) for one of your newer projects. This is a problem that RVM solves beautifully.</p>
-
-<p>Another situation could be that you want to have different sets of gems on the same version of Ruby but don&#8217;t want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn't have if you used the packaged Ruby</strong>.</p>
-
-<p>We&#8217;re going to use it to install only one version of Ruby, but we can <a href='http://rvm.beginrescueend.com'>consult the documentation</a> if we want to install a different version of Ruby.</p>
-
-<p>With <code>git</code> and <code>curl</code> installed we&#8217;ll be able to install RVM with this command:</p>
-
-<pre><code>bash -s stable &lt; &lt;(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer) </code></pre>
-
-<p>The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.</p>
-
-<p>Once that&#8217;s done, we&#8217;re going to need to add a line to <code>~/.bashrc</code> file (the file responsible for setting up our bash session) which will load RVM:</p>
-
-<pre><code>echo &#39;[[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]] &amp;&amp; source &quot;$HOME/.rvm/scripts/rvm&quot;&#39; &gt;&gt; ~/.bash_profile </code></pre>
-
-<p>Then we&#8217;ll need to reload the <code>~/.bashrc</code> file which we can do with this small command:</p>
-
-<pre><code>. ~/.bash_profile</code></pre>
-
-<p>If we run <code>rvm notes</code> we&#8217;ll be told the certain things that we need to have installed to install the different versions of Ruby:</p>
-
-<pre><code>Notes for Darwin ( Mac OS X )
-    For Snow Leopard be sure to have Xcode Tools Version 3.2.1 (1613) or later
-    You should download the latest Xcode tools from developer.apple.com.
-      (This is since the dvd install for Snow Leopard contained bugs).
-
-    If you intend on installing MacRuby you must install LLVM first.
-    If you intend on installing JRuby you must install the JDK.
-    If you intend on installing IronRuby you must install Mono (version 2.6 or greater is recommended).</code></pre>
-
-<p>We&#8217;re not going to be using MacRuby, JRuby or IronRuby in this guide so we won&#8217;t need to install any of those things. If we have XCode installed we will have everything we need to install Ruby.</p>
-
-<p>Now our Ruby lives will be as painless as possible.</p>
-<h3>Ruby</h3>
-<p>With RVM and XCode installed we can install Ruby 1.9.2:</p>
-
-<pre><code>rvm install 1.9.2</code></pre>
-
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#8217;s done, we&#8217;ll have Ruby 1.9.2 installed. To begin using it we can use this lovely command:</p>
-
-<pre><code>rvm use 1.9.2</code></pre>
-
-<p>Are we using 1.9.2? You betcha:</p>
-
-<pre><code>ruby -v
-ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]</code></pre>
-
-<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes!</p>
-
-<pre><code>rvm --default use 1.9.2</code></pre>
-
-<p>Now whenever we open a new bash session for this user we&#8217;ll have Ruby available for us to use! Yay!</p>
-<h3>Rails</h3>
-<p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#8217;t need to use that nasty <code>sudo</code> to install things; we&#8217;ve got write-access to our own things! To install the Rails gem we&#8217;ll run this command:</p>
-
-<pre><code>gem install rails</code></pre>
-
-<p>This will install the <code>rails</code> gem and the other 22 gems that it and its dependencies depend on, including Bundler.</p>
-<h3>MySQL</h3>
-<p>If you&#8217;re planning on using the <code>mysql2</code> gem for your application then you&#8217;ll want to install the <code>mysql</code> Homebrew package using this command:</p>
-
-<pre><code>brew install mysql</code></pre>
-
-<p>If you&#8217;re using Rails 3.0 then you&#8217;ll need to specify a 0.2.x version of the <code>mysql2</code> gem in your Gemfile:</p>
-
-<pre><code>gem &#39;mysql2&#39;, &#39;~&gt; 0.2.7&#39;</code></pre>
-
-<p>If you&#8217;re using Rails 3.1, then this line will get it:</p>
-
-<pre><code>gem &#39;mysql2&#39;</code></pre>
-<h3>PostgreSQL</h3>
-<p>If you want to use PostgreSQL instead of MySQL:</p>
-
-<pre><code>brew install postgresql</code></pre>
-
-<p>Then in the application&#8217;s <code>Gemfile</code> use the <code>pg</code> gem:</p>
-
-<pre><code>gem &#39;pg&#39;</code></pre>
-<h3>Fin.</h3>
-<p>And that&#8217;s it! Now you&#8217;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project</p>
-
-<pre><code>rvm use 1.9.2@rails3 --rvmrc</code></pre>
-
-<p>RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>]]></content>
  </entry>
  
  
