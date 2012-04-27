@@ -4,13 +4,33 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2012-04-26T10:24:12-05:00</updated>
+ <updated>2012-04-27T17:16:20-05:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Caffeine and Sleep</title>
+   <link href="http://ryanbigg.com/2012/04/caffeine-and-sleep"/>
+   <updated>2012-04-27T00:00:00-05:00</updated>
+   <id>http://ryanbigg.com/2012/04/caffeine-and-sleep</id>
+   <content type="html"><![CDATA[<p>I used to drink a lot of Coca Cola. I think my record was 18 375ml cans of it during a LAN party once. I didn&#8217;t feel so good the morning after. I used to not brush my teeth that often as well (compared with now, which is morning &#38; night as all good dentists recommend), and as a result I have very &#8220;holey&#8221; teeth and even had one extracted in February. I used to drink Coca Cola because it contained caffeine which would give me a pleasant buzz.</p>
+
+<p>Then my dentist suggested that I stop drinking drinks containing that much sugar, and so I did. I switched to Pepsi Max for a couple of years after that. Then, one day, I stopped. I can&#8217;t remember the exact reason <em>why</em> I stopped drinking it, but I did. This was back in 2009.</p>
+
+<p>The first couple of days were interesting. I had trouble focussing for long periods of time. I never got the caffeine headaches that people talk about. But then it got gradually better and I&#8217;ve been basically caffeine-free for close to 3 years now. Then it <em>kept getting better</em>. I found myself sleeping more solidly each night and being able to concentrate for longer and longer periods. I very rarely now have moments where I feel completely exhausted. When they do happen, having a some sugar helps for that last little bit.</p>
+
+<p>Then there was the change in sleeping pattern in 2010, when I started writing Rails 3 in Action. I swithced from getting up at 7:45am to getting up at 6:00am. And I did this every day, except where I stayed out late the night before. That extra time in the morning allowed me to do some internet catch up, do some writing, have a shower and get ready for the day and then still have more time to do even more writing. After a late night out, there&#8217;s that buffer there that I can use to catch up on sleep that I&#8217;ve otherwise missed. I can also use this time for exercise, which is awesome.</p>
+
+<p>When I get to work it&#8217;s no longer just over an hour since I woke up. It&#8217;s more like three hours. With me not being a morning person by nature, this is wonderful. I come in to work and I&#8217;ve already woken up fully and I can just get to doing everything.</p>
+
+<p>Tim Riley <a href='http://icelab.com.au/articles/the-benefits-of-waking-up-early/'>wrote about his experiences with getting up earlier too</a></p>
+
+<p><strong>So, my thing I want you to try is to go the whole month of May by changing one of these two habits. Either cut out caffeine completely from your diet, or start getting up early in the morning. If you want the &#8220;Hard Mode&#8221; variety, try both. It&#8217;s really improved my life and I reckon it&#8217;ll do the same to yours.</strong></p>]]></content>
+ </entry>
  
  <entry>
    <title>Integration testing engines</title>
@@ -1106,50 +1126,6 @@ end</code></pre>
 <p>After the <em>battle of the egos</em> took place, I delved a little deeper into the Sprockets rabbit hole, got defeated by some gnarly code and thought &#8220;fuck it dude, let&#8217;s go <s>bowling</s> to sleep&#8221;. I awoke this morning and delved a little deeper into exactly how all of this magic happens.</p>
 
 <p>This guide now lives as the <a href='https://github.com/radar/guides/blob/master/sprockets.md'>Sprockets Internals Guide</a> on my <a href='http://github.com/radar/guides'>guides</a> repository. Check out both of them. You may learn something.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>The Asset Pipeline</title>
-   <link href="http://ryanbigg.com/2011/06/the-asset-pipeline"/>
-   <updated>2011-06-18T00:00:00-05:00</updated>
-   <id>http://ryanbigg.com/2011/06/the-asset-pipeline</id>
-   <content type="html"><![CDATA[<p>Today I begun writing the section that I&#8217;ve deemed should be at the beginning of Appendix B (&#8220;Tidbits&#8221;) of Rails 3 in Action. It&#8217;s about the asset pipeline stuff that has been brought into Rails 3.1 with the aid of the Sprockets gem. I&#8217;ve decided to put it at the beginning of this Appendix as it&#8217;s probably the most interesting thing in the entire appendix and it hasn&#8217;t been written about in this much detail (at least, from what I&#8217;ve seen) before.</p>
-
-<p>So far, it&#8217;s looking good. I cover things like:</p>
-
-<ul>
-<li><code>image_tag</code> generating a URL such as <code>/assets/image.png</code> which actually is served through Sprockets.</li>
-
-<li>Assets can be at either <code>app/assets</code> or <code>vendor/assets</code>. No mention of <code>lib/assets</code> because I don&#8217;t think it&#8217;s sensible to put assets in <code>lib</code>. Maybe someone can explain that one to me.</li>
-
-<li>By inheriting from <code>Rails::Engine</code> within a gem, that gem&#8217;s <code>app/assets</code> subdirectories are now added to the load path for Sprockets. When Sprockets goes looking for an asset, it will look there, providing the directories exist. Also, <code>vendor/assets</code>, ditto.</li>
-
-<li>Sprockets directives. Not even the <em>Sprockets README, Wiki or <a href='http://getsprockets.org/'>site</a></em> cover this. You would have thought it&#8217;s kind of a, you know, <em>core behaviour that people would wet their pants over</em>, but obviously not given the lack of documentation.</li>
-
-<li>Pre-compiled Sass, SCSS and CoffeeScript and how their relative gems (<code>sass-rails</code> and <code>coffeescript</code>) aid in that purpose, and how they&#8217;re served through Sprockets.</li>
-</ul>
-
-<p>But the final thing that I want to cover is how it all works in the <code>production</code> environment. From what I can see, assets are given an MD5 identifier (<code>application.css</code> becomes <code>application-23daf...</code>) for some mysterious purpose and they are cached <em>somewhere</em>. So I went looking for information that explains it. Surely Sam Stephenson or <em>someone</em> else who&#8217;s worked on this <em>amazing new core feature</em> for Rails 3.1 has written <em>something</em> about it.</p>
-
-<p>Right?</p>
-
-<p>No. This is a feature that has been packed into Rails 3.1 with no rationale other than hearsay to back it up. The Rails Core team deemed it would be a fabulous idea to have an asset manager within Rails 3.1, and boom, there it was. I&#8217;m sure they would have gone with Jammit if only it had been created by a 37signals employee. Oh well, at least Sprockets is.</p>
-
-<p>Jammit is exceptionally well documented and has a group of people who are already using it. Again, this whole <em>rationale</em> business comes into play. There&#8217;s no clearly laid out rationale why the Rails Core Team chose to go with Sprockets rather than Jammit. We can circulate rumours and hearsay (like the one above about it being made by a 37signals employee being the reason it was picked) all we like, but it&#8217;s not until there&#8217;s an actual official piece of documentation that says &#8220;this is why things are the way they are&#8221; that we are (usually) satisfied.</p>
-
-<p><a href='http://gembundler.org'>Bundler&#8217;s site</a> is a <strong>fantastic</strong> example of great documentation. Hell, it even provides a <a href='http://gembundler.com/rationale.html'>rationale</a> that explains how it works and why it works in pretty easy-to-understand terms.</p>
-
-<p><em>[breath]</em></p>
-
-<p>So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was <a href='https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4'>added by yours truly</a> earlier today. I also wrote up <a href='https://gist.github.com/1032696'>some notes</a> just so I could understand how the <code>Sprockets::Railtie</code> works for myself. Thought others may find it useful too.</p>
-
-<p>Not documenting things makes it <em>incredibly</em> hard for anybody else to understand what the hell you&#8217;re trying to do and provides no justification for anybody viewing your project as to why they should use it. Any single person can throw code up online. It takes someone special to make people understand why it&#8217;s there and why they should <em>want</em> to use it.</p>
-
-<p>I think it&#8217;s great that there&#8217;s new features being added to Rails and old ones being reworked. But, I think it&#8217;s absolute crap that there&#8217;s no go-to source of explaining why these things exist and how they make our lives better. <em>I</em> certainly understand how Sprockets makes my life easier, but someone else <em>might not</em>. I don&#8217;t want to have to explain to those people every single time they ask &#8220;Why should I use sprockets?&#8221; my reason for using it. I want to be able to say &#8220;I read this guide <span>link</span> and it really helped me understand it. Perhaps you&#8217;ll understand too?&#8221;</p>
-
-<p>It&#8217;s just so incredibly hard trying to explain something in the book when there&#8217;s just <em>no</em> reference material to go by or anybody else to ask.</p>
-
-<p>For without this documentation / reference material, the people in search of it write ranty blog posts. And we don&#8217;t want that.</p>]]></content>
  </entry>
  
  
