@@ -25,7 +25,7 @@ wonderful. I come in to work and I've already woken up fully and I can just get 
 
 Tim Riley [wrote about his experiences with getting up earlier too](http://icelab.com.au/articles/the-benefits-of-waking-up-early/). 
 
-> However, I’ve found this new approach to be very effective. The early mornings are a good time. It is quiet. The day has just begun and my mind is clear of any distractions, so it is easy to concentrate. Because the time for work has a definite ending, it also encourages me to pick discrete and achievable goals for each morning. Rinse and repeat, and before long, I have demonstrable, consistent, incremental progress towards my goal.
+> However, I've found this new approach to be very effective. The early mornings are a good time. It is quiet. The day has just begun and my mind is clear of any distractions, so it is easy to concentrate. Because the time for work has a definite ending, it also encourages me to pick discrete and achievable goals for each morning. Rinse and repeat, and before long, I have demonstrable, consistent, incremental progress towards my goal.
 
 **So, my thing I want you to try is to go the whole month of May by changing one of these two habits. Either cut out caffeine completely from your diet, or start
 getting up early in the morning. If you want the "Hard Mode" variety, try both. It's really improved my life and I reckon it'll do the same to yours.**
