@@ -155,7 +155,7 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
 
 And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project:
 
-    rvm use 1.9.3@rails3 --rvmrc
+    rvm use 1.9.3-p194@rails3 --rvmrc
 
 RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.
 
