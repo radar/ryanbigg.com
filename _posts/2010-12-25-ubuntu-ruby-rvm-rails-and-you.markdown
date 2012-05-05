@@ -45,19 +45,17 @@ Another situation could be that you want to have different sets of gems on the s
 
 We're going to use it to install only one version of Ruby, but we can <a href='http://rvm.io'>consult the documentation</a> if we want to install a different version of Ruby. 
 
-With `git-core` and `curl` installed we'll be able to install RVM with this command:
+With `curl` installed we'll be able to install RVM with this command:
 
-    curl -L get.rvm.io | bash -s stable
+    curl -L get.rvm.io | bash -s stable --auto
 
-The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.
+The beautiful part of this is that it installs RVM and Rubies to our home directory, providing a sandboxed environment just for us.
 
-Once that's done, we're going to need to add a line to `~/.bashrc` file (the file responsible for setting up our bash session) which will load RVM:
+Once that's done, for RVM to work properly, you have to set the 'Run command as login shell' checkbox on the Title and Command tab inside of gnome-terminal's Settings page.
 
-    echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"' >> ~/.bashrc 
-
-Then we'll need to reload the `~/.bashrc` file which we can do with this small command:
+Then we'll need to reload the `~/.bash_profile` file which we can do with this small command:
    
-    . ~/.bashrc
+    . ~/.bash_profile
 
 The next command we run will tell us what other packages we need to install for Ruby to work:
 
