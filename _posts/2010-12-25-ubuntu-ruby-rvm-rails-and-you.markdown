@@ -51,7 +51,8 @@ With `git-core` and `curl` installed we'll be able to install RVM with this comm
 
 The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.
 
-Once that's done, we're going to need to add a line to `~/.bashrc` file (the file responsible for setting up our bash session) which will load RVM:
+Once that's done, we're going to need to add a line to `~/.bashrc` file (the file responsible for setting up our bash session) which will load RVM. Do this by
+running this command in the terminal:
 
     echo '[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"' >> ~/.bashrc 
 
