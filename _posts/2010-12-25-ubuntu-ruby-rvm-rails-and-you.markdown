@@ -29,6 +29,8 @@ By the end of this guide, you will have these things installed and have some ver
 
 We assume you have `sudo` access to your machine, and that you have an understanding of the basic concepts of Ruby, such as "What is Rubygems?" and more importantly "How do I turn this computer-thing on?". This knowledge can be garnered by reading the first chapter of <a href='http://manning.com/black2'>any Ruby book</a>.
 
+If you're looking for a good Rails book, I wrote one called <a href='http://manning.com/katz'>Rails 3 in Action</a>.
+
 <h3>Housekeeping</h3>
 
 First of all, we're going to run `sudo apt-get update` so that we have the latest sources on our box so that we don't run into any package-related issues, such as not being able to install some packages. 

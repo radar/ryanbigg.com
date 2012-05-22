@@ -25,6 +25,8 @@
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
 
 <p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &#8220;What is Rubygems?&#8221; and more importantly &#8220;How do I turn this computer-thing on?&#8221;. This knowledge can be garnered by reading the first chapter of <a href='http://manning.com/black2'>any Ruby book</a>.</p>
+
+<p>If you&#8217;re looking for a good Rails book, I wrote one called <a href='http://manning.com/katz'>Rails 3 in Action</a>.</p>
 <h3>Housekeeping</h3>
 <p>First of all, we&#8217;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#8217;t run into any package-related issues, such as not being able to install some packages.</p>
 
@@ -80,16 +82,20 @@ subversion</code></pre>
 
 <pre><code>rvm use 1.9.3</code></pre>
 
+<p>Please note, using &#8216;1.9.3&#8217; as a default allows for when ruby is updated for that version then ALL projects using 1.9.3 as their string will be updated as well. This is a side affect people might not want. The preferred method is to include the patch level to the &#8217;&#8211;default&#8217; parameter so that if 1.9.3 gets updated, other projects don&#8217;t automatically have that change applied to to them as well. If, say for example, for some reason some method/action gets deprecated in a patchlevel or some method signature gets changed between patchlevels, this will affect <em>all</em> projects defined using the &#8216;1.9.3&#8217; string. This may or may not be what people want. Please be aware of this! Now, to continue on..</p>
+
 <p>Are we using 1.9.3? You betcha:</p>
 
 <pre><code>ruby -v
 ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]</code></pre>
 
-<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes!</p>
+<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes! Noting the &#8216;1.9.3&#8217; side-note above, lets take note of the patchlevel, which in this case is &#8216;-p194&#8217; and add that to our default selection.</p>
 
-<pre><code>rvm --default use 1.9.3</code></pre>
+<pre><code>rvm --default use 1.9.3-p194</code></pre>
 
 <p>Now whenever we open a new bash session for this user we&#8217;ll have Ruby available for us to use! Yay!</p>
+
+<p>As an additional side-note: Users can, and should, use a gemset when possible so that they don&#8217;t pollute their &#8216;default&#8217; which is what is selected when a gemset is not specified in either a project&#8217;s .rvmrc, or at the command-line. Each installed Ruby has a &#8216;@global&#8217; gemset. This is used to share gems with other gemsets created under that specific Ruby, and with the &#8216;default&#8217; gemset. This can be selected by running &#8216;rvm gemset use global&#8217; and then installing the gems you wish to share to other gemsets including &#8216;default&#8217;. You can, of course simply install in each gemset but this will cause needless duplication and use up more disk-space and bandwidth.</p>
 <h3>Rails</h3>
 <p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#8217;t need to use that nasty <code>sudo</code> to install things; we&#8217;ve got write-access! To install the Rails gem we&#8217;ll run this command:</p>
 
@@ -138,7 +144,7 @@ details.  You may need configuration options.</code></pre>
 <h3>Fin.</h3>
 <p>And that&#8217;s it! Now you&#8217;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project:</p>
 
-<pre><code>rvm use 1.9.3@rails3 --rvmrc</code></pre>
+<pre><code>rvm use 1.9.3-p194@rails3 --rvmrc</code></pre>
 
 <p>RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 <h4>Credits</h4>
