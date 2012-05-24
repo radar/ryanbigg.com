@@ -83,10 +83,10 @@ This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go o
 
     rvm use 1.9.3
 
-Are we using 1.9.23 You betcha:
+Are we using 1.9.3? You betcha:
 
     ruby -v
-    ruby 1.9.2p0 (2011-10-30 revision 33570) [x86_64-linux]
+    ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes!
 
