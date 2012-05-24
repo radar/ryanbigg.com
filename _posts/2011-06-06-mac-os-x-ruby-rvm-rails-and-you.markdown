@@ -7,16 +7,16 @@ title: Mac OS X, Ruby, RVM, Rails and You
 
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.2, RVM and Rails 3.0.7 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.1 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2010/12/ubuntu-ruby-rvm-rails-and-you/'>Ubuntu, Ruby, RVM, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
 
 <p>
-  If you're looking for a quick-n-dirty way, then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.2.
+  If you're looking for a quick-n-dirty way, then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets a version of Rails working for you, albeit with 1.8.7 rather than 1.9.3.
 </p>
 
-This guide will go through installing the <a href='http://rvm.beginrescueend.com'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.2), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. 
+This guide will go through installing the <a href='http://rvm.beginrescueend.com'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>.
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once. 
 
@@ -38,7 +38,7 @@ We'll need Git to install RVM as it clones it from <a href='http://github.com/wa
 
 <h3>RVM</h3>
 
-RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.2) for one of your newer projects. This is a problem that RVM solves beautifully. 
+RVM is a <a href='http://rvm.beginrescueend.com'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully.
 
 Another situation could be that you want to have different sets of gems on the same version of Ruby but don't want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn't have if you used the packaged Ruby</strong>.
 
@@ -58,7 +58,7 @@ Then we'll need to reload the `~/.bashrc` file which we can do with this small c
    
     . ~/.bash_profile
 
-If we run `rvm notes` we'll be told the certain things that we need to have installed to install the different versions of Ruby:
+If we run `rvm requirements` we'll be told the certain things that we need to have installed to install the different versions of Ruby:
 
     Notes for Darwin ( Mac OS X )
         For Snow Leopard be sure to have Xcode Tools Version 3.2.1 (1613) or later
@@ -75,22 +75,22 @@ Now our Ruby lives will be as painless as possible.
 
 <h3>Ruby</h3>
 
-With RVM and XCode installed we can install Ruby 1.9.2:
+With RVM and XCode installed we can install Ruby 1.9.3:
 
-    rvm install 1.9.2
+    rvm install 1.9.3
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 1.9.2 installed. To begin using it we can use this lovely command:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 1.9.3 installed. To begin using it we can use this lovely command:
 
-    rvm use 1.9.2
+    rvm use 1.9.3
 
-Are we using 1.9.2? You betcha:
+Are we using 1.9.23 You betcha:
 
     ruby -v
-    ruby 1.9.2p136 (2010-12-25 revision 30365) [x86_64-linux]
+    ruby 1.9.2p0 (2011-10-30 revision 33570) [x86_64-linux]
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes!
 
-    rvm --default use 1.9.2
+    rvm --default use 1.9.3
 
 Now whenever we open a new bash session for this user we'll have Ruby available for us to use! Yay!
 
@@ -112,7 +112,7 @@ If you're using Rails 3.0 then you'll need to specify a 0.2.x version of the `my
 
     gem 'mysql2', '~> 0.2.7'
 
-If you're using Rails 3.1, then this line will get it:
+If you're using Rails 3.2, then this line will get it:
 
     gem 'mysql2'
 
@@ -130,7 +130,7 @@ Then in the application's `Gemfile` use the `pg` gem:
 
 And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project
 
-    rvm use 1.9.2@rails3 --rvmrc
+    rvm use 1.9.3@rails3 --rvmrc
 
 RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.
 
