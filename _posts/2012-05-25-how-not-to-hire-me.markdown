@@ -92,7 +92,7 @@ Then he drops this other bombshell:
 
 > Therefore I'm choosing python, I've already started to learn the basics, I think it has so much more potential in terms of quality and scaling capabilities than ror.. Plus i'm finding it a lot more fun to learn (but it's still very challenging and definitely not easy, but who cares, within six months I'll be good enough to lead a team of developers, even by learning part time). 
 
-*HOLY SHIT*. This guy is going to learn Python in 6 months and then lead a team. If I was a self-respecting programming (hint: I am) I don't want to be in a
+*HOLY SHIT*. This guy is going to learn Python in 6 months and then lead a team. If I were a self-respecting programmer (hint: I am) I don't want to be in a
 team that's led by someone who's got only 6 months experience in my programming language. And by only learning part-time? Please.
 
 He also claimed that I drink beer:
