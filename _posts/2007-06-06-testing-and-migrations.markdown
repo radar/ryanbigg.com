@@ -1,4 +1,4 @@
---- 
+---
 wordpress_id: 32
 layout: post
 title: Testing and Migrations
@@ -30,7 +30,7 @@ In this example we assume there's already two blogs in the table, which is defau
 
 [code]
 require File.dirname(__FILE__) + '/../test_helper'
-#beleive it or not, this line actually includes the blog controller (app/controllers/blog_controller.rb)!
+#believe it or not, this line actually includes the blog controller (app/controllers/blog_controller.rb)!
 require 'blog_controller'
 
 class BlogController; def rescue_action(e) raise e end; end
@@ -62,7 +62,7 @@ end
 end
 [/code]
 
-So when the test runs it loads the mocked version of AuthenticatedSystem, and when the "logged_in?" method is called it uses the method defined in the mocked version instead of the one in the real version. 
+So when the test runs it loads the mocked version of AuthenticatedSystem, and when the "logged_in?" method is called it uses the method defined in the mocked version instead of the one in the real version.
 
 [font:size=4]Migrations[/font]
 
@@ -113,7 +113,7 @@ end
 Alright, so I elaborated a bit that time. Basically, that should create a very skeletised version of a blog + comments + users database for a blog application. So, how do we get it into the database? Well, you could go into mysql and type something like...
 
 CREATE TABLE `blogs` (
-`id` INT(11)... 
+`id` INT(11)...
 etc. etc etc.
 )
 
