@@ -146,5 +146,5 @@ And then a little later on he replies for the final time:
 > Hopefully there aren't any lingering hard feelings.
 > That is that last thing I would have hoped for...
 
-I wish no ill feelings on this guy. The tone of his emails was exceptionally off-putting and I can't beleive that people think that they can get away with
+I wish no ill feelings on this guy. The tone of his emails was exceptionally off-putting and I can't believe that people think that they can get away with
 things like this. A little bit of courtesy on *both* sides of these types of discussions goes an exceptionally long way.
