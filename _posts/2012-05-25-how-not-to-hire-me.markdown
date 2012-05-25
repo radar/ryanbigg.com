@@ -58,7 +58,7 @@ He also said this:
 > In under just three months you would be able to figure out whether it would be worthy or not putting more of your time in this startup since from the launch date for the website to function we need direct money inflow.
 
 So no direct money inflow at the moment. This is a *huge* red flag to me. "Yes, please work for a pittance but I *promise* we'll be making money hand over fist
-any time soon!". I'm not a business guy, but I think this guy is a little crazy by this point.
+any time now!". I'm not a business guy, but I think this guy is a little crazy by this point.
 
 Oh, he also said I could "influence millions of people". I replied:
 
