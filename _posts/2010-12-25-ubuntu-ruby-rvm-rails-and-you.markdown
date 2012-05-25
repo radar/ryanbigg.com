@@ -127,7 +127,7 @@ This will install the `rails` gem and the other 28 gems that it and its dependen
 
 <h3>MySQL</h3>
 
-If you're planning on using the `mysql2` gem for your application then you'll want to install the `libmysqlclient16-dev` package before you do that. Without it, you'll get an error when the gem tries to compile its native extensions:
+If you're planning on using the `mysql2` gem for your application then you'll want to install the `libmysqlclient-dev` package before you do that. Without it, you'll get an error when the gem tries to compile its native extensions:
 
     Building native extensions.  This could take a while...
     ERROR:  Error installing mysql2:
