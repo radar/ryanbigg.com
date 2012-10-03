@@ -12,9 +12,7 @@ What could that JavaScript be doing? Well, it's not that hard to understand *now
 
 The script initializes a new JavaScript array, like this:
 
-```js
-var variant_prices = new Array();
-```
+    var variant_prices = new Array();
 
 Fairly innocuous. We would've also accepted `var variant_prices = [];`.
 
@@ -28,9 +26,7 @@ Obviously, this is not very efficient and would lead to some performance degreda
 
 The *now obvious* solution to this problem is to *not* use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:
 
-```js
-var variant_prices = {};
-```
+    var variant_prices = {};
 
 Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.
 
