@@ -4,7 +4,7 @@ layout: post
 title: JavaScript Arrays and Objects
 ---
 
-[These three little lovely lines](https://github.com/spree/spree/blob/master/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56) of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.
+[These three little lovely lines](https://github.com/spree/spree/blob/bf0b85472e477f20f84d030c575382b9c0922903/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56) of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.
 
 What was happening was that in Google Chrome, the page was giving an "aw snap!" error. So I went to Firefox, where the page didn't "aw snap", but instead hung for a moment then asked if I wanted to stop the script.
 
