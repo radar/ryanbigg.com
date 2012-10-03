@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - JavaScript Arrays and Objects</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='page'>
+      <article>
+        <a href="/2012/10/javascript-arrays-and-objects"><header>JavaScript Arrays and Objects</header></a>
+        <small>03 Oct 2012</small><br>
+        <p><a href='https://github.com/spree/spree/blob/master/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56'>These three little lovely lines</a> of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.</p>
+
+<p>What was happening was that in Google Chrome, the page was giving an &#8220;aw snap!&#8221; error. So I went to Firefox, where the page didn&#8217;t &#8220;aw snap&#8221;, but instead hung for a moment then asked if I wanted to stop the script.</p>
+
+<p>What could that JavaScript be doing? Well, it&#8217;s not that hard to understand <em>now</em>, but it didn&#8217;t click the first couple of times I read it.</p>
+
+<p>The script initializes a new JavaScript array, like this:</p>
+
+<p><code>js
+var variant_prices = new Array();
+</code></p>
+
+<p>Fairly innocuous. We would&#8217;ve also accepted <code>var variant_prices = [];</code>.</p>
+
+<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant&#8217;s id <em>as an index in the array</em>. If a variant has an <code>id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code>variant_prices[0]</code> being undefined, and <code>variant_prices[1]</code> being whatever value is assigned.</p>
+
+<p><em>However</em>, if the variant&#8217;s <code>id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
+
+<p>Obviously, this is not very efficient and would lead to some performance degredations. Smart browsers would detect this early on and show a vague warning screen and dumber browsers would ask politely if you&#8217;d like to stop the script. Which script? Well, they won&#8217;t tell you that. You have to play guessing games, like most of the time with the beautiful language that is JavaScript.</p>
+<hr />
+<p>The <em>now obvious</em> solution to this problem is to <em>not</em> use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:</p>
+
+<p><code>js
+var variant_prices = {};
+</code></p>
+
+<p>Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.</p>
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-334 http://ryanbigg.com/?p=RB-334'
+        var disqus_url = 'http://ryanbigg.com/2012/10/javascript-arrays-and-objects';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script type="text/javascript">
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>   
+  </body>
+</html>
