@@ -12,7 +12,7 @@
         <a href="/2010/12/ubuntu-ruby-rvm-rails-and-you"><header>Ubuntu, Ruby, RVM, Rails, and You</header></a>
         <small>25 Dec 2010</small><br>
         <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.1 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.8 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p><p>
 <strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p><p>
@@ -32,7 +32,7 @@
 
 <p>Next, we&#8217;re going to install <a href='http://git-scm.org'>Git (a version control system)</a> and <code>curl</code> which are both required to install and use RVM, and <code>build-essential</code> which is required to compile Ruby versions, amongst other compilable things. To install these three packages we use this command:</p>
 
-<pre><code>sudo apt-get install build-essential git-core curl</code></pre>
+<pre><code>sudo apt-get install curl</code></pre>
 <h3>RVM</h3>
 <p>RVM is a <a href='http://rvm.io'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully.</p>
 
@@ -40,19 +40,15 @@
 
 <p>We&#8217;re going to use it to install only one version of Ruby, but we can <a href='http://rvm.io'>consult the documentation</a> if we want to install a different version of Ruby.</p>
 
-<p>With <code>git-core</code> and <code>curl</code> installed we&#8217;ll be able to install RVM with this command:</p>
+<p>With <code>curl</code> installed we&#8217;ll be able to install RVM with this command:</p>
 
-<pre><code>curl -L get.rvm.io | bash -s stable</code></pre>
+<pre><code>curl -L get.rvm.io | bash -s stable --auto</code></pre>
 
-<p>The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.</p>
+<p>The beautiful part of this is that it installs RVM and Ruby to our home directory, providing a sandboxed environment just for us.</p>
 
-<p>Once that&#8217;s done, we&#8217;re going to need to add a line to <code>~/.bashrc</code> file (the file responsible for setting up our bash session) which will load RVM. Do this by running this command in the terminal:</p>
+<p>Then we&#8217;ll need to reload the <code>~/.bash_profile</code> file which we can do with this small command:</p>
 
-<pre><code>echo &#39;[[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]] &amp;&amp; source &quot;$HOME/.rvm/scripts/rvm&quot;&#39; &gt;&gt; ~/.bashrc </code></pre>
-
-<p>Then we&#8217;ll need to reload the <code>~/.bashrc</code> file which we can do with this small command:</p>
-
-<pre><code>. ~/.bashrc</code></pre>
+<pre><code>. ~/.bash_profile</code></pre>
 
 <p>The next command we run will tell us what other packages we need to install for Ruby to work:</p>
 
@@ -61,7 +57,7 @@
 # For Ruby / Ruby HEAD (MRI, Rubinius, &amp; REE), install the following:
 ruby: /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev 
 curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev
-libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion</code></pre>
+libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkgconfig</code></pre>
 
 <p>A couple of these packages we&#8217;ve already installed, such as <code>git-core</code> and <code>curl</code>. They won&#8217;t be re-installed again.</p>
 
@@ -70,7 +66,7 @@ libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion</co
 <pre><code>sudo apt-get install build-essential openssl libreadline6 libreadline6-dev \
 curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 \
 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison  \
-subversion</code></pre>
+subversion pkgconfig</code></pre>
 
 <p>Now our Ruby lives will be as painless as possible.</p>
 <h3>Ruby</h3>
