@@ -5,6 +5,7 @@ title: Ubuntu, Ruby, RVM, Rails, and You
 wordpress_url: http://ryanbigg.com/?p=1215
 ---
 
+<strong>Last updated: October 11th, 2012</strong>
 
 <p>
   <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.8 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
