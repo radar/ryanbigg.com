@@ -31,31 +31,21 @@
      http://litanyagainstfear.com -->
 <div id='page'>
   <article>
-    <a href="/2012/10/javascript-arrays-and-objects"><header>JavaScript Arrays and Objects</header></a>
-    <small>03 Oct 2012</small><br>
-    <p><a href='https://github.com/spree/spree/blob/bf0b85472e477f20f84d030c575382b9c0922903/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56'>These three little lovely lines</a> of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.</p>
+    <a href="/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia"><header>I didn't submit a talk to RubyConf Australia</header></a>
+    <small>01 Nov 2012</small><br>
+    <p>Because I have nothing interesting to talk about.</p>
 
-<p>What was happening was that in Google Chrome, the page was giving an &#8220;aw snap!&#8221; error. So I went to Firefox, where the page didn&#8217;t &#8220;aw snap&#8221;, but instead hung for a moment then asked if I wanted to stop the script.</p>
+<p>Honestly: I can&#8217;t think of a single thing that I think would be entertaining for a wide audience to listen to me talk about. I don&#8217;t want to submit a talk based solely on the notion that I&#8217;m supposed to be a mildly-famous member of the Australian Ruby community. What a crap premise to submit a talk on! What on earth could I possibly give a talk about and make informative for a large audience?</p>
 
-<p>What could that JavaScript be doing? Well, it&#8217;s not that hard to understand <em>now</em>, but it didn&#8217;t click the first couple of times I read it.</p>
+<p>I&#8217;m not going to talk about writing a book because I already moan and bitch about that enough on Twitter. Plus, the actual act of writing a book isn&#8217;t <em>exciting</em>.</p>
 
-<p>The script initializes a new JavaScript array, like this:</p>
+<p>I&#8217;m not going to talk about documentation because nobody gives a crap about proper documentation, save for a very small select group of people and the people who are reading it. Don&#8217;t bullshit me. You know it&#8217;s true.</p>
 
-<pre><code>var variant_prices = new Array();</code></pre>
+<p>I&#8217;m not going to talk about engines in general because there&#8217;s already a great guide that covers 95% of what a conference audience needs to know. Chapter 17 of Rails 3 in Action covers it and a bit more also. No point giving a talk about something that&#8217;s already been written about. Personally, I go to conferences to see <em>new, cool and interesting stuff</em>. Not things that I can read about or watch on the Internet.</p>
 
-<p>Fairly innocuous. We would&#8217;ve also accepted <code>var variant_prices = [];</code>.</p>
+<p>I&#8217;m not going to talk about my work on Spree because &#8211; and I say this without intending an arrogant tone &#8211; the work itself is self-evident and you don&#8217;t need to hear about it at a conference. I&#8217;m especially <em>not</em> going to talk about my thoughts on how to split up a monolithic <em>engine</em> such as Spree into smaller, easier to manage components. That checkout state machine work that I did? Excuse my brashness, but that was fucking awesome and I&#8217;m so damn proud of it, but I&#8217;m not going to talk about <em>that</em> either. Allowing Spree stores to choose their authentication backend? Please. It was just this thing I did. It doesn&#8217;t deserve a whole conference talk.</p>
 
-<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant&#8217;s id <em>as an index in the array</em>. If a variant has an <code>id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code>variant_prices[0]</code> being undefined, and <code>variant_prices[1]</code> being whatever value is assigned.</p>
-
-<p><em>However</em>, if the variant&#8217;s <code>id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
-
-<p>Obviously, this is not very efficient and would lead to some performance degredations. Smart browsers would detect this early on and show a vague warning screen and dumber browsers would ask politely if you&#8217;d like to stop the script. Which script? Well, they won&#8217;t tell you that. You have to play guessing games, like most of the time with the beautiful language that is JavaScript.</p>
-<hr />
-<p>The <em>now obvious</em> solution to this problem is to <em>not</em> use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:</p>
-
-<pre><code>var variant_prices = {};</code></pre>
-
-<p>Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.</p>
+<p>I&#8217;m quite happy, this time, to sit there and be an audience member who is learning about all the <em>new, cool and interesting stuff</em> <strong>other</strong> people are doing.</p>
   </article>
 </div>
 
@@ -63,6 +53,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2012/10/javascript-arrays-and-objects">JavaScript Arrays and Objects</a><abbr>03 Oct 2012</abbr></li>
+  
       <li><a href="/2012/05/on-hiring">On Hiring</a><abbr>25 May 2012</abbr></li>
   
       <li><a href="/2012/05/how-not-to-hire-me">How not to hire me</a><abbr>25 May 2012</abbr></li>
@@ -110,8 +102,6 @@
       <li><a href="/2011/06/sprocket-asset-tags-internals">Sprocket asset tags internals</a><abbr>19 Jun 2011</abbr></li>
   
       <li><a href="/2011/06/the-asset-pipeline">The Asset Pipeline</a><abbr>18 Jun 2011</abbr></li>
-  
-      <li><a href="/2011/06/mac-os-x-ruby-rvm-rails-and-you">Mac OS X, Ruby, RVM, Rails and You</a><abbr>06 Jun 2011</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2012-10-03T17:22:29+10:00</updated>
+ <updated>2012-11-01T15:28:35+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,11 +13,31 @@
 
  
  <entry>
+   <title>I didn't submit a talk to RubyConf Australia</title>
+   <link href="http://ryanbigg.com/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia"/>
+   <updated>2012-11-01T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia</id>
+   <content type="html"><![CDATA[<p>Because I have nothing interesting to talk about.</p>
+
+<p>Honestly: I can&#8217;t think of a single thing that I think would be entertaining for a wide audience to listen to me talk about. I don&#8217;t want to submit a talk based solely on the notion that I&#8217;m supposed to be a mildly-famous member of the Australian Ruby community. What a crap premise to submit a talk on! What on earth could I possibly give a talk about and make informative for a large audience?</p>
+
+<p>I&#8217;m not going to talk about writing a book because I already moan and bitch about that enough on Twitter. Plus, the actual act of writing a book isn&#8217;t <em>exciting</em>.</p>
+
+<p>I&#8217;m not going to talk about documentation because nobody gives a crap about proper documentation, save for a very small select group of people and the people who are reading it. Don&#8217;t bullshit me. You know it&#8217;s true.</p>
+
+<p>I&#8217;m not going to talk about engines in general because there&#8217;s already a great guide that covers 95% of what a conference audience needs to know. Chapter 17 of Rails 3 in Action covers it and a bit more also. No point giving a talk about something that&#8217;s already been written about. Personally, I go to conferences to see <em>new, cool and interesting stuff</em>. Not things that I can read about or watch on the Internet.</p>
+
+<p>I&#8217;m not going to talk about my work on Spree because &#8211; and I say this without intending an arrogant tone &#8211; the work itself is self-evident and you don&#8217;t need to hear about it at a conference. I&#8217;m especially <em>not</em> going to talk about my thoughts on how to split up a monolithic <em>engine</em> such as Spree into smaller, easier to manage components. That checkout state machine work that I did? Excuse my brashness, but that was fucking awesome and I&#8217;m so damn proud of it, but I&#8217;m not going to talk about <em>that</em> either. Allowing Spree stores to choose their authentication backend? Please. It was just this thing I did. It doesn&#8217;t deserve a whole conference talk.</p>
+
+<p>I&#8217;m quite happy, this time, to sit there and be an audience member who is learning about all the <em>new, cool and interesting stuff</em> <strong>other</strong> people are doing.</p>]]></content>
+ </entry>
+ 
+ <entry>
    <title>JavaScript Arrays and Objects</title>
    <link href="http://ryanbigg.com/2012/10/javascript-arrays-and-objects"/>
    <updated>2012-10-03T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2012/10/javascript-arrays-and-objects</id>
-   <content type="html"><![CDATA[<p><a href='https://github.com/spree/spree/blob/master/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56'>These three little lovely lines</a> of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.</p>
+   <content type="html"><![CDATA[<p><a href='https://github.com/spree/spree/blob/bf0b85472e477f20f84d030c575382b9c0922903/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56'>These three little lovely lines</a> of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.</p>
 
 <p>What was happening was that in Google Chrome, the page was giving an &#8220;aw snap!&#8221; error. So I went to Firefox, where the page didn&#8217;t &#8220;aw snap&#8221;, but instead hung for a moment then asked if I wanted to stop the script.</p>
 
@@ -1142,85 +1162,6 @@ ActiveSupport::Concern</a> it actually takes you right to those docs. This makes
 <p>You can see the end result on my <a href='https://github.com/radar/screencasts/tree/master/000-game-of-life'>screencasts repository on GitHub</a>.</p>
 
 <p>Please let me know of any feedback you have on this screencast (i.e. was the keyboard too noisy or did I speak too fast?) or any ideas for future ones you&#8217;d be interested in listening to. Ideally, I&#8217;d like to do one every week.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>That One Test</title>
-   <link href="http://ryanbigg.com/2011/10/that-one-test"/>
-   <updated>2011-10-19T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2011/10/that-one-test</id>
-   <content type="html"><![CDATA[<p>Have you ever worked on a project that has tests? Probably. How about a project that has a test that runs fine by itself but fails when the whole suite runs? Maybe. That&#8217;s what I&#8217;m going to be talking about here today.</p>
-
-<p>You probably already know the story. You have a whole bunch of tests, perhaps hundreds of them, that take multiple minutes to run as a whole and about 32% of the way through <em>one</em> of the test fails. But that&#8217;s ok, because you&#8217;re running <code>rspec</code> with the <code>--fail-fast</code> option which will make RSpec quit the instant it comes across a failure, right?</p>
-
-<p>Or maybe not. Well, now you know.</p>
-
-<p>Anyway, this one test is testing some piece of obscure, but required, functionality. Whenever you try thinking about when you worked on it &#8211; or even <em>if</em> you worked on it &#8211; your mind starts going fuzzy and the room starts to spin widdershins. You run the test by itself and RSpec reports this back:</p>
-
-<pre><code>.
-
-1 example, 0 failures</code></pre>
-
-<p>You put on your &#8220;Challenge Accepted&#8221; face and re-run the tests again, perhaps this time with the <code>--fail-fast</code> option enabled. Sure enough, the test fails again.</p>
-
-<p>Cool story.</p>
-<hr />
-<h3 id='step_1_dont_panic'>Step 1: DON&#8217;T. PANIC.</h3>
-
-<p>You want to fix this. It&#8217;s 5:30pm. On a Friday. The Friday before a long weekend. The very same Friday you promised someone you&#8217;d be home early. But That One Test is being a <em>complete dick</em> about things.</p>
-
-<p>However, there&#8217;s light at the end of the tunnel: only 32% of the tests need running before the failure is going to happen. RSpec will (as far as I have observed) run the tests in precisely the same order all the time. This means that the other 68% of your test suite can be excluded from the suspect list.</p>
-
-<p>To fix this bug, you&#8217;re going to need a list of all the tests that ran before this test. RSpec doesn&#8217;t provide this functionality, and so you&#8217;re going to have to build it yourself. But it&#8217;s easy! Don&#8217;t Panic.</p>
-<hr />
-<h3 id='step_2_build_a_list_of_suspects'>Step 2: Build a list of suspects</h3>
-
-<p>You know those pretty little green dots / red Fs / yellow stars RSpec prints out? They&#8217;re all coming from a part of RSpec called the <a href='https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/formatters/progress_formatter.rb'>`ProgressFormatter`</a>. Look, sensible code! If the example passes, it calls <code>output.print green(&#39;.&#39;)</code>. You probably couldn&#8217;t get more sensible than this.</p>
-
-<p>My <em>point</em> is that RSpec uses this as a kind of reporting tool to show you that progress is actually being made. The <em>great</em> thing about this is that you can write your own! With your own tool, you&#8217;ll be able to output to a log what specs are being run and then use this as a base list of suspects.</p>
-
-<p>Create a new file called <code>spec/support/spec_logger.rb</code> and put this content in it:</p>
-
-<pre><code>require &#39;rspec/core/formatters/progress_formatter&#39;
-class SpecLogger &lt; RSpec::Core::Formatters::ProgressFormatter
-
-  def example_started(example)
-    super
-    File.open(&quot;specs.log&quot;, &quot;a+&quot;) do |f|
-      f.write(example.location + &quot;\n&quot;)
-    end
-  end
-end</code></pre>
-
-<p>What this does is that it inherits the standard green dots, red Fs and yellow stars from <code>RSpec::Core::Formatters::ProgressFormatter</code> and extends it with a bit of functionality that will log exactly what specs are being run during a test run.</p>
-
-<p>To use this formatter in your next (fast failing) test run, run it using <code>bundle exec rspec spec --require spec/support/spec_logger -f SpecLogger --fail-fast</code>.</p>
-
-<p>Once this command completes, you&#8217;ll have a list of suspects in <code>specs.log</code> at the root of your project.</p>
-<hr />
-<h3 id='step_3_find_the_perp'>Step 3: Find the perp</h3>
-
-<p>In this <code>specs.log</code> file you should have a list of specs that have been run just recently, with the final one being the one that is failing mysteriously. Now let&#8217;s assume that in the entire test suite there are exactly 100 tests total. With this failure occurring 32% of the way through, it should be failing at the #32 test. This number is important because it&#8217;s equally divisible by two.</p>
-
-<p>However, the locations listed in specs.log are going to have duplicate files, and RSpec only allows you to run multiple files at a time, and not multiple locations within multiple files. This list should be culled to only have one line for each file.</p>
-
-<p>Next, the trick is to take one half of these <em>plus</em> the file containing the failing test and run them together. If you take the first 15 tests and run them in an RSpec command like <code>bundle exec rspec spec &lt;file1&gt; &lt;file2&gt; ... &lt;file15&gt;</code> then you&#8217;ll be able to see a result.</p>
-
-<p>This is <em>exactly</em> the process <code>git bisect</code> uses, or at least what I think it does.</p>
-
-<p>If these tests are failing with these first fifteen, then the failure is most likely caused by one of those tests. If it&#8217;s not, then it&#8217;s in the other half. Re-run the test suite with that half and see if you get a failure there.</p>
-
-<p>When you know which half it is, half it again and keep culling down the list of suspects until you have (ideally) two files: the first will be the one that&#8217;s causing the breakage, and the second one will be the one containing the test that&#8217;s failing.</p>
-
-<p>From there, figure out what test in that first file is causing things to fail. Comment out half the tests, run the two files again. If it passes then it&#8217;s in that half, if it fails then it&#8217;s not. Keep at it until you&#8217;ve distilled it down to the minimum amount of tests possible, which can be as low as two, but there could be a case where two tests in the original file are causing the disruption.</p>
-<hr />
-<h3 id='step_4_fix_it'>Step 4: Fix it.</h3>
-
-<p>This is left as an exercise to the reader. This could be anything, but at least now you know the area where the code is failing.</p>
-
-<p>Once it&#8217;s fixed, run the entire test suite again to ensure that everything is peachy.</p>
-
-<p>If it is, congratulations. Go home. Enjoy the weekend.</p>]]></content>
  </entry>
  
  
