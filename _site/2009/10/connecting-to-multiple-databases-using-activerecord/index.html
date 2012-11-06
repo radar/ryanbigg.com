@@ -11,22 +11,19 @@
       <article>
         <a href="/2009/10/connecting-to-multiple-databases-using-activerecord"><header>Connecting to Multiple Databases Using ActiveRecord</header></a>
         <small>17 Oct 2009</small><br>
-        <p>You can call <span class='term'>establish_connection</span> with the key that points to another database config in your <em>config/database.yml file</em></p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre&gt;
-class Person &lt; ActiveRecord::Base
+        <p>You can call <code>establish_connection</code> with the key that points to another database config in your <code>config/database.yml</code></p>
+
+<pre><code>class Person &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
-&lt;/pre&gt;</pre><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre&gt;
+
 class Ticket &lt; ActiveRecord::Base
   establish_connection(:bug_tracker)
-end
-&lt;/pre&gt;</pre>
+end</code></pre>
+
 <p>If you have a whole bunch of models that need to connect to another database:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre&gt;
-class HR &lt; ActiveRecord::Base
+
+<pre><code>class HR &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
@@ -36,8 +33,7 @@ end
 
 class Resource &lt; HR
   # ...
-end
-&lt;/pre&gt;</pre>
+end</code></pre>
       </article>
     </div>
     <div id='disqus_thread'></div>
