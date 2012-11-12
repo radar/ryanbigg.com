@@ -54,7 +54,7 @@ in case you dont: it was DocBook or Microsoft Word. I chose DocBook because it's
 I also thought "Sure, these guys probably have the tools to convert this into PDF and ePub and Mobi and monetary
 notes that I can give to people to buy things".
 
-Man, I can be naïve sometimes.
+Man, I can be na&#239;ve sometimes.
 
 When we went to review, they went through the XML document with this tool I can't remember the name of and it seriously messed with my *obsessive* formatting. I was non-plussed. I asked them to fix it, and they did, which was nice of them. Still, this tool basically crapped all over the XML document.
 
