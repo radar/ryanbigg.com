@@ -5,20 +5,15 @@ title: Ubuntu, Ruby, RVM, Rails, and You
 wordpress_url: http://ryanbigg.com/?p=1215
 ---
 
-<strong>Last updated: October 11th, 2012</strong>
+<strong>Last updated: November 20th, 2012</strong>
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.8 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
 <strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p>
-
-<p>
-  If you're not using Ubuntu then try <a href='https://github.com/wayneeseguin/rvm/raw/master/contrib/bootstrap_rails_environment'>Wayne E. Seguin's rails_bootstrap_script</a> which probably gets Rails 3.0.9 working for you, albeit with 1.9.1 rather than 1.9.3. But in this guide, we're going to want to use Ruby 1.9.3 and Rails 3.2.1.
-</p>
-
 
 <h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 
@@ -36,7 +31,7 @@ If you're looking for a good Rails book, I wrote one called <a href='http://mann
 
 First of all, we're going to run `sudo apt-get update` so that we have the latest sources on our box so that we don't run into any package-related issues, such as not being able to install some packages. 
 
-Next, we're going to install <a href='http://git-scm.org'>Git (a version control system)</a> and `curl` which are both required to install and use RVM, and `build-essential` which is required to compile Ruby versions, amongst other compilable things. To install these three packages we use this command:
+Next, we're going to install `curl`, which we'll use to fetch the RVM script:
 
     sudo apt-get install curl
 
@@ -67,7 +62,13 @@ The next command we run will tell us what other packages we need to install for 
     curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev
     libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkgconfig
 
-A couple of these packages we've already installed, such as `git-core` and `curl`. They won't be re-installed again. 
+A couple of things to note in this is that the `build-essential` package is
+installed, which will install all the essential build tools for Ubuntu, so
+we'll be able to download and compile Ruby, amongst other things. 
+
+This will also install <a href='http://git-scm.org'>Git</a>, which is a version
+control system tool that you should be using if you're not already. This is
+used by RVM to fetch the latest source for some versions of Ruby.
 
 These packages will lessen the pain when we're working with Ruby. For example, the `libssl-dev` package will make OpenSSL support in Ruby work, `libsqlite3-0` and `libsqlite3-dev` are required for the `sqlite3-ruby` gem and the `libxml2-dev` and `libxslt-dev` packages are required for the `nokogiri` gem. Let's install all these packages now using this command:
 
@@ -98,11 +99,11 @@ This may or may not be what people want. Please be aware of this! Now, to contin
 Are we using 1.9.3? You betcha:
 
     ruby -v
-    ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]
+    ruby 1.9.3p327 (2012-04-20 revision 35410) [x86_64-linux]
 
-Or, even better, would be to make this the *default* for our user! Oooh, yes! Noting the '1.9.3' side-note above, lets take note of the patchlevel, which in this case is '-p194' and add that to our default selection.
+Or, even better, would be to make this the *default* for our user! Oooh, yes! Noting the '1.9.3' side-note above, lets take note of the patchlevel, which in this case is '-p327' and add that to our default selection.
 
-    rvm --default use 1.9.3-p194
+    rvm --default use 1.9.3-p327
 
 Now whenever we open a new bash session for this user we'll have Ruby available for us to use! Yay!
 
@@ -117,9 +118,9 @@ duplication and use up more disk-space and bandwidth.
 
 Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 3.2.3
+    gem install rails -v 3.2.9
 
-This will install the `rails` gem and the other 28 gems that it and its dependencies depend on, including Bundler.
+This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 
 <h3>MySQL</h3>
 
@@ -168,7 +169,7 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
 
 And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an `.rvmrc` file is to run a command like this inside the project:
 
-    rvm use 1.9.3-p194@rails3 --rvmrc
+    rvm use 1.9.3-p327@rails3 --rvmrc
 
 RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.
 
