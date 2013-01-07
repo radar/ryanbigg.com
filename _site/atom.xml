@@ -4,13 +4,36 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2012-11-12T14:19:45+11:00</updated>
+ <updated>2013-01-07T12:49:04+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>A story about scaffolding</title>
+   <link href="http://ryanbigg.com/2013/01/a-story-about-scaffolding"/>
+   <updated>2013-01-07T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2013/01/a-story-about-scaffolding</id>
+   <content type="html"><![CDATA[<p>When Rails was released, one of the &#8220;showy&#8221; features in it was the ability to get up and running quickly. That&#8217;s always been the focus for Rails.</p>
+
+<p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code>rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code>scaffold</code>. In later Rails releases (can&#8217;t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
+
+<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we&#8217;re sticking with the Post scaffold idea. So you do that, but then you don&#8217;t realise that you need to add the field to the <code>attr_accessible</code> list<sup id='fnref:1'><a href='#fn:1' rel='footnote'>1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you&#8217;d need to add it to the form partial as well. Newbies don&#8217;t learn how to do these very, very basic things first off <em>if they&#8217;re using scaffolding</em> and that&#8217;s why it&#8217;s a bad thing.</p>
+
+<p>If you begin using scaffolding, you can indeed see exactly what functionality Rails is capable of. Goodo, you can create, read, update and delete things. The problem, however, is that you end up not learning how any of it works, and it seems like &#8220;a wizard did it&#8221;. Of course, as you get more knowledgeable about Rails you&#8217;ll know that there&#8217;s no such thing as wizards.</p>
+
+<p>Learning from the ground up that in order to be able to display even a list of posts on a page that you need a <code>Post</code> model, that the model responds to an <code>all</code> method, that is then called in a thing called <code>PostsController</code> and then that information is stored in an instance variable which is then accessed by this thing called a &#8220;view&#8221; which has the same name as your action&#8230; that may seem like hard work at first (hint: it is), but it&#8217;s worth it. That is because the moment you want to step outside the cocoon of a CRUD resource and do something differently, you&#8217;ll probably know how to.</p>
+
+<p>Scaffolding doesn&#8217;t teach you the extreme basics of Rails development. Building things from scratch does. This foundation is absolutely critical to understanding how Rails works.</p>
+
+<p>That&#8217;s why the new <a href='http://edgeguides.rubyonrails.org/getting_started.html'>Rails Getting Started guide</a> does not contain one single mention of the scaffold generator anywhere. Newbies should be taught the basics, <em>not</em> shown conjuring tricks.</p>
+<div class='footnotes'><hr /><ol><li id='fn:1'>
+<p><code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters</p>
+<a href='#fnref:1' rev='footnote'>&#8617;</a></li></ol></div>]]></content>
+ </entry>
  
  <entry>
    <title>No more writing for Manning</title>
@@ -1041,7 +1064,7 @@ Then they should see a validation error:
 
 <p>I also thought &#8220;Sure, these guys probably have the tools to convert this into PDF and ePub and Mobi and monetary notes that I can give to people to buy things&#8221;.</p>
 
-<p>Man, I can be naïve sometimes.</p>
+<p>Man, I can be na&#239;ve sometimes.</p>
 
 <p>When we went to review, they went through the XML document with this tool I can&#8217;t remember the name of and it seriously messed with my <em>obsessive</em> formatting. I was non-plussed. I asked them to fix it, and they did, which was nice of them. Still, this tool basically crapped all over the XML document.</p>
 
@@ -1146,28 +1169,6 @@ class)</code> error which was happening inside of the <code>spree_paypal_express
 
 <p>Ah, and one more thing: it gives you a unique URL for each page, which is something the current Rails API <em>doesn&#8217;t do</em>. When you make a request to <a href='http://radar.github.com/sume/#search/ActiveSupport::Concern'>the link for
 ActiveSupport::Concern</a> it actually takes you right to those docs. This makes it easy to link it to other people.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>Going on a Spree</title>
-   <link href="http://ryanbigg.com/2011/11/going-on-a-spree"/>
-   <updated>2011-11-03T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2011/11/going-on-a-spree</id>
-   <content type="html"><![CDATA[<p>When I was in America, I had the pleasure of talking to a lot of Americans. Americans are fun. As soon as they hear the Australian accent they say something along the lines of &#8220;Oh, you&#8217;re from Australia?! I <em>love</em> Australia!&#8221;.</p>
-
-<p>While I was there, I was thinking that there&#8217;s just <em>so much</em> work out in the world. So many people doing super interesting things. I started to think that perhaps I should take a break from &#8220;shotgun consulting&#8221; again, but only if I could find one thing that I was super passionate about.</p>
-
-<p>I was courted by so many different companies when I was at GoGaRuco and Strangeloop and while I was in Chicago. Stuff ranging from a joking &#8220;Screw those guys, come work for us!&#8221; to more serious &#8220;We&#8217;ll do whatever it takes you get you on board&#8221;. You know what&#8217;s a really good feeling? Being wanted. It&#8217;s so <em>amazing</em>. So thanks to those companies and their employees for their offers.</p>
-
-<p>While I was in Chicago, I got into some serious-type discussions with two companies. One of them was Groupon, where I sat for about a week doing work remotely for RubyX. I think they have an amazing team at Groupon (including people like Bo Jeanes, who I am very good friends with), but it&#8217;s a bit too large for what I wanted to do.</p>
-
-<p>On the very same day that these serious-type discussions happened with Groupon, the same kind of discussions started with a slightly smaller company called <a href='http://spreecommerce.org'>Spree Commerce</a>. Sean and I started talking about a Community Manager position that he wanted to fill, a position that involves full-time open source work and talking with members of the community seeing to their needs. Spree has <a href='http://techcrunch.com/2011/10/10/spree-raises-1-5-million-from-true-ventures-aol-for-open-source-ecommerce-platform/'>$1.1 million</a> dollars of funding, which will go into some pretty exciting projects.</p>
-
-<p>That is precisely the thing I am passionate about: making a product and the community around it <em>better</em>. Spree has a great platform and it will only get better with time.</p>
-
-<p>For instance, we have <a href='http://groups.google.com/group/spree-user/msg/af44fbdb7e401b8e'>just undertaken work to move all of Spree's functionality into a namespace</a>. This will be merged back into the<code>master</code> branch next week. This means that if you want to have a <code>Product</code> model in your application and still want to use Spree&#8217;s then that&#8217;s entirely possible. I go into more information in <a href='http://groups.google.com/group/spree-user/msg/af44fbdb7e401b8e'>this lengthy post on the Google Group</a> about what the namespacing means.</p>
-
-<p>I&#8217;m excited to start officially at Spree next week and I wish RubyX all the best for their future endeavours. If you want a crack team people to build your Rails application, RubyX is that team.</p>]]></content>
  </entry>
  
  

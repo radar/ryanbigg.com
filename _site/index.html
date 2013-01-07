@@ -21,7 +21,6 @@
           <p> Occasionally I find some time to write interesting blog posts such as the ones you see below.</p>
           <p>I also have done quite a lot of <a href="http://github.com/radar">open-source work</a> and I <a href="http://twitter.com/ryanbigg">tweet</a>. Find out more <a href="http://ryanbigg.com/about-me">about me</a>.</p> 
           <p>If you like what you see you can <a href='http://feeds.feedburner.com/ryanbigg'>subscribe to this blog</a>.</p>
-          <p><small>Oh, and I once beat <a href='https://twitter.com/dhh/status/81987522766450688'>DHH</a> in an <a href='https://twitter.com/ryanbigg/status/81988004947828736'>argument</a>.</small></p>
         </div>
       </div>
       <header></header>
@@ -31,21 +30,24 @@
      http://litanyagainstfear.com -->
 <div id='page'>
   <article>
-    <a href="/2012/11/no-more-writing-for-manning"><header>No more writing for Manning</header></a>
-    <small>12 Nov 2012</small><br>
-    <p>As of around this time last week, I am no longer writing for Manning.</p>
+    <a href="/2013/01/a-story-about-scaffolding"><header>A story about scaffolding</header></a>
+    <small>07 Jan 2013</small><br>
+    <p>When Rails was released, one of the &#8220;showy&#8221; features in it was the ability to get up and running quickly. That&#8217;s always been the focus for Rails.</p>
 
-<p>This decision has been a long time coming. Ever since I started working for Manning I&#8217;ve had issues with their tooling. I covered these in posts like <a href='http://ryanbigg.com/2011/11/don-t-print-hard-copies/'>&#8220;Don&#8217;t print hard-copies&#8221;</a> and <a href='http://ryanbigg.com/2010/12/the-writing-process/'>&#8220;The Writing Process&#8221;</a>). They&#8217;ve been saying now for <em>two years</em> that they were going to fix it and&#8230; nothing much has been done.</p>
+<p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code>rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code>scaffold</code>. In later Rails releases (can&#8217;t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
 
-<p>I got so frustrated with their system two weeks in, I decided to write my own. I demonstrate part of Manning&#8217;s system and part of my own, in <a href='https://vimeo.com/45002976'>this short video</a>. I wrote my own review system in a relatively short period of time.</p>
+<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we&#8217;re sticking with the Post scaffold idea. So you do that, but then you don&#8217;t realise that you need to add the field to the <code>attr_accessible</code> list<sup id='fnref:1'><a href='#fn:1' rel='footnote'>1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you&#8217;d need to add it to the form partial as well. Newbies don&#8217;t learn how to do these very, very basic things first off <em>if they&#8217;re using scaffolding</em> and that&#8217;s why it&#8217;s a bad thing.</p>
 
-<p>The writing tools are something that I need to use everyday and if they&#8217;re just getting in my way, it totally kills my vibe to write. I don&#8217;t want to hate writing, because I <em>love</em> writing. I love the feeling I get when I can clearly explain something to someone the first time in writing and they just <em>get it</em>.</p>
+<p>If you begin using scaffolding, you can indeed see exactly what functionality Rails is capable of. Goodo, you can create, read, update and delete things. The problem, however, is that you end up not learning how any of it works, and it seems like &#8220;a wizard did it&#8221;. Of course, as you get more knowledgeable about Rails you&#8217;ll know that there&#8217;s no such thing as wizards.</p>
 
-<p>So, no more writing for Manning because their tools for doing it are terrible. The people at Manning are nothing short of excellent.</p>
+<p>Learning from the ground up that in order to be able to display even a list of posts on a page that you need a <code>Post</code> model, that the model responds to an <code>all</code> method, that is then called in a thing called <code>PostsController</code> and then that information is stored in an instance variable which is then accessed by this thing called a &#8220;view&#8221; which has the same name as your action&#8230; that may seem like hard work at first (hint: it is), but it&#8217;s worth it. That is because the moment you want to step outside the cocoon of a CRUD resource and do something differently, you&#8217;ll probably know how to.</p>
 
-<p>Rails 4 in Action <em>will</em> be published by Manning &#8211; they have the rights to the book, not me &#8211; meaning they will need to source another author to do it. For any questions related to that process, contact <a href='support@manning.com'>support@manning.com</a>. They&#8217;ll know more about it than I do.</p>
-<hr />
-<p>All of that doesn&#8217;t mean I&#8217;ve stopped writing Rails material completely. Oh no no no. You just wait.</p>
+<p>Scaffolding doesn&#8217;t teach you the extreme basics of Rails development. Building things from scratch does. This foundation is absolutely critical to understanding how Rails works.</p>
+
+<p>That&#8217;s why the new <a href='http://edgeguides.rubyonrails.org/getting_started.html'>Rails Getting Started guide</a> does not contain one single mention of the scaffold generator anywhere. Newbies should be taught the basics, <em>not</em> shown conjuring tricks.</p>
+<div class='footnotes'><hr /><ol><li id='fn:1'>
+<p><code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters</p>
+<a href='#fnref:1' rev='footnote'>&#8617;</a></li></ol></div>
   </article>
 </div>
 
@@ -53,6 +55,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2012/11/no-more-writing-for-manning">No more writing for Manning</a><abbr>12 Nov 2012</abbr></li>
+  
       <li><a href="/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia">I didn't submit a talk to RubyConf Australia</a><abbr>01 Nov 2012</abbr></li>
   
       <li><a href="/2012/10/javascript-arrays-and-objects">JavaScript Arrays and Objects</a><abbr>03 Oct 2012</abbr></li>
@@ -100,8 +104,6 @@
       <li><a href="/2011/09/learning-and-asking">Learning and Asking</a><abbr>07 Sep 2011</abbr></li>
   
       <li><a href="/2011/09/with-rails-3-1-comes-great-things">With Rails 3.1, comes great things</a><abbr>04 Sep 2011</abbr></li>
-  
-      <li><a href="/2011/06/sprocket-asset-tags-internals">Sprocket asset tags internals</a><abbr>19 Jun 2011</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

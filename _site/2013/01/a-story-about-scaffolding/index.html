@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - A story about scaffolding</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='page'>
+      <article>
+        <a href="/2013/01/a-story-about-scaffolding"><header>A story about scaffolding</header></a>
+        <small>07 Jan 2013</small><br>
+        <p>When Rails was released, one of the &#8220;showy&#8221; features in it was the ability to get up and running quickly. That&#8217;s always been the focus for Rails.</p>
+
+<p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code>rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code>scaffold</code>. In later Rails releases (can&#8217;t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
+
+<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we&#8217;re sticking with the Post scaffold idea. So you do that, but then you don&#8217;t realise that you need to add the field to the <code>attr_accessible</code> list<sup id='fnref:1'><a href='#fn:1' rel='footnote'>1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you&#8217;d need to add it to the form partial as well. Newbies don&#8217;t learn how to do these very, very basic things first off <em>if they&#8217;re using scaffolding</em> and that&#8217;s why it&#8217;s a bad thing.</p>
+
+<p>If you begin using scaffolding, you can indeed see exactly what functionality Rails is capable of. Goodo, you can create, read, update and delete things. The problem, however, is that you end up not learning how any of it works, and it seems like &#8220;a wizard did it&#8221;. Of course, as you get more knowledgeable about Rails you&#8217;ll know that there&#8217;s no such thing as wizards.</p>
+
+<p>Learning from the ground up that in order to be able to display even a list of posts on a page that you need a <code>Post</code> model, that the model responds to an <code>all</code> method, that is then called in a thing called <code>PostsController</code> and then that information is stored in an instance variable which is then accessed by this thing called a &#8220;view&#8221; which has the same name as your action&#8230; that may seem like hard work at first (hint: it is), but it&#8217;s worth it. That is because the moment you want to step outside the cocoon of a CRUD resource and do something differently, you&#8217;ll probably know how to.</p>
+
+<p>Scaffolding doesn&#8217;t teach you the extreme basics of Rails development. Building things from scratch does. This foundation is absolutely critical to understanding how Rails works.</p>
+
+<p>That&#8217;s why the new <a href='http://edgeguides.rubyonrails.org/getting_started.html'>Rails Getting Started guide</a> does not contain one single mention of the scaffold generator anywhere. Newbies should be taught the basics, <em>not</em> shown conjuring tricks.</p>
+<div class='footnotes'><hr /><ol><li id='fn:1'>
+<p><code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters</p>
+<a href='#fnref:1' rev='footnote'>&#8617;</a></li></ol></div>
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-338 http://ryanbigg.com/?p=RB-338'
+        var disqus_url = 'http://ryanbigg.com/2013/01/a-story-about-scaffolding';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script type="text/javascript">
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>   
+  </body>
+</html>
