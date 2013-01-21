@@ -46,5 +46,5 @@ Testing (with RSpec and Capybara) is throughout, just like with Rails 3 in
 Action.
 
 So if you're looking for a book that covers all of the above, please [buy a copy
-of Multitenancy with Rails](https://leanpub.com/multitenancy-with-rails) *right
+of Multitenancy with Rails](https://leanpub.com/multi-tenancy-rails) *right
 now*.
