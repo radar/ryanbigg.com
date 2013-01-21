@@ -4,13 +4,37 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2013-01-07T12:49:04+11:00</updated>
+ <updated>2013-01-21T18:37:54+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Multitenancy with Rails</title>
+   <link href="http://ryanbigg.com/2013/01/multitenancy-with-rails"/>
+   <updated>2013-01-21T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2013/01/multitenancy-with-rails</id>
+   <content type="html"><![CDATA[<p>Well before I had even <a href='http://ryanbigg.com/2012/11/no-more-writing-for-manning/'>split from Manning</a>, I had been working on a new book called <a href='https://leanpub.com/multi-tenancy-rails'>&#8220;Multitenancy with Rails&#8221;</a>, which you can buy right now.</p>
+
+<p>The idea for the book has been around for a while. A couple of friends (<a href='https://github.com/parndt'>Phil Arndt</a>, <a href='https://github.com/knewter'>Josh Adams</a>, <a href='https://github.com/robyurkowski'>Rob Yurkowski</a> and <a href='https://github.com/GeekOnCoffee'>Andrew Hooker</a>) and I had been talking in our secret IRC back channel about what a more advanced Rails book might cover. Through I don&#8217;t know what process, we came up with this idea and I&#8217;m putting it into book form.</p>
+
+<p>For now, all the book is covering is what we&#8217;re building, which is a hosted forum application, how to build a foundation for the subscriptions engine and then how we&#8217;re going to accomplish the database scoping necessary to separate the accounts&#8217; data.</p>
+
+<p>The engine is what the book&#8217;s application is going to heavily rely on. This foundation building deals with adding things like accounts which have subdomains, and then authenticating users for those accounts using Warden, and not Devise. To find out why, you&#8217;re going to have to read it.</p>
+
+<p>The chapter on scoping first of all covers using a database field, which is the typical way that people have been dealing with this problem for years, and then covers the &#8220;new&#8221; way of doing it: by using PostgreSQL schemas and the <code>apartment</code> gem.</p>
+
+<p>The next chapter, Chapter 4, will cover building the application which will combine both the subscriptions engine we build in Chapter 2, as well as the <a href='https://github.com/radar/forem'>Forem</a> forum engine that the aforementioned folk and I build and maintain.</p>
+
+<p>Chapter 5 will cover subscriptions, where each account could be subscribed to the application for an amount such as $29/month and that allows them to create 5 forums. That sort of thing. It&#8217;ll also cover taking payments for those subscriptions using Stripe&#8217;s wonderful API, and then what to do if somebody decides to do a dodgy.</p>
+
+<p>Testing (with RSpec and Capybara) is throughout, just like with Rails 3 in Action.</p>
+
+<p>So if you&#8217;re looking for a book that covers all of the above, please <a href='https://leanpub.com/multitenancy-with-rails'>buy a copy of Multitenancy with Rails</a> <em>right now</em>.</p>]]></content>
+ </entry>
  
  <entry>
    <title>A story about scaffolding</title>
@@ -1126,49 +1150,6 @@ class)</code> error which was happening inside of the <code>spree_paypal_express
 <p>It&#8217;s 28 minutes of debugging goodness and <a href='https://s3.amazonaws.com/ryanbigg_screencasts/002-wrong-argument-type.mov'>you can view it here</a>.</p>
 <hr />
 <p>The next screencasts I will do are examples of how to do nested attributes within Rails, covering <code>belongs_to</code>, <code>has_many</code> and <code>has_many :through</code> associations, along with demystifying how nested attributes works within Rails.</p>]]></content>
- </entry>
- 
- <entry>
-   <title>The Rails API</title>
-   <link href="http://ryanbigg.com/2011/11/the-rails-api"/>
-   <updated>2011-11-14T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2011/11/the-rails-api</id>
-   <content type="html"><![CDATA[<p>Recently, the Rails API got a facelift. Gone is the boring and dull blue four-frame-set API that once was. Now we have a dual-framed red API instead. The colours are good, I&#8217;ll give it that. Take a look at it:</p>
-<img src='/images/rails-api/original.png' />
-<p>Notice anything wrong?</p>
-
-<p>Probably not.</p>
-
-<p>So let&#8217;s take away some things until you start thinking it&#8217;s wrong. How about we take out that &#8220;RDOC_MAIN.rdoc&#8221; string &#8211; both instances &#8211; and we made the version more prominent? We&#8217;ll also get rid of the last modified timestamp, as a date is more friendly to people. Making these simple changes, we&#8217;ll get this:</p>
-<img src='/images/rails-api/title-changes.png' />
-<p>Right. That&#8217;s a little better now. It&#8217;s clearer what the purpose of this page is and when it was last updated. We don&#8217;t care that the README is in a file called &#8220;RDOC_MAIN.rdoc&#8221;, and so we&#8217;ve removed it. Simple.</p>
-
-<p>Now what else don&#8217;t we need? Well, when we go to the API we&#8217;re most likely going to want to find information about the methods provided by Rails. So why have the README there at all? While it&#8217;s a good placeholder for the content, that&#8217;s all it is: a placeholder. The main focus of the API site should be what we want to do on it: search for things. If you want to read the README, there&#8217;s <a href='http://github.com/rails/rails'>better (and more standard) places for that</a>, quite simply.</p>
-
-<p>With the README gone, we&#8217;re going to have this gigantic void of empty, useless space. With this change, the main feature of the API, the searching, is almost hidden up in the top-left hand corner. So let&#8217;s make that more prominent.</p>
-
-<p>Is that menu underneath it really useful? It contains an awfully large amount of items in it. Do people really care about that? Isn&#8217;t searching for something a much easier way to find it? I&#8217;d say so.</p>
-
-<p>So we remove the README, we remove the menu, we make the search more prominent. What are we left with?</p>
-<img src='/images/rails-api/search-box.png' />
-<p>The title, the date the API was last updated and a box to search. There&#8217;s no mystery to what this box does: it says &#8220;Search&#8221; on it. It could also say &#8220;Search the Rails API&#8221;. Anybody should be able to figure out that you can search the API using this box.</p>
-
-<p>But there&#8217;s no button! There doesn&#8217;t need to be a button, though. When a person searches, it will autocomplete their search and show the matching results from the API. You could even go a step further and weight certain results, so that things like <s>`ActiveRecord::Base`</s>, um, excuse me, <code>ActiveRecord::FinderMethods</code>&#8217;s <code>find</code> method appears before <code>ActiveResource::Base</code>.</p>
-
-<p>Further more, you could get a search for &#8220;match&#8221; to show the routing (<code>ActionDispatch::Routing::Mapper::Base</code>) <code>match</code> method prominently, and the other <code>match</code> (like the one in <code>HTML::Selector</code>) methods less prominently, perhaps in a grey colour instead of black.</p>
-
-<p>Anything wrong with this now? I think not. The API is less confusing and more prominently displays the function that most people use it for.</p>
-<hr />
-<p>That&#8217;s my vision for the future of the Rails API. I know it probably won&#8217;t get to that stage, as there&#8217;s large technical hurdles in the way (such as indexing the entire documentation for Rails into a searchable format), but I think that it&#8217;s still possible.</p>
-
-<p>So this weekend I dove into some <a href='http://documentcloud.github.com/backbone/'>Backbone.js</a> with the help of <a href='http://twitter.com/joeybeninghove'>Joey Beninghove's</a> <a href='http://backbonescreencasts.com/'>great Backbone.js screencasts</a> and built this idea. There&#8217;s also a bit of the Twitter Bootstrap in use, which makes things pretty.</p>
-
-<p>It&#8217;s called <a href='http://radar.github.com/sume'>Sume</a> and looks like this:</p>
-<img src='/images/sume.png' />
-<p>It&#8217;s just a proof-of-concept of this Rails API idea, allowing you to search for only a handful of classes and methods at the moment. But it presents it in a neat format.</p>
-
-<p>Ah, and one more thing: it gives you a unique URL for each page, which is something the current Rails API <em>doesn&#8217;t do</em>. When you make a request to <a href='http://radar.github.com/sume/#search/ActiveSupport::Concern'>the link for
-ActiveSupport::Concern</a> it actually takes you right to those docs. This makes it easy to link it to other people.</p>]]></content>
  </entry>
  
  

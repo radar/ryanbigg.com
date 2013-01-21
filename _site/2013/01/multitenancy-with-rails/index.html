@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - Multitenancy with Rails</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='page'>
+      <article>
+        <a href="/2013/01/multitenancy-with-rails"><header>Multitenancy with Rails</header></a>
+        <small>21 Jan 2013</small><br>
+        <p>Well before I had even <a href='http://ryanbigg.com/2012/11/no-more-writing-for-manning/'>split from Manning</a>, I had been working on a new book called <a href='https://leanpub.com/multi-tenancy-rails'>&#8220;Multitenancy with Rails&#8221;</a>, which you can buy right now.</p>
+
+<p>The idea for the book has been around for a while. A couple of friends (<a href='https://github.com/parndt'>Phil Arndt</a>, <a href='https://github.com/knewter'>Josh Adams</a>, <a href='https://github.com/robyurkowski'>Rob Yurkowski</a> and <a href='https://github.com/GeekOnCoffee'>Andrew Hooker</a>) and I had been talking in our secret IRC back channel about what a more advanced Rails book might cover. Through I don&#8217;t know what process, we came up with this idea and I&#8217;m putting it into book form.</p>
+
+<p>For now, all the book is covering is what we&#8217;re building, which is a hosted forum application, how to build a foundation for the subscriptions engine and then how we&#8217;re going to accomplish the database scoping necessary to separate the accounts&#8217; data.</p>
+
+<p>The engine is what the book&#8217;s application is going to heavily rely on. This foundation building deals with adding things like accounts which have subdomains, and then authenticating users for those accounts using Warden, and not Devise. To find out why, you&#8217;re going to have to read it.</p>
+
+<p>The chapter on scoping first of all covers using a database field, which is the typical way that people have been dealing with this problem for years, and then covers the &#8220;new&#8221; way of doing it: by using PostgreSQL schemas and the <code>apartment</code> gem.</p>
+
+<p>The next chapter, Chapter 4, will cover building the application which will combine both the subscriptions engine we build in Chapter 2, as well as the <a href='https://github.com/radar/forem'>Forem</a> forum engine that the aforementioned folk and I build and maintain.</p>
+
+<p>Chapter 5 will cover subscriptions, where each account could be subscribed to the application for an amount such as $29/month and that allows them to create 5 forums. That sort of thing. It&#8217;ll also cover taking payments for those subscriptions using Stripe&#8217;s wonderful API, and then what to do if somebody decides to do a dodgy.</p>
+
+<p>Testing (with RSpec and Capybara) is throughout, just like with Rails 3 in Action.</p>
+
+<p>So if you&#8217;re looking for a book that covers all of the above, please <a href='https://leanpub.com/multitenancy-with-rails'>buy a copy of Multitenancy with Rails</a> <em>right now</em>.</p>
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-339 http://ryanbigg.com/?p=RB-339'
+        var disqus_url = 'http://ryanbigg.com/2013/01/multitenancy-with-rails';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script type="text/javascript">
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>   
+  </body>
+</html>

@@ -30,24 +30,25 @@
      http://litanyagainstfear.com -->
 <div id='page'>
   <article>
-    <a href="/2013/01/a-story-about-scaffolding"><header>A story about scaffolding</header></a>
-    <small>07 Jan 2013</small><br>
-    <p>When Rails was released, one of the &#8220;showy&#8221; features in it was the ability to get up and running quickly. That&#8217;s always been the focus for Rails.</p>
+    <a href="/2013/01/multitenancy-with-rails"><header>Multitenancy with Rails</header></a>
+    <small>21 Jan 2013</small><br>
+    <p>Well before I had even <a href='http://ryanbigg.com/2012/11/no-more-writing-for-manning/'>split from Manning</a>, I had been working on a new book called <a href='https://leanpub.com/multi-tenancy-rails'>&#8220;Multitenancy with Rails&#8221;</a>, which you can buy right now.</p>
 
-<p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code>rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code>scaffold</code>. In later Rails releases (can&#8217;t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
+<p>The idea for the book has been around for a while. A couple of friends (<a href='https://github.com/parndt'>Phil Arndt</a>, <a href='https://github.com/knewter'>Josh Adams</a>, <a href='https://github.com/robyurkowski'>Rob Yurkowski</a> and <a href='https://github.com/GeekOnCoffee'>Andrew Hooker</a>) and I had been talking in our secret IRC back channel about what a more advanced Rails book might cover. Through I don&#8217;t know what process, we came up with this idea and I&#8217;m putting it into book form.</p>
 
-<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we&#8217;re sticking with the Post scaffold idea. So you do that, but then you don&#8217;t realise that you need to add the field to the <code>attr_accessible</code> list<sup id='fnref:1'><a href='#fn:1' rel='footnote'>1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you&#8217;d need to add it to the form partial as well. Newbies don&#8217;t learn how to do these very, very basic things first off <em>if they&#8217;re using scaffolding</em> and that&#8217;s why it&#8217;s a bad thing.</p>
+<p>For now, all the book is covering is what we&#8217;re building, which is a hosted forum application, how to build a foundation for the subscriptions engine and then how we&#8217;re going to accomplish the database scoping necessary to separate the accounts&#8217; data.</p>
 
-<p>If you begin using scaffolding, you can indeed see exactly what functionality Rails is capable of. Goodo, you can create, read, update and delete things. The problem, however, is that you end up not learning how any of it works, and it seems like &#8220;a wizard did it&#8221;. Of course, as you get more knowledgeable about Rails you&#8217;ll know that there&#8217;s no such thing as wizards.</p>
+<p>The engine is what the book&#8217;s application is going to heavily rely on. This foundation building deals with adding things like accounts which have subdomains, and then authenticating users for those accounts using Warden, and not Devise. To find out why, you&#8217;re going to have to read it.</p>
 
-<p>Learning from the ground up that in order to be able to display even a list of posts on a page that you need a <code>Post</code> model, that the model responds to an <code>all</code> method, that is then called in a thing called <code>PostsController</code> and then that information is stored in an instance variable which is then accessed by this thing called a &#8220;view&#8221; which has the same name as your action&#8230; that may seem like hard work at first (hint: it is), but it&#8217;s worth it. That is because the moment you want to step outside the cocoon of a CRUD resource and do something differently, you&#8217;ll probably know how to.</p>
+<p>The chapter on scoping first of all covers using a database field, which is the typical way that people have been dealing with this problem for years, and then covers the &#8220;new&#8221; way of doing it: by using PostgreSQL schemas and the <code>apartment</code> gem.</p>
 
-<p>Scaffolding doesn&#8217;t teach you the extreme basics of Rails development. Building things from scratch does. This foundation is absolutely critical to understanding how Rails works.</p>
+<p>The next chapter, Chapter 4, will cover building the application which will combine both the subscriptions engine we build in Chapter 2, as well as the <a href='https://github.com/radar/forem'>Forem</a> forum engine that the aforementioned folk and I build and maintain.</p>
 
-<p>That&#8217;s why the new <a href='http://edgeguides.rubyonrails.org/getting_started.html'>Rails Getting Started guide</a> does not contain one single mention of the scaffold generator anywhere. Newbies should be taught the basics, <em>not</em> shown conjuring tricks.</p>
-<div class='footnotes'><hr /><ol><li id='fn:1'>
-<p><code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters</p>
-<a href='#fnref:1' rev='footnote'>&#8617;</a></li></ol></div>
+<p>Chapter 5 will cover subscriptions, where each account could be subscribed to the application for an amount such as $29/month and that allows them to create 5 forums. That sort of thing. It&#8217;ll also cover taking payments for those subscriptions using Stripe&#8217;s wonderful API, and then what to do if somebody decides to do a dodgy.</p>
+
+<p>Testing (with RSpec and Capybara) is throughout, just like with Rails 3 in Action.</p>
+
+<p>So if you&#8217;re looking for a book that covers all of the above, please <a href='https://leanpub.com/multitenancy-with-rails'>buy a copy of Multitenancy with Rails</a> <em>right now</em>.</p>
   </article>
 </div>
 
@@ -55,6 +56,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2013/01/a-story-about-scaffolding">A story about scaffolding</a><abbr>07 Jan 2013</abbr></li>
+  
       <li><a href="/2012/11/no-more-writing-for-manning">No more writing for Manning</a><abbr>12 Nov 2012</abbr></li>
   
       <li><a href="/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia">I didn't submit a talk to RubyConf Australia</a><abbr>01 Nov 2012</abbr></li>
@@ -102,8 +105,6 @@
       <li><a href="/2011/10/leaving-chicago">Leaving Chicago</a><abbr>02 Oct 2011</abbr></li>
   
       <li><a href="/2011/09/learning-and-asking">Learning and Asking</a><abbr>07 Sep 2011</abbr></li>
-  
-      <li><a href="/2011/09/with-rails-3-1-comes-great-things">With Rails 3.1, comes great things</a><abbr>04 Sep 2011</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
