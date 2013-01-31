@@ -5,10 +5,10 @@ title: Ubuntu, Ruby, RVM, Rails, and You
 wordpress_url: http://ryanbigg.com/?p=1215
 ---
 
-<strong>Last updated: November 20th, 2012</strong>
+<strong>Last updated: Thursday January 31st 2013</strong>
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu 12.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
@@ -60,7 +60,7 @@ The next command we run will tell us what other packages we need to install for 
     # For Ruby / Ruby HEAD (MRI, Rubinius, & REE), install the following:
     ruby: /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev 
     curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev
-    libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkgconfig
+    libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkg-config
 
 A couple of things to note in this is that the `build-essential` package is
 installed, which will install all the essential build tools for Ubuntu, so
@@ -75,7 +75,11 @@ These packages will lessen the pain when we're working with Ruby. For example, t
     sudo apt-get install build-essential openssl libreadline6 libreadline6-dev \
     curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 \
     libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison  \
-    subversion pkgconfig
+    subversion pkg-config
+
+If you're using an older version of Ubuntu, the `pkg-config` package is called `pkgconfig`. You will need to install that instead:
+
+    sudo apt-get install pkgconfig
 
 Now our Ruby lives will be as painless as possible.
 

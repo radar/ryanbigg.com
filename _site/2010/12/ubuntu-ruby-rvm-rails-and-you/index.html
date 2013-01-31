@@ -11,8 +11,8 @@
       <article>
         <a href="/2010/12/ubuntu-ruby-rvm-rails-and-you"><header>Ubuntu, Ruby, RVM, Rails, and You</header></a>
         <small>25 Dec 2010</small><br>
-        <strong>Last updated: November 20th, 2012</strong><p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu (versions 10 through 12), but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+        <strong>Last updated: Thursday January 31st 2013</strong><p>
+  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu 12.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p><p>
 <strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p><h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
@@ -55,7 +55,7 @@
 # For Ruby / Ruby HEAD (MRI, Rubinius, &amp; REE), install the following:
 ruby: /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev 
 curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev
-libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkgconfig</code></pre>
+libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkg-config</code></pre>
 
 <p>A couple of things to note in this is that the <code>build-essential</code> package is installed, which will install all the essential build tools for Ubuntu, so we&#8217;ll be able to download and compile Ruby, amongst other things.</p>
 
@@ -66,7 +66,11 @@ libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkg
 <pre><code>sudo apt-get install build-essential openssl libreadline6 libreadline6-dev \
 curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 \
 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison  \
-subversion pkgconfig</code></pre>
+subversion pkg-config</code></pre>
+
+<p>If you&#8217;re using an older version of Ubuntu, the <code>pkg-config</code> package is called <code>pkgconfig</code>. You will need to install that instead:</p>
+
+<pre><code>sudo apt-get install pkgconfig</code></pre>
 
 <p>Now our Ruby lives will be as painless as possible.</p>
 <h3>Ruby</h3>
