@@ -6,7 +6,8 @@ title: About spec/support
 
 I'm going to expand on a tweet I wrote this morning:
 
-<blockquote class="twitter-tweet"><p>Thinking more and more that spec/support is an anti-pattern. I don’t want everything required for every test.</p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/status/297497422396026881">February 2, 2013</a></blockquote><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+> Thinking more and more that spec/support is
+> an anti-pattern. I don't want everything required for every test.
 
 I came to this thought when I was working on sharing testing support code
 between an engine and an application, for an example in Chapter 4 of
