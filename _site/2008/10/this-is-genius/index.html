@@ -11,13 +11,14 @@
       <article>
         <a href="/2008/10/this-is-genius"><header>This is genius!</header></a>
         <small>24 Oct 2008</small><br>
-        <p>I read Mike Gunderloy&#8217;s blog post today and afterwards thought he was crazy! I thought you couldn&#8217;t do <span class='term'>Blog.find("1-title")</span>.</p>
+        <p>I read Mike Gunderloy&#39;s blog post today and afterwards thought he was crazy! I thought you couldn&#39;t do <span class='term'>Blog.find(&quot;1-title&quot;)</span>.</p>
 
 <p>But you can.</p>
 
-<p>If you pass in 1-title as <span class='term'>params[:id]</span> for any action and then pass it to <span class='term'>find</span>, <span class='term'>find</span> will do its &#8220;thing&#8221; and just execute <span class='term'>find(1)</span>, giving you pretty URLs AND pretty code.</p>
+<p>If you pass in 1-title as <span class='term'>params[:id]</span> for any action and then pass it to <span class='term'>find</span>, <span class='term'>find</span> will do its &quot;thing&quot; and just execute <span class='term'>find(1)</span>, giving you pretty URLs AND pretty code. </p>
 
-<p>I later found out this was because find just calls <span class='term'>to_i</span> when it gets given strings, and calling it on &#8220;1-title&#8221; will give you &#8220;1&#8221;.</p>
+<p>I later found out this was because find just calls <span class='term'>to_i</span> when it gets given strings, and calling it on &quot;1-title&quot; will give you &quot;1&quot;.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

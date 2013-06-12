@@ -16,18 +16,21 @@
     has_many model.split(".").first.pluralize.to_sym, :foreign_key => "owner_id"
   end
 </pre>
+
 <p>I tried adding:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
+
+<pre lang='rails'>
  if model.classify.is_a?(ActiveRecord::Base)
-      &lt;&lt;-EVAL
+      <<-EVAL
       class #{model.classify}
         belongs_to :owner
       end
       EVAL
     end
-&lt;/pre&gt;</pre>
-<p>too, but Rails didn&#8217;t like that.</p>
+</pre>
+
+<p>too, but Rails didn&#39;t like that.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

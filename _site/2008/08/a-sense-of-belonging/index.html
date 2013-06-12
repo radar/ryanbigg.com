@@ -11,22 +11,55 @@
       <article>
         <a href="/2008/08/a-sense-of-belonging"><header>A Sense of Belonging</header></a>
         <small>29 Aug 2008</small><br>
-        <p>Numerous times I&#8217;ve needed and I&#8217;ve seen other people have needed the need to check whether an object belongs to the currently logged in user. I&#8217;ve worked out that something like this works: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&quot;rails&quot;&gt;class User &lt; ActiveRecord::Base
-  has_many :posts
+        <p>Numerous times I&#39;ve needed and I&#39;ve seen other people have needed the need to check whether an object belongs to the currently logged in user. I&#39;ve worked out that something like this works:
+<pre lang="rails">class User &lt; ActiveRecord::Base
+  has<em>many :posts
   def owns?(object)
     object.user == self
   end
-end&lt;/pre&gt;
-This works when you have a currently logged in user and call it by using &lt;span class=&quot;term&quot;&gt;current_user.owns?(@post)&lt;/span&gt;. Now what if you wanted to do it the other way around? Well it&apos;s really as simple as this:
-&lt;pre lang=&quot;rails&quot;&gt;class Post </pre></p>
+end</pre>
+This works when you have a currently logged in user and call it by using <span class="term">current</em>user.owns?(@post)</span>. Now what if you wanted to do it the other way around? Well it&#39;s really as simple as this:
+<pre lang="rails">class Post &lt; ActiveRecord::Base
+  belongs<em>to :user
+  def belongs</em>to?(other<em>user)
+    user == other</em>user
+  end
+end</pre>
+Now you can reference that through <span class="term">@post.belongs<em>to?(other</em>user)</span>.</p>
 
-<p>If you wanted to use either of these in the controller, it would be like this: <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&quot;rails&quot;&gt;class PostsController </pre></p>
+<p>If you wanted to use either of these in the controller, it would be like this:
+<pre lang="rails">class PostsController &lt; ApplicationController
+  def edit
+    @post = Post.find(params[:id])
+    check_ownership
+  end</p>
 
-<p>def update @post = Post.find(params<span>:id</span>) if current_user.owns?(@post) # or @post.belongs_to?(current_user) # carry on&#8230; if @post.update_attributes(params<span>:post</span>) flash<span>:success</span> = &#8220;Post updated!&#8221; redirect_to topic_path(@topic) else flash<span>:error</span> = &#8220;Post could not be updated.&#8221; render :action =&gt; &#8220;edit&#8221; end else flash<span>:error</span> = &#8220;You do not own that post.&#8221; end end</p>
+<p>def update
+    @post = Post.find(params[:id])
+    if current<em>user.owns?(@post) # or @post.belongs</em>to?(current<em>user)
+    # carry on...
+      if @post.update</em>attributes(params[:post])
+        flash[:success] = &quot;Post updated!&quot;
+        redirect<em>to topic</em>path(@topic)
+      else
+        flash[:error] = &quot;Post could not be updated.&quot;
+        render :action =&gt; &quot;edit&quot;
+      end
+    else
+      flash[:error] = &quot;You do not own that post.&quot;
+    end
+  end</p>
 
-<p>private def check_ownership if !current_user.owns?(@post) # or @post.belongs_to?(current_user) flash<span>:error</span> = &#8220;You do not own that post!&#8221; redirect_back_or_default topic_path(@topic) end end end&lt;/pre&gt; Now here we&#8217;ve called <span class='term'>check_ownership</span> in the edit action which will stop the template from being rendered by calling <span class='term'>redirect_back_or_default</span>. We can&#8217;t call (as I found out thanks to Blue_Sea) <span class='term'>check_ownership</span> in the same way in the update action because the code will still be executed. So we must call the methods we defined in the model, either <span class='term'>current_user.owns?(@post)</span> or <span class='term'>@post.belongs_to?(current_user)</span>.</p>
+<p>private
+    def check<em>ownership
+      if !current</em>user.owns?(@post) # or @post.belongs<em>to?(current</em>user)
+        flash[:error] = &quot;You do not own that post!&quot;
+        redirect<em>back</em>or<em>default topic</em>path(@topic)
+      end
+    end
+end</pre>
+Now here we&#39;ve called <span class="term">check<em>ownership</span> in the edit action which will stop the template from being rendered by calling <span class="term">redirect</em>back<em>or</em>default</span>. We can&#39;t call (as I found out thanks to Blue<em>Sea) <span class="term">check</em>ownership</span> in the same way in the update action because the code will still be executed. So we must call the methods we defined in the model, either <span class="term">current<em>user.owns?(@post)</span> or <span class="term">@post.belongs</em>to?(current_user)</span>.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

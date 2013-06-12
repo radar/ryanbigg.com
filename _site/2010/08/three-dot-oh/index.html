@@ -11,53 +11,64 @@
       <article>
         <a href="/2010/08/three-dot-oh"><header>Three Dot Oh</header></a>
         <small>30 Aug 2010</small><br>
-        <p>If you haven&#8217;t heard already, <a href='http://weblog.rubyonrails.org/2010/8/29/rails-3-0-it-s-done'>Rails 3.0.0 was released earlier today!</a> Congratulations to <a href='http://contributors.rubyonrails.org'>all who have worked</a> on this release since December 2008. Thank you.</p>
+        <p>If you haven&#39;t heard already, <a href='http://weblog.rubyonrails.org/2010/8/29/rails-3-0-it-s-done'>Rails 3.0.0 was released earlier today!</a> Congratulations to <a href='http://contributors.rubyonrails.org'>all who have worked</a> on this release since December 2008. Thank you.</p>
 
-<p>With this &#8220;final&#8221; release of 3.0.0 finally out the door, I&#8217;ve seen a great uptake of it and I&#8217;m excited to see what people do with it. Whilst it almost seems mandatory to participate in the circlejerk, I am going to take leave from it this time and delve into something else very much related.</p>
+<p>With this &quot;final&quot; release of 3.0.0 finally out the door, I&#39;ve seen a great uptake of it and I&#39;m excited to see what people do with it. Whilst it almost seems mandatory to participate in the circlejerk, I am going to take leave from it this time and delve into something else very much related.</p>
 
-<p>Even though Rails 3 is out and we should all really upgrade our applications right now, there&#8217;s going to be some people, like myself, who are still going to be developing Rails 2.x applications. I know, right? The guy <a href='http://manning.com/katz'>writing a book on Rails 3</a> has a day job developing a Rails 2 application.</p>
+<p>Even though Rails 3 is out and we should all really upgrade our applications right now, there&#39;s going to be some people, like myself, who are still going to be developing Rails 2.x applications. I know, right? The guy <a href='http://manning.com/katz'>writing a book on Rails 3</a> has a day job developing a Rails 2 application.</p>
 
-<p>C&#8217;est la vie.</p>
+<p>C&#39;est la vie.</p>
 
 <p>So does my friend Lucas Willett and his team at Ennova and not forgetting the fabulous <a href='http://twitter.com/jasoncodes'>@jasoncodes</a>. Tonight we were discussing, as we do, things relating to Rails. The (one-sided) conversation goes like this:</p>
+
 <blockquote>
-Lucas: sup<br />
-Lucas: freaking bastard heroku<br />
-Lucas: we're using [declarative_authorization] 0.5 which has only one gem dep of rails 2.1.0 and greater<br />
-Lucas: so heroku decides OH SHIT<br />
-Lucas: YOU NEED AREL AND ACTIVE SUPPORT AND EVERYTHING EVER<br />
-Lucas: VERSION 3 OF EVERYTHING<br />
+Lucas: sup<br>
+Lucas: freaking bastard heroku<br>
+Lucas: we're using [declarative_authorization] 0.5 which has only one gem dep of rails 2.1.0 and greater<br>
+Lucas: so heroku decides OH SHIT<br>
+Lucas: YOU NEED AREL AND ACTIVE SUPPORT AND EVERYTHING EVER<br>
+Lucas: VERSION 3 OF EVERYTHING<br>
 </blockquote>
+
 <p>Lucas is an energetic kind of guy. I can imagine him typing that at no less than 546wpm, frowning intently the entire time.</p>
 
 <p>The problem it turns out is <a href='http://github.com/stffn/declarative_authorization/blob/master/declarative_authorization.gemspec'>this glorious file</a>. Do you see any problem with it? No?</p>
 
 <p>Not even with this?</p>
+
 <h2>s.add_dependency('rails', '&gt;= 2.1.0')</h2>
-<p>Yeah, that&#8217;s right. Greater-than-or-equal to 2.1.0. Do you <strong>know</strong> what got released today? Three Dot Oh. BOOM.</p>
 
-<p>That&#8217;s the problem. That little dependency line&#8217;s going to want to install the <strong>latest and greatest</strong> version of Rails, which just so happens to be 3.0.0. Oops. But Lucas is still running a 2.3.x application.</p>
+<p>Yeah, that&#39;s right. Greater-than-or-equal to 2.1.0. Do you <strong>know</strong> what got released today? Three Dot Oh. BOOM.</p>
 
-<p>So how do we fix this? I&#8217;m not entirely sure myself. One of the options (coincidentally the only one I can think of right now) would be to tell Lucas to use Bundler for his 2.x application like all good boys &amp; girls should be doing. Bundler would solve this problem by only loading the gems that Lucas wants. Take this (contrived) <em>Gemfile</em> as an example:</p>
+<p>That&#39;s the problem. That little dependency line&#39;s going to want to install the <strong>latest and greatest</strong> version of Rails, which just so happens to be 3.0.0. Oops. But Lucas is still running a 2.3.x application. </p>
+
+<p>So how do we fix this? I&#39;m not entirely sure myself. One of the options (coincidentally the only one I can think of right now) would be to tell Lucas to use Bundler for his 2.x application like all good boys &amp; girls should be doing. Bundler would solve this problem by only loading the gems that Lucas wants. Take this (contrived) <em>Gemfile</em> as an example:</p>
+
 <pre>
   gem 'rails', '2.3.8'
   gem 'declarative_authorization'
 </pre>
+
 <p>Bundler will <strong>only</strong> load the 2.3.8 Rails gem, regardless of what Lucas has installed. He could have every single version of Rails installed. 2.3.8 is king. When Lucas (or any code throughout his application) does something like:</p>
+
 <pre>
   require 'active_support'
 </pre>
-<p>RubyGems won&#8217;t through a hissy fit similar to this:</p>
+
+<p>RubyGems won&#39;t through a hissy fit similar to this:</p>
+
 <blockquote>
   Gem::LoadError: can't activate activesupport (= 3.0.0, runtime) for ["railties-3.0.0"], already activated activesupport-2.3.8 for []
 </blockquote>
-<p>Bundler&#8217;s got that covered.</p>
 
-<p>I hear you cry! You say: &#8220;But (Sir/Lord/King/Dickhead) Ryan, I thought Bundler only worked with Rails 3!!one&#8221; (for one of the exclamation points, you <strong>actually</strong> say &#8220;exclamation (point!)&#8221;). This is simply not true.</p>
+<p>Bundler&#39;s got that covered.</p>
+
+<p>I hear you cry! You say: &quot;But (Sir/Lord/King/Dickhead) Ryan, I thought Bundler only worked with Rails 3!!one&quot; (for one of the exclamation points, you <strong>actually</strong> say &quot;exclamation (point!)&quot;). This is simply not true.</p>
 
 <p>There are <a href='http://gembundler.com/rails23.html'>lovely instructions on how to use Bundler with Rails 2.3</a>. I would suggest that you (along with Mr Willett) read these to save yourself some potential headaches.</p>
 
-<p>Why? Because right now if you do <span class='term'>gem install declarative_authorization</span> and you don&#8217;t have Rails 3 installed, you&#8217;ll get it installed:</p>
+<p>Why? Because right now if you do <span class='term'>gem install declarative_authorization</span> and you don&#39;t have Rails 3 installed, you&#39;ll get it installed:</p>
+
 <pre>
 Successfully installed declarative_authorization-0.5
 Successfully installed activesupport-3.0.0
@@ -73,11 +84,13 @@ Successfully installed actionmailer-3.0.0
 Successfully installed thor-0.14.0
 Successfully installed railties-3.0.0
 </pre>
-<p><span>dhh voice</span>WHOOPS<span>/dhh voice</span></p>
 
-<p>So yes, the short end of this story is: use Bundler. Please? Yehuda&#8217;s put a lot of effort into it and I&#8217;m pretty confident it&#8217;s going to save you (and Lucas!) a lot of heartache in the future (of which Bundler is a big part).</p>
+<p>[dhh voice]WHOOPS![/dhh voice]</p>
 
-<p>I hope to see a lot more of you out there using Rails 3 (like <a href='http://gemcutter.org'>Gemcutter</a> is). Until then, I&#8217;ll be quietly sobbing at my desk working on this now ancient relic of a Rails 2 application. Enjoy.</p>
+<p>So yes, the short end of this story is: use Bundler. Please? Yehuda&#39;s put a lot of effort into it and I&#39;m pretty confident it&#39;s going to save you (and Lucas!) a lot of heartache in the future (of which Bundler is a big part).</p>
+
+<p>I hope to see a lot more of you out there using Rails 3 (like <a href='http://gemcutter.org'>Gemcutter</a> is). Until then, I&#39;ll be quietly sobbing at my desk working on this now ancient relic of a Rails 2 application. Enjoy.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

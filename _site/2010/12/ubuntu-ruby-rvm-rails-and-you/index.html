@@ -11,103 +11,122 @@
       <article>
         <a href="/2010/12/ubuntu-ruby-rvm-rails-and-you"><header>Ubuntu, Ruby, RVM, Rails, and You</header></a>
         <small>25 Dec 2010</small><br>
-        <strong>Last updated: Thursday January 31st 2013</strong><p>
+        <p><strong>Last updated: Thursday January 31st 2013</strong></p>
+
+<p>
   <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu 12.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
-</p><p>
+</p>
+
+<p>
 <strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
-</p><h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
+</p>
+
+<h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
+
 <p>Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.</p>
 
-<p>This guide will go through installing the <a href='http://rvm.io'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>.</p>
+<p>This guide will go through installing the <a href='http://rvm.io'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. </p>
 
-<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
+<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once. </p>
 
-<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &#8220;What is Rubygems?&#8221; and more importantly &#8220;How do I turn this computer-thing on?&#8221;. This knowledge can be garnered by reading the first chapter of <a href='http://manning.com/black2'>any Ruby book</a>.</p>
+<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is Rubygems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href='http://manning.com/black2'>any Ruby book</a>.</p>
 
-<p>If you&#8217;re looking for a good Rails book, I wrote one called <a href='http://manning.com/katz'>Rails 3 in Action</a>.</p>
+<p>If you&#39;re looking for a good Rails book, I wrote one called <a href='http://manning.com/katz'>Rails 3 in Action</a>.</p>
+
 <h3>Housekeeping</h3>
-<p>First of all, we&#8217;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#8217;t run into any package-related issues, such as not being able to install some packages.</p>
 
-<p>Next, we&#8217;re going to install <code>curl</code>, which we&#8217;ll use to fetch the RVM script:</p>
+<p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages. </p>
 
-<pre><code>sudo apt-get install curl</code></pre>
+<p>Next, we&#39;re going to install <code>curl</code>, which we&#39;ll use to fetch the RVM script:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install curl
+</code></pre></div>
 <h3>RVM</h3>
-<p>RVM is a <a href='http://rvm.io'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully.</p>
 
-<p>Another situation could be that you want to have different sets of gems on the same version of Ruby but don&#8217;t want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.io/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn't have if you used the packaged Ruby</strong>.</p>
+<p>RVM is a <a href='http://rvm.io'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully. </p>
 
-<p>We&#8217;re going to use it to install only one version of Ruby, but we can <a href='http://rvm.io'>consult the documentation</a> if we want to install a different version of Ruby.</p>
+<p>Another situation could be that you want to have different sets of gems on the same version of Ruby but don&#39;t want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.io/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn&#39;t have if you used the packaged Ruby</strong>.</p>
 
-<p>With <code>curl</code> installed we&#8217;ll be able to install RVM with this command:</p>
+<p>We&#39;re going to use it to install only one version of Ruby, but we can <a href='http://rvm.io'>consult the documentation</a> if we want to install a different version of Ruby. </p>
 
-<pre><code>curl -L get.rvm.io | bash -s stable --auto</code></pre>
-
+<p>With <code>curl</code> installed we&#39;ll be able to install RVM with this command:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">curl -L get.rvm.io | bash -s stable --auto
+</code></pre></div>
 <p>The beautiful part of this is that it installs RVM and Ruby to our home directory, providing a sandboxed environment just for us.</p>
 
-<p>Then we&#8217;ll need to reload the <code>~/.bash_profile</code> file which we can do with this small command:</p>
-
-<pre><code>. ~/.bash_profile</code></pre>
-
+<p>Then we&#39;ll need to reload the <code>~/.bash_profile</code> file which we can do with this small command:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">. ~/.bash_profile
+</code></pre></div>
 <p>The next command we run will tell us what other packages we need to install for Ruby to work:</p>
-
-<pre><code>rvm requirements
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm requirements
 ...
 # For Ruby / Ruby HEAD (MRI, Rubinius, &amp; REE), install the following:
 ruby: /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev 
 curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev
-libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkg-config</code></pre>
+libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkg-config
+</code></pre></div>
+<p>A couple of things to note in this is that the <code>build-essential</code> package is
+installed, which will install all the essential build tools for Ubuntu, so
+we&#39;ll be able to download and compile Ruby, amongst other things. </p>
 
-<p>A couple of things to note in this is that the <code>build-essential</code> package is installed, which will install all the essential build tools for Ubuntu, so we&#8217;ll be able to download and compile Ruby, amongst other things.</p>
+<p>This will also install <a href='http://git-scm.org'>Git</a>, which is a version
+control system tool that you should be using if you&#39;re not already. This is
+used by RVM to fetch the latest source for some versions of Ruby.</p>
 
-<p>This will also install <a href='http://git-scm.org'>Git</a>, which is a version control system tool that you should be using if you&#8217;re not already. This is used by RVM to fetch the latest source for some versions of Ruby.</p>
-
-<p>These packages will lessen the pain when we&#8217;re working with Ruby. For example, the <code>libssl-dev</code> package will make OpenSSL support in Ruby work, <code>libsqlite3-0</code> and <code>libsqlite3-dev</code> are required for the <code>sqlite3-ruby</code> gem and the <code>libxml2-dev</code> and <code>libxslt-dev</code> packages are required for the <code>nokogiri</code> gem. Let&#8217;s install all these packages now using this command:</p>
-
-<pre><code>sudo apt-get install build-essential openssl libreadline6 libreadline6-dev \
+<p>These packages will lessen the pain when we&#39;re working with Ruby. For example, the <code>libssl-dev</code> package will make OpenSSL support in Ruby work, <code>libsqlite3-0</code> and <code>libsqlite3-dev</code> are required for the <code>sqlite3-ruby</code> gem and the <code>libxml2-dev</code> and <code>libxslt-dev</code> packages are required for the <code>nokogiri</code> gem. Let&#39;s install all these packages now using this command:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install build-essential openssl libreadline6 libreadline6-dev \
 curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 \
 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison  \
-subversion pkg-config</code></pre>
-
-<p>If you&#8217;re using an older version of Ubuntu, the <code>pkg-config</code> package is called <code>pkgconfig</code>. You will need to install that instead:</p>
-
-<pre><code>sudo apt-get install pkgconfig</code></pre>
-
+subversion pkg-config
+</code></pre></div>
+<p>If you&#39;re using an older version of Ubuntu, the <code>pkg-config</code> package is called <code>pkgconfig</code>. You will need to install that instead:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install pkgconfig
+</code></pre></div>
 <p>Now our Ruby lives will be as painless as possible.</p>
+
 <h3>Ruby</h3>
+
 <p>With RVM and these packages we can install Ruby 1.9.3:</p>
-
-<pre><code>rvm install 1.9.3</code></pre>
-
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#8217;s done, we&#8217;ll have Ruby 1.9.3 installed. To begin using it we can use this lovely command:</p>
-
-<pre><code>rvm use 1.9.3</code></pre>
-
-<p>Please note, using &#8216;1.9.3&#8217; as a default allows for when ruby is updated for that version then ALL projects using 1.9.3 as their string will be updated as well. This is a side affect people might not want. The preferred method is to include the patch level to the &#8217;&#8211;default&#8217; parameter so that if 1.9.3 gets updated, other projects don&#8217;t automatically have that change applied to to them as well. If, say for example, for some reason some method/action gets deprecated in a patchlevel or some method signature gets changed between patchlevels, this will affect <em>all</em> projects defined using the &#8216;1.9.3&#8217; string. This may or may not be what people want. Please be aware of this! Now, to continue on..</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm install 1.9.3
+</code></pre></div>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 1.9.3 installed. To begin using it we can use this lovely command:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 1.9.3
+</code></pre></div>
+<p>Please note, using &#39;1.9.3&#39; as a default allows for when ruby is updated for that version then ALL projects using 1.9.3 
+as their string will be updated as well. This is a side affect people might not want. The preferred method is to include 
+the patch level to the &#39;--default&#39; parameter so that if 1.9.3 gets updated, other projects don&#39;t automatically have that 
+change applied to to them as well. If, say for example, for some reason some method/action gets deprecated in a patchlevel 
+or some method signature gets changed between patchlevels, this will affect <em>all</em> projects defined using the &#39;1.9.3&#39; string.
+This may or may not be what people want. Please be aware of this! Now, to continue on..</p>
 
 <p>Are we using 1.9.3? You betcha:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby -v
+ruby 1.9.3p327 (2012-04-20 revision 35410) [x86_64-linux]
+</code></pre></div>
+<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes! Noting the &#39;1.9.3&#39; side-note above, lets take note of the patchlevel, which in this case is &#39;-p327&#39; and add that to our default selection.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm --default use 1.9.3-p327
+</code></pre></div>
+<p>Now whenever we open a new bash session for this user we&#39;ll have Ruby available for us to use! Yay!</p>
 
-<pre><code>ruby -v
-ruby 1.9.3p327 (2012-04-20 revision 35410) [x86_64-linux]</code></pre>
+<p>As an additional side-note: Users can, and should, use a gemset when possible so that they don&#39;t pollute their &#39;default&#39; 
+which is what is selected when a gemset is not specified in either a project&#39;s .rvmrc, or at the command-line.
+Each installed Ruby has a &#39;@global&#39; gemset. This is used to share gems with other gemsets created under that specific Ruby, 
+and with the &#39;default&#39; gemset. This can be selected by running &#39;rvm gemset use global&#39; and then installing the gems you wish 
+to share to other gemsets including &#39;default&#39;. You can, of course simply install in each gemset but this will cause needless 
+duplication and use up more disk-space and bandwidth.</p>
 
-<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes! Noting the &#8216;1.9.3&#8217; side-note above, lets take note of the patchlevel, which in this case is &#8216;-p327&#8217; and add that to our default selection.</p>
-
-<pre><code>rvm --default use 1.9.3-p327</code></pre>
-
-<p>Now whenever we open a new bash session for this user we&#8217;ll have Ruby available for us to use! Yay!</p>
-
-<p>As an additional side-note: Users can, and should, use a gemset when possible so that they don&#8217;t pollute their &#8216;default&#8217; which is what is selected when a gemset is not specified in either a project&#8217;s .rvmrc, or at the command-line. Each installed Ruby has a &#8216;@global&#8217; gemset. This is used to share gems with other gemsets created under that specific Ruby, and with the &#8216;default&#8217; gemset. This can be selected by running &#8216;rvm gemset use global&#8217; and then installing the gems you wish to share to other gemsets including &#8216;default&#8217;. You can, of course simply install in each gemset but this will cause needless duplication and use up more disk-space and bandwidth.</p>
 <h3>Rails</h3>
-<p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#8217;t need to use that nasty <code>sudo</code> to install things; we&#8217;ve got write-access! To install the Rails gem we&#8217;ll run this command:</p>
 
-<pre><code>gem install rails -v 3.2.9</code></pre>
-
+<p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails -v 3.2.9
+</code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
-<h3>MySQL</h3>
-<p>If you&#8217;re planning on using the <code>mysql2</code> gem for your application then you&#8217;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#8217;ll get an error when the gem tries to compile its native extensions:</p>
 
-<pre><code>Building native extensions.  This could take a while...
+<h3>MySQL</h3>
+
+<p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing mysql2:
-	ERROR: Failed to build gem native extension.
+    ERROR: Failed to build gem native extension.
 
 /home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
 checking for rb_thread_blocking_region()... yes
@@ -125,13 +144,14 @@ checking for mysql_query() in -lmysqlclient... no
 *** extconf.rb failed ***
 Could not create Makefile due to some reason, probably lack of
 necessary libraries and/or headers.  Check the mkmf.log file for more
-details.  You may need configuration options.</code></pre>
+details.  You may need configuration options.
+</code></pre></div>
 <h3>PostgreSQL</h3>
-<p>Similar to the <code>mysql2</code> gem&#8217;s error above, you&#8217;ll also get an error with the <code>pg</code> gem if you don&#8217;t have the <code>libpq-dev</code> package installed you&#8217;ll get this error:</p>
 
-<pre><code>    Building native extensions.  This could take a while...
+<p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">    Building native extensions.  This could take a while...
 ERROR:  Error installing pg:
-	ERROR: Failed to build gem native extension.
+    ERROR: Failed to build gem native extension.
 
 /home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
 checking for pg_config... no
@@ -140,15 +160,21 @@ Can&#39;t find the &#39;libpq-fe.h header
 *** extconf.rb failed ***
 Could not create Makefile due to some reason, probably lack of
 necessary libraries and/or headers.  Check the mkmf.log file for more
-details.  You may need configuration options.</code></pre>
+details.  You may need configuration options.
+</code></pre></div>
 <h3>Fin.</h3>
-<p>And that&#8217;s it! Now you&#8217;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project:</p>
 
-<pre><code>rvm use 1.9.3-p327@rails3 --rvmrc</code></pre>
-
+<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 1.9.3-p327@rails3 --rvmrc
+</code></pre></div>
 <p>RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
+
 <h4>Credits</h4>
-<p>Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm requirements. He&#8217;s got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were &#8220;inspired&#8221; by that post.</p>
+
+<p>Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm requirements. He&#39;s got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were &quot;inspired&quot; by that post.</p>
+
+<p>This article has been translated to <a href="http://science.webhostinggeeks.com/zivot-radara">Serbo-Croatian</a> language by Anja Skrba from <a href="http://webhostinggeeks.com/"> Webhostinggeeks.com</a>.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

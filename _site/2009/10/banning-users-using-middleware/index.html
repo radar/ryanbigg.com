@@ -11,10 +11,14 @@
       <article>
         <a href="/2009/10/banning-users-using-middleware"><header>Banning Users Using Middleware</header></a>
         <small>06 Oct 2009</small><br>
-        <a href='http://bjeanes.com'>Bo Jeanes</a><h3>The Ban Hammer</h3>
+        <p><a href='http://bjeanes.com'>Bo Jeanes</a>, a coworker at Mocra, recently implemented a way to ban people on one of his side projects <a href='http://dearqut.com'>DearQUT</a> because somebody was posting nasty messages. We were talking earlier today about it and the topic of using a middleware came up since we &quot;don&#39;t want to waste resources on that asshole&quot;. So I thought I&#39;d investigate to to see how easy it is to make a middleware in Rails, turns out it&#39;s <strong>very easy!</strong>. If you don&#39;t like reading blog posts, I have <a href='http://github.com/radar/hammer'>sample Rails application</a> containing the very same source code I used for this blog post. This contains also the &quot;Special Github&quot; extras like an admin section for adding/editing/deleting banned IPs! I also &quot;cheated&quot; by stealing elements from the <a href='http://railscasts.com/episodes/151-rack-middleware'>Railscast on Rack Middleware</a>. </p>
+
+<h3>The Ban Hammer</h3>
+
 <p>First off I generated a model called <span class='term'>BannedIP</span> by running <span class='term'>script/generate model BannedIP ip:string</span> and ran <span class='term'>rake db:migrate</span> to create the database and the <em>banned_ips</em> table.</p>
 
 <p>After that, I made a file called <em>lib/hammer.rb</em> and it goes a little like:</p>
+
 <pre lang='rails'>
 class Hammer
   def initialize(app)
@@ -36,11 +40,13 @@ class Hammer
   end
 end
 </pre>
-<p>Eagle-eyes will see that this is almost a blatant rip-off of Ryan Bates&#8217; code. Ignore that part. Admire that I call <span class='term'>BannedIP.find_by_ip(env["REMOTE_ADDR"])</span> which will return an <span class='term'>BannedIP</span> object if one exists, otherwise it&#8217;ll return <span class='term'>nil</span>. in the case that someone&#8217;s banned then it&#8217;ll show them a very lightweight page with &#8220;You have been banned from this site.&#8221; and they&#8217;ll feel guilty and stuff <small>(this feature actually coming in v2)</small>.</p>
 
-<p>Now to use this middleware you have to add <span class='term'>config.middleware.use 'Hammer'</span> to your <em>config/environment.rb</em> file and (of course) restart the server. Every request will of course query the database once more which, if you&#8217;re running a <s>large</s> <s>big</s> HUGE site can lead to performance issues.</p>
+<p>Eagle-eyes will see that this is almost a blatant rip-off of Ryan Bates&#39; code. Ignore that part. Admire that I call <span class='term'>BannedIP.find<em>by</em>ip(env[&quot;REMOTE_ADDR&quot;])</span> which will return an <span class='term'>BannedIP</span> object if one exists, otherwise it&#39;ll return <span class='term'>nil</span>. in the case that someone&#39;s banned then it&#39;ll show them a very lightweight page with &quot;You have been banned from this site.&quot; and they&#39;ll feel guilty and stuff <small>(this feature actually coming in v2)</small>.</p>
 
-<p>Of course you could just use <a href='http://www.netfilter.org/'>iptables</a> and do something like <span class='term'>iptables -I INPUT -s 25.55.55.55 -j DROP</span>, but then they won&#8217;t be told <em>why</em> they&#8217;re banned.</p>
+<p>Now to use this middleware you have to add <span class='term'>config.middleware.use &#39;Hammer&#39;</span> to your <em>config/environment.rb</em> file and (of course) restart the server. Every request will of course query the database once more which, if you&#39;re running a <s>large</s> <s>big</s> HUGE site can lead to performance issues.</p>
+
+<p>Of course you could just use <a href='http://www.netfilter.org/'>iptables</a> and do something like <span class='term'>iptables -I INPUT -s 25.55.55.55 -j DROP</span>, but then they won&#39;t be told <em>why</em> they&#39;re banned.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

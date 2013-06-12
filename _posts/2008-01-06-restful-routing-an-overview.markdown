@@ -15,7 +15,9 @@ It all starts with the good 'ol config/routes.rb file. In here is where all the 
 map.resources :forums, :has_many => :topics
 map.resources :topics, :has_many => :posts
 map.resources :posts</pre>
+
 Not running on Rails 2.0? Then this is the code you want:
+
 <pre lang="rails">
 map.resources :forums do |forum|
   forum.resources :topics, :name_prefix => "forum_"
@@ -25,7 +27,9 @@ map.resources :topics do |topic|
   topic.resources :posts, :name_prefix => "topic_"
 end
 
-map.resources :posts</pre>
+map.resources :posts
+</pre>
+
 This defines routes like:
 <pre>/forums/1</pre>
 - Show a forum

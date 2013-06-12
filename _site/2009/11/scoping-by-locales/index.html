@@ -11,29 +11,35 @@
       <article>
         <a href="/2009/11/scoping-by-locales"><header>Scoping by locales</header></a>
         <small>08 Nov 2009</small><br>
-        <p>Today in #rubyonrails, <a href='http://kiwinewt.geek.nz/'>kiwinewt</a> asked:</p>
+        <p>Today in #rubyonrails, <a href='http://kiwinewt.geek.nz/'>kiwinewt</a> asked: </p>
+
 <blockquote>How can I have a model with a text field and have that text field in multiple languages?</blockquote>
-<p>To which he meant that he has a model and he wants different versions of text displayed based on whatever the locale is set to. This is quite the common question in the channel and previously I&#8217;ve drawn blanks, but today I had a Moment of Clarity +10 and coded up something amazingly simple.</p>
+
+<p>To which he meant that he has a model and he wants different versions of text displayed based on whatever the locale is set to. This is quite the common question in the channel and previously I&#39;ve drawn blanks, but today I had a Moment of Clarity +10 and coded up something amazingly simple. </p>
 
 <p>It has two parts. The first is the code in the model:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;ruby&apos;&gt;
-class Page &lt; ActiveRecord::Base
-  def self.with_locale(&amp;block)
+
+<pre lang='ruby'>
+class Page < ActiveRecord::Base
+  def self.with_locale(&block)
     page = scoped_by_locale(I18n.locale.to_s) { block.call }.first
     page ||= scoped_by_locale(I18n.default_locale.to_s) { block.call }.first
 
-    raise ActiveRecord::RecordNotFound, &quot;The page you were looking for does not have a version in #{I18n.locale}&quot; if page.nil?
+    raise ActiveRecord::RecordNotFound, "The page you were looking for does not have a version in #{I18n.locale}" if page.nil?
     
     page
   end
 end
-&lt;/pre&gt;</pre>
+</pre>
+
 <p>And the second is how you use it:</p>
+
 <pre>
   @page = Page.with_locale { Page.first }
 </pre>
+
 <p>Now if you set <span class='term'>I18n.locale</span> in your application and use <span class='term'>with_locale</span> it will automatically find records based on that locale.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

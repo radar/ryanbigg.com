@@ -11,60 +11,67 @@
       <article>
         <a href="/2008/04/self-referrential-relationships"><header>Self-Referential Relationships</header></a>
         <small>29 Apr 2008</small><br>
-        <p>I&#8217;ve seen this question asked time and time again, so I&#8217;m going to write a short tutorial about how to do it. The question is self-refferential relationships for a model, often the User model to determine the relationship between two different users. I&#8217;ll assume that you&#8217;ve already got a Rails application and at least a User model for this. We&#8217;ll use a has_many :through relationship to define which users are related to who.</p>
+        <p>I&#39;ve seen this question asked time and time again, so I&#39;m going to write a short tutorial about how to do it. The question is self-refferential relationships for a model, often the User model to determine the relationship between two different users. I&#39;ll assume that you&#39;ve already got a Rails application and at least a User model for this. We&#39;ll use a has_many :through relationship to define which users are related to who.</p>
 
-<p>Let&#8217;s generate a model for the relationship: <span class='term'>script/generate model relationship</span>. This will generate a migration which we&#8217;ll create our relationships table with.</p>
-<strong class='code-title'>db/migrate/xxx_create_relationships.rb</strong><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&quot;rails&quot;&gt;class CreateRelationships &lt; ActiveRecord::Migration
+<p>Let&#39;s generate a model for the relationship: <span class="term">script/generate model relationship</span>. This will generate a migration which we&#39;ll create our relationships table with.</p>
+
+<p><strong class="code-title">db/migrate/xxx<em>create</em>relationships.rb</strong>
+<pre lang="rails">class CreateRelationships &lt; ActiveRecord::Migration
   def self.up
-    create_table :relationships do |t|
-      t.integer :user_id, :friend_id
-      t.string :relationship_type
+    create<em>table :relationships do |t|
+      t.integer :user</em>id, :friend<em>id
+      t.string :relationship</em>type
     end
-  end
+  end</p>
 
-  def self.down
+<p>def self.down
     drop_table :relationships
   end
-end&lt;/pre&gt;
-And that should do us. Run &lt;span class=&quot;term&quot;&gt;rake db:migrate&lt;/span&gt; to add the table in.
+end</pre>
+And that should do us. Run <span class="term">rake db:migrate</span> to add the table in.</p>
 
-Now we go into our User model and we add in the following:
+<p>Now we go into our User model and we add in the following:</p>
 
-&lt;strong class=&quot;code-title&quot;&gt;app/models/user.rb&lt;/strong&gt;
-&lt;pre lang=&quot;rails&quot;&gt;class User &lt; ActiveRecord::Base
-  has_many :relationships
-  has_many :friends, :through =&gt; :relationships
-end&lt;/pre&gt;
-And in our relationship.rb model:
+<p><strong class="code-title">app/models/user.rb</strong>
+<pre lang="rails">class User &lt; ActiveRecord::Base
+  has<em>many :relationships
+  has</em>many :friends, :through =&gt; :relationships
+end</pre>
+And in our relationship.rb model:</p>
 
-&lt;strong class=&quot;code-title&quot;&gt;app/models/user.rb&lt;/strong&gt;
-&lt;pre lang=&quot;rails&quot;&gt;class Relationship &lt; ActiveRecord::Base
-  belongs_to :friend, :class_name =&gt; &quot;User&quot;
+<p><strong class="code-title">app/models/user.rb</strong>
+<pre lang="rails">class Relationship &lt; ActiveRecord::Base
+  belongs<em>to :friend, :class</em>name =&gt; &quot;User&quot;
   belongs_to :user
-end&lt;/pre&gt;
-And now we see if it works:
+end</pre>
+And now we see if it works:</p>
 
-&lt;strong class=&quot;code-title&quot;&gt;script/console&lt;/strong&gt;
-&lt;pre lang=&quot;rails&quot;&gt;&gt;&gt; u = User.find_by_name(&quot;Ryan&quot;)
-=&gt; #
-&gt;&gt; u.friends &lt;&lt; User.find_by_name(&quot;Charlie&quot;)
-=&gt; #
-&gt;&gt; u.save
-=&gt; true&lt;/pre&gt;
-Now what if we want to change that relationship field? We&apos;ll add in two methods in to the user model to find the relationship for a specific user.
+<p><strong class="code-title">script/console</strong>
+<pre lang="rails">&gt;&gt; u = User.find<em>by</em>name(&quot;Ryan&quot;)
+=&gt; #</p>
 
-&lt;strong class=&quot;code-title&quot;&gt;app/models/user.rb&lt;/strong&gt;
-&lt;pre lang=&quot;rails&quot;&gt;def to_i
+<blockquote>
+<blockquote>
+<p>u.friends &lt;&lt; User.find<em>by</em>name(&quot;Charlie&quot;)
+=&gt; #
+u.save
+=&gt; true</pre>
+Now what if we want to change that relationship field? We&#39;ll add in two methods in to the user model to find the relationship for a specific user.</p>
+</blockquote>
+</blockquote>
+
+<p><strong class="code-title">app/models/user.rb</strong>
+<pre lang="rails">def to_i
   id
-end
+end</p>
 
-def find_relationship_with(user)
-  Relationship.find_by_friend_id(user.to_i)
-end&lt;/pre&gt;
-The first method, &lt;span class=&quot;term&quot;&gt;to_i&lt;/span&gt;, will return just the id for the user. The reason why we do this is because in the next method, &lt;span class=&quot;term&quot;&gt;find_relationship_with&lt;/span&gt; we pass in a single argument, user. Now because we&apos;ve defined the to_i method on our User model, this means we can either pass in a user id or a user object to this method, and it will call to_i on whatever we pass in, ending up with an id. When the method&apos;s done, it will return a relationship object which you can then modify.
+<p>def find<em>relationship</em>with(user)
+  Relationship.find<em>by</em>friend<em>id(user.to</em>i)
+end</pre>
+The first method, <span class="term">to<em>i</span>, will return just the id for the user. The reason why we do this is because in the next method, <span class="term">find</em>relationship<em>with</span> we pass in a single argument, user. Now because we&#39;ve defined the to</em>i method on our User model, this means we can either pass in a user id or a user object to this method, and it will call to_i on whatever we pass in, ending up with an id. When the method&#39;s done, it will return a relationship object which you can then modify.</p>
 
-Best of luck.</pre>
+<p>Best of luck.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

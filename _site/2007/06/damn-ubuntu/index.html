@@ -11,21 +11,22 @@
       <article>
         <a href="/2007/06/damn-ubuntu"><header>Damn Ubuntu!</header></a>
         <small>13 Jun 2007</small><br>
-        <p>&#8220;Yeah, it&#8217;s a tomorrow problem.&#8221; I said yesterday in regards to installing Ubuntu on the development server at work. Little did I know that it would cause so many hassles.</p>
+        <p>&quot;Yeah, it&#39;s a tomorrow problem.&quot; I said yesterday in regards to installing Ubuntu on the development server at work. Little did I know that it would cause so many hassles.</p>
 
-<p>First of all the mirror at http://au.archive.ubuntu.org didn&#8217;t have some packages, so I changed that to mirror.internode.on.net and that seemed to fix everything except for the nginx package. So I changed &#8220;dapper&#8221; to &#8220;feisty&#8221; in /etc/apt/sources.list and it found it and installed it. Then it decided to remove/alter some key features. That wasn&#8217;t good. I tried compiling imagemagick, and that failed with a &#8220;cannot compile executable&#8221; error (which there are only ~700,000 results for on Google!). Then I tried doing apt-get install build-essential. That needed libc-dev which needed lib6c-dev, which needed gcc, which needed libc-dev. See my conundrum?</p>
+<p>First of all the mirror at http://au.archive.ubuntu.org didn&#39;t have some packages, so I changed that to mirror.internode.on.net and that seemed to fix everything except for the nginx package. So I changed &quot;dapper&quot; to &quot;feisty&quot; in /etc/apt/sources.list and it found it and installed it. Then it decided to remove/alter some key features. That wasn&#39;t good. I tried compiling imagemagick, and that failed with a &quot;cannot compile executable&quot; error (which there are only ~700,000 results for on Google!). Then I tried doing apt-get install build-essential. That needed libc-dev which needed lib6c-dev, which needed gcc, which needed libc-dev. See my conundrum?</p>
 
-<p>So I hooked up the dev server to the Internode connection and pulled a cool 1mb/sec off their mirror and downloaded 7.04-server in just under 6 minutes. So I burnt that to another disk and went to install it, it got up to &#8220;Selecting and Installing Software&#8221; and hangs at 85% on update-manager-core.</p>
+<p>So I hooked up the dev server to the Internode connection and pulled a cool 1mb/sec off their mirror and downloaded 7.04-server in just under 6 minutes. So I burnt that to another disk and went to install it, it got up to &quot;Selecting and Installing Software&quot; and hangs at 85% on update-manager-core.</p>
 
-<p>EDIT: I have just tried installing it on my server, and it hangs at precisely the same point. I&#8217;m going to leave it on overnight and see if it progresses any further.</p>
+<p>EDIT: I have just tried installing it on my server, and it hangs at precisely the same point. I&#39;m going to leave it on overnight and see if it progresses any further.</p>
 
-<p>EDIT #2 (14th June 07): I was watching Medium last night and I heard the CD-drive open. I turned on my screen to see ubuntu had finished installing. Apparently it takes a while at that point. Also, you may need to do &#8220;sudo apt-get install update-manager-core&#8221;. I didn&#8217;t, thankfully, but I did see it automatically included in one of the installs I did this morning.</p>
+<p>EDIT #2 (14th June 07): I was watching Medium last night and I heard the CD-drive open. I turned on my screen to see ubuntu had finished installing. Apparently it takes a while at that point. Also, you may need to do &quot;sudo apt-get install update-manager-core&quot;. I didn&#39;t, thankfully, but I did see it automatically included in one of the installs I did this morning.</p>
 
-<p>It&#8217;s a tomorrow problem.</p>
+<p>It&#39;s a tomorrow problem.</p>
 
 <p>They also have a weird network setup. Five of the computers in the office seem to be on a Telstra connection (around 50kb/s), which goes something like PC -&gt; another PC -&gt; another PC -&gt; Routr -&gt; Internet, and the rest of the computers in the office are on an Internode connection (around 900-1200kb/s) which goes something like PC -&gt; Router -&gt; Internet.</p>
 
-<p>All of the computers are plugged into the same switch, yet it&#8217;s connecting to a different network. Maybe I&#8217;ll have to have a play around with the route settings tomorrow.</p>
+<p>All of the computers are plugged into the same switch, yet it&#39;s connecting to a different network. Maybe I&#39;ll have to have a play around with the route settings tomorrow.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

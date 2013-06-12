@@ -11,39 +11,41 @@
       <article>
         <a href="/2011/10/that-one-test"><header>That One Test</header></a>
         <small>19 Oct 2011</small><br>
-        <p>Have you ever worked on a project that has tests? Probably. How about a project that has a test that runs fine by itself but fails when the whole suite runs? Maybe. That&#8217;s what I&#8217;m going to be talking about here today.</p>
+        <p>Have you ever worked on a project that has tests? Probably. How about a project that has a test that runs fine by itself but fails when the whole suite runs? Maybe. That&#39;s what I&#39;m going to be talking about here today.</p>
 
-<p>You probably already know the story. You have a whole bunch of tests, perhaps hundreds of them, that take multiple minutes to run as a whole and about 32% of the way through <em>one</em> of the test fails. But that&#8217;s ok, because you&#8217;re running <code>rspec</code> with the <code>--fail-fast</code> option which will make RSpec quit the instant it comes across a failure, right?</p>
+<p>You probably already know the story. You have a whole bunch of tests, perhaps hundreds of them, that take multiple minutes to run as a whole and about 32% of the way through <em>one</em> of the test fails. But that&#39;s ok, because you&#39;re running <code>rspec</code> with the <code>--fail-fast</code> option which will make RSpec quit the instant it comes across a failure, right?</p>
 
 <p>Or maybe not. Well, now you know.</p>
 
-<p>Anyway, this one test is testing some piece of obscure, but required, functionality. Whenever you try thinking about when you worked on it &#8211; or even <em>if</em> you worked on it &#8211; your mind starts going fuzzy and the room starts to spin widdershins. You run the test by itself and RSpec reports this back:</p>
+<p>Anyway, this one test is testing some piece of obscure, but required, functionality. Whenever you try thinking about when you worked on it -- or even <em>if</em> you worked on it -- your mind starts going fuzzy and the room starts to spin widdershins. You run the test by itself and RSpec reports this back:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">.
 
-<pre><code>.
-
-1 example, 0 failures</code></pre>
-
-<p>You put on your &#8220;Challenge Accepted&#8221; face and re-run the tests again, perhaps this time with the <code>--fail-fast</code> option enabled. Sure enough, the test fails again.</p>
+1 example, 0 failures
+</code></pre></div>
+<p>You put on your &quot;Challenge Accepted&quot; face and re-run the tests again, perhaps this time with the <code>--fail-fast</code> option enabled. Sure enough, the test fails again. </p>
 
 <p>Cool story.</p>
-<hr />
-<h3 id='step_1_dont_panic'>Step 1: DON&#8217;T. PANIC.</h3>
 
-<p>You want to fix this. It&#8217;s 5:30pm. On a Friday. The Friday before a long weekend. The very same Friday you promised someone you&#8217;d be home early. But That One Test is being a <em>complete dick</em> about things.</p>
+<hr>
 
-<p>However, there&#8217;s light at the end of the tunnel: only 32% of the tests need running before the failure is going to happen. RSpec will (as far as I have observed) run the tests in precisely the same order all the time. This means that the other 68% of your test suite can be excluded from the suspect list.</p>
+<h3>Step 1: DON&#39;T. PANIC.</h3>
 
-<p>To fix this bug, you&#8217;re going to need a list of all the tests that ran before this test. RSpec doesn&#8217;t provide this functionality, and so you&#8217;re going to have to build it yourself. But it&#8217;s easy! Don&#8217;t Panic.</p>
-<hr />
-<h3 id='step_2_build_a_list_of_suspects'>Step 2: Build a list of suspects</h3>
+<p>You want to fix this. It&#39;s 5:30pm. On a Friday. The Friday before a long weekend. The very same Friday you promised someone you&#39;d be home early. But That One Test is being a <em>complete dick</em> about things.</p>
 
-<p>You know those pretty little green dots / red Fs / yellow stars RSpec prints out? They&#8217;re all coming from a part of RSpec called the <a href='https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/formatters/progress_formatter.rb'>`ProgressFormatter`</a>. Look, sensible code! If the example passes, it calls <code>output.print green(&#39;.&#39;)</code>. You probably couldn&#8217;t get more sensible than this.</p>
+<p>However, there&#39;s light at the end of the tunnel: only 32% of the tests need running before the failure is going to happen. RSpec will (as far as I have observed) run the tests in precisely the same order all the time. This means that the other 68% of your test suite can be excluded from the suspect list.</p>
 
-<p>My <em>point</em> is that RSpec uses this as a kind of reporting tool to show you that progress is actually being made. The <em>great</em> thing about this is that you can write your own! With your own tool, you&#8217;ll be able to output to a log what specs are being run and then use this as a base list of suspects.</p>
+<p>To fix this bug, you&#39;re going to need a list of all the tests that ran before this test. RSpec doesn&#39;t provide this functionality, and so you&#39;re going to have to build it yourself. But it&#39;s easy! Don&#39;t Panic.</p>
+
+<hr>
+
+<h3>Step 2: Build a list of suspects</h3>
+
+<p>You know those pretty little green dots / red Fs / yellow stars RSpec prints out? They&#39;re all coming from a part of RSpec called the <a href='https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/formatters/progress_formatter.rb'><code>ProgressFormatter</code></a>. Look, sensible code! If the example passes, it calls <code>output.print green(&#39;.&#39;)</code>. You probably couldn&#39;t get more sensible than this.</p>
+
+<p>My <em>point</em> is that RSpec uses this as a kind of reporting tool to show you that progress is actually being made. The <em>great</em> thing about this is that you can write your own! With your own tool, you&#39;ll be able to output to a log what specs are being run and then use this as a base list of suspects.</p>
 
 <p>Create a new file called <code>spec/support/spec_logger.rb</code> and put this content in it:</p>
-
-<pre><code>require &#39;rspec/core/formatters/progress_formatter&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;rspec/core/formatters/progress_formatter&#39;
 class SpecLogger &lt; RSpec::Core::Formatters::ProgressFormatter
 
   def example_started(example)
@@ -52,37 +54,42 @@ class SpecLogger &lt; RSpec::Core::Formatters::ProgressFormatter
       f.write(example.location + &quot;\n&quot;)
     end
   end
-end</code></pre>
-
+end
+</code></pre></div>
 <p>What this does is that it inherits the standard green dots, red Fs and yellow stars from <code>RSpec::Core::Formatters::ProgressFormatter</code> and extends it with a bit of functionality that will log exactly what specs are being run during a test run.</p>
 
 <p>To use this formatter in your next (fast failing) test run, run it using <code>bundle exec rspec spec --require spec/support/spec_logger -f SpecLogger --fail-fast</code>.</p>
 
-<p>Once this command completes, you&#8217;ll have a list of suspects in <code>specs.log</code> at the root of your project.</p>
-<hr />
-<h3 id='step_3_find_the_perp'>Step 3: Find the perp</h3>
+<p>Once this command completes, you&#39;ll have a list of suspects in <code>specs.log</code> at the root of your project.</p>
 
-<p>In this <code>specs.log</code> file you should have a list of specs that have been run just recently, with the final one being the one that is failing mysteriously. Now let&#8217;s assume that in the entire test suite there are exactly 100 tests total. With this failure occurring 32% of the way through, it should be failing at the #32 test. This number is important because it&#8217;s equally divisible by two.</p>
+<hr>
+
+<h3>Step 3: Find the perp</h3>
+
+<p>In this <code>specs.log</code> file you should have a list of specs that have been run just recently, with the final one being the one that is failing mysteriously. Now let&#39;s assume that in the entire test suite there are exactly 100 tests total. With this failure occurring 32% of the way through, it should be failing at the #32 test. This number is important because it&#39;s equally divisible by two.</p>
 
 <p>However, the locations listed in specs.log are going to have duplicate files, and RSpec only allows you to run multiple files at a time, and not multiple locations within multiple files. This list should be culled to only have one line for each file.</p>
 
-<p>Next, the trick is to take one half of these <em>plus</em> the file containing the failing test and run them together. If you take the first 15 tests and run them in an RSpec command like <code>bundle exec rspec spec &lt;file1&gt; &lt;file2&gt; ... &lt;file15&gt;</code> then you&#8217;ll be able to see a result.</p>
+<p>Next, the trick is to take one half of these <em>plus</em> the file containing the failing test and run them together. If you take the first 15 tests and run them in an RSpec command like <code>bundle exec rspec spec &lt;file1&gt; &lt;file2&gt; ... &lt;file15&gt;</code> then you&#39;ll be able to see a result.</p>
 
 <p>This is <em>exactly</em> the process <code>git bisect</code> uses, or at least what I think it does.</p>
 
-<p>If these tests are failing with these first fifteen, then the failure is most likely caused by one of those tests. If it&#8217;s not, then it&#8217;s in the other half. Re-run the test suite with that half and see if you get a failure there.</p>
+<p>If these tests are failing with these first fifteen, then the failure is most likely caused by one of those tests. If it&#39;s not, then it&#39;s in the other half. Re-run the test suite with that half and see if you get a failure there.</p>
 
-<p>When you know which half it is, half it again and keep culling down the list of suspects until you have (ideally) two files: the first will be the one that&#8217;s causing the breakage, and the second one will be the one containing the test that&#8217;s failing.</p>
+<p>When you know which half it is, half it again and keep culling down the list of suspects until you have (ideally) two files: the first will be the one that&#39;s causing the breakage, and the second one will be the one containing the test that&#39;s failing.</p>
 
-<p>From there, figure out what test in that first file is causing things to fail. Comment out half the tests, run the two files again. If it passes then it&#8217;s in that half, if it fails then it&#8217;s not. Keep at it until you&#8217;ve distilled it down to the minimum amount of tests possible, which can be as low as two, but there could be a case where two tests in the original file are causing the disruption.</p>
-<hr />
-<h3 id='step_4_fix_it'>Step 4: Fix it.</h3>
+<p>From there, figure out what test in that first file is causing things to fail. Comment out half the tests, run the two files again. If it passes then it&#39;s in that half, if it fails then it&#39;s not. Keep at it until you&#39;ve distilled it down to the minimum amount of tests possible, which can be as low as two, but there could be a case where two tests in the original file are causing the disruption.</p>
+
+<hr>
+
+<h3>Step 4: Fix it.</h3>
 
 <p>This is left as an exercise to the reader. This could be anything, but at least now you know the area where the code is failing.</p>
 
-<p>Once it&#8217;s fixed, run the entire test suite again to ensure that everything is peachy.</p>
+<p>Once it&#39;s fixed, run the entire test suite again to ensure that everything is peachy. </p>
 
 <p>If it is, congratulations. Go home. Enjoy the weekend.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

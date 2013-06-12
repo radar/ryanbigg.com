@@ -11,16 +11,19 @@
       <article>
         <a href="/2008/07/faking-it"><header>Faking It</header></a>
         <small>14 Jul 2008</small><br>
-        <p>Today I was doing the one thing I truly, truly love doing and that&#8217;s complaining about writing RSpec tests. I came across a doozy of a problem involving RSpec testing and faking subdomains. Here&#8217;s a stripped down version of what I did:</p>
+        <p>Today I was doing the one thing I truly, truly love doing and that&#39;s complaining about writing RSpec tests. I came across a doozy of a problem involving RSpec testing and faking subdomains. Here&#39;s a stripped down version of what I did:</p>
+
 <pre lang='rails'>
 def login_as(user)
   session["user"] = users(user).id
   request.host = User.find(session["user"]).company.domain + ".example.com"
 end
 </pre>
-<p>Just pop that into your <em>spec/spec_helper.rb</em> and then you can use <span class='term'>login_as(:user)</span> which will find the fixture with the name of &#8220;user&#8221; and then go from there to setting your faked host as being from, for example, blah.example.com.</p>
 
-<p>Pretty simple, shame Google didn&#8217;t turn up any relevant results without me having to dig deeper than usual.</p>
+<p>Just pop that into your <em>spec/spec<em>helper.rb</em> and then you can use <span class='term'>login</em>as(:user)</span> which will find the fixture with the name of &quot;user&quot; and then go from there to setting your faked host as being from, for example, blah.example.com.</p>
+
+<p>Pretty simple, shame Google didn&#39;t turn up any relevant results without me having to dig deeper than usual.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

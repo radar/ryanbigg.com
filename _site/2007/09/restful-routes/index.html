@@ -13,50 +13,68 @@
         <small>10 Sep 2007</small><br>
         <p>Eventually I hope to integrate this into the guide, but here it is.</p>
 
-<p>RESTful routing makes it easier to link to the actions within controllers without having to repetitively type out code such as <span>term</span>:controller =&gt; &#8220;blogs&#8221;, :action =&gt; &#8220;show&#8221;, :id =&gt; blog.id<span>/term</span> every time you want to link to that specific action. RESTful routing also forces you into a CRUD convention (which may seem bad at first), but if someone reads your code they know what each action does. Restful routing, by default, employs seven actions within every controller, namely New, Create, Edit, Update, Destroy, Show and Index. These are the seven basic actions of your controller which nearly every controller uses. It also employs two more HTTP request methods, beside GET and POST, called PUT and DELETE.</p>
+<p>RESTful routing makes it easier to link to the actions within controllers without having to repetitively type out code such as [term]:controller =&gt; &quot;blogs&quot;, :action =&gt; &quot;show&quot;, :id =&gt; blog.id[/term] every time you want to link to that specific action. RESTful routing also forces you into a CRUD convention (which may seem bad at first), but if someone reads your code they know what each action does. Restful routing, by default, employs seven actions within every controller, namely New, Create, Edit, Update, Destroy, Show and Index. These are the seven basic actions of your controller which nearly every controller uses. It also employs two more HTTP request methods, beside GET and POST, called PUT and DELETE.</p>
 
-<p>We&#8217;re already have our blogs controller but we need to define a new line in our config/routes.rb</p>
+<p>We&#39;re already have our blogs controller but we need to define a new line in our config/routes.rb</p>
 
-<p><span>code=&#8221;config/routes.rb&#8221;</span> map.resources :blogs <span>/code</span></p>
+<p>[code=&quot;config/routes.rb&quot;]
+map.resources :blogs
+[/code]</p>
 
 <p>If we wanted to make a link to the blogs index somewhere, like application.rhtml, we would define it like so:</p>
 
-<p><span>code=&#8221;app/views/layouts/application.rhtml&#8221;</span> &lt;%= link_to(&#8220;Blogs&#8221;, blogs_path) %&gt; <span>/code</span></p>
+<p>[code=&quot;app/views/layouts/application.rhtml&quot;]
+&lt;%= link<em>to(&quot;Blogs&quot;, blogs</em>path) %&gt;
+[/code]</p>
 
-<p>This tells Rails that we want all the blogs, indicated by the pluralization of the word &#8220;blog&#8221;, and we don&#8217;t need to specify any further actions.</p>
+<p>This tells Rails that we want all the blogs, indicated by the pluralization of the word &quot;blog&quot;, and we don&#39;t need to specify any further actions.</p>
 
-<p>The line tells Rails that we want to make that controller RESTful. Previously, we have used <span>term</span>:controller =&gt; &#8220;blogs&#8221;, :action =&gt; &#8220;show&#8221;, :id =&gt; blog.id<span>/term</span> to go to a specific blog. Thanks to RESTful routing, all we now need to type is something like:</p>
+<p>The line tells Rails that we want to make that controller RESTful. Previously, we have used [term]:controller =&gt; &quot;blogs&quot;, :action =&gt; &quot;show&quot;, :id =&gt; blog.id[/term] to go to a specific blog. Thanks to RESTful routing, all we now need to type is something like:</p>
 
-<p><span>code=&#8221;app/views/_blog.rhtml&#8221;</span> <pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;h2&gt;</pre></p>
+<p>[code=&quot;app/views/<em>blog.rhtml&quot;]
+<h2>&lt;%= link</em>to blog.subject, blog_path(blog) %&gt;</h2>
+[/code]</p>
 
-<p>This <span>term</span>link_to<span>/term</span> would use RESTful routing to take us to the blog. The way it does this is that it sees that it&#8217;s a standard link, so the HTTP request method is GET by default. It then sees that we want the path to a blog, defined by the singularisation of our controller which indicates we only want one blog. Finally, in the argument list after it we specify which blog. This can be the blog object itself (as shown in the example), or it could be <span>term</span>blog.id<span>/term</span>.</p>
+<p>This [term]link_to[/term] would use RESTful routing to take us to the blog. The way it does this is that it sees that it&#39;s a standard link, so the HTTP request method is GET by default. It then sees that we want the path to a blog, defined by the singularisation of our controller which indicates we only want one blog. Finally, in the argument list after it we specify which blog. This can be the blog object itself (as shown in the example), or it could be [term]blog.id[/term].</p>
 
-<p>To make a link to edit the blog, we call the method <span>term</span>edit_blog_path<span>/term</span> and specify the argument, which again can either be the blog object or the blog id, like this <span>term</span>edit_blog_path(blog)<span>/term</span> or <span>term</span>edit_blog_path(blog.id)<span>/term</span>. This will link us to <span>term</span>blogs/1;edit<span>/term</span>. This tells you simply that you&#8217;re looking at the first blog, indicated by <span>term</span>blogs/1<span>/term</span> and that you are performing the edit action on it, indicated by the <span>term</span>;edit<span>/term</span>.</p>
+<p>To make a link to edit the blog, we call the method [term]edit<em>blog</em>path[/term] and specify the argument, which again can either be the blog object or the blog id, like this [term]edit<em>blog</em>path(blog)[/term] or [term]edit<em>blog</em>path(blog.id)[/term]. This will link us to [term]blogs/1;edit[/term]. This tells you simply that you&#39;re looking at the first blog, indicated by [term]blogs/1[/term] and that you are performing the edit action on it, indicated by the [term];edit[/term]. </p>
 
-<p>Once we get to the edit form then we need to go to the update action. Here we would usually specify something like <span>term</span>:controller =&gt; &#8220;blogs&#8221;, :action =&gt; &#8220;update&#8221;, :id =&gt; @blog.id<span>/term</span> but not today! Instead we specify the form like:</p>
+<p>Once we get to the edit form then we need to go to the update action. Here we would usually specify something like [term]:controller =&gt; &quot;blogs&quot;, :action =&gt; &quot;update&quot;, :id =&gt; @blog.id[/term] but not today! Instead we specify the form like:</p>
 
-<p><span>code=&#8221;app/views/blogs/edit.rhtml&#8221;</span> &lt;% form_for :blog, @blog, :url =&gt; blog_path(blog), :html =&gt; { :method =&gt; &#8220;put&#8221; } do |f| %&gt; <span>/code</span></p>
+<p>[code=&quot;app/views/blogs/edit.rhtml&quot;]
+&lt;% form<em>for :blog, @blog, :url =&gt; blog</em>path(blog), :html =&gt; { :method =&gt; &quot;put&quot; } do |f| %&gt;
+[/code]</p>
 
-<p>This says that we&#8217;re using the blog object, to go to the url of a single blog. Now here&#8217;s where it&#8217;ll get confusing. Before I&#8217;ve said that <span>term</span>blog_path(blog)<span>/term</span> goes straight to the show action within the blogs controller. Well, don&#8217;t worry, it still does. Just in this example I&#8217;ve specified <span>term</span>:html =&gt; { :method =&gt; &#8220;put&#8221; }<span>/term</span> which uses one of those custom HTTP request methods we saw earlier and instead of going to the show action it now goes to the update action.</p>
+<p>This says that we&#39;re using the blog object, to go to the url of a single blog. Now here&#39;s where it&#39;ll get confusing. Before I&#39;ve said that [term]blog_path(blog)[/term] goes straight to the show action within the blogs controller. Well, don&#39;t worry, it still does. Just in this example I&#39;ve specified [term]:html =&gt; { :method =&gt; &quot;put&quot; }[/term] which uses one of those custom HTTP request methods we saw earlier and instead of going to the show action it now goes to the update action.</p>
 
-<p>Finally there&#8217;ll be a case where a blog isn&#8217;t just cutting it any more and we have to destroy it. This is where we use the final HTTP custom request method, <span>term</span>DELETE<span>/term</span>. To destroy a blog we specify a URL like <span>term</span>link_to &#8220;Destroy&#8221;, blog_path, :method =&gt; &#8220;delete&#8221;<span>/term</span>. Again, because we&#8217;ve specifed the method delete it doesn&#8217;t go to the show action, but the destroy action.</p>
+<p>Finally there&#39;ll be a case where a blog isn&#39;t just cutting it any more and we have to destroy it. This is where we use the final HTTP custom request method, [term]DELETE[/term]. To destroy a blog we specify a URL like [term]link<em>to &quot;Destroy&quot;, blog</em>path, :method =&gt; &quot;delete&quot;[/term]. Again, because we&#39;ve specifed the method delete it doesn&#39;t go to the show action, but the destroy action.</p>
 
-<p>Now we want to define a new RESTful route for the comments for a particular blog and for that we&#8217;re going to define a nested route. This is just a route definition inside a route definition and isn&#8217;t really as tricky as it sounds.</p>
+<p>Now we want to define a new RESTful route for the comments for a particular blog and for that we&#39;re going to define a nested route. This is just a route definition inside a route definition and isn&#39;t really as tricky as it sounds.</p>
 
-<p>In the routes.rb file replace <span>term</span>map.resources :blogs<span>/term</span> with:</p>
+<p>In the routes.rb file replace [term]map.resources :blogs[/term] with:</p>
 
-<p><span>code=&#8221;config/routes.rb&#8221;</span> map.resources &#8220;blogs&#8221; do |blog| blog.resources &#8216;comments&#8217; end map.resources &#8216;comments&#8217; <span>/code</span></p>
+<p>[code=&quot;config/routes.rb&quot;]
+map.resources &quot;blogs&quot; do |blog|
+blog.resources &#39;comments&#39;
+end
+map.resources &#39;comments&#39;
+[/code]</p>
 
-<p>Notice how we have defined the route for comments twice. This is because we can either reference it by the blog&#8217;s nested route or by itself like <span>term</span>/comments/1<span>/term</span> to see the comment with the ID of 1.</p>
+<p>Notice how we have defined the route for comments twice. This is because we can either reference it by the blog&#39;s nested route or by itself like [term]/comments/1[/term] to see the comment with the ID of 1.</p>
 
 <p>This simply defines that we can call a route like /blogs/1/comments and ideally we would define something like the following in the comments controller:</p>
 
-<p><span>code=&#8221;app/controllers/comments_controller.rb&#8221;</span> def index @comments = Comment.find_by_blog_id(params<span>:blog_id</span>) end <span>/code</span></p>
+<p>[code=&quot;app/controllers/comments<em>controller.rb&quot;]
+def index
+@comments = Comment.find</em>by<em>blog</em>id(params[:blog_id])
+end
+[/code]</p>
 
-<p>to get the comments for that particular blog. We can also now call methods like <span>term</span>comments_path<span>/term</span> to get all the comments universally or <span>term</span>comments_path(blog)<span>/term</span> to get all the comments for a particular blog.</p>
+<p>to get the comments for that particular blog. We can also now call methods like [term]comments<em>path[/term] to get all the comments universally or [term]comments</em>path(blog)[/term] to get all the comments for a particular blog.</p>
 
-<p>To specify a custom action you can put <span>term</span>:member =&gt; { :custom =&gt; :get }<span>/term</span> after the route definition to make it something like <span>term</span>map.resources :blogs, :member =&gt; { :custom =&gt; :get }<span>/term</span> Which will let you access the custom action by calling <span>term</span>custom_blog_path(blog)<span>/term</span>. To define something where you don&#8217;t need to pass in a blog argument, use <span>term</span>:collection<span>/term</span> instead of <span>term</span>:member<span>/term</span>, like this: <span>term</span>:collection =&gt; { :custom =&gt; :get }<span>/term</span>. To define subsequent actions within these hashes, simply separate them with a comma <span>term</span>:collection =&gt; { :custom =&gt; :get, :other =&gt; :post }<span>/term</span> The symbol after the points to (<span>term</span>=&gt;<span>/term</span>) is the HTTP request method by which the page is requested. You can use get, post, put or delete.</p>
+<p>To specify a custom action you can put [term]:member =&gt; { :custom =&gt; :get }[/term]
+after the route definition to make it something like [term]map.resources :blogs, :member =&gt; { :custom =&gt; :get }[/term] Which will let you access the custom action by calling [term]custom<em>blog</em>path(blog)[/term]. To define something where you don&#39;t need to pass in a blog argument, use [term]:collection[/term] instead of [term]:member[/term], like this: [term]:collection =&gt; { :custom =&gt; :get }[/term]. To define subsequent actions within these hashes, simply separate them with a comma [term]:collection =&gt; { :custom =&gt; :get, :other =&gt; :post }[/term] The symbol after the points to ([term]=&gt;[/term]) is the HTTP request method by which the page is requested. You can use get, post, put or delete.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

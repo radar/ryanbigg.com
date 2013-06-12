@@ -11,118 +11,150 @@
       <article>
         <a href="/2008/10/i18n-an-overview"><header>I18n: An Overview</header></a>
         <small>29 Oct 2008</small><br>
-        <p>Welcome to yet another overview, this time it&#8217;s on the new I18n features in Rails 2.2 which you can install by typing <span class='term'>gem install rails -s http://gems.rubyonrails.org -v 2.2.0</span>.</p>
+        <p>Welcome to yet another overview, this time it&#39;s on the new I18n features in Rails 2.2 which you can install by typing <span class='term'>gem install rails -s http://gems.rubyonrails.org -v 2.2.0</span>.</p>
 
-<p>Any mention of the <span class='term'>t</span> method in this guide are also spots where you can use <span class='term'>translate</span> too, they are just aliased methods (t is aliased to translate), it&#8217;s just much easier (for me) to type t than it is to type translate. Please excuse my laziness.</p>
+<p>Any mention of the <span class='term'>t</span> method in this guide are also spots where you can use <span class='term'>translate</span> too, they are just aliased methods (t is aliased to translate), it&#39;s just much easier (for me) to type t than it is to type translate. Please excuse my laziness.</p>
 
-<p>I&#8217;ve begun adding in the translation calls for rboard in my <a href='http://github.com/radar/rboard/tree/radar'>personal branch on GitHub</a> and today I would like to show you how I&#8217;ve done it.</p>
+<p>I&#39;ve begun adding in the translation calls for rboard in my <a href='http://github.com/radar/rboard/tree/radar'>personal branch on GitHub</a> and today I would like to show you how I&#39;ve done it.</p>
 
 <p>Firstly I have added these two lines to my <i>config/environment.rb</i>:</p>
-<b>config/environment.rb</b><pre lang='rails'>
-I18n.load_path = Dir.glob("#{RAILS_ROOT}/locales/*.rb")
-I18n.default_locale = "en-AU"
-</pre>
-<p>This tells rails to load the translation files (aka locale files) from the locales directory in the root of my rails app, and they are in a ruby format. Alternatively you could load yaml files. this also tells it to set the default locale as &#8220;en-AU&#8221;, which will load <i>locales/en-AU.rb</i> by default.</p>
 
-<p>My (incomplete) translation file looks like this: <b>locales/en-AU.rb</b> <pre lang='rails'>
+<p><b>config/environment.rb</b>
+<pre lang='rails'>
+I18n.load<em>path = Dir.glob(&quot;#{RAILS</em>ROOT}/locales/*.rb&quot;)
+I18n.default_locale = &quot;en-AU&quot;
+</pre></p>
+
+<p>This tells rails to load the translation files (aka locale files) from the locales directory in the root of my rails app, and they are in a ruby format. Alternatively you could load yaml files. this also tells it to set the default locale as &quot;en-AU&quot;, which will load <i>locales/en-AU.rb</i> by default.</p>
+
+<p>My (incomplete) translation file looks like this:
+<b>locales/en-AU.rb</b>
+<pre lang='rails'>
 {
-  :'en-AU' => {
-   :forum_heading => "Forum",
-   :topics_heading => "Topics",
-   :posts_heading => "Posts",
-   :last_post_heading => "Last Post",
-   :no_forums => "There are no forums.", 
-   :administrator_should_create_forum => "Maybe an administrator should create one.",
-   :you_should_create_forum => "Maybe you should create a forum.",
-   :forum_statistics => "Forum Statistics",
-   :posts_per_topic => "Posts per topic",
-   :recent_users => "Users on in the last 15 minutes",
-   :registered_users => "Registered Users",
-   :home => "Home",
-   :edit_profile => "Edit Profile",
-   :member_list => "Member List",
-   :search => "Search",
-   :new_message => "new message",
-   :logout => "Logout",
-   :time_now => "The time is now",
-   :viewing_forum => "Viewing forum",
-   :new_topic => "New Topic",
-   :moderation_heading => "Moderation",
-   :topic_heading => "Topic",
-   :replies_heading => "Replies",
-   :views_heading => "Views",
-   :author_heading => "Author",
-   :ago => "ago",
-   :by => "by"
+  :&#39;en-AU&#39; =&gt; {
+   :forum<em>heading =&gt; &quot;Forum&quot;,
+   :topics</em>heading =&gt; &quot;Topics&quot;,
+   :posts<em>heading =&gt; &quot;Posts&quot;,
+   :last</em>post<em>heading =&gt; &quot;Last Post&quot;,
+   :no</em>forums =&gt; &quot;There are no forums.&quot;, 
+   :administrator<em>should</em>create<em>forum =&gt; &quot;Maybe an administrator should create one.&quot;,
+   :you</em>should<em>create</em>forum =&gt; &quot;Maybe you should create a forum.&quot;,
+   :forum<em>statistics =&gt; &quot;Forum Statistics&quot;,
+   :posts</em>per<em>topic =&gt; &quot;Posts per topic&quot;,
+   :recent</em>users =&gt; &quot;Users on in the last 15 minutes&quot;,
+   :registered<em>users =&gt; &quot;Registered Users&quot;,
+   :home =&gt; &quot;Home&quot;,
+   :edit</em>profile =&gt; &quot;Edit Profile&quot;,
+   :member<em>list =&gt; &quot;Member List&quot;,
+   :search =&gt; &quot;Search&quot;,
+   :new</em>message =&gt; &quot;new message&quot;,
+   :logout =&gt; &quot;Logout&quot;,
+   :time<em>now =&gt; &quot;The time is now&quot;,
+   :viewing</em>forum =&gt; &quot;Viewing forum&quot;,
+   :new<em>topic =&gt; &quot;New Topic&quot;,
+   :moderation</em>heading =&gt; &quot;Moderation&quot;,
+   :topic<em>heading =&gt; &quot;Topic&quot;,
+   :replies</em>heading =&gt; &quot;Replies&quot;,
+   :views<em>heading =&gt; &quot;Views&quot;,
+   :author</em>heading =&gt; &quot;Author&quot;,
+   :ago =&gt; &quot;ago&quot;,
+   :by =&gt; &quot;by&quot;
   }
 }
 </pre></p>
 
-<p>When I have a string I want translated in my app I will simply call stuff like <span class='term'>t(:author_heading)</span> and Rails will look up the correct translation for it, which in this case is just &#8220;Author&#8221;.</p>
+<p>When I have a string I want translated in my app I will simply call stuff like <span class='term'>t(:author_heading)</span> and Rails will look up the correct translation for it, which in this case is just &quot;Author&quot;.</p>
 
 <p>Now if I had another translation file, say <i>locales/es.rb</i> and I had Spanish users on rboard they could select a locale from their profile page and that would store it as a string on their user record. To translate this, we can use a before_filter on the application controller:</p>
-<b>app/controllers/application.rb</b><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
+
+<p><b>app/controllers/application.rb</b>
+<pre lang='rails'>
 class ApplicationController &lt; ActionController::Base
-  before_filter :set_locale
-  def set_locale
-    I18n.locale = current_user.locale if logged_in?
+  before<em>filter :set</em>locale
+  def set<em>locale
+    I18n.locale = current</em>user.locale if logged_in?
   end
 end
-&lt;/pre&gt;</pre>
+</pre></p>
+
 <p>This will set the locale to whatever the user has set, providing that they are logged in.</p>
+
 <h3>Interpolation</h3>
+
 <p>If you wish to insert a value into a translation you can use interpolation. To do this you can specify the t method call like this:</p>
-<b>in a i18n-friendly file somewhere</b><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
+
+<p><b>in a i18n-friendly file somewhere</b>
+<pre lang='rails'>
 &lt;%= t(:welcome, :user =&gt; current_user.login) %&gt;
-&lt;/pre&gt;</pre>
+</pre></p>
+
 <p>And then in your locales file specify this:</p>
-<b>locales/en-AU.rb</b><pre lang='rails'>
-:welcome => "welcome !"
-</pre>
-<p>And the output of the translation will now be &#8220;welcome Ryan!&#8221; or whatever the user login was.</p>
+
+<p><b>locales/en-AU.rb</b>
+<pre lang='rails'>
+:welcome =&gt; &quot;welcome !&quot;
+</pre></p>
+
+<p>And the output of the translation will now be &quot;welcome Ryan!&quot; or whatever the user login was.</p>
+
 <h3>Counting</h3>
-<p>If you have a translation such as <span class='term'>:x_new_messages</span> in your translation file and you want the output of this translation to be correctly pluralized you can pass the count option to this:</p>
-<b>In any <span class='term'>t</span> method supporting files</b><pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
-&lt;%= t(:x_new_messages, :count =&gt; current_user.messages.size) %&gt;
-&lt;/pre&gt;</pre>
-<p>The <span class='term'>x_</span> prefix to our translation is not important, it&#8217;s just there to show us that this translation may return different results depending on the count that is passed to it.</p>
+
+<p>If you have a translation such as <span class='term'>:x<em>new</em>messages</span> in your translation file and you want the output of this translation to be correctly pluralized you can pass the count option to this:</p>
+
+<p><b>In any <span class='term'>t</span> method supporting files</b>
+<pre lang='rails'>
+&lt;%= t(:x<em>new</em>messages, :count =&gt; current_user.messages.size) %&gt;
+</pre></p>
+
+<p>The <span class='term'>x_</span> prefix to our translation is not important, it&#39;s just there to show us that this translation may return different results depending on the count that is passed to it.</p>
 
 <p>Then in your translation file you can do:</p>
-<b>locales/en-AU.rb</b><pre lang='rails'>
-:x_new_messages => {:zero => 'No new messages', :one => 'One new message', :other => ' new messages'}
-</pre>
-<p>And depending on the value of count it will return one of those three outcomes.</p>
-<h3>Forcing a Locale</h3>
-<p>If you want to force a locale on a single translation you can do this by specifying the &lt;span class=&#8217;term&#8217;&gt;:locale&lt;/option&gt; to the t method call like so:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
-&lt;%= t(:english, :locale =&gt; &quot;en-AU&quot;) %&gt;
-&lt;/pre&gt;</pre>
-<p>And this will always show the en-AU translation of the english key in the en-AU.rb locale file.</p>
-<h3>Alternative Translations</h3>
-<p>If one of your translations does not match like:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
-&lt;%= t(:norsk) %&gt;
-&lt;/pre&gt;</pre>
-<p>You can have I18n fall back to any number of other translations:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
-&lt;%= t(:norsk, :default =&gt; [:norwegian, :up_north, :northwards, &quot;norway&quot;]) %&gt;
-&lt;/pre&gt;</pre>
-<p>I18n will attempt to get a default translation from the options specified and will select the first one. If all translations failed then the string version, &#8220;norway&#8221; will be outputted.</p>
-<h3>Retrieving Multiple Translations</h3>
-<p>To get multiple translations back at the same time you can specify an array as the first argument to the t method.</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;pre lang=&apos;rails&apos;&gt;
-&lt;%= t(:forums, :topics) %&gt;
-&lt;/pre&gt;</pre>
-<p>Assuming you have correct translations for forums and topics you will get the translated versions returned in an array. Assuming you don&#8217;t have the correct translations for forums OR topics you will get back a string version of whatever translation is missing, possibly wrapped in a <span class='term'>&lt;span class='translation_missing'&gt;&lt;/span&gt;</span>.</p>
 
-<p>Further translation files can be found at <a href='http://github.com/svenfuchs/rails-i18n/tree/master/rails'>Sven Fuch's Github Repository</a></p>
+<p><b>locales/en-AU.rb</b>
+<pre lang='rails'>
+:x<em>new</em>messages =&gt; {:zero =&gt; &#39;No new messages&#39;, :one =&gt; &#39;One new message&#39;, :other =&gt; &#39; new messages&#39;}
+</pre></p>
+
+<p>And depending on the value of count it will return one of those three outcomes.</p>
+
+<h3>Forcing a Locale</h3>
+
+<p>If you want to force a locale on a single translation you can do this by specifying the <span class='term'>:locale</option> to the t method call like so:</p>
+
+<pre lang='rails'>
+<%= t(:english, :locale => "en-AU") %>
+</pre>
+
+<p>And this will always show the en-AU translation of the english key in the en-AU.rb locale file.</p>
+
+<h3>Alternative Translations</h3>
+
+<p>If one of your translations does not match like:</p>
+
+<pre lang='rails'>
+<%= t(:norsk) %>
+</pre>
+
+<p>You can have I18n fall back to any number of other translations:</p>
+
+<pre lang='rails'>
+<%= t(:norsk, :default => [:norwegian, :up_north, :northwards, "norway"]) %>
+</pre>
+
+<p>I18n will attempt to get a default translation from the options specified and will select the first one. If all translations failed then the string version, &quot;norway&quot; will be outputted.</p>
+
+<h3>Retrieving Multiple Translations</h3>
+
+<p>To get multiple translations back at the same time you can specify an array as the first argument to the t method.</p>
+
+<pre lang='rails'>
+<%= t(:forums, :topics) %>
+</pre>
+
+<p>Assuming you have correct translations for forums and topics you will get the translated versions returned in an array. Assuming you don&#39;t have the correct translations for forums OR topics you will get back a string version of whatever translation is missing, possibly wrapped in a <span class='term'>&lt;span class=&#39;translation_missing&#39;&gt;&lt;/span&gt;</span>.</p>
+
+<p>Further translation files can be found at <a href='http://github.com/svenfuchs/rails-i18n/tree/master/rails'>Sven Fuch&#39;s Github Repository</a></p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

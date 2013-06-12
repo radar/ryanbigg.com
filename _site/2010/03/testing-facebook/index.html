@@ -11,14 +11,14 @@
       <article>
         <a href="/2010/03/testing-facebook"><header>Testing Facebook</header></a>
         <small>02 Mar 2010</small><br>
-        <strong>I would strongly, strongly, strongly encourage people to now use <a href='http://github.com/intridea/omniauth'>OmniAuth</a> for all their Facebook needs.</strong>
-<p>We&#8217;re currently adding Facebook integration to an existing application that uses Authlogic. That means adding a button that any user can press on the login form that then takes them to Facebook, signs them in and then lets them log into our site. For this purpose and the time being &#8220;Facebook integration&#8221; means only that: letting the user login with their Facebook details. For the Facebook side of things we&#8217;re using <a href='http://github.com/mmagino/facebooker'>Facebooker</a> which is not the well-documented library we all would hope it is. Oh, and you <strong>cannot</strong> use it as a gem with Rails.</p>
+        <p><strong>I would strongly, strongly, strongly encourage people to now use <a href='http://github.com/intridea/omniauth'>OmniAuth</a> for all their Facebook needs.</strong></p>
 
-<p>Also along with Facebooker we also use the <a href='http://github.com/kalasjocke/authlogic_facebook_connect'>Authlogic Facebook Connect</a> plugin to provide us with a button we use on our login form. It also provides us with a file called <em>xd\receiver.html</em> in our <em>public</em> folder which&#8217;s use <a href='http://wiki.developers.facebook.com/index.php/How_Connect_Authentication_Works'>is documented here</a>.</p>
+<p>We&#39;re currently adding Facebook integration to an existing application that uses Authlogic. That means adding a button that any user can press on the login form that then takes them to Facebook, signs them in and then lets them log into our site. For this purpose and the time being &quot;Facebook integration&quot; means only that: letting the user login with their Facebook details. For the Facebook side of things we&#39;re using <a href='http://github.com/mmagino/facebooker'>Facebooker</a> which is not the well-documented library we all would hope it is. Oh, and you <strong>cannot</strong> use it as a gem with Rails.</p>
+
+<p>Also along with Facebooker we also use the <a href='http://github.com/kalasjocke/authlogic_facebook_connect'>Authlogic Facebook Connect</a> plugin to provide us with a button we use on our login form. It also provides us with a file called <em>xd\receiver.html</em> in our <em>public</em> folder which&#39;s use <a href="http://wiki.developers.facebook.com/index.php/How_Connect_Authentication_Works">is documented here</a>. </p>
 
 <p>We created our <em>application.html.erb</em> using these key elements, as specified in the Authlogic Facebook Connect README:</p>
-
-<pre><code>&lt;html&gt;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;html&gt;
   &lt;head&gt;
     &lt;%= javascript_include_tag :defaults %&gt;
     &lt;%= fb_connect_javascript_tag %&gt;
@@ -27,17 +27,15 @@
     &lt;%= fb_connect_javascript_tag %&gt;
     &lt;%= init_fb_connect &quot;XFBML&quot; %&gt;
   &lt;/body&gt;
-&lt;/html&gt;</code></pre>
-
+&lt;/html&gt;
+</code></pre></div>
 <p>Our login page is nothing out of the ordinary save for this tag placed where we want the button to connect to Facebook:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;%= authlogic_facebook_login_button :length =&gt; &quot;long&quot; %&gt;
+</code></pre></div>
+<p>As stated in the <a href='http://wiki.developers.facebook.com/index.php/How_Connect_Authentication_Works'>Canonical Documentation</a> because we&#39;ve generated the button the Javascript included into the layout will be executed when the user visits the page. This Javascript then calls the <code>FB.init(&quot;YOUR_API_KEY_HERE&quot;, &quot;xd_receiver.htm&quot;);</code> which does some Facebook/Javascript magic I am still yet to comprehend. This voodoo eventually renders a button that your user can click. When your user clicks this button it opens a popup window that asks the user to log into Facebook if they aren&#39;t already, otherwise this will do a &quot;seamless&quot; login. We&#39;ll go with the first option here and assume the user hasn&#39;t logged in. But by the time you&#39;ve read this, they have logged into Facebook and now the Javascript continues to execute, retrieving values from the popup window and stores them as cookies. After this is all &quot;said and done&quot; your form will be submitted and your app will carry on its merry way.</p>
 
-<pre><code>&lt;%= authlogic_facebook_login_button :length =&gt; &quot;long&quot; %&gt;</code></pre>
-
-<p>As stated in the <a href='http://wiki.developers.facebook.com/index.php/How_Connect_Authentication_Works'>Canonical Documentation</a> because we&#8217;ve generated the button the Javascript included into the layout will be executed when the user visits the page. This Javascript then calls the <code>FB.init(&quot;YOUR_API_KEY_HERE&quot;, &quot;xd_receiver.htm&quot;);</code> which does some Facebook/Javascript magic I am still yet to comprehend. This voodoo eventually renders a button that your user can click. When your user clicks this button it opens a popup window that asks the user to log into Facebook if they aren&#8217;t already, otherwise this will do a &#8220;seamless&#8221; login. We&#8217;ll go with the first option here and assume the user hasn&#8217;t logged in. But by the time you&#8217;ve read this, they have logged into Facebook and now the Javascript continues to execute, retrieving values from the popup window and stores them as cookies. After this is all &#8220;said and done&#8221; your form will be submitted and your app will carry on its merry way.</p>
-
-<p>Here&#8217;s the beginning of our Authlogic-juiced User model:</p>
-
-<pre><code>class User &lt; ActiveRecord::Base
+<p>Here&#39;s the beginning of our Authlogic-juiced User model:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">class User &lt; ActiveRecord::Base
   acts_as_authentic do |c|
     c.session_class = UserSession
 
@@ -61,13 +59,12 @@
     u.validates_uniqueness_of :email, :message =&gt; :email_in_use
     u.validates_confirmation_of :email, :message =&gt; &quot;^The emails given did not match.&quot;
   end
-end</code></pre>
-
+end
+</code></pre></div>
 <p>As you can see here if <code>facebook_uid</code> is present we are not validating the presence of <code>email</code> or <code>password</code> for obvious reasons.</p>
 
-<p>When your form is submitted it&#8217;ll go a <code>create</code> action in a controller (we called ours <code>UserSessionsController</code>) and looks like this:</p>
-
-<pre><code>class UserSessionsController &lt; ApplicationController
+<p>When your form is submitted it&#39;ll go a <code>create</code> action in a controller (we called ours <code>UserSessionsController</code>) and looks like this:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">class UserSessionsController &lt; ApplicationController
   before_filter :check_fb, :only =&gt; :create
   #...
   def create
@@ -96,19 +93,17 @@ end</code></pre>
         ensure_authenticated_to_facebook
       end
     end
-end</code></pre>
-
-<p>We have specific code here to activate a user if they log in through Facebook; we assume that if a person is logging in through Facebook that they are not an automated robot (as opposed to a manual one?) and they do not need a confirmation email sent. What&#8217;s most exciting about this code however is <em>not</em> the create action, but the <code>before_filter</code> we run&#8230; erm, before&#8230; it.</p>
+end
+</code></pre></div>
+<p>We have specific code here to activate a user if they log in through Facebook; we assume that if a person is logging in through Facebook that they are not an automated robot (as opposed to a manual one?) and they do not need a confirmation email sent. What&#39;s most exciting about this code however is <em>not</em> the create action, but the <code>before_filter</code> we run... erm, before... it.</p>
 
 <p>As you can see, the <code>before_filter</code> calls <code>ensure_authenticated_to_facebook</code> which is a method from Facebooker, traditionally used itself as a <code>before_filter</code> but because we have the ability to log in with an email &amp; password OR a facebook login, is called conditionally. That method looks like this:</p>
-
-<pre><code>def ensure_authenticated_to_facebook
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def ensure_authenticated_to_facebook
   set_facebook_session || create_new_facebook_session_and_redirect!
-end</code></pre>
-
+end
+</code></pre></div>
 <p>This attempts the <code>set_facebook_session</code> method first:</p>
-
-<pre><code>def set_facebook_session
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def set_facebook_session
   # first, see if we already have a session
   session_set = session_already_secured?
   # if not, see if we can load it from the environment
@@ -121,26 +116,24 @@ end</code></pre>
     Session.current = facebook_session
   end
   return session_set
-end</code></pre>
-
-<p>We do not have a current session so it&#8217;ll go and call <code>create_facebook_session</code>:</p>
-
-<pre><code>def create_facebook_session
+end
+</code></pre></div>
+<p>We do not have a current session so it&#39;ll go and call <code>create_facebook_session</code>:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def create_facebook_session
   secure_with_facebook_params! || secure_with_cookies! || secure_with_token!
-end</code></pre>
-
-<p>So this uses three methods: <code>secure_with_facebook_params!</code>, <code>secure_with_cookies!</code> or <code>secure_with_token</code>. Remember what I said earlier about what happens when the user presses the button? No? Here&#8217;s a refresher: it sets cookies. Not the edible kind, sadly. So the method that&#8217;ll be used here is <code>secure_with_cookies!</code>.</p>
+end
+</code></pre></div>
+<p>So this uses three methods: <code>secure_with_facebook_params!</code>, <code>secure_with_cookies!</code> or <code>secure_with_token</code>. Remember what I said earlier about what happens when the user presses the button? No? Here&#39;s a refresher: it sets cookies. Not the edible kind, sadly. So the method that&#39;ll be used here is <code>secure_with_cookies!</code>. </p>
 
 <p>I feel now is a good time to show you the test we wrote.</p>
-
-<pre><code>describe UserSessionsController do
+<div class="highlight"><pre><code class="text language-text" data-lang="text">describe UserSessionsController do
   describe &quot;create&quot; do
     describe &quot;facebook user&quot; do
       it &quot;creates account based on facebook details&quot; do
         Facebooker.use_curl = false 
         FakeWeb.allow_net_connect = false
         FakeWeb.register_uri(:post, &quot;http://api.facebook.com/restserver.php&quot;, :body =&gt; Rails.root + &quot;spec/fixtures/get_users_info.xml&quot;)
-  
+
         setup_fb_connect_cookies
 
         post :create
@@ -152,15 +145,14 @@ end</code></pre>
       end
     end
   end
-end</code></pre>
+end
+</code></pre></div>
+<p>The <code>Facebooker.use_curl = false</code> is only neccesary if you have the <em>curb</em> gem installed. Hat-tip to <a href="http://ryanbigg.com/2010/03/testing-facebook/comment-page-1/#comment-34739">Balvig</a> in the comments!</p>
 
-<p>The <code>Facebooker.use_curl = false</code> is only neccesary if you have the <em>curb</em> gem installed. Hat-tip to <a href='http://ryanbigg.com/2010/03/testing-facebook/comment-page-1/#comment-34739'>Balvig</a> in the comments!</p>
+<p>We first disable internet connections using FakeWeb. We do this so we can stub out the response to Facebooker&#39;s internal call to <code>getUsersInfo</code> to Facebook and always return a valid user object. The fake XML <a href="http://gist.github.com/319392#file_get_users_info.xml"> can be viewed in this gist.</a></p>
 
-<p>We first disable internet connections using FakeWeb. We do this so we can stub out the response to Facebooker&#8217;s internal call to <code>getUsersInfo</code> to Facebook and always return a valid user object. The fake XML <a href='http://gist.github.com/319392#file_get_users_info.xml'> can be viewed in this gist.</a></p>
-
-<p>After Fakeweb has done its thing we call the <code>setup_fb_connect_cookies</code> method which does exactly what it says on the box, it lives in the <em>spec/support/facebook_helpers.rb</em> file:</p>
-
-<pre><code>def setup_fb_connect_cookies
+<p>After Fakeweb has done its thing we call the <code>setup_fb_connect_cookies</code> method which does exactly what it says on the box, it lives in the <em>spec/support/facebook\</em>helpers.rb_ file:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def setup_fb_connect_cookies
   cookie_hash_for_auth.each {|k,v| request.cookies[ENV[&#39;FACEBOOK_API_KEY&#39;]+k] = CGI::Cookie.new(ENV[&#39;FACEBOOK_API_KEY&#39;]+k,v).first}
 end
 
@@ -169,13 +161,12 @@ def cookie_hash_for_auth
   raw_string = hash.map{ |k,v| [k.gsub(/^_/, &#39;&#39;), v].join(&#39;=&#39;) }.sort.join
   actual_sig = Digest::MD5.hexdigest([raw_string, Facebooker::Session.secret_key].join)
   hash.merge(&quot;&quot; =&gt; actual_sig)
-end</code></pre>
-
-<p>Why such complicated code? Well, this provides the cookies that Facebooker needs in order to log in. The final three lines in the <code>cookie_hash_for_auth</code> method is all about setting up a &#8220;signature&#8221; which Facebook parses in the parameters to ensure that they haven&#8217;t been tampered with. The generation of this was ripped straight from the guts of Facebooker which uses (almost) the same code to generate an MD5 to verify the signature against.</p>
+end
+</code></pre></div>
+<p>Why such complicated code? Well, this provides the cookies that Facebooker needs in order to log in. The final three lines in the <code>cookie_hash_for_auth</code> method is all about setting up a &quot;signature&quot; which Facebook parses in the parameters to ensure that they haven&#39;t been tampered with. The generation of this was ripped straight from the guts of Facebooker which uses (almost) the same code to generate an MD5 to verify the signature against.</p>
 
 <p>In short: We now have cookies that our <code>post :create</code> is going to use. So, when this is triggered <code>secure_with_cookies!</code> does its thing:</p>
-
-<pre><code>def secure_with_cookies!
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def secure_with_cookies!
     parsed = {}
 
     fb_cookie_names.each { |key| parsed[key[fb_cookie_prefix.size,key.size]] = cookies[key] }
@@ -189,13 +180,12 @@ end</code></pre>
     @facebook_session = new_facebook_session
     @facebook_session.secure_with!(parsed[&#39;session_key&#39;],parsed[&#39;user&#39;],parsed[&#39;expires&#39;],parsed[&#39;ss&#39;])
     @facebook_session
-end</code></pre>
+end
+</code></pre></div>
+<p>This has now generated a value for <code>session[:facebook_session]</code>, a <code>Facebooker::Session</code> object. Great. The <code>@user_session</code> in our controller has a user method that returns a valid user and we ensure it&#39;s that way in the remainder of the controller test. Great, so that part works. Now about how <em>doing</em> something with the logged in user?</p>
 
-<p>This has now generated a value for <code>session[:facebook_session]</code>, a <code>Facebooker::Session</code> object. Great. The <code>@user_session</code> in our controller has a user method that returns a valid user and we ensure it&#8217;s that way in the remainder of the controller test. Great, so that part works. Now about how <em>doing</em> something with the logged in user?</p>
-
-<p>Well for that purpose, <a href='http://blog.eizesus.com/2010/02/facebooker-tips-1-session-expiry-cucumber-and-env-6-2-2010/'>Elad Meidar wrote a blog post covering how to do it in Cucumber</a>. This consists of setting up your facebooker.yml to having a <code>cucumber</code> key share the configuration of the <code>development</code> key and a couple of steps:</p>
-
-<pre><code>Given /^I am logged in as a Facebook user$/ do
+<p>Well for that purpose, <a href="http://blog.eizesus.com/2010/02/facebooker-tips-1-session-expiry-cucumber-and-env-6-2-2010/">Elad Meidar wrote a blog post covering how to do it in Cucumber</a>. This consists of setting up your facebooker.yml to having a <code>cucumber</code> key share the configuration of the <code>development</code> key and a couple of steps:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Given /^I am logged in as a Facebook user$/ do
 
   # Initializer facebooker session
   @integration_session = open_session
@@ -208,70 +198,75 @@ end</code></pre>
   @current_user.facebook_user.friends = [ Facebooker::User.new(:id =&gt; 2, :name =&gt; &#39;Bob&#39;),
     Facebooker::User.new(:id =&gt; 3, :name =&gt; &#39;Sam&#39;)]
   @integration_session.default_request_params.merge!( :fb_sig_user =&gt; @current_user.facebook_id, :fb_sig_friends =&gt; @current_user.facebook_user.friends.map(&amp;:id).join(&#39;,&#39;) )
-end</code></pre>
-
+end
+</code></pre></div>
 <p>This code sets the parameters on the next request and Facebooker accepts these and uses them to create a new <code>Facebooker::Session</code> object, which it stores in <code>session[:facebook_session]</code>.</p>
 
 <p>The <code>open_session</code> method comes from Facebooker by placing this line in <em>features/support/app.rb</em>:</p>
-
-<pre><code>require &#39;facebooker/rails/cucumber&#39;</code></pre>
-
+<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;facebooker/rails/cucumber&#39;
+</code></pre></div>
 <p>The <code>facebook_user</code> method on our <code>User</code> object comes from defining it on the <code>User</code> model:</p>
-<script src='http://gist.github.com/296758.js?file=user.rb' />
-<p>Now with the steps and correct requires in place, we have our feature:</p>
 
-<pre><code>Feature: Facebook
+<script src="http://gist.github.com/296758.js?file=user.rb"></script>
+
+<p>Now with the steps and correct requires in place, we have our feature:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Feature: Facebook
   In order to use the site as a facebook user
   As a user
   I want to have already logged in with Facebook and be roaming the wide brown lands
 
   Scenario: logging into facebook
     Given I am logged in as a Facebook user
-  	And I am on the homepage
-    Then I should be on the homepage</code></pre>
-
-<p>This is just a silly example that ensures that the user is not redirected back to the login page if they are logged in as a Facebook user. I hope you write better features than this. This feature will fail for the time being because our <code>current_user</code> method only queries <code>current_user_session</code>, so we&#8217;ll modify it to be this instead:</p>
-
-<pre><code>def current_user
+    And I am on the homepage
+    Then I should be on the homepage
+</code></pre></div>
+<p>This is just a silly example that ensures that the user is not redirected back to the login page if they are logged in as a Facebook user. I hope you write better features than this. This feature will fail for the time being because our <code>current_user</code> method only queries <code>current_user_session</code>, so we&#39;ll modify it to be this instead:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def current_user
   @current_user ||= (current_user_session &amp;&amp; current_user_session.record)
   @current_user ||= User.find_by_facebook_uid(session[:facebook_session].user.uid)
-end</code></pre>
-
+end
+</code></pre></div>
 <p>Now we can use <code>current_user</code> to reference current Facebook users too, meaning our feature will now pass.</p>
 
-<p>With a controller spec and feature passing, that&#8217;s lunch!</p>
-<h3>For After Lunch</h3>
-<p>So how was lunch? I hope it was good. Since this is only a one-way kind of communication I can&#8217;t accurately respond to whatever you&#8217;re going to say. Sorry!</p>
+<p>With a controller spec and feature passing, that&#39;s lunch!</p>
 
-<p>Right then! So our application is tested well enough that we know that we can log in using faked-out Facebook cookies, but does the actual real-world side of things work? Does clicking the button actually prompt the user to log into Facebook if they haven&#8217;t already or just go through that whole section transparently and present them with an already logged in screen?</p>
+<h3>For After Lunch</h3>
+
+<p>So how was lunch? I hope it was good. Since this is only a one-way kind of communication I can&#39;t accurately respond to whatever you&#39;re going to say. Sorry!</p>
+
+<p>Right then! So our application is tested well enough that we know that we can log in using faked-out Facebook cookies, but does the actual real-world side of things work? Does clicking the button actually prompt the user to log into Facebook if they haven&#39;t already or just go through that whole section transparently and present them with an already logged in screen?</p>
 
 <p>Chances are this is a big, gigantic, fat</p>
+
 <h3>No.</h3>
-<p>You&#8217;ll more-than-likely run across an &#8220;Invalid parameter&#8221; issue as we had when we tried to use our application. The error code for this is 100.</p>
 
-<p>So what&#8217;s up?</p>
+<p>You&#39;ll more-than-likely run across an &quot;Invalid parameter&quot; issue as we had when we tried to use our application. The error code for this is 100.</p>
 
-<p>Well, as it turns out, when you try to go to the login page for an application that hasn&#8217;t yet been activated it just warns you that it hasn&#8217;t been activated. I&#8217;m not quite clear on how Facebooker works in this particular section, but it is my understanding that the login page is supposed to take you to the application page. Let me explain in step-by-step kind of way. &#8220;application&#8217;s page&#8221; means your site in this scenario. You&#8217;ve set this up by specifying the &#8220;Connect URL&#8221; in the &#8220;Connect&#8221; section of your Application Settings page to be the root-level of your site. So this is how Facebooker does its thing:</p>
-<pre class='markdown-html-error' style='border: solid 3px red; background-color: pink'>REXML could not parse this XML/HTML: 
-&lt;ol&gt;
-&lt;li&gt;Facebooker grabs an auth_token using the `facebook.Auth.createToken` API method. This returns something like `72a910e1f24eb6034549d23cd2245f28`&lt;/li&gt;
-&lt;li&gt; This `auth_token` is then passed to `http://facebook.com/login.php` as a parameter, which is rendered in whichever fashion you wish. For all intents and purposes, our application renders it in another browser window.&lt;/li&gt;
-&lt;li&gt;The login.php page detects if you are logged out or in and does either:
-  &lt;li&gt; If you&apos;re logged out of Facebook, prompts for an email and password. If you &quot;get this right&quot;, Facebook sets up some cookies, links that `auth_token` to your Facebook user, and redirects you to the application.&lt;/li&gt;
-  &lt;li&gt; If you&apos;re logged in to Facebook, Facebook sets up some cookies, links that `auth_token` to your Facebook user, and redirects you to the application.&lt;/li&gt;
-&lt;/li&gt;
-&lt;li&gt;The cookies are then used to call `facebook.Auth.getSession` which, because you&apos;re now most-definitely logged into Facebook, will return a session object. Something that looks like:
+<p>So what&#39;s up?</p>
 
-&lt;pre&gt;
+<p>Well, as it turns out, when you try to go to the login page for an application that hasn&#39;t yet been activated it just warns you that it hasn&#39;t been activated. I&#39;m not quite clear on how Facebooker works in this particular section, but it is my understanding that the login page is supposed to take you to the application page. Let me explain in step-by-step kind of way. &quot;application&#39;s page&quot; means your site in this scenario. You&#39;ve set this up by specifying the &quot;Connect URL&quot; in the &quot;Connect&quot; section of your Application Settings page to be the root-level of your site. So this is how Facebooker does its thing:</p>
+
+<p><ol>
+<li>Facebooker grabs an auth_token using the <code>facebook.Auth.createToken</code> API method. This returns something like <code>72a910e1f24eb6034549d23cd2245f28</code></li>
+<li> This <code>auth_token</code> is then passed to <code>http://facebook.com/login.php</code> as a parameter, which is rendered in whichever fashion you wish. For all intents and purposes, our application renders it in another browser window.</li>
+<li>The login.php page detects if you are logged out or in and does either:
+  <li> If you&#39;re logged out of Facebook, prompts for an email and password. If you &quot;get this right&quot;, Facebook sets up some cookies, links that <code>auth_token</code> to your Facebook user, and redirects you to the application.</li>
+  <li> If you&#39;re logged in to Facebook, Facebook sets up some cookies, links that <code>auth_token</code> to your Facebook user, and redirects you to the application.</li>
+</li>
+<li>The cookies are then used to call <code>facebook.Auth.getSession</code> which, because you&#39;re now most-definitely logged into Facebook, will return a session object. Something that looks like:</p>
+
+<pre>
 2.5KVyRHmZWBbOun8ZwDwQxg__.3600.1243290000-608966587\n  608966587\n  1268190000
-&lt;/pre&gt;
-&lt;/li&gt;
+</pre>
 
-&lt;li&gt;Facebooker creates a `Facebooker::Session` object based on this return value which it stores in your application as `session[:facebook_session]`&lt;/li&gt;
+<p></li></p>
 
-What could possibly go wrong is that if you have your application in &quot;Sandbox Mode&quot; (under &quot;Advanced&quot; in &quot;Application Settings&quot;), when you go to the login page you&apos;ll be shown the &quot;This application is under construction&quot; and therefore Facebook will not link your user account with the `auth_token` so when `facebook.Auth.getSession` tries to do what its name implies: it&apos;ll fail with &quot;Invalid Parameter&quot;. Just be careful about that! It had us caught up for a day and bit, we didn&apos;t know about that option.
+<p><li>Facebooker creates a <code>Facebooker::Session</code> object based on this return value which it stores in your application as <code>session[:facebook_session]</code></li></p>
 
- I hope you found this as informative as I found it interesting to investigate.</pre>
+<p>What could possibly go wrong is that if you have your application in &quot;Sandbox Mode&quot; (under &quot;Advanced&quot; in &quot;Application Settings&quot;), when you go to the login page you&#39;ll be shown the &quot;This application is under construction&quot; and therefore Facebook will not link your user account with the <code>auth_token</code> so when <code>facebook.Auth.getSession</code> tries to do what its name implies: it&#39;ll fail with &quot;Invalid Parameter&quot;. Just be careful about that! It had us caught up for a day and bit, we didn&#39;t know about that option.</p>
+
+<p>I hope you found this as informative as I found it interesting to investigate.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

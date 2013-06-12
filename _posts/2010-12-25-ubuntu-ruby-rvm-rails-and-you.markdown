@@ -181,3 +181,5 @@ RVM is such a powerful tool and comes in handy for day-to-day Ruby development. 
 
 Thanks to <a href='http://twitter.com/krainboltgreene'>krainboltgreene</a> for pointing out that the guide needed to install the packages specified by rvm requirements. He's got a similar <a href='http://krainboltgreene.github.com/l/3'>write up here for Ubuntu 10.04</a>. Some of the instructions in this guide were "inspired" by that post.
 
+This article has been translated to <a href="http://science.webhostinggeeks.com/zivot-radara">Serbo-Croatian</a> language by Anja Skrba from <a href="http://webhostinggeeks.com/"> Webhostinggeeks.com</a>.
+

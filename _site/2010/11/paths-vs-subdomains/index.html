@@ -12,20 +12,27 @@
         <a href="/2010/11/paths-vs-subdomains"><header>Paths vs Subdomains</header></a>
         <small>28 Nov 2010</small><br>
         <p>Earlier today I put out <a href='http://twitter.com/ryanbigg/status/8747010869956608'>a tweet</a> which asked:</p>
+
 <blockquote>
 site.com/account (Github) or account.site.com (Basecamp) style for per-account URLs?
 </blockquote>
-<p>There were great arguments from both sides in the debate. Tweets like <a href='http://twitter.com/Sutto/status/8799294744170496'>Darcy Laycock's</a> and <a href='http://twitter.com/jms_/status/8770149087707137'>James Ottaway's</a>.</p>
 
-<p>I&#8217;ve decided to make it paths for two reasons.</p>
+<p>There were great arguments from both sides in the debate. Tweets like <a href='http://twitter.com/Sutto/status/8799294744170496'>Darcy Laycock&#39;s</a> and <a href='http://twitter.com/jms_/status/8770149087707137'>James Ottaway&#39;s</a>.</p>
+
+<p>I&#39;ve decided to make it paths for two reasons.</p>
+
 <h3>Easier to test</h3>
-<p>Quite simply, paths (http://ticketee.com/account) are much easier to test by booting up <code>rails server</code> than subdomains are. They require no additional configuration by that means and they&#8217;re guaranteed to work on all systems.</p>
+
+<p>Quite simply, paths (http://ticketee.com/account) are much easier to test by booting up <code>rails server</code> than subdomains are. They require no additional configuration by that means and they&#39;re guaranteed to work on all systems.</p>
 
 <p>Subdomains on the other hand would require use of another tool such as <a href='http://github.com/bjeanes/ghost'>Ghost</a> which would work on Ubuntu and Mac OS X, but not Windows. There is no One True Solution for everybody when it comes to subdomains. Since Rails 3 in Action is intentionally written without discrimination between operating systems, I would prefer this chapter to be no exception to that rule.</p>
-<h3>Account sharing</h3>
-<p>In the application I am going to be sharing users across accounts. A user that is created on one account, can be gifted access to an alternative account. This would result in an &#8220;open&#8221; system, and I think a path URL would be better for this than a subdomain URL.</p>
 
-<p>Thank you all for your suggestions and the interesting discussions tonight. You&#8217;ve been amazing.</p>
+<h3>Account sharing</h3>
+
+<p>In the application I am going to be sharing users across accounts. A user that is created on one account, can be gifted access to an alternative account. This would result in an &quot;open&quot; system, and I think a path URL would be better for this than a subdomain URL.</p>
+
+<p>Thank you all for your suggestions and the interesting discussions tonight. You&#39;ve been amazing.</p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>

@@ -11,29 +11,35 @@
       <article>
         <a href="/2010/09/advanced-rails-documentation"><header>Advanced Rails Documentation</header></a>
         <small>30 Sep 2010</small><br>
-        <p>Recently I&#8217;ve been talking to a lot of people about Rails. It&#8217;s what I do. Lots of these people I talked to were in San Francisco when I was. Some others were in Jacksonville Beach. A common thread of conversation was that to truly know the Rails internals you have to read the source and interpret it for yourself what it means. If only there were guides out there for the more advanced concepts in Rails.</p>
+        <p>Recently I&#39;ve been talking to a lot of people about Rails. It&#39;s what I do. Lots of these people I talked to were in San Francisco when I was. Some others were in Jacksonville Beach. A common thread of conversation was that to truly know the Rails internals you have to read the source and interpret it for yourself what it means. If only there were guides out there for the more advanced concepts in Rails.</p>
 
-<p>There was discussions as recently as March this year about starting up a Rails Internals documentation group, much in the same vein that docrails has people who write the <a href='http://guides.rubyonrails.org'>Rails Guides</a>. These guides are top-notch and are a great boon to the resources of people who are just getting started with Rails, but there&#8217;s nothing comparable for those who are more advanced.</p>
+<p>There was discussions as recently as March this year about starting up a Rails Internals documentation group, much in the same vein that docrails has people who write the <a href="http://guides.rubyonrails.org">Rails Guides</a>. These guides are top-notch and are a great boon to the resources of people who are just getting started with Rails, but there&#39;s nothing comparable for those who are more advanced.</p>
 
-<p>This is where the Rails Internals documentation comes in. It&#8217;s clear to me from the conversations I&#8217;ve had with people about Rails over the past couple of months that there&#8217;s a <strong>real need</strong> for some seriously good advanced documentation. There&#8217;s also the sidebar on <a href='http://yehudakatz.com'>Yehuda Katz's</a> blog for <a href='http://skribit.com'>Skribit</a>, where people can vote up posts they want Yehuda to write about. Yehuda&#8217;s too busy blowing our minds with other things (i.e. <a href='http://github.com/carlhuda/bundler'>Bundler</a> and now <a href='http://sproutcore.com'>SproutCore</a>) to write about them.</p>
+<p>This is where the Rails Internals documentation comes in. It&#39;s clear to me from the conversations I&#39;ve had with people about Rails over the past couple of months that there&#39;s a <strong>real need</strong> for some seriously good advanced documentation. There&#39;s also the sidebar on <a href='http://yehudakatz.com'>Yehuda Katz&#39;s</a> blog for <a href='http://skribit.com'>Skribit</a>, where people can vote up posts they want Yehuda to write about. Yehuda&#39;s too busy blowing our minds with other things (i.e. <a href='http://github.com/carlhuda/bundler'>Bundler</a> and now <a href='http://sproutcore.com'>SproutCore</a>) to write about them.</p>
 
-<p>The highest request on that list is &#8220;migrating from rails 2.3.* to 3.0&#8221;, which is neatly covered by <a href='http://www.railsupgradehandbook.com/'>Jeremy McAnally's Rails 3 Upgrade Handbook</a>.</p>
+<p>The highest request on that list is &quot;migrating from rails 2.3.* to 3.0&quot;, which is neatly covered by <a href='http://www.railsupgradehandbook.com/'>Jeremy McAnally&#39;s Rails 3 Upgrade Handbook</a>.</p>
 
-<p>The second highest request on that list is &#8220;The lifecycle of a request through the rails stack&#8221;. This is an <strong>epic</strong> in itself. There&#8217;s an amazing amount of work that goes into rendering even a simple view through a controller, and that&#8217;s just the basic part of it. Your routes could route out to a Sinatra application, your model could actually be an ActiveResource model or a NoSQL model and you could be returning JSON data rather than an actual template.</p>
+<p>The second highest request on that list is &quot;The lifecycle of a request through the rails stack&quot;. This is an <strong>epic</strong> in itself. There&#39;s an amazing amount of work that goes into rendering even a simple view through a controller, and that&#39;s just the basic part of it. Your routes could route out to a Sinatra application, your model could actually be an ActiveResource model or a NoSQL model and you could be returning JSON data rather than an actual template.</p>
+
 <h3>Fucking Rails man, how does it work?</h3>
-<p>So I&#8217;ve been thinking for quite a while that it&#8217;d be nice to work on Rails documentation <strong>full time</strong>. Back in January when I was between jobs I begun writing the <a href='http://guides.rubyonrails.org/initialization.html'>Rails 3 Initialization Process</a> guide. I stopped writing it because I got a (kinda) paying gig writing <a href='http://manning.com/katz'>Rails 3 in Action</a>. I loved digging into the guts of Rails and explaining how they work. I got a great response from my initial postings of that guide and I&#8217;d like to complete it as the first in the Rails Internals Guides series, with the remainder beginning with:</p>
+
+<p>So I&#39;ve been thinking for quite a while that it&#39;d be nice to work on Rails documentation <strong>full time</strong>. Back in January when I was between jobs I begun writing the <a href='http://guides.rubyonrails.org/initialization.html'>Rails 3 Initialization Process</a> guide. I stopped writing it because I got a (kinda) paying gig writing <a href='http://manning.com/katz'>Rails 3 in Action</a>. I loved digging into the guts of Rails and explaining how they work. I got a great response from my initial postings of that guide and I&#39;d like to complete it as the first in the Rails Internals Guides series, with the remainder beginning with:</p>
+
 <ul>
   <li>Action Dispatch, receiving + serving requests</li>
   <li>Action Pack, finding controllers and response rendering</li>
   <li>Active Model, the different modules and how you can create your own ORM-like system</li>
   <li>Active Record, ARel &amp; things such as associations and dynamic finders</li>
 </ul>
-<p>Besides the &#8220;big picture&#8221;, I have no solid idea of precisely what would go in these guides, or even if they&#8217;re interesting to people outside the world of my own head.</p>
 
-<p>Would I even be able to find a company to pay me to do this full-time? The biggest question is how it would benefit them. Wouldn&#8217;t it save time having some go-to place for Rails internals documentation so you don&#8217;t have to spend all that time trudging through it? I think so.</p>
+<p>Besides the &quot;big picture&quot;, I have no solid idea of precisely what would go in these guides, or even if they&#39;re interesting to people outside the world of my own head. </p>
 
-<p>The second question: Is there a large enough audience interested in documentation in a similar vein to the <a href='http://guides.rubyonrails.org/initialization.html'>Initialization Guide</a>? Is that the &#8220;correct&#8221;/sensible way to do that? Is it useful?</p>
-<strong>As a Rails programmer, what guides would you like to see written about Rails? It could just be about the ecosystem, not neccesarily the framework's code itself. Let me know in the comments.</strong>
+<p>Would I even be able to find a company to pay me to do this full-time? The biggest question is how it would benefit them. Wouldn&#39;t it save time having some go-to place for Rails internals documentation so you don&#39;t have to spend all that time trudging through it? I think so.</p>
+
+<p>The second question: Is there a large enough audience interested in documentation in a similar vein to the <a href='http://guides.rubyonrails.org/initialization.html'>Initialization Guide</a>? Is that the &quot;correct&quot;/sensible way to do that? Is it useful?</p>
+
+<p><strong>As a Rails programmer, what guides would you like to see written about Rails? It could just be about the ecosystem, not neccesarily the framework&#39;s code itself. Let me know in the comments.</strong></p>
+
       </article>
     </div>
     <div id='disqus_thread'></div>
