@@ -30,36 +30,34 @@
      http://litanyagainstfear.com -->
 <div id='page'>
   <article>
-    <a href="/2013/07/waiting-for-ajax-in-capybara"><header>Waiting for AJAX in Capybara</header></a>
-    <small>09 Jul 2013</small><br>
-    <p>In Spree recently, we&#39;ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree&#39;s API</a> for the Backend component. This means that we&#39;ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
-
-<p>Some of these test failures are that the tests just aren&#39;t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more ... bewildering:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">F
-An error occurred in an after hook
-  ActiveRecord::StatementInvalid: 
-    SQLite3::BusyException:
-    database is locked: DELETE FROM &quot;spree_activators&quot;;
-  occurred at ...lib/sqlite3/statement.rb:108:in `step&#39;
+    <a href="/2013/08/bundler-local-paths"><header>Bundler local paths</header></a>
+    <small>16 Aug 2013</small><br>
+    <p>There&#39;s a little known feature of Bundler that allows you to use a local Git
+repository while developing locally, and a remote Git repo when deploying. This
+feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
 </code></pre></div>
-<p>This error happens when an AJAX request is still being processed by the server, but the test finishes and Database Cleaner attempts to wipe the database. The server has locked the database until it&#39;s done what it needs to do, and during that lock Database Cleaner attempts to wipe all the data and can&#39;t.</p>
-
-<p>To fix this, we just needed to wait for all AJAX requests to complete. This means replacing <code>sleep</code> with magic numbers, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">sleep(2)
+<p>And remote paths:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
 </code></pre></div>
-<p>With this method:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">def wait_for_ajax
-  counter = 0
-  while page.execute_script(&quot;return $.active&quot;).to_i &gt; 0
-    counter += 1
-    sleep(0.1)
-    raise &quot;AJAX request took longer than 5 seconds.&quot; if counter &gt;= 50
-  end
-end
-</code></pre></div>
-<p>This code will call <code>$.active</code> which is jQuery-code for &quot;how many <code>$.ajax</code> requests are still active?&quot;, and if that returns more than 0, then it will sleep for a moment, and check again. This code gives AJAX requests 5 seconds to wrap up before raising an exception and moving on.</p>
+<p>How does it work?</p>
 
-<p>Use this <code>wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
+<hr>
+
+<p>Well, what you can do instead is tell Bundler that you have a local copy of
+this repository by running a command like this in your terminal:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
+</code></pre></div>
+<p>Then in your Gemfile whenever you reference a Git repo for this gem, like this...</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+</code></pre></div>
+<p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
+
+<p>For more information, check out the <a href="http://bundler.io/v1.3/git.html">Bundler documentation page</a>, under &quot;Local Git Repos&quot;.</p>
+
+<hr>
+
+<p>Thanks to Phil Arndt who first showed me this trick many moons ago.</p>
 
   </article>
 </div>
@@ -68,6 +66,8 @@ end
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2013/07/waiting-for-ajax-in-capybara">Waiting for AJAX in Capybara</a><abbr>09 Jul 2013</abbr></li>
+  
       <li><a href="/2013/06/finding-sql-queries-in-rails">Finding SQL queries in Rails</a><abbr>26 Jun 2013</abbr></li>
   
       <li><a href="/2013/02/about-spec-support">About spec/support</a><abbr>02 Feb 2013</abbr></li>
@@ -115,8 +115,6 @@ end
       <li><a href="/2011/11/the-rails-api">The Rails API</a><abbr>14 Nov 2011</abbr></li>
   
       <li><a href="/2011/11/going-on-a-spree">Going on a Spree</a><abbr>03 Nov 2011</abbr></li>
-  
-      <li><a href="/2011/10/screencast-pilot">Screencast: Pilot</a><abbr>31 Oct 2011</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

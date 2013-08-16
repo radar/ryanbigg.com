@@ -4,13 +4,47 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2013-07-09T13:10:00+10:00</updated>
+ <updated>2013-08-16T15:55:35+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Bundler local paths</title>
+   <link href="http://ryanbigg.com/2013/08/bundler-local-paths"/>
+   <updated>2013-08-16T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2013/08/bundler-local-paths</id>
+   <content type="html"><![CDATA[<p>There&#39;s a little known feature of Bundler that allows you to use a local Git
+repository while developing locally, and a remote Git repo when deploying. This
+feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
+</code></pre></div>
+<p>And remote paths:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+</code></pre></div>
+<p>How does it work?</p>
+
+<hr>
+
+<p>Well, what you can do instead is tell Bundler that you have a local copy of
+this repository by running a command like this in your terminal:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
+</code></pre></div>
+<p>Then in your Gemfile whenever you reference a Git repo for this gem, like this...</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+</code></pre></div>
+<p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
+
+<p>For more information, check out the <a href="http://bundler.io/v1.3/git.html">Bundler documentation page</a>, under &quot;Local Git Repos&quot;.</p>
+
+<hr>
+
+<p>Thanks to Phil Arndt who first showed me this trick many moons ago.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Waiting for AJAX in Capybara</title>
@@ -1296,23 +1330,6 @@ property.</p>
 <p>This morning, I went into the agent&#39;s office, handed over the first month&#39;s rent and signed the lease agreement.</p>
 
 <p>I&#39;ll be moving down and in on the 21st of January. See you around!</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Matt Lightner</title>
-   <link href="http://ryanbigg.com/2011/12/matt-lightner"/>
-   <updated>2011-12-27T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2011/12/matt-lightner</id>
-   <content type="html"><![CDATA[<p>Matt Lightner -- <a href='http://www.facebook.com/mlightner'>according to posts on his Facebook</a> -- is dead. It apparently
-happened on Christmas day, which just adds supremely to the suckiness of it all.</p>
-
-<p>You may remember him from that little hosting company called <a href='http://site5.com'>Site5</a> he started when he was 15. You know
-the one that was one of the, if not <em>the</em> first, hosting company to offer Ruby on Rails support.</p>
-
-<p>I had the pleasure of working with Matt around September last year and ended up visiting him in San Francisco. We went to <a href='http://www.yelp.com/biz/antonios-nut-house-palo-alto'>Antonio&#39;s Nut House</a> where we drank and played darts (and ate way too many free peanuts). Then we went back to his apartment where I got to sleep on an air mattress. That morning we went for bagels at a place not too far away from the Nut House. Those are my favourite memories of San Francisco.</p>
-
-<p>He was such an amazing guy and will be terribly missed.</p>
 ]]></content>
  </entry>
  

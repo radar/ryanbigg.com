@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - Bundler local paths</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='page'>
+      <article>
+        <a href="/2013/08/bundler-local-paths"><header>Bundler local paths</header></a>
+        <small>16 Aug 2013</small><br>
+        <p>There&#39;s a little known feature of Bundler that allows you to use a local Git
+repository while developing locally, and a remote Git repo when deploying. This
+feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
+</code></pre></div>
+<p>And remote paths:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+</code></pre></div>
+<p>How does it work?</p>
+
+<hr>
+
+<p>Well, what you can do instead is tell Bundler that you have a local copy of
+this repository by running a command like this in your terminal:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
+</code></pre></div>
+<p>Then in your Gemfile whenever you reference a Git repo for this gem, like this...</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+</code></pre></div>
+<p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
+
+<p>For more information, check out the <a href="http://bundler.io/v1.3/git.html">Bundler documentation page</a>, under &quot;Local Git Repos&quot;.</p>
+
+<hr>
+
+<p>Thanks to Phil Arndt who first showed me this trick many moons ago.</p>
+
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-343 http://ryanbigg.com/?p=RB-343'
+        var disqus_url = 'http://ryanbigg.com/2013/08/bundler-local-paths';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script type="text/javascript">
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>   
+  </body>
+</html>
