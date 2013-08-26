@@ -33,4 +33,4 @@ For more information, check out the [Bundler documentation page](http://bundler.
 
 ----
 
-Thanks to Phil Arndt who first showed me this trick many moons ago.
+Thanks to [Phil Arndt](http://p.arndt.io) who first showed me this trick many moons ago.
