@@ -4,13 +4,55 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2013-08-26T14:40:51+10:00</updated>
+ <updated>2013-09-05T09:31:50+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Debugging Rails Controllers</title>
+   <link href="http://ryanbigg.com/2013/09/debugging-rails-controllers"/>
+   <updated>2013-09-05T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2013/09/debugging-rails-controllers</id>
+   <content type="html"><![CDATA[<p>Here&#39;s my flow for debugging a misbehaving controller. Imagine that there&#39;s a form at <code>app/views/messages/new.html.erb</code> that is posting to <code>MessagesController#create</code>. The parameters aren&#39;t being passed through from the form to the controller, and the model is raising a validation error saying that a field is blank -- even though it&#39;s <em>clearly</em> not.</p>
+
+<h3>Step 0: Does restarting the server fix the problem?</h3>
+
+<h3>Step 1: Check the form</h3>
+
+<ul>
+<li>Is the attribute defined in the correct place? </li>
+<li>Is it using the form builder helper (i.e. <code>f.text_field</code>) or is it using <code>text_field_tag</code>? If it&#39;s supposed to be <code>params[:message][:body]</code> then it should be using the form builder. If not, then it should be using <code>text_field_tag</code> or similar.</li>
+<li>Unlikely, but still possible: Is the field disabled before submission of the form? Disabled fields are not passed through as parameters.</li>
+</ul>
+
+<h3>Step 2: Check the controller</h3>
+
+<ul>
+<li>Is the route to the controller defined correctly in <code>config/routes.rb</code>?</li>
+<li>Is the controller set up to receive the right parameters?</li>
+<li>Did I spell &#39;message&#39; with the correct number of &#39;s&#39;s within <code>params[:message]</code>?</li>
+<li>Are the parameters from the form permitted using strong_parameters?</li>
+<li>Are <em>all</em> the parameters from the form permitted?</li>
+<li>Did I spell the parameters correctly? </li>
+<li>What does the log output say for this controller? Does it contain the parameters I want with the values I want?</li>
+<li>Can I place a <code>binding.pry</code> statement at the top of the action and print out <code>params</code> to see the correct parameters there too?</li>
+</ul>
+
+<h3>Step 3: Check the model</h3>
+
+<ul>
+<li>If using <code>attr_accessible</code>, are the attribute marked as accessible?</li>
+<li>Did I accidentally use <code>attr_accessor</code> when I meant to use <code>attr_accessible</code>?</li>
+<li>Did I define a setter method for this attribute accidentally that doesn&#39;t actually set the attribute?</li>
+<li>Is there a callback that unsets this parameter somehow?</li>
+<li>If it&#39;s nested attributes that are being sent through, go check the nested model for the above.</li>
+</ul>
+]]></content>
+ </entry>
  
  <entry>
    <title>Bundler local paths</title>
@@ -1276,60 +1318,6 @@ do so in <a href='http://stackoverflow.com'>a public forum where other people ca
 a whore, just without the money changing hands thing.</p>
 
 <p>No more.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Moving Out: Down to Melbourne</title>
-   <link href="http://ryanbigg.com/2012/01/moving-out-down-to-melbourne"/>
-   <updated>2012-01-09T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2012/01/moving-out-down-to-melbourne</id>
-   <content type="html"><![CDATA[<p>Oops, spoilers!</p>
-
-<p>One year, four months ago I <a href='http://ryanbigg.com/2010/08/moving-out-for-reals'>moved out of a place in Camperdown in
-Sydney</a> to a more remote suburb called Narwee. If you don&#39;t know where that is (and judging by the conversations I&#39;ve had with
-many of you, <em>nobody</em> does), it&#39;s a South-Western suburb of Sydney, best described as &quot;Go south to the airport, then about as far
-west&quot;. You could Google Maps it if you like. I&#39;ll wait.</p>
-
-<p>It was there that I moved in with a guy called Tim and basically rented a room and shared the house for $200. It suited me fine, as I spent quite a lot of that time in there writing a book. The trainline nearby got me into and out of the city every single day that I needed it, bar one or two times where somebody decided to fight one of the trains.</p>
-
-<p>When I came back from Adelaide recently, Tim arrived back also and told me that he has a friend who he would like to move in and so
-he asked me (very nicely, might I add) to move out by the end of January. Fair enough, it&#39;s his place. This was on the 28th of December.</p>
-
-<p>So then I needed to find a place. If I stay until February this year, then it&#39;ll be two years in Sydney. During that time, I&#39;ve
-always heard Melbourne compared to Sydney favourably. Things like &quot;Melbourne&#39;s like Sydney, but with more fun&quot;. It also helped a bit
-that my friend Tom (who I caught up with over Christmas) was suggesting that I should move to Melbourne as well so that we could hang out.</p>
-
-<p>I was cooking dinner on the 29th and felt like I was doing nothing to further the situation. I needed to move out, but my weekend
-plans weren&#39;t exactly conducive to that. So I thought &quot;fuck it&quot; and sent out a tweet asking if anyone had a place for me to
-(temporarily) stay in Melbourne.</p>
-
-<p>Tom replied with a half-joking, half-indignant tweet that I should have messaged him first and asked if I could stay there. I sent
-him a message and he replied and said I could stay at his. The very next day I drove the ~900km down to Melbourne to stay at Tom&#39;s house.</p>
-
-<hr>
-
-<p>At that point, I had no fucking clue what I was doing in Melbourne. It was one of those spur-of-the-moment things. The drive <em>flew</em>
-by, thanks in part to the Hume Highway dual-carriageway upgrades and the most-excellent Back to Work podcast.</p>
-
-<p>Then, I got to see Melbourne for the first non-going-through-in-a-bus-to-the-airport-for-railscamp time. This city reminds me so much of San Francisco, from the cafés, to the over-population of hipsters (which is a con, not a pro) to the amazing food and friendly people. <a href='http://rosshill.com.au/melbourne'>Ross Hill actually wrote about these things</a>, and I can totally agree with him. I&#39;m actually writing this from <a href='http://inspire9.com.au'>Inspire9</a> right now!</p>
-
-<p>I got to experience NYE in Melbourne with some great friends and all of those things combined are what sold me on Melbourne. So I&#39;m
-moving there (which is &quot;here&quot; right now, but let&#39;s not get technical).</p>
-
-<hr>
-
-<p>I still had no fucking clue where I wanted to move, but at that point it <em>had</em> to be Melbourne. Some point after that, Tom and I are talking and he brings up that the guy who sold him his apartment (that he shares with two others) had another that he was looking to rent out also.</p>
-
-<p>I got in touch with him, and he showed me the place. It is <a href='http://www.flickr.com/photos/radarlistener/sets/72157628787106371/'>the best place I&#39;ve ever had the pleasure of looking at</a>. Wooden floorboards, a nice upstairs area, two bathrooms, four bedrooms (one will be used as a study / storage area), gas stove kitchen, nice patio, and so on.</p>
-
-<p>On Friday, I looked it over again with two other prospective housemates and they both agreed that it was nice. One of them backed out
-due to how long it is out of town, and the other one doesn&#39;t mind. So I told the agent that I would absolutely love to lease the
-property.</p>
-
-<p>This morning, I went into the agent&#39;s office, handed over the first month&#39;s rent and signed the lease agreement.</p>
-
-<p>I&#39;ll be moving down and in on the 21st of January. See you around!</p>
 ]]></content>
  </entry>
  
