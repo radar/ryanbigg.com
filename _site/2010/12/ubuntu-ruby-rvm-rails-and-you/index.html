@@ -11,21 +11,21 @@
       <article>
         <a href="/2010/12/ubuntu-ruby-rvm-rails-and-you"><header>Ubuntu, Ruby, RVM, Rails, and You</header></a>
         <small>25 Dec 2010</small><br>
-        <p><strong>Last updated: Thursday January 31st 2013</strong></p>
+        <p><strong>Last updated: Wednesday 11th September 2013</strong></p>
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 1.9.3, RVM and Rails 3.2.9 and is specifically written for a <em>development</em> environment on Ubuntu 12.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
+  <strong>This beginner's guide will set up with Ruby 2.0.0, RVM and Rails 4.0.0 and is specifically written for a <em>development</em> environment on Ubuntu 12.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong>
 </p>
 
 <p>
-<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 1.9.3p0 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
+<strong>If you're looking for a way to set this up on a production server then I would recommend the use of <a href='https://github.com/joshfng/railsready'>the railsready script</a> which installs all the necessary packages for Ruby 2.0.0p247 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong>
 </p>
 
 <h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.</h2>
 
 <p>Still not convinced? <a href='http://news.ycombinator.org/item?id=2039438'>Read this</a>.</p>
 
-<p>This guide will go through installing the <a href='http://rvm.io'>RVM (Ruby Version Manager)</a>, then a version of Ruby (1.9.3), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. </p>
+<p>This guide will go through installing the <a href='http://rvm.io'>RVM (Ruby Version Manager)</a>, then a version of Ruby (2.0.0), then <a href='http://rubyonrails.org'>Rails</a> and finally <a href='http://gembundler.com'>Bundler</a>. </p>
 
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once. </p>
 
@@ -42,7 +42,7 @@
 </code></pre></div>
 <h3>RVM</h3>
 
-<p>RVM is a <a href='http://rvm.io'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (1.9.3) for one of your newer projects. This is a problem that RVM solves beautifully. </p>
+<p>RVM is a <a href='http://rvm.io'>Ruby Version Manager</a> created by Wayne E. Seguin and is extremely helpful for installing and managing many different versions of Ruby all at once. Sometimes you could be working on a project that requires an older (1.8.7) version of Ruby but also need a new version (2.0.0) for one of your newer projects. This is a problem that RVM solves beautifully. </p>
 
 <p>Another situation could be that you want to have different sets of gems on the same version of Ruby but don&#39;t want to have to do deal with Gem Conflict Hell. RVM has <a href='http://rvm.io/gemsets/basics/'>gemsets</a> for this. <strong>This is a feature you wouldn&#39;t have if you used the packaged Ruby</strong>.</p>
 
@@ -85,25 +85,25 @@ subversion pkg-config
 
 <h3>Ruby</h3>
 
-<p>With RVM and these packages we can install Ruby 1.9.3:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm install 1.9.3
+<p>With RVM and these packages we can install Ruby 2.0.0:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm install 2.0.0
 </code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 1.9.3 installed. To begin using it we can use this lovely command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 1.9.3
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.0.0 installed. To begin using it we can use this lovely command:</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 2.0.0
 </code></pre></div>
-<p>Please note, using &#39;1.9.3&#39; as a default allows for when ruby is updated for that version then ALL projects using 1.9.3 
+<p>Please note, using &#39;2.0.90&#39; as a default allows for when ruby is updated for that version then ALL projects using 2.0.0
 as their string will be updated as well. This is a side affect people might not want. The preferred method is to include 
-the patch level to the &#39;--default&#39; parameter so that if 1.9.3 gets updated, other projects don&#39;t automatically have that 
+the patch level to the &#39;--default&#39; parameter so that if 2.0.0 gets updated, other projects don&#39;t automatically have that 
 change applied to to them as well. If, say for example, for some reason some method/action gets deprecated in a patchlevel 
-or some method signature gets changed between patchlevels, this will affect <em>all</em> projects defined using the &#39;1.9.3&#39; string.
+or some method signature gets changed between patchlevels, this will affect <em>all</em> projects defined using the &#39;2.0.0&#39; string.
 This may or may not be what people want. Please be aware of this! Now, to continue on..</p>
 
-<p>Are we using 1.9.3? You betcha:</p>
+<p>Are we using 2.0.0? You betcha:</p>
 <div class="highlight"><pre><code class="text language-text" data-lang="text">ruby -v
-ruby 1.9.3p327 (2012-04-20 revision 35410) [x86_64-linux]
+ruby 2.0.0p247 (2013-06-27 revision 41674) [x86_64-darwin12.4.0]
 </code></pre></div>
-<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes! Noting the &#39;1.9.3&#39; side-note above, lets take note of the patchlevel, which in this case is &#39;-p327&#39; and add that to our default selection.</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm --default use 1.9.3-p327
+<p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes! Noting the &#39;2.0.0&#39; side-note above, lets take note of the patchlevel, which in this case is &#39;-p247&#39; and add that to our default selection.</p>
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm --default use 2.0.0p247
 </code></pre></div>
 <p>Now whenever we open a new bash session for this user we&#39;ll have Ruby available for us to use! Yay!</p>
 
@@ -117,7 +117,7 @@ duplication and use up more disk-space and bandwidth.</p>
 <h3>Rails</h3>
 
 <p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails -v 3.2.9
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails -v 4.0.0
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
@@ -128,7 +128,7 @@ duplication and use up more disk-space and bandwidth.</p>
 ERROR:  Error installing mysql2:
     ERROR: Failed to build gem native extension.
 
-/home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
+/home/ryan/.rvm/rubies/ruby-2.0.0-p247/bin/ruby extconf.rb
 checking for rb_thread_blocking_region()... yes
 checking for mysql_query() in -lmysqlclient... no
 checking for main() in -lm... yes
@@ -153,7 +153,7 @@ details.  You may need configuration options.
 ERROR:  Error installing pg:
     ERROR: Failed to build gem native extension.
 
-/home/ryan/.rvm/rubies/ruby-1.9.3-p0/bin/ruby extconf.rb
+/home/ryan/.rvm/rubies/ruby-2.0.0-p247/bin/ruby extconf.rb
 checking for pg_config... no
 checking for libpq-fe.h... no
 Can&#39;t find the &#39;libpq-fe.h header
@@ -165,7 +165,7 @@ details.  You may need configuration options.
 <h3>Fin.</h3>
 
 <p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a> which goes into using things such as <a href='http://rvm.io/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.io/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 1.9.3-p327@rails3 --rvmrc
+<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 2.0.0-p247@rails3 --rvmrc
 </code></pre></div>
 <p>RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 
