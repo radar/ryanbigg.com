@@ -107,7 +107,7 @@ Are we using 2.0.0? You betcha:
 
 Or, even better, would be to make this the *default* for our user! Oooh, yes! Noting the '2.0.0' side-note above, lets take note of the patchlevel, which in this case is '-p247' and add that to our default selection.
 
-    rvm --default use 2.0.0p247
+    rvm --default use 2.0.0-p247
 
 Now whenever we open a new bash session for this user we'll have Ruby available for us to use! Yay!
 
