@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2013-09-24T15:42:13+10:00</updated>
+ <updated>2013-09-25T09:45:25+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -99,18 +99,18 @@ side of things, taxation rears its ugly head(s).</p>
 <p>Worth noting here is that the discount is applied first, <em>then</em> the tax rate. This is the most sensible option because if someone is purchasing an item with the intention of receiving that $10 off, it is more intuitive that the $10 is off the listing price, rather than the after-tax price. This is also the recommended behavior, as mentioned later in the &quot;Promotions and Tax&quot; section.</p>
 
 <p>The second line item would be calculated in roughly the same way:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 + (10% of $5) = $55
-($50 + $5)         = $55
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 + (10% of $50) = $55
+($50 + $5)          = $55
 </code></pre></div>
 <p>Note that in these situations we are calculating the adjustment amount (if it exists) and then the tax amount. The buyer of a product should only be taxed on the final adjusted price of the line item, rather than its base price. In the instance of the first line item, the base price is $40 rather than $50 due to do the -$10 adjustment. Therefore the tax for this item would be 10% of $40 ($4), rather than 10% of $50 ($5).</p>
 
 <p>Therefore the order&#39;s total so far is <code>$44 + $55</code>, $99. Now to calculate the shipments, it would be this:</p>
 <div class="highlight"><pre><code class="text language-text" data-lang="text">       (Shipment #1)              (Shipment #2)
-($5 - $5) = $0 + (10% of $0)  +        $10
+($5 - $5) = $0 + (10% of $0)  +  $10 + (10% of $10) = $0 + $11 = $11
 </code></pre></div>
 <p>Because the first shipment has a &quot;free shipping&quot; adjustment, there is no additional tax adjustment to this shipment.</p>
 
-<p>That means that the order&#39;s subtotal, with line items of $99 and shipments of $10, would be $109. The order&#39;s adjustment of $20 off, means the order&#39;s grand total is $89.</p>
+<p>That means that the order&#39;s subtotal, with line items of $99 and shipments of $11, would be $110. The order&#39;s adjustment of $20 off, means the order&#39;s grand total is $90.</p>
 
 <h2>Calculation of an order&#39;s total, with tax included in the price</h2>
 
@@ -316,7 +316,7 @@ Total      = $99 + $10                       = $109
 
 <p>If you have any comments or corrections to offer, please email me at ryan@spreecommerce.com.</p>
 
-<p>Last revision: 24th September, 2013.</p>
+<p>Last revision: 25th September, 2013.</p>
 ]]></content>
  </entry>
  

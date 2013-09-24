@@ -83,19 +83,19 @@ Worth noting here is that the discount is applied first, *then* the tax rate. Th
 
 The second line item would be calculated in roughly the same way:
 
-    ($50 + (10% of $5) = $55
-    ($50 + $5)         = $55
+    ($50 + (10% of $50) = $55
+    ($50 + $5)          = $55
 
 Note that in these situations we are calculating the adjustment amount (if it exists) and then the tax amount. The buyer of a product should only be taxed on the final adjusted price of the line item, rather than its base price. In the instance of the first line item, the base price is $40 rather than $50 due to do the -$10 adjustment. Therefore the tax for this item would be 10% of $40 ($4), rather than 10% of $50 ($5).
 
 Therefore the order's total so far is `$44 + $55`, $99. Now to calculate the shipments, it would be this:
 
            (Shipment #1)              (Shipment #2)
-    ($5 - $5) = $0 + (10% of $0)  +        $10
+    ($5 - $5) = $0 + (10% of $0)  +  $10 + (10% of $10) = $0 + $11 = $11
 
 Because the first shipment has a "free shipping" adjustment, there is no additional tax adjustment to this shipment.
 
-That means that the order's subtotal, with line items of $99 and shipments of $10, would be $109. The order's adjustment of $20 off, means the order's grand total is $89.
+That means that the order's subtotal, with line items of $99 and shipments of $11, would be $110. The order's adjustment of $20 off, means the order's grand total is $90.
 
 ## Calculation of an order's total, with tax included in the price
 
@@ -302,5 +302,5 @@ If both items are returned to the store, the refund amount for each item will st
 
 If you have any comments or corrections to offer, please email me at ryan@spreecommerce.com.
 
-Last revision: 24th September, 2013.
+Last revision: 25th September, 2013.
 
