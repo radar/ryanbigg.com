@@ -69,7 +69,7 @@ scale. There's a saying that Sharon really likes: "From little things, big
 things grow". If there is a little violence, you can sure bet that big
 violence will be on its way.
 
-What does this mean pratically in the Ruby community? We think, that like any
+What does this mean practically in the Ruby community? We think, that like any
 other community, if small things are said or done or encouraged, whether the
 people are intoxicated or not, it breaks down people's sensitivity towards
 those things. We think that encouraging a woman to do bodyshots at a
