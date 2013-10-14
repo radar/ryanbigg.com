@@ -5,7 +5,7 @@ title: Violence in the Ruby community
 ---
 
 This post was written by myself and my fiancee,
-[Sharon](https://twitter.com/smly_law), about the sexual assault of Justine
+[Sharon](https://twitter.com/smly_law), about the alleged sexual assault of Justine
 Arreche by Joe O'Brien at Codemash 2013. Both Joe and Justine are, like me,
 members of the Ruby community. Sharon is a lawyer who's currently supporting
 domestic violence victims in her work, and feels that domestic violence and
