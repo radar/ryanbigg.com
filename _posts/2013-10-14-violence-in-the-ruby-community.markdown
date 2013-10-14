@@ -40,7 +40,7 @@ charges should be laid against the perpetrator. Joe needs to be held to
 account for his actions in a court of law and Justine should be entitled to
 that kind of justice. She even says herself in her post that:
 
->  I want him to recognize the toll he’s taken on my life and how everything
+>  I want him to recognize the toll he's taken on my life and how everything
 >  has changed for me. How he took so much of myself away from how I used to
 >  be.
 
