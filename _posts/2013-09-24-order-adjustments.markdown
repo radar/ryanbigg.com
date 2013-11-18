@@ -99,9 +99,17 @@ That means that the order's subtotal, with line items of $99 and shipments of $1
 
 ## Calculation of an order's total, with tax included in the price
 
-To further complicate matters, tax that is included in an item's price must be backed out in certain circumstances. For example, an item with a 10% VAT tax sold in a European country to a buyer outside of that country must have that 10% tax "refunded". 
+To further complicate matters, tax can also be *included* in the price, rather than being an additional cost applied.
 
-Taking again the example a single line item that costs $50, with 10% of that price being this 10% VAT tax. When this item is sold to someone outside the VAT zone, we must apply a negative adjustment to the line item to refund that tax. The calculation for the adjustment is this:
+In Australia, there is a GST (Goods and Services Tax) applied to some items. This tax is a flat 10% and is included in the price of those items. An item that is worth $50 would have $4.545... of that amount made up by GST. The calculation is this:
+
+    $50 - ($50 / 110%) = $4.54545...
+
+This tax amount *must* be displayed on receipts (and similar) because stores need it for end of financial year taxation purposes, and so this is what Spree refers to as an "included" adjustment, which is an adjustment which will not modify the total price. Within Spree, an item that is $50 will have a $4.545... adjustment applied to it, but that item will still cost $50.
+
+To *even further* complicate matters, tax that is included in an item's price must be backed out in certain circumstances. For example, an item with a 10% VAT tax sold in a European country to a buyer outside of that country must have that 10% tax refunded.
+
+Taking again the example a single line item that costs $50, with 10% of that price being this 10% VAT tax. When this item is sold to someone outside the VAT zone, we must apply a negative adjustment to the line item to refund that tax. The calculation for the adjustment is the same as before:
 
     $50 - ($50 / 110%) = $4.54545...
 
