@@ -12,4 +12,10 @@ What's difficult is that we have all these stores that need to configure their o
 
 I've been doing some work around this recently with taxes in Australia, Canada, the US, England, Spain and Finland. All six of those countries have different methods of applying tax. 
 
-For Australia we have a "boolean" GST tax. 10% included GST across everything unless it's [something that's exempt](http://www.ato.gov.au/General/Aboriginal-and-Torres-Strait-Islander-people/In-detail/GST---Helping-you-understand-your-GST-obligations/?page=3). An item that's worth $100 has $9.09 GST, with a base price of $90.91. This is *by far* the simplest tax system that I have encountered. GST is great. For the lawyers out there, [this is the document you want to peruse](http://www.comlaw.gov.au/Details/C2013C00117)
+For Australia we have a "boolean" GST tax. 10% included GST across everything unless it's [something that's exempt](http://www.ato.gov.au/General/Aboriginal-and-Torres-Strait-Islander-people/In-detail/GST---Helping-you-understand-your-GST-obligations/?page=3). An item that's worth $100 has $9.09 GST, with a base price of $90.91. This is *by far* the simplest tax system that I have encountered. GST is great. For the lawyers out there, [this is the document you want to peruse](http://www.comlaw.gov.au/Details/C2013C00117).
+
+A little interesting tidbit/sidebar: Australia has not one but *two* Income Tax Acts. It has the [Income Tax Assessment Act of 1936](http://www.austlii.edu.au/au/legis/cth/consol_act/itaa1936240/) and the [Income Tax Assessment Act of 1997](http://www.comlaw.gov.au/Details/C2013C00082). Both are beastly. The 1997 one was an attempt at rewriting the 1936 and that attempt failed spectactularly, and so now we have two. Luckily we're computing sales tax and not income tax!
+
+In England and EU countries, there is a similar tax levied called the VAT. VAT rates vary from country to country. For example: England has a standard VAT rate of 20%, and a reduced VAT rate of 5%, while France also has a standard VAT at 20%, but several reduced rates at 10%, 5.5% and 2.1% respectively. Germany, on the other hand, has a standard rate of 19%, and a single reduced VAT rate at 7%.
+
+
