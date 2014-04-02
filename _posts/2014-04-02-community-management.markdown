@@ -24,7 +24,7 @@ know why, it just does) and the later months of the year due to Black Friday /
 Christmas / people wanting things done "Right Now Or Else" by the end of the
 year.
 
-During this extremely busy phrase, I've really dialed back on the programming
+During this extremely busy phase, I've really dialed back on the programming
 part of my job and I've been dedicating most of my time to answering user
 support requests, mainly in the form of trying to keep my email inbox at an
 amount as close to zero as possible. The community benefits from this work
