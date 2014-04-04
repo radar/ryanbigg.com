@@ -4,13 +4,125 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2014-03-18T16:58:15+11:00</updated>
+ <updated>2014-04-04T16:43:36+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Ecommerce is hard</title>
+   <link href="http://ryanbigg.com/2014/03/ecommerce-is-hard"/>
+   <updated>2014-03-28T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2014/03/ecommerce-is-hard</id>
+   <content type="html"><![CDATA[<p>In this post I hope to cover some of the complexities found in building <a href='https://spreecommerce.com'>Spree Commerce</a>, an extremely flexible ecommerce engine. There will be a bit of technical talk and lots of fun. </p>
+
+<hr>
+
+<p>When you first think about ecommerce, you consider the typical flow of basically every single ecommerce site out there. You find the product you want. You add it to your cart. You go through the cart process, and at some point you probably complete your purchase. </p>
+
+<h2>Product viewing</h2>
+
+<p>If you bought a physical product, it will probably be shipped to you through one of several means. </p>
+
+<p><aside>
+  I personally find it pretty amazing that even though I live in the remotest country on Earth, I can still go shop on an American store and then have that product drop shipped from a factory at any point on the earth to a location of my choosing. </p>
+
+<p>I once ordered a new iPhone from a couch in Germany to my house in Australia. That&#39;s when I knew this ecommerce thing was really going to take off.
+</aside></p>
+
+<p>If it&#39;s a digital product, then you&#39;ll be able to download it there and then. You might even be subscribed to access this digital product on a monthly or yearly basis. </p>
+
+<p>If you didn&#39;t complete your process, then that&#39;s ok too.</p>
+
+<p>Quite a lot of people spend a lot of their time making this process as easy as possible. I know this first hand with all my work on <a href='http://spreecommerce.com'>Spree Commerce</a>. What people see when they use a default Spree store is a very simple interface:</p>
+
+<div align='center'>
+  <img src='/images/ecommerce-is-hard/spree_home.png'>
+</div>
+
+<p>Front and center are all the things you can buy on this default store. On the left, there&#39;s a list of product categories. Up the top, a search box and a way to login to the store. These are the very basic elements to any store.</p>
+
+<p>This is a really, really basic run down of what&#39;s happening on this store. Products in Spree can have an availability date which hides them from the general public until that date. So that means that the home page is not going to be displaying <em>all</em> products <em>all the time</em>, but needs to limit it to at least this. This part isn&#39;t so hard. It&#39;s just a limiting query on the results returned from the database.</p>
+
+<p>Then you&#39;ve got the search box at the top which can limit these products to a different collection based on arbitrary things: names, colours, sizes, whatever. Implementing decent searching on an ecommerce site is <em>super hard</em> and there&#39;s companies that spend a huge amount of time and money trying to get this right. Spree&#39;s built-in search is definitely not perfect, but it&#39;s a start. </p>
+
+<p>Honestly, you&#39;re better off implementing something like <a href='http://www.elasticsearch.org/'>elasticsearch</a>. Different stores are going to want different ways of querying for results, so it&#39;s pretty hard for Spree to offer a solid solution to make everyone happy in this department.</p>
+
+<hr>
+
+<p>When you want to find out more about a product, you click (or tap!) on a product:</p>
+
+<div align='center'>
+  <img src='/images/ecommerce-is-hard/product_show.png'>
+</div>
+
+<p>It&#39;s on this page that you can see more images for the product. This is where the store is going to sell the product to you. <em>This is the exact Ruby on Rails Baseball Jersey you have been looking for</em>.</p>
+
+<h2>All the product parts</h2>
+
+<p>Let&#39;s stop here and consider all the different things that have had to come together at this point to make the process work. On the homepage, there was a list of products. Therefore we can safely assume that there&#39;s at least a <code>Product</code> model involved, and that&#39;s correct. There&#39;s also some way of categorizing products, and in Spree we call that a <code>Taxon</code>, although you might like to call it a <code>Category</code>.</p>
+
+<p>When we click to go through to a specific product&#39;s page, we can see even more information about that product. We can see a huge image on the left, with even more images underneath. Therefore a <code>Product</code> has many <code>Image</code> objects. </p>
+
+<p>Underneath the images, there&#39;s &quot;Properties&quot; which list the different attributes of this particular item. While it <em>looks</em> like a key-value pair, it&#39;s actually three different models coming together: <code>Property</code>, <code>ProductProperty</code> and <code>Product</code>. <code>Property</code> stores the name of a property so that it can be shared across many different products. <code>ProductProperty</code> is where the value of that property is stored for a particular <code>Product</code>. </p>
+
+<p>To the right of the images, there&#39;s &quot;Variants&quot; which list the different variations of this product. In this case, there&#39;s different sizes and different colours. In Spree, we refer to things like &quot;Size&quot; as an <code>OptionType</code>, and the values for these <code>OptionTypes</code> as <code>OptionValues</code>. A unique combination of a <code>Product</code>, <code>OptionType</code> and <code>OptionValue</code> can result in a new <code>Variant</code>. While there can only one be value of a <code>Property</code> for a <code>Product</code>, there can be multiple <code>OptionValues</code> for the same <code>OptionType</code> for the variants.</p>
+
+<p>Underneath the variant list is a prompt that invites us to &quot;Look for similar items&quot;. This is that <code>Taxon</code> model coming into play again. This prompt is displaying the taxons that this item is a part of. </p>
+
+<p><aside>
+  Short tangent: If you click on &quot;T-Shirts&quot;, it will show you all the other T-Shirts from the store. Spree allows you to sort the products within a taxon so that you can show some items more prominently than others. Remember earlier when I talked about the complexities of searching? Yeah, well that sorting of products is also going to play into that complexity. That&#39;s when you get into the deep mystical arts of weighting products based on special criteria like popularity or stock levels. 
+</aside></p>
+
+<p>On the far-right of the page is the most important element: the &#39;Add to Cart&#39; button which begins the checkout process. </p>
+
+<hr>
+
+<h2>Checkout</h2>
+
+<p>Just like JavaScript frameworks, everyone has an opinion about the best way to design an ecommerce checkout. My personal favourite checkout system of all time is Amazon&#39;s. Allow me to gush about Amazon&#39;s checkout and why it&#39;s beautiful for a moment. </p>
+
+<p>When I&#39;m signed into Amazon, I can view any old product and see a screen that looks like this:</p>
+
+<div align='center'>
+  <img src='/images/ecommerce-is-hard/amazon_r4ia.png'>
+</div>
+
+<p>The elements on the page are similar to Spree or vice versa. Big product image on the left, more images underneath that, price to the right of that, checkout button over on the far right. The big thing about this page is that they&#39;re offering me a cheaper price than what <a href='http://manning.com/bigg2'>the publisher offers</a>; a full 30% off. You can be sure Amazon&#39;s going to get their cut for selling this item, then the publisher&#39;s going to get something and the author might get a buck or two at the end of the quarter if he&#39;s been a good boy.</p>
+
+<p>Immediately after the item has been added to the cart it shows me this:</p>
+
+<div align='center'>
+  <img src='/images/ecommerce-is-hard/amazon_cart.png'>
+</div>
+
+<p>I can choose to either &quot;Edit my cart&quot; or &quot;Proceed to checkout&quot;. Or I could do other things outside of the focus of this box. This box really influences me to do one or the other. It&#39;s really pushing me to complete the checkout and pay for it, and so I click &quot;Proceed to checkout&quot; that which lands me on the screen:</p>
+
+<div align='center'>
+  <img src='/images/ecommerce-is-hard/amazon_checkout.png'>
+</div>
+
+<p>This is not the first time I&#39;ve checked out with Amazon and so Amazon has remembered my shipping and billing addresses and my all-important payment information. Amazon has this <em>down</em>. All the information that is relevant to this order is displayed on one single page and I can very easily check it over. There is very little on this page distracting me from actually completing the checkout, which is just perfect. I can add a coupon code, apply for their credit card (which pops up in a new window), or place my order.</p>
+
+<p>Amazon&#39;s design is just excellent.</p>
+
+<p>Now, to Spree. Spree has the following checkout process:</p>
+
+<ol>
+<li>Cart</li>
+<li>Registration (maybe)</li>
+<li>Address</li>
+<li>Delivery</li>
+<li>Payment</li>
+<li>Confirm (maybe)</li>
+</ol>
+
+<p>This fits a lot of cases and appeases a lot of our userbase.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Violence in the Ruby community</title>
@@ -1554,68 +1666,6 @@ appeared on my Twitter timeline. After reading it, I felt like I needed to reply
 
 <p><em>Thanks!
 Ryan Bigg</em></p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Frontier, we need to talk</title>
-   <link href="http://ryanbigg.com/2012/03/frontier-we-need-to-talk"/>
-   <updated>2012-03-14T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2012/03/frontier-we-need-to-talk</id>
-   <content type="html"><![CDATA[<p>Hi,</p>
-
-<p>My name is Ryan Bigg and I booked flights to Salt Lake City with a layover in Denver on the 14th of March. I&#39;d never booked you
-before. How did I find out about you? Well, there&#39;s a handy site called <a href="http://hipmunk.com">Hipmunk</a> which is an aggregator for
-flights, hotels and whatnot. You were ranked as the cheapest, and I figured what harm could there be in booking? The flight was a
-perfect time, arriving at 4:25pm in SLC. Nobody else had flights arriving at such a perfect time as you.</p>
-
-<p>First, a little bit of background on why I was going there in the first place. I&#39;m a programmer. There&#39;s a conference there called
-<a href="http://mtnwestrubyconf.org/">Mountain West Ruby Conference</a> which I booked tickets to go to right before booking flights with you.
-By arriving early in SLC, I hoped to catch up with some other programmer friends of mine and have a pre-conference dinner.</p>
-
-<p>I arrived at San Francisco airport at 9:40am and checked in for the 10:45am flight. I was told there would be a delay of one hour and that I would miss my Denver connection. I would then have to make a later one at 9:20pm to go to SLC, arriving somewhere in the vicinity of 11:25pm. Too late to catch up with my friends.</p>
-
-<p>At 11:45am, the screens still flashed &quot;Delayed&quot;. I didn&#39;t want to approach the counter and ask about times because the hostesses
-were already seemingly pushed to their limits. I truly, truly pity them in situations like this where they have to deal with
-indignant customers. A very long time ago, I used to work in a similar role and know how bad people can get.</p>
-
-<p>At around 1:30pm, I decided to go have lunch with the screens still flashing delayed. The line for the restaurant nearby was too
-busy, so I went over to the store next door and bought some Pringles and a bottle of water. I then moved to one of the charging
-stations next to Gate 41, which is right across from Gate 43. There, I waited for the flight. Still flashing delayed.</p>
-
-<p>So I decided I would do some work to pass the time while waiting for your flight. I completely missed the announcement due to one
-reason or another, and looked up to see the flight board had changed. Not once was I notified of a departure time for the plane,
-either by PA or screens.</p>
-
-<p>I approached the desk and was told that I had missed my flight. The really helpful air hostess with the patience of a monastery (who wasn&#39;t wearing a name badge, so I couldn&#39;t tell you her name) rebooked me on the next available flight, one that was supposed to be leaving at 2:45pm but was delayed until &quot;Around 5&quot;. This would mean that I would be cutting it fairly fine in my layover for Denver, but could still probably make it. (I later checked, the flight actually departed at 5:56pm, meaning I would have missed my connection and had to stay the night in Denver, and I would&#39;ve missed the first day of the conference tomorrow)</p>
-
-<p>As 5pm approached, I checked the flight status on Google. Originally, it told me 5:15pm. Then it told me 5:35pm, with an arrival time
-within 19 minutes of my layover. Yeah, nah. Wasn&#39;t going to make that.</p>
-
-<p>Not once did I receive an email telling me that the flight was delayed. No notification over the PA at all. Not a single, iota, of
-anything.</p>
-
-<p>I contacted one of my programming buddies and he advised me that there was a SouthWest direct-to-Salt-Lake-City flight leaving
-Oakland Airport at 8:40pm that was being sold for $267. I bought it. I approached the desk again and asked how I would go about
-getting a refund, and aI was told (again, <em>super</em> politely!) that I would need to call Frontier. That&#39;s very hard for me to do here,
-because I don&#39;t have a mobile phone that works in this great country.</p>
-
-<p>I caught a cab ($125, including tip) to Oakland airport. Checked in at SouthWest who informed me that their planes had no such delay
-and would depart on time. Yay!</p>
-
-<p>So here I sit, at Gate 31 in Oakland airport, writing this to you in the ultra-vain hope that you&#39;ll improve your systems. When your
-flights have delays, PLEASE email your customers. I was constantly on the WiFi in SFO checking for notifications. Notify them over
-the PA that a flight <em>may</em> be arriving at a specific time and to not go anywhere.</p>
-
-<p>One final thing: I don&#39;t know where my large suitcase is right now. The suitcase that has <em>all</em> my good clothes, some souveniers and
-some other things. It could be in Denver, it could be in Salt Lake City. I don&#39;t know. I can&#39;t call anybody to ask. I will need to go
-to Baggage Claim in SLC and hope that they have it there. If they don&#39;t have it, then I&#39;m out around $900 of equipment.</p>
-
-<p>Your @FrontierCare account contacted me earlier and offered me a $50 voucher on future Frontier flights, but I don&#39;t think that I&#39;ll
-be using it. I&#39;ll be looking to get a refund (or at least, a partial one) for the flights that I&#39;ve missed today. $50 is a paltry
-figure compared to how much I could have potentially lost today.</p>
-
-<p>Please, please, please improve your customer service experience. It is <em>not</em> rocket science.</p>
 ]]></content>
  </entry>
  
