@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2014-06-19T12:37:29+10:00</updated>
+ <updated>2014-06-19T12:38:17+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -23,7 +23,7 @@
 
 <p><code>Lotus::Model</code> departs from the ActiveRecord way of doing things by having four main types of objects: entities, mappers, repositories and adapters. The creator of Lotus (Luca Guida) has <a href="http://lucaguidi.com/2014/04/23/introducing-lotus-model.html">a great post outlining what each of those do</a>.</p>
 
-<p>I&#39;ve added <code>Lotus::Model</code> to spree_poro (in a <a href="https://github.com/radar/spree_poro/tree/lotus">new branch</a> and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. </p>
+<p>I&#39;ve added <code>Lotus::Model</code> to spree_poro (in a <a href="https://github.com/radar/spree_poro/tree/lotus">new branch</a>) and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. </p>
 
 <p>Having the entities separate from the persistence code means there&#39;s a clear separation between the business logic of the entities and the persistence logic of the repositories. If I want to test that finding tax rates based on an order&#39;s tax zone works, I no longer test that on the <code>Spree::TaxRate</code> model. Instead, that responsibility falls to the <code>Spree::TaxRateRepository</code>, and so <a href="https://github.com/radar/spree_poro/blob/fac4921d87c6a047e8b2df380137f3866cac2442/spec/spree/repositories/tax_rate_spec.rb">that is where it&#39;s tested</a>. This means that I could even get away with stubbing <code>Spree::TaxRateRepository.match</code> in the normal <code>TaxRate</code> specs to return some plain Ruby objects, and those tests do not need to care about any persistence layer at all.</p>
 
