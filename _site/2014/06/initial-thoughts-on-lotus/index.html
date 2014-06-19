@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - Initial thoughts on Lotus</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link href='http://fonts.googleapis.com/css?family=Buenard' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='post'>
+      <article>
+        <a href="/2014/06/initial-thoughts-on-lotus"><header>Initial thoughts on Lotus</header></a>
+        <small>19 Jun 2014</small><br>
+        <p>Following on from my <a href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks/">last post</a>, I&#39;ve been experimenting some more with my <a href="https://github.com/radar/spree_poro">spree_poro</a>, and I&#39;ve been looking at how to work with some kind of data store persistence more sophisticated than the <code>Spree::Data</code> constant that I had used previously. I wanted something more sophisticated than running <code>select</code>s over arrays.</p>
+
+<p><a href="http://lotusrb.org">Lotus</a> bills itself as a &quot;complete web framework for Ruby&quot; and also uses the words &quot;simple&quot;, &quot;fast&quot;, and &quot;lightweight&quot;. In my limited experience of only using the <code>Lotus::Model</code> part of the framework, I can say it&#39;s all of those things. <code>Lotus::Model</code> itself is less than 600 lines and my tests (now 50 of them) still run in &lt;0.05 seconds.</p>
+
+<p><code>Lotus::Model</code> departs from the ActiveRecord way of doing things by having four main types of objects: entities, mappers, repositories and adapters. The creator of Lotus (Luca Guida) has <a href="http://lucaguidi.com/2014/04/23/introducing-lotus-model.html">a great post outlining what each of those do</a>.</p>
+
+<p>I&#39;ve added <code>Lotus::Model</code> to spree_poro and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. </p>
+
+<p>Having the entities separate from the persistence code means there&#39;s a clear separation between the business logic of the entities and the persistence logic of the repositories. If I want to test that finding tax rates based on an order&#39;s tax zone works, I no longer test that on the <code>Spree::TaxRate</code> model. Instead, that responsibility falls to the <code>Spree::TaxRateRepository</code>, and so <a href="https://github.com/radar/spree_poro/blob/fac4921d87c6a047e8b2df380137f3866cac2442/spec/spree/repositories/tax_rate_spec.rb">that is where it&#39;s tested</a>. This means that I could even get away with stubbing <code>Spree::TaxRateRepository.match</code> in the normal <code>TaxRate</code> specs to return some plain Ruby objects, and those tests do not need to care about any persistence layer at all.</p>
+
+<p>I am very interested to see how this whole Lotus thing pans out. It&#39;s very easy to understand at this point in time, other than that I can&#39;t work out how to properly do polymorphic associations (as is necessary for promotions within Spree, sadly). Perhaps that would be a feature that comes eventually to Lotus, or we re-architect the way Spree is designed to work more with Lotus.</p>
+
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-349 http://ryanbigg.com/?p=RB-349'
+        var disqus_url = 'http://ryanbigg.com/2014/06/initial-thoughts-on-lotus';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script type="text/javascript">
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>   
+  </body>
+</html>
