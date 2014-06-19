@@ -10,7 +10,7 @@ Following on from my [last post](http://ryanbigg.com/2014/06/spree-factories-and
 
 `Lotus::Model` departs from the ActiveRecord way of doing things by having four main types of objects: entities, mappers, repositories and adapters. The creator of Lotus (Luca Guida) has [a great post outlining what each of those do](http://lucaguidi.com/2014/04/23/introducing-lotus-model.html).
 
-I've added `Lotus::Model` to spree_poro and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. 
+I've added `Lotus::Model` to spree_poro (in a [new branch](https://github.com/radar/spree_poro/tree/lotus) and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. 
 
 Having the entities separate from the persistence code means there's a clear separation between the business logic of the entities and the persistence logic of the repositories. If I want to test that finding tax rates based on an order's tax zone works, I no longer test that on the `Spree::TaxRate` model. Instead, that responsibility falls to the `Spree::TaxRateRepository`, and so [that is where it's tested](https://github.com/radar/spree_poro/blob/fac4921d87c6a047e8b2df380137f3866cac2442/spec/spree/repositories/tax_rate_spec.rb). This means that I could even get away with stubbing `Spree::TaxRateRepository.match` in the normal `TaxRate` specs to return some plain Ruby objects, and those tests do not need to care about any persistence layer at all.
 
