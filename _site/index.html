@@ -30,19 +30,35 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2014/06/initial-thoughts-on-lotus"><header>Initial thoughts on Lotus</header></a>
-  <small>19 Jun 2014</small><br>
-  <p>Following on from my <a href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks/">last post</a>, I&#39;ve been experimenting some more with my <a href="https://github.com/radar/spree_poro">spree_poro</a>, and I&#39;ve been looking at how to work with some kind of data store persistence more sophisticated than the <code>Spree::Data</code> constant that I had used previously. I wanted something more sophisticated than running <code>select</code>s over arrays.</p>
+  <a href="/2014/07/nicholas-meyler"><header>Nicholas Meyler</header></a>
+  <small>10 Jul 2014</small><br>
+  <p>Nicholas Meyler spammed the Ruby community as a whole last year. He was unrepentant for contacting me a second time after I asked him to take me off his list the first time. He holds the #1 rank on <a href="http://recruiterspam.com">recruiterspam.com</a>, and with very good reason. I also had this to say about him:</p>
 
-<p><a href="http://lotusrb.org">Lotus</a> bills itself as a &quot;complete web framework for Ruby&quot; and also uses the words &quot;simple&quot;, &quot;fast&quot;, and &quot;lightweight&quot;. In my limited experience of only using the <code>Lotus::Model</code> part of the framework, I can say it&#39;s all of those things. <code>Lotus::Model</code> itself is less than 600 lines and my tests (now 50 of them) still run in &lt;0.05 seconds.</p>
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/rerouse">@rerouse</a> <a href="https://twitter.com/coreyhaines">@coreyhaines</a> <a href="https://twitter.com/garybernhardt">@garybernhardt</a> <a href="https://twitter.com/tenderlove">@tenderlove</a> <a href="https://twitter.com/steveklabnik">@steveklabnik</a> Ugh, Nicholas Meyler. Scummiest Scumbag Recruiter ever.</p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/statuses/385918215559184384">October 4, 2013</a></blockquote>
 
-<p><code>Lotus::Model</code> departs from the ActiveRecord way of doing things by having four main types of objects: entities, mappers, repositories and adapters. The creator of Lotus (Luca Guida) has <a href="http://lucaguidi.com/2014/04/23/introducing-lotus-model.html">a great post outlining what each of those do</a>.</p>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-<p>I&#39;ve added <code>Lotus::Model</code> to spree_poro (in a <a href="https://github.com/radar/spree_poro/tree/lotus">new branch</a>) and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. </p>
+<p>More recently, I re-joined LinkedIn and because LinkedIn asks you to contact with people who you&#39;ve got email correspondence with, Nicholas Meyler got added to my LinkedIn network by mistake. Apparently this means <a href="http://www.recruitingblogs.com/profiles/blogs/so-now-you-want-to-be-friends?xg_source=activity">that I want us to be friends</a>. This is not the case.</p>
 
-<p>Having the entities separate from the persistence code means there&#39;s a clear separation between the business logic of the entities and the persistence logic of the repositories. If I want to test that finding tax rates based on an order&#39;s tax zone works, I no longer test that on the <code>Spree::TaxRate</code> model. Instead, that responsibility falls to the <code>Spree::TaxRateRepository</code>, and so <a href="https://github.com/radar/spree_poro/blob/fac4921d87c6a047e8b2df380137f3866cac2442/spec/spree/repositories/tax_rate_spec.rb">that is where it&#39;s tested</a>. This means that I could even get away with stubbing <code>Spree::TaxRateRepository.match</code> in the normal <code>TaxRate</code> specs to return some plain Ruby objects, and those tests do not need to care about any persistence layer at all.</p>
+<p>Here&#39;s a reply to that blog post which I would post as a comment, but nobody with any sense reads comments on the internet these days:</p>
 
-<p>I am very interested to see how this whole Lotus thing pans out. It&#39;s very easy to understand at this point in time, other than that I can&#39;t work out how to properly do polymorphic associations (as is necessary for promotions within Spree, sadly). Perhaps that would be a feature that comes eventually to Lotus, or we re-architect the way Spree is designed to work more with Lotus.</p>
+<hr>
+
+<p>Hello! I am the person who called our good friend Nicholas the &quot;scummiest scumbag recruiter ever&quot;. It would seem our good friend Nicholas fails to understand the word &quot;libel&quot;, which is defined in my dictionary here as &quot;a published false statement that is damaging to a person&#39;s reputation&quot;. I&#39;d like to focus at the moment on the word &quot;false&quot; here. In my experience with recruiters, Nicholas is the absolute worse of the worst. Allow me to explain.</p>
+
+<p>Let&#39;s start with Gary Bernhardt&#39;s <a href="https://gist.github.com/garybernhardt/6819142">open letter to the people at wdsearch.com</a>. In this, there are some great indications of the poor practices put in place by Nicholas when attempting to recruit for a job almost a year ago.</p>
+
+<p>On the site recruiterspam.com, <a href="http://imgur.com/9VhAR6F">Nicholas Meyler is the spammiest recruiter, ever</a>. As you can see from the chart, there are quite a lot of recruiters out there, and Nicholas features a lot in that graph. How come? Perhaps it was because Nicholas chose to spam the <em>entire Ruby community</em> looking for people to fill positions. Perhaps it was because he was unrepentant when told in very certain terms that unsolicited blanket contacting about recruiting shows a lack of care for the people who he&#39;s contacting.</p>
+
+<p>In my opinion, recruiting should be more than about putting bums on seats. It should be about developing connections with people at companies looking to hire people and also connections with the people looking for work. This way, you get to understand the needs of those companies as well as the hires. Treating people like cattle is extremely demeaning and shows a complete lack of empathy. The only other types of people I know to treat people like that are sociopaths.</p>
+
+<p>Recruiters need to focus on the human element of their job, given that is entirely the point: connecting people with other people to build great teams.</p>
+
+<p>Nicholas&#39;s accusation of my &quot;scummiest scumbag recruiter ever&quot; comment being libel, is actually provably false. The statement is nothing but the truth, as I have proven, and Nicholas deserves the comment more than anybody else that I can think of right now.</p>
+
+<p>No, Nicholas. I don&#39;t want to be friends. I hope that this blog post is another entry into the Google results for your name. The &quot;vandalism&quot; of your name is warranted because of your sheer stubbornness to change your ways for the better. The provocation for the comments was the not once, but <em>twice</em>, unsolicited, untargeted email sent to both of my main inboxes. </p>
+
+<p>You can complain to Google and government all you want. At the end of the day, freedom of speech is still a thing. At the end of your post, you ask for suggestions. I have one: stop being a scumbag recruiter. Work within the communities that you&#39;re trying to recruit for and find out who&#39;s hiring and who&#39;s looking.</p>
 
 </article>
 
@@ -50,6 +66,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2014/06/initial-thoughts-on-lotus">Initial thoughts on Lotus</a><abbr>19 Jun 2014</abbr></li>
+  
       <li><a href="/2014/06/spree-factories-and-callbacks">Spree, Factories and Callbacks</a><abbr>17 Jun 2014</abbr></li>
   
       <li><a href="/2014/04/community-management">Community Management</a><abbr>02 Apr 2014</abbr></li>
@@ -97,8 +115,6 @@
       <li><a href="/2012/03/engines-and-authentication">Engines and Authentication</a><abbr>03 Mar 2012</abbr></li>
   
       <li><a href="/2012/01/free-help">Free Help</a><abbr>31 Jan 2012</abbr></li>
-  
-      <li><a href="/2012/01/moving-out-down-to-melbourne">Moving Out: Down to Melbourne</a><abbr>09 Jan 2012</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
