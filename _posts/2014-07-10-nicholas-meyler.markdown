@@ -33,7 +33,7 @@ You can complain to Google and government all you want. At the end of the day, f
 
 ---
 
-Update: Nicholas Meyler has now spammed the support@spreecommerce.com email address with accusations that I am stalking and spamming him. As I said earlier in this post, I *accidentally* added him on LinkedIn. I email a lot of people and a lot of people email me. He got caught in that dragnet and somehow assumed that I wanted to be friends with him. It's as untrue now as it is was then.
+Update: Nicholas Meyler has now spammed the support@spreecommerce.com email address with accusations that I am stalking and spamming him. He claims to have reported both myself and Spree Commerce as a company to the FBI and the Australian Government. As I said earlier in this post, I *accidentally* added him on LinkedIn. I email a lot of people and a lot of people email me. He got caught in that dragnet and somehow assumed that I wanted to be friends with him. It's as untrue now as it is was then.
 
 [Here's a copy of the email he sent to the support address](https://gist.github.com/radar/562fd7d870974464f494). He claims that my LinkedIn request was spam. Clearly, it was not. The whole point of LinkedIn is to get, well, "linked in". You do that by sending messages to people asking to connect. He could've ignored the message, but he chose to reply. He is very clearly attempting to rouse me to reply in an aggressive tone with his reply to my automated message, and that's precisely what he got back.
 
