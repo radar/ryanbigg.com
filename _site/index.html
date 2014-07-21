@@ -30,19 +30,33 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2014/06/initial-thoughts-on-lotus"><header>Initial thoughts on Lotus</header></a>
-  <small>19 Jun 2014</small><br>
-  <p>Following on from my <a href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks/">last post</a>, I&#39;ve been experimenting some more with my <a href="https://github.com/radar/spree_poro">spree_poro</a>, and I&#39;ve been looking at how to work with some kind of data store persistence more sophisticated than the <code>Spree::Data</code> constant that I had used previously. I wanted something more sophisticated than running <code>select</code>s over arrays.</p>
+  <a href="/2014/07/ryan-bigg-is-now-a-git"><header>Ryan Bigg is now a Git...</header></a>
+  <small>22 Jul 2014</small><br>
+  <p>Yes, the <a href="http://spreecommerce.com/blog/farewell-ryan-bigg">rumours are true</a>, I am leaving Spree Commerce. This makes me a git because there&#39;s one and only one Community Manager at Spree, and so that void will need to be filled by someone else. Thankfully Jeff Dutil is going to step into my role as interim Community Manager for the time being.</p>
 
-<p><a href="http://lotusrb.org">Lotus</a> bills itself as a &quot;complete web framework for Ruby&quot; and also uses the words &quot;simple&quot;, &quot;fast&quot;, and &quot;lightweight&quot;. In my limited experience of only using the <code>Lotus::Model</code> part of the framework, I can say it&#39;s all of those things. <code>Lotus::Model</code> itself is less than 600 lines and my tests (now 50 of them) still run in &lt;0.05 seconds.</p>
+<p>I&#39;m also a git for tricking you all:</p>
 
-<p><code>Lotus::Model</code> departs from the ActiveRecord way of doing things by having four main types of objects: entities, mappers, repositories and adapters. The creator of Lotus (Luca Guida) has <a href="http://lucaguidi.com/2014/04/23/introducing-lotus-model.html">a great post outlining what each of those do</a>.</p>
+<blockquote class="twitter-tweet" lang="en"><p>Ryan Bigg is now a GitHubber! <a href="https://t.co/jYm8bKVV1z">https://t.co/jYm8bKVV1z</a></p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/statuses/491321781781684224">July 21, 2014</a></blockquote>
 
-<p>I&#39;ve added <code>Lotus::Model</code> to spree_poro (in a <a href="https://github.com/radar/spree_poro/tree/lotus">new branch</a>) and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. </p>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-<p>Having the entities separate from the persistence code means there&#39;s a clear separation between the business logic of the entities and the persistence logic of the repositories. If I want to test that finding tax rates based on an order&#39;s tax zone works, I no longer test that on the <code>Spree::TaxRate</code> model. Instead, that responsibility falls to the <code>Spree::TaxRateRepository</code>, and so <a href="https://github.com/radar/spree_poro/blob/fac4921d87c6a047e8b2df380137f3866cac2442/spec/spree/repositories/tax_rate_spec.rb">that is where it&#39;s tested</a>. This means that I could even get away with stubbing <code>Spree::TaxRateRepository.match</code> in the normal <code>TaxRate</code> specs to return some plain Ruby objects, and those tests do not need to care about any persistence layer at all.</p>
+<hr>
 
-<p>I am very interested to see how this whole Lotus thing pans out. It&#39;s very easy to understand at this point in time, other than that I can&#39;t work out how to properly do polymorphic associations (as is necessary for promotions within Spree, sadly). Perhaps that would be a feature that comes eventually to Lotus, or we re-architect the way Spree is designed to work more with Lotus.</p>
+<p>I&#39;m actually going to work at <a href="http://lifx.co">LIFX</a> as a Ruby programmer there. It was exceptionally lonely working in this Melbourne timezone mostly by myself, and I was getting complacent at Spree. I want a bigger challenge while I still have the time and energy for it. </p>
+
+<p>LIFX seems like a perfect fit in regards to those things. I&#39;ll be working with people in an office in Richmond (not far from where I currently work at <a href="http://inspire9.com.au">Inspire9</a>), and the work will be something different to the ecommerce work that I&#39;ve been doing for 2.5 years. The Internet of Things is a really neat concept and I am really looking forward to working at LIFX.</p>
+
+<hr>
+
+<p>I first worked with Spree when I worked with my old job building the <a href="https://shop.abc.net.au/">ABC online store</a>. I was also working on the <a href="https://guides.rubyonrails.org/engines.html">Engines Guide</a> at this point, so my interest around Rails engines was still quite intense. </p>
+
+<p>Josh Adams pinged me about <a href="https://groups.google.com/forum/#!msg/spree-user/P0iywDQokto">a discussion regarding namespaces on the spree user mailing list</a> and I just <a href="https://groups.google.com/forum/#!msg/spree-user/P0iywDQokto/jhtAftv7RK8J">had to reply</a>. That week, Sean from Spree messaged me over IRC and asked if I wanted a job. A month later I started working there on the namespacing work and gradually took over the maintenance of the project from Sean and Brian while they worked on developing Spree Commerce as a business.</p>
+
+<p>As a result of that, I&#39;ve made <a href="https://github.com/spree/spree/graphs/contributors">over 3000 commits</a> and posted 7,000 issue comments. Over two and a half years, that averages out to 3 commits per day and almost 8 comments. I&#39;ve also posted 15,000 messages in the Spree IRC channel. I don&#39;t know the email stats, but I would guess it falls within the same range. I apologise for all the spam.</p>
+
+<hr>
+
+<p>I&#39;m immensely proud of my work at Spree. It&#39;s been an interesting challenge to work on building something as complex as an ecommerce platform and still keeping it neat and tidy in comparison to certain other ecommerce frameworks. I know the Spree team will keep up the great work that they&#39;ve been doing on Wombat. The future of Spree is looking bright, and I wish them all the best.</p>
 
 </article>
 
@@ -50,6 +64,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2014/06/initial-thoughts-on-lotus">Initial thoughts on Lotus</a><abbr>19 Jun 2014</abbr></li>
+  
       <li><a href="/2014/06/spree-factories-and-callbacks">Spree, Factories and Callbacks</a><abbr>17 Jun 2014</abbr></li>
   
       <li><a href="/2014/04/community-management">Community Management</a><abbr>02 Apr 2014</abbr></li>
@@ -97,8 +113,6 @@
       <li><a href="/2012/03/engines-and-authentication">Engines and Authentication</a><abbr>03 Mar 2012</abbr></li>
   
       <li><a href="/2012/01/free-help">Free Help</a><abbr>31 Jan 2012</abbr></li>
-  
-      <li><a href="/2012/01/moving-out-down-to-melbourne">Moving Out: Down to Melbourne</a><abbr>09 Jan 2012</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
