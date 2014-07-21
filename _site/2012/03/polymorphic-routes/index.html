@@ -13,13 +13,13 @@
         <a href="/2012/03/polymorphic-routes"><header>Polymorphic Routes</header></a>
         <small>27 Mar 2012</small><br>
         <p>Really early on in Rails, you would write routes like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">redirect_to :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;show&quot;, :id =&gt; @post.id
+<div class="highlight"><pre><code class="language-text" data-lang="text">redirect_to :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;show&quot;, :id =&gt; @post.id
 </code></pre></div>
 <p>What this would do is dutifully redirect to the <code>show</code> action inside the <code>PostsController</code> and pass along the <code>id</code> parameter with a
 value of whatever <code>@post.id</code> returns. Typical 302 response.</p>
 
 <p>Then Rails 1.2 came along and allowed you to use routing helpers, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">redirect_to post_path(@post)
+<div class="highlight"><pre><code class="language-text" data-lang="text">redirect_to post_path(@post)
 </code></pre></div>
 <p>And the people rejoiced.</p>
 
@@ -27,7 +27,7 @@ value of whatever <code>@post.id</code> returns. Typical 302 response.</p>
 like <code>/posts/1</code> and then <code>redirect_to</code> would send back a 302 response to that route and the browser would follow it.</p>
 
 <p>Then later versions (I can&#39;t remember which one), allowed syntax like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">redirect_to @post
+<div class="highlight"><pre><code class="language-text" data-lang="text">redirect_to @post
 </code></pre></div>
 <p>And the people rejoiced a second time.</p>
 
@@ -45,7 +45,7 @@ object, sees that it is an object of the <code>Post</code> class (we assume, any
 database somewhere by calling <code>persisted?</code> on it. </p>
 
 <p>By &quot;persisted&quot;, I mean that a Ruby object has a matching record in the database somewhere. The <code>persisted?</code> method in Active Record is implemented like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">def persisted?
+<div class="highlight"><pre><code class="language-text" data-lang="text">def persisted?
   !(new_record? || destroyed?)
 end
 </code></pre></div>
@@ -57,13 +57,13 @@ somewhere, and that the place it can be found is most likely under a method call
 in the <code>to_param</code> value of this object which is usually the <code>id</code>.</p>
 
 <p>In short, it&#39;s effectively doing this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">#{@post.class.downcase}_path(@post.to_param)
+<div class="highlight"><pre><code class="language-text" data-lang="text">#{@post.class.downcase}_path(@post.to_param)
 </code></pre></div>
 <p>Which comes out to being this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">post_path(1)
+<div class="highlight"><pre><code class="language-text" data-lang="text">post_path(1)
 </code></pre></div>
 <p>And when that method is called you would get this little string:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&quot;/posts/1&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&quot;/posts/1&quot;
 </code></pre></div>
 <p>Lovely!</p>
 
@@ -73,16 +73,16 @@ attempt to work out the correct URL of what to use.</p>
 <h3>The form of form_for</h3>
 
 <p>Now, when you&#39;re coding Rails you may have used <code>form_for</code> like this a very long time ago:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;% form_for @post, :url =&gt; { :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;create&quot; } do |f| %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;% form_for @post, :url =&gt; { :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;create&quot; } do |f| %&gt;
 </code></pre></div>
 <p>Of course, with advancements in Rails you could simplify it to this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;% form_for @post, :url =&gt; posts_path do |f| %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;% form_for @post, :url =&gt; posts_path do |f| %&gt;
 </code></pre></div>
 <p>Because the form is going to default to having a <code>POST</code> HTTP method and therefore a request to <code>posts_path</code> is going to go to the
 <code>create</code> action of <code>PostsController</code>, rather than the <code>index</code> action, which is what would result if it were a <code>GET</code> request.</p>
 
 <p>But why stop there? Why not just write this?</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;%= form_for @post do |f| %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;%= form_for @post do |f| %&gt;
 </code></pre></div>
 <p>Personally, I see no reason not to... if it&#39;s something as simple as this. The <code>form_for</code> method uses <code>url_for</code> underneath, just like
 <code>redirect_to</code> to work out where the form should go. It knows that the <code>@post</code> object is of the <code>Post</code> class (again, we assume) and it
@@ -99,7 +99,7 @@ more common these days for people to even put their whole <code>form_for</code> 
 
 <p>So <code>form_for</code> is fairly simple for when you pass a normal object, but what happens if you pass an array of objects? Like this, for
 instance:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;%= form_for [@post, @comment] do |f| %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;%= form_for [@post, @comment] do |f| %&gt;
 </code></pre></div>
 <p>Well, both <code>url_for</code> and <code>form_for</code> have you covered there too.</p>
 
@@ -113,10 +113,10 @@ instance:</p>
 
 <p>The <code>url_for</code> method combines these individual parts with an underscore, so that it becomes <code>post_comments</code> and then appends <code>_path</code>
 to the end of that, resulting in <code>post_comments_path</code>. Then it passes in just the persisted objects to the call to that method, resulting in a call like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">post_comments_path(@post)
+<div class="highlight"><pre><code class="language-text" data-lang="text">post_comments_path(@post)
 </code></pre></div>
 <p>Calling that method results in this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&quot;/posts/1/comments&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&quot;/posts/1/comments&quot;
 </code></pre></div>
 <p>Best part? <code>form_for</code> will still know to use <code>POST</code> if the <code>@comment</code> object is not a persisted object, and <code>PUT</code> if it is. A good
 thing to remember is that the <code>form_for</code> is always for the <em>last</em> object specified in the array. The objects prior to it are just its
@@ -129,7 +129,7 @@ you keep it to just two parts.</p>
 
 <p>Now that we&#39;ve covered using an array containing objects for <code>form_for</code>, let&#39;s take a look at another common use. An array containing
 at least one Symbol object, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;%= form_for [:admin, @post, @comment] do |f| %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;%= form_for [:admin, @post, @comment] do |f| %&gt;
 </code></pre></div>
 <p>What the <code>url_for</code> method does here is very simple. It sees that there&#39;s a <code>Symbol</code> and takes it as it is. The first part of the
 <code>url</code> will simply be the same as the symbol: <code>admin</code>. The URL that <code>url_for</code> knows of at this point is just <code>[:admin]</code>.</p>
@@ -140,10 +140,10 @@ and <code>comment</code> too, resulting in <code>[:admin, :post, :comment]</code
 
 <p>Then the joining happens, resulting in a method of <code>admin_post_comment_path</code>, and because both <code>@post</code> and <code>@comment</code> are persisted here,
 they&#39;re passed in, resulting in this method call:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">admin_post_comment_path(@post, @comment)
+<div class="highlight"><pre><code class="language-text" data-lang="text">admin_post_comment_path(@post, @comment)
 </code></pre></div>
 <p>Which (usually) turns into this path:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">/admin/posts/1/comments/2
+<div class="highlight"><pre><code class="language-text" data-lang="text">/admin/posts/1/comments/2
 </code></pre></div>
 <h3>Conclusion</h3>
 

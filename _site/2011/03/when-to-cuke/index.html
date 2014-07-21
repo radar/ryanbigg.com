@@ -17,7 +17,7 @@
 <p>I personally feel, in some cases, Cucumber isn&#39;t the right solution. If you&#39;re developing something that has no non-Ruby savvy stakeholder, why would you write it in Cucumber? I personally don&#39;t see the point. It overly complicates things.</p>
 
 <p>Take this example: I want to create a feature for posting a new comment on a post. It would go like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Feature: Comments
+<div class="highlight"><pre><code class="language-text" data-lang="text">Feature: Comments
 In order to tell the masses what&#39;s on my mind
 As a user
 I want to post comments on the site
@@ -35,7 +35,7 @@ Scenario: Creating a comment
   Then I should see &quot;I am posting a comment.&quot; within &quot;#comments&quot;
 </code></pre></div>
 <p>I&#39;ve tried to keep it as simple as I can here, but it should demonstrate the point I am trying to make. The logic of how the &quot;Given there is a post&quot; step is defined something like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Given /^there is a post:$/ do |table|
+<div class="highlight"><pre><code class="language-text" data-lang="text">Given /^there is a post:$/ do |table|
   hash = table.hashes.first
   @post = Post.create!(hash)
 end
@@ -43,12 +43,12 @@ end
 <p>Where&#39;s it defined? Well, it could be anywhere. That&#39;s the problem! Usually, I&#39;d define this in a file at <code>features/step_definitions/post_steps.rb</code> because it deals with <code>Post</code> objects, but that&#39;s just me. People have different tastes and therefore, undoubtedly, will do it differently. Maybe I&#39;ve been too mollycoddled by Rails, but this is completely arbitrarily decided by whoever&#39;s writing the feature at the time. It gets to me.</p>
 
 <p>Oh, then what happens if you want to have some kind of association, say you want to add an author to that post, transforming the step into this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Given there is a post:
+<div class="highlight"><pre><code class="language-text" data-lang="text">Given there is a post:
   | title        | text                         | author                  |
   | When to Cuke | I think Cucumber is great... | radarlistener@gmail.com |
 </code></pre></div>
 <p>Yes, it&#39;s an email address. But what does it mean? Well, that behaviour would have to be defined in the step definition, which is &quot;in another castle&quot;.</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Given /^there is a post:$/ do |table|
+<div class="highlight"><pre><code class="language-text" data-lang="text">Given /^there is a post:$/ do |table|
    hash = table.hashes.first
    hash[&quot;author&quot;] = Factory(:user, :email =&gt; hash[&quot;author&quot;])
    @post = Post.create!(hash)
@@ -61,7 +61,7 @@ end
 <h2>Enter: Capybara</h2>
 
 <p>Now let&#39;s see this <em>same</em> test, but written as a Capybara integration test:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">describe &quot;Comments&quot; do
+<div class="highlight"><pre><code class="language-text" data-lang="text">describe &quot;Comments&quot; do
   before do
     Factory(:post, :title =&gt; &quot;When to Cuke&quot;,
                    :text =&gt; &quot;I think Cucumber is great...&quot;,

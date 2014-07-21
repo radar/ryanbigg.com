@@ -33,10 +33,10 @@
 <p>The first thing we&#39;re going to need to install is XCode, which can be found on the second DVD of your install disks or, alternatively, on the Mac App Store for $5. It&#39;s a big download, so you may want to find the DVDs again. We&#39;re going to need this for the build tools that it installs to install Ruby and other packages.</p>
 
 <p>First of all, we&#39;re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href='https://github.com/mxcl/homebrew'>homebrew</a>. We can install this by using this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby -e &quot;$(curl -fsSL https://gist.github.com/raw/323731/install_homebrew.rb)&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby -e &quot;$(curl -fsSL https://gist.github.com/raw/323731/install_homebrew.rb)&quot;
 </code></pre></div>
 <p>Once it&#39;s installed, we&#39;ll be able to install the package for <a href='http://git-scm.org'>Git</a> by using a simple command like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install git
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install git
 </code></pre></div>
 <p>We&#39;ll need Git to install RVM as it clones it from <a href='http://github.com/wayneeseguin/rvm'>RVM&#39;s GitHub repository</a>.</p>
 
@@ -49,18 +49,18 @@
 <p>We&#39;re going to use it to install only one version of Ruby, but we can <a href='http://rvm.beginrescueend.com'>consult the documentation</a> if we want to install a different version of Ruby. </p>
 
 <p>With <code>git</code> and <code>curl</code> installed we&#39;ll be able to install RVM with this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">bash -s stable &lt; &lt;(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer) 
+<div class="highlight"><pre><code class="language-text" data-lang="text">bash -s stable &lt; &lt;(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer) 
 </code></pre></div>
 <p>The beautiful part of this is that it installs Ruby to our home directory, providing a sandboxed environment just for us.</p>
 
 <p>Once that&#39;s done, we&#39;re going to need to add a line to <code>~/.bashrc</code> file (the file responsible for setting up our bash session) which will load RVM:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">echo &#39;[[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]] &amp;&amp; source &quot;$HOME/.rvm/scripts/rvm&quot;&#39; &gt;&gt; ~/.bash_profile 
+<div class="highlight"><pre><code class="language-text" data-lang="text">echo &#39;[[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]] &amp;&amp; source &quot;$HOME/.rvm/scripts/rvm&quot;&#39; &gt;&gt; ~/.bash_profile 
 </code></pre></div>
 <p>Then we&#39;ll need to reload the <code>~/.bashrc</code> file which we can do with this small command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">. ~/.bash_profile
+<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bash_profile
 </code></pre></div>
 <p>If we run <code>rvm requirements</code> we&#39;ll be told the certain things that we need to have installed to install the different versions of Ruby:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Notes for Darwin ( Mac OS X )
+<div class="highlight"><pre><code class="language-text" data-lang="text">Notes for Darwin ( Mac OS X )
     For Snow Leopard be sure to have Xcode Tools Version 3.2.1 (1613) or later
     You should download the latest Xcode tools from developer.apple.com.
       (This is since the dvd install for Snow Leopard contained bugs).
@@ -76,50 +76,50 @@
 <h3>Ruby</h3>
 
 <p>With RVM and XCode installed we can install Ruby 1.9.3:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm install 1.9.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm install 1.9.3
 </code></pre></div>
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 1.9.3 installed. To begin using it we can use this lovely command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 1.9.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm use 1.9.3
 </code></pre></div>
 <p>Are we using 1.9.3? You betcha:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby -v
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby -v
 ruby 1.9.3p0 (2011-10-30 revision 33570) [x86_64-linux]
 </code></pre></div>
 <p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes!</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm --default use 1.9.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm --default use 1.9.3
 </code></pre></div>
 <p>Now whenever we open a new bash session for this user we&#39;ll have Ruby available for us to use! Yay!</p>
 
 <h3>Rails</h3>
 
 <p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access to our own things! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the other 22 gems that it and its dependencies depend on, including Bundler.</p>
 
 <h3>MySQL</h3>
 
 <p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>mysql</code> Homebrew package using this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install mysql
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install mysql
 </code></pre></div>
 <p>If you&#39;re using Rails 3.0 then you&#39;ll need to specify a 0.2.x version of the <code>mysql2</code> gem in your Gemfile:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;mysql2&#39;, &#39;~&gt; 0.2.7&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;mysql2&#39;, &#39;~&gt; 0.2.7&#39;
 </code></pre></div>
 <p>If you&#39;re using Rails 3.2, then this line will get it:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;mysql2&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;mysql2&#39;
 </code></pre></div>
 <h3>PostgreSQL</h3>
 
 <p>If you want to use PostgreSQL instead of MySQL:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install postgresql
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install postgresql
 </code></pre></div>
 <p>Then in the application&#39;s <code>Gemfile</code> use the <code>pg</code> gem:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;pg&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;pg&#39;
 </code></pre></div>
 <h3>Fin.</h3>
 
 <p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.beginrescueend.com'>RVM site</a> which goes into using things such as <a href='http://rvm.beginrescueend.com/gemsets/basics/'>gemsets</a> and the exceptionally helpful <a href='http://rvm.beginrescueend.com/workflow/rvmrc/#project'>per-project .rvmrc file</a>. A quick way to generate an <code>.rvmrc</code> file is to run a command like this inside the project</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 1.9.3@rails3 --rvmrc
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm use 1.9.3@rails3 --rvmrc
 </code></pre></div>
 <p>RVM is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 

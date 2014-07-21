@@ -61,13 +61,13 @@ side of things, taxation rears its ugly head(s).</p>
 </ul>
 
 <p>First, we sum the line items and their adjustments, which would be this equation:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 - $10) + $50 = $90
+<div class="highlight"><pre><code class="language-text" data-lang="text">($50 - $10) + $50 = $90
 </code></pre></div>
 <p>The order&#39;s total so far is $90. Now we add the shipments:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($5 - $5) + $10 = $10
+<div class="highlight"><pre><code class="language-text" data-lang="text">($5 - $5) + $10 = $10
 </code></pre></div>
 <p>We add this number to the line items&#39; total and we get $100. Now we apply the order&#39;s adjustments to this subtotal amount:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$100 - $20 = $80
+<div class="highlight"><pre><code class="language-text" data-lang="text">$100 - $20 = $80
 </code></pre></div>
 <p>This results in the order&#39;s grand total of $80.</p>
 
@@ -88,19 +88,19 @@ side of things, taxation rears its ugly head(s).</p>
 </ul>
 
 <p>The first line item&#39;s total would be calculated like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 - $10) = $40 + (10% of $40) = $44
+<div class="highlight"><pre><code class="language-text" data-lang="text">($50 - $10) = $40 + (10% of $40) = $44
 ($40)       =        $40 + $4    = $44
 </code></pre></div>
 <p>Worth noting here is that the discount is applied first, <em>then</em> the tax rate. This is the most sensible option because if someone is purchasing an item with the intention of receiving that $10 off, it is more intuitive that the $10 is off the listing price, rather than the after-tax price. This is also the recommended behavior, as mentioned later in the &quot;Promotions and Tax&quot; section.</p>
 
 <p>The second line item would be calculated in roughly the same way:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 + (10% of $50) = $55
+<div class="highlight"><pre><code class="language-text" data-lang="text">($50 + (10% of $50) = $55
 ($50 + $5)          = $55
 </code></pre></div>
 <p>Note that in these situations we are calculating the adjustment amount (if it exists) and then the tax amount. The buyer of a product should only be taxed on the final adjusted price of the line item, rather than its base price. In the instance of the first line item, the base price is $40 rather than $50 due to do the -$10 adjustment. Therefore the tax for this item would be 10% of $40 ($4), rather than 10% of $50 ($5).</p>
 
 <p>Therefore the order&#39;s total so far is <code>$44 + $55</code>, $99. Now to calculate the shipments, it would be this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">       (Shipment #1)              (Shipment #2)
+<div class="highlight"><pre><code class="language-text" data-lang="text">       (Shipment #1)              (Shipment #2)
 ($5 - $5) = $0 + (10% of $0)  +  $10 + (10% of $10) = $0 + $11 = $11
 </code></pre></div>
 <p>Because the first shipment has a &quot;free shipping&quot; adjustment, there is no additional tax adjustment to this shipment.</p>
@@ -112,22 +112,22 @@ side of things, taxation rears its ugly head(s).</p>
 <p>To further complicate matters, tax can also be <em>included</em> in the price, rather than being an additional cost applied.</p>
 
 <p>In Australia, there is a GST (Goods and Services Tax) applied to some items. This tax is a flat 10% and is included in the price of those items. An item that is worth $50 would have $4.545... of that amount made up by GST. The calculation is this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
+<div class="highlight"><pre><code class="language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
 </code></pre></div>
 <p>This tax amount <em>must</em> be displayed on receipts (and similar) because stores need it for end of financial year taxation purposes, and so this is what Spree refers to as an &quot;included&quot; adjustment, which is an adjustment which will not modify the total price. Within Spree, an item that is $50 will have a $4.545... adjustment applied to it, but that item will still cost $50.</p>
 
 <p>To <em>even further</em> complicate matters, tax that is included in an item&#39;s price must be backed out in certain circumstances. For example, an item with a 10% VAT tax sold in a European country to a buyer outside of that country must have that 10% tax refunded.</p>
 
 <p>Taking again the example a single line item that costs $50, with 10% of that price being this 10% VAT tax. When this item is sold to someone outside the VAT zone, we must apply a negative adjustment to the line item to refund that tax. The calculation for the adjustment is the same as before:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
+<div class="highlight"><pre><code class="language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
 </code></pre></div>
 <p>The adjustment is rounded up to the second decimal point, which will result in an adjustment of $4.55, rather than $4.54.</p>
 
 <p>This means that the adjusted price for the line item will be:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 - $4.55 = $45.45
+<div class="highlight"><pre><code class="language-text" data-lang="text">$50 - $4.55 = $45.45
 </code></pre></div>
 <p>If this item has a discount adjustment, then that discount is applied before the tax adjustment. Let&#39;s say that we have the $50 item with a $10 discount, and a tax rate of 10%. The calculation is then:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 - $10) - ($40 / 110%) = $3.6363636...
+<div class="highlight"><pre><code class="language-text" data-lang="text">($50 - $10) - ($40 / 110%) = $3.6363636...
 </code></pre></div>
 <p>With the adjustment, the sale price of the item would only be $40, therefore the tax subtraction for this item will be $3.63, rather than the original $4.55.</p>
 
@@ -146,10 +146,10 @@ side of things, taxation rears its ugly head(s).</p>
 <p>(Aside: for a demonstration about how much exactly tax rates can differ, click around a couple of times on <a href="https://taxcloud.net/find-a-rate/default.aspx">this map</a> within any one state. This service is what the <a href="https://github.com/bluehandtalking/spree_tax_cloud">Spree Tax Cloud extension</a> uses.)</p>
 
 <p>With adjustment information stored on a per-line item basis, it is now relatively easy to update a tax adjustment for a line item if that line item changes. Take for example our previous example of the $50 shirt with the 10% tax, but no other adjustment yet. To calculate that line item&#39;s tax, the calculation is this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 + (10% of $50) = $55
+<div class="highlight"><pre><code class="language-text" data-lang="text">$50 + (10% of $50) = $55
 </code></pre></div>
 <p>Now imagine that instead of 1 shirt, the buyer is actually buying 2. The calculation would only be this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 * 2) + (10% of $100) = $110
+<div class="highlight"><pre><code class="language-text" data-lang="text">($50 * 2) + (10% of $100) = $110
 </code></pre></div>
 <p>In previous versions of Spree, having one tax adjustment for the entire order makes things complex, because this tax adjustment would need to be recalculated for <em>all</em> line items, rather than just the one that has changed.</p>
 
@@ -174,10 +174,10 @@ side of things, taxation rears its ugly head(s).</p>
 <h3>In Practice: Updating adjustments</h3>
 
 <p>When a line item&#39;s quantity changes, its related adjustments must also be recalculated. Take for example the shirt worth $50 with a 10% tax again. To calculate the correct price for a shirt, the calculation is this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 + (10% of $50) = $55
+<div class="highlight"><pre><code class="language-text" data-lang="text">$50 + (10% of $50) = $55
 </code></pre></div>
 <p>When there are two shirts however, the calculation is this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 * 2) + (10% of ($50 * 2)) = $110
+<div class="highlight"><pre><code class="language-text" data-lang="text">($50 * 2) + (10% of ($50 * 2)) = $110
 </code></pre></div>
 <p>Previous versions of Spree recalculate all the adjustments on the order, whereas this latest work only calculates the adjustments for things that have changed.</p>
 
@@ -292,13 +292,13 @@ there are 3 shirts, each worth $50, on the same line item, the tables turn.</p>
 <p>Store credits, on the other hand, are manually applied adjustments. For an order with a store credit applied to it, care must be taken to ensure the correct refund is issued.</p>
 
 <p>As an example, take the order that has been used as an example previously:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Line Item #1 (LI1): $50 shirt, $10 off. 10% tax.
+<div class="highlight"><pre><code class="language-text" data-lang="text">Line Item #1 (LI1): $50 shirt, $10 off. 10% tax.
 Line Item #2 (LI2): $50 pants. 10% tax.
 Shipment #1   (S1): Just the shirt. $5. 10% tax.
 Shipment #2   (S2): Just the pants. $5. 10% tax.
 </code></pre></div>
 <p>The order&#39;s sub total is calculated like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">LI1        = ($50 - $10) + 10% of ($50 - 10) = $44
+<div class="highlight"><pre><code class="language-text" data-lang="text">LI1        = ($50 - $10) + 10% of ($50 - 10) = $44
  +                                              +
 LI2        = $50 + 10% of $50                = $55
                                                 =

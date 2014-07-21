@@ -24,7 +24,7 @@ and this is the <em>first</em> test that they&#39;re writing. I personally think
 functionality.</p>
 
 <p>In the example test (written in Capybara&#39;s syntax) below, the user fills in the form (ignoring one of the required fields) and then should see that there&#39;s an error on the page.</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">visit root_path
+<div class="highlight"><pre><code class="language-text" data-lang="text">visit root_path
 click_link &quot;Posts&quot;
 click_link &quot;New Post&quot;
 
@@ -40,7 +40,7 @@ within(&quot;#post_form .errors&quot;) do
 end
 </code></pre></div>
 <p>Or if you prefer Cucumber:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Given a user is creating a new post
+<div class="highlight"><pre><code class="language-text" data-lang="text">Given a user is creating a new post
 And the user leaves the post text blank
 When the user clicks &quot;Create Post&quot;
 Then they should see a validation error:
@@ -56,8 +56,8 @@ presence of this field? <em>It doesn&#39;t.</em></p>
 
 <p>Testing that the model contains the validation is a secondary thing, and is generally something I skip doing. The
 test for at least one of the form&#39;s validations goes into the request spec. If I&#39;m feeling pedantic I&#39;ll write
-another for the other validations, but I can <em>assume</em> that dynamic_form (the thing that provides
-<code>error_messages_for</code> is doing the right thing when it comes to its own methods. If one error message is showing
+another for the other validations, but I can <em>assume</em> that dynamic<em>form (the thing that provides
+`error</em>messages_for` is doing the right thing when it comes to its own methods. If one error message is showing
 up, good chance the others are.</p>
 
 <p>In the case where validation error messages <em>don&#39;t</em> show up then I write a specific test for that inside the

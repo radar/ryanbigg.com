@@ -15,7 +15,7 @@
         <p>In Spree recently, we&#39;ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree&#39;s API</a> for the Backend component. This means that we&#39;ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
 
 <p>Some of these test failures are that the tests just aren&#39;t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more ... bewildering:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">F
+<div class="highlight"><pre><code class="language-text" data-lang="text">F
 An error occurred in an after hook
   ActiveRecord::StatementInvalid: 
     SQLite3::BusyException:
@@ -25,10 +25,10 @@ An error occurred in an after hook
 <p>This error happens when an AJAX request is still being processed by the server, but the test finishes and Database Cleaner attempts to wipe the database. The server has locked the database until it&#39;s done what it needs to do, and during that lock Database Cleaner attempts to wipe all the data and can&#39;t.</p>
 
 <p>To fix this, we just needed to wait for all AJAX requests to complete. This means replacing <code>sleep</code> with magic numbers, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">sleep(2)
+<div class="highlight"><pre><code class="language-text" data-lang="text">sleep(2)
 </code></pre></div>
 <p>With this method:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">def wait_for_ajax
+<div class="highlight"><pre><code class="language-text" data-lang="text">def wait_for_ajax
   counter = 0
   while page.execute_script(&quot;return $.active&quot;).to_i &gt; 0
     counter += 1

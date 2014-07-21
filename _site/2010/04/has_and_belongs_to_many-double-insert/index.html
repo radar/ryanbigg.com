@@ -21,7 +21,7 @@
 <h3>Symptoms</h3>
 
 <p>We have two models whose names aren&#39;t important so excuse me if I use the name <code>Person</code> and <code>Address</code> to represent them. They are nothing of the sort. In their purest form to replicate this issue, they are defined like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">class Address &lt; ActiveRecord::Base
+<div class="highlight"><pre><code class="language-text" data-lang="text">class Address &lt; ActiveRecord::Base
   has_and_belongs_to_many :people
 end
 
@@ -32,7 +32,7 @@ class Person &lt; ActiveRecord::Base
 <p>end</p>
 
 <p>When we go to <code>create</code> a new <code>Person</code> record:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Person.create(:addresses_attributes =&gt; { &quot;0&quot; =&gt; { :suburb =&gt; &quot;Camperdown&quot; } }) 
+<div class="highlight"><pre><code class="language-text" data-lang="text">Person.create(:addresses_attributes =&gt; { &quot;0&quot; =&gt; { :suburb =&gt; &quot;Camperdown&quot; } }) 
 </code></pre></div>
 <p>It inserts <strong>1</strong> <code>Person</code> record, <strong>1</strong> <code>Address</code> record but <strong>2</strong> join table records.</p>
 

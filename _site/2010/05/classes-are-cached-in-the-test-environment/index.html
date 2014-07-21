@@ -27,7 +27,7 @@
 <p>Then came the seeding feature. This is the feature that runs the <code>db:seed</code> task for itself and because <code>User.current_user</code> was set in a prior ran feature, it was creating <code>Activity</code> records for users that no longer exist. When the app then went to display these activities on the homepage, it would attempt access the <code>avatar</code> method on a user that no longer existed, thus giving us an <code>undefined method avatar for nil:NilClass</code>. </p>
 
 <p>This was because between requests in test mode, <strong>classes are not reloaded</strong>. Therefore, <code>User.current_user</code> would not be unset. To unset it, we specify this in a file located at <em>features/support/start.rb</em>:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Before do
+<div class="highlight"><pre><code class="language-text" data-lang="text">Before do
   User.current_user = nil
 end
 </code></pre></div>

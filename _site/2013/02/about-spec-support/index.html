@@ -24,7 +24,7 @@ between an engine and an application, for an example in Chapter 4 of
 <a href="https://leanpub.com/multi-tenancy-rails">Multitenancy with Rails</a>. What I had
 originally was a file in <code>spec/support</code> called <code>SubdomainHelpers</code>, defined like
 this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">module SubdomainHelpers
+<div class="highlight"><pre><code class="language-text" data-lang="text">module SubdomainHelpers
   def within_account_subdomain(&amp;block)
     context &quot;within a subdomain&quot; do
       let(:subdomain_url) { &quot;http://#{account.subdomain}.example.com&quot; }
@@ -36,7 +36,7 @@ this:</p>
 end
 </code></pre></div>
 <p>This module is then used to extend the RSpec <code>describe</code> blocks, like this</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">describe &quot;User sign in&quot; do
+<div class="highlight"><pre><code class="language-text" data-lang="text">describe &quot;User sign in&quot; do
   extend SubdomainHelpers
   ...
 end
@@ -48,7 +48,7 @@ end
 <p>My problem with this is that this file is required <em>all the damn time</em>, even in
 tests which don&#39;t use Capybara. The culprit is this default line in
 <code>spec/spec_helper.rb</code></p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Dir[File.dirname(__FILE__) + &quot;/support/**/*.rb&quot;].each {|f| require f }
+<div class="highlight"><pre><code class="language-text" data-lang="text">Dir[File.dirname(__FILE__) + &quot;/support/**/*.rb&quot;].each {|f| require f }
 </code></pre></div>
 <p>This line is used for requiring all the files in <code>spec/support</code> so that you
 don&#39;t have to. Seems like a good idea, but isn&#39;t once you have a ton of things
@@ -57,12 +57,12 @@ in <code>spec/support</code>.</p>
 <p>Making it easy to require the file defining <code>SubdomainHelpers</code> in both the
 engine and the application involves moving the helper in to the <code>lib</code> directory
 of the engine, and then requiring that file in the appropriate places:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;subscribem/testing_support/subdomain_helpers&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;subscribem/testing_support/subdomain_helpers&#39;
 </code></pre></div>
 <p>Even if we <em>weren&#39;t</em> using an engine and an application and just had the
 application, I would much rather just be requiring just the files I need for a
 test, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;support/subdomain_helpers&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;support/subdomain_helpers&#39;
 </code></pre></div>
 <p>Than having the full range of <code>spec/support</code> files loaded all at once on the
 off chance a spec might need it. I wouldn&#39;t expect this to <em>dramatically</em> increase a spec suite&#39;s

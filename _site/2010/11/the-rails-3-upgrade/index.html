@@ -25,7 +25,7 @@
 <h3>Bundler</h3>
 
 <p>Before I came to Ennova they (like all smart / cool / awesome people I know) had already switched their 2.3.8 (I&#39;m going to keep stressing this point) application over to using Bundler. It worked beautifully! If they hadn&#39;t done this then we would have to install the &quot;rails_upgrade&quot; plugin using this line:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">script/plugin install git://github.com/rails/rails_upgrade.git
+<div class="highlight"><pre><code class="language-text" data-lang="text">script/plugin install git://github.com/rails/rails_upgrade.git
 </code></pre></div>
 <p>And then run <code>rake rails:upgrade:gems</code> to switch the <code>config.gem</code> lines in the <em>config/environment(s)/*.rb</em> files to <code>gem</code> lines in a <em>Gemfile</em>. There&#39;s other commands that this plugin provides to which we should have used to upgrade our application in retrospect, but I think not using them didn&#39;t slow us down <em>that</em> much. <a href='https://github.com/rails/rails_upgrade'>Check out the README here.</a></p>
 
@@ -60,25 +60,25 @@
 <p>Next up, in <em>config/environments/production.rb</em> we set the <code>config.active_support.deprecation</code> to <code>:notify</code> so that when the application was running in production mode (like when we were running <code>rails console production</code>) it would show us the deprecation warnings in the console rather than hiding them. We also set this same setting to <code>:stderr</code> in the <em>config/environments/test.rb</em> and <em>config/environments/development.rb</em> files. Also in these files there was reference to an old setting called <code>consider_all_requests_local</code>, which we removed reference to.</p>
 
 <p>The first deprecation warning that came up when <code>rails console production</code> decided it wanted to start booting our application was that the syntax in our routes file was deprecated. This was because we were using the deprecated mapper, which in simple terms meaning that our routes went like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">ActionController::Routing::Routes.draw do |map|
+<div class="highlight"><pre><code class="language-text" data-lang="text">ActionController::Routing::Routes.draw do |map|
   map.root :controller =&gt; &quot;welcome&quot;, :action =&gt; &quot;index&quot;
 </code></pre></div>
 <p>When they should be something like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Rails.application.routes.draw do
+<div class="highlight"><pre><code class="language-text" data-lang="text">Rails.application.routes.draw do
   root :to =&gt; &quot;welcome#index&quot;
 </code></pre></div>
 <p>Ahh, much better! This is where we stuffed up, we should have run the <code>rake rails:upgrade:routes</code> command <em>before</em> we ran <code>rails new .</code> because the rails upgrade plugin only works on a Rails 2 application. We spent a couple of minutes going through this file fixing up all the lines in this file to use their new syntax. Whilst it&#39;s handy to know how each of the methods map across between Rails 2 and 3, it&#39;s also good to know that if you don&#39;t know what a route <em>should</em> be in Rails 3 that you can reference the <a href='http://guides.rubyonrails.org/routing.html'>Routing Guide</a>. The current (as-of-writing) gem version for <em>declarative\</em>authorization_ is 0.5 and it uses this old, deprecated routing syntax too. Thankfully sttfn has updated his gem like all good gem authors <em>should</em>, and we were able to load the gem straight from GitHub with this line:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;declarative_authorization&#39;, :git =&gt; &quot;git://github.com/stffn/declarative_authorization&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;declarative_authorization&#39;, :git =&gt; &quot;git://github.com/stffn/declarative_authorization&quot;
 </code></pre></div>
 <p>The next warnings when running <code>rails console production</code> was that we were using <code>named_scope</code> when in Rails 3 the correct method is simply <code>scope</code>. We did a find-and-replace to fix these up, only to run <code>rails console</code> and to find out that <code>authlogic</code> this time was the one throwing the remaining warnings. I&#39;d already done an upgrade at GetUp from Rails 2 to Rails 3 and because binarylogic is inattentive of his gems I went about doing an upgrade for it to make it work with Rails 3, resulting in <a href='http://github.com/radar/authlogic'>my fork of authlogic</a> which should have all the deprecation warnings fixed.</p>
 
 <p>More ActiveRecord deprecations were next, with a couple of callbacks in our application defined like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">def after_update
+<div class="highlight"><pre><code class="language-text" data-lang="text">def after_update
   # do something
 end
 </code></pre></div>
 <p>Other callbacks like <code>before_create</code> and <code>after_create</code> existed too. Rather than defining the callback methods like this, the correct way in Rails 3 to define these is to define them as methods (private ones for bonus points) and then use the callback to call them, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">after_update :do_something
+<div class="highlight"><pre><code class="language-text" data-lang="text">after_update :do_something
 
 def do_something
   something.do!
@@ -87,42 +87,42 @@ end
 <p>It&#39;s best practice to define the callbacks like this because you may have multiple callbacks you want to run after a record has been updated, or created or whatever. </p>
 
 <p>It was after this that our <code>rails console production</code> booted with no errors. Great! The application has RSpec and test/unit tests, and I&#39;m very partial to RSpec so we tried running it and it bombed too. We bumped the version number of <code>rspec-rails</code> up to 2.0.1 in the <em>Gemfile</em>, ran <code>bundle install</code> again and then tried running the tests. They failed because of this error:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">no such file to load -- spec
+<div class="highlight"><pre><code class="language-text" data-lang="text">no such file to load -- spec
 </code></pre></div>
 <p>We had to change the requires in <em>spec/spec\</em>helper.rb_ from this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;spec/autorun&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;spec/autorun&#39;
 require &#39;spec/rails&#39;
 require &#39;spec&#39;
 </code></pre></div>
 <p>To this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;rspec/autorun&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;rspec/autorun&#39;
 require &#39;rspec/rails&#39;
 require &#39;rspec&#39;
 </code></pre></div>
 <p>Also in this file, the <code>Spec::Runner</code> constant doesn&#39;t exist, and this is used for this line further down in the file:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Spec::Runner.configure do |config|
+<div class="highlight"><pre><code class="language-text" data-lang="text">Spec::Runner.configure do |config|
    ...
 end
 </code></pre></div>
 <p>RSpec is now configured using the <code>RSpec</code> constant, so the above lines are now:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">RSpec.configure do |config|
+<div class="highlight"><pre><code class="language-text" data-lang="text">RSpec.configure do |config|
   ...
 end
 </code></pre></div>
 <p>At this point RSpec was launching and we were informed of our next deprecation warning: the <code>cache_template_loading</code> setting for the application configuration (ours was in <em>config/environments/test.rb</em>) has been deprecated, and so we had to remove it. After this our specs were at least running (but not all passing), and so we decided we&#39;d come back to them after we attempted to get the test/unit tests to pass. Just like <code>rails console</code> and the RSpec tests before them, they bombed too.</p>
 
 <p>This time it was due to this error:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">no such file to load -- test_help
+<div class="highlight"><pre><code class="language-text" data-lang="text">no such file to load -- test_help
 </code></pre></div>
 <p>To be honest, I don&#39;t use test/unit to test Rails applications, I just hate it. I was pairing with Lucas on the application and he&#39;d been brought up to only ever use RSpec and Cucumber, so he was just following my lead on this one. Then I made a bad mistake: <strong>I removed the test_help line</strong>. </p>
 
 <p><small>We found out a few days later that this file is actually now at <code>rails/test_help</code>. This file is incredibly important for transactions in tests and it wasn&#39;t until Wednesday when we fixed this problem. Don&#39;t make the same mistake as us, it&#39;s important!</small></p>
 
 <p>In quite a lot of our test/unit tests we had this line:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">include ActionController::Assertions::SelectorAssertions
+<div class="highlight"><pre><code class="language-text" data-lang="text">include ActionController::Assertions::SelectorAssertions
 </code></pre></div>
 <p>This module has now been moved into Action Dispatch and so the correct <code>include</code> is this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">include ActionDispatch::Assertions::SelectorAssertions
+<div class="highlight"><pre><code class="language-text" data-lang="text">include ActionDispatch::Assertions::SelectorAssertions
 </code></pre></div>
 <p>The rest of Monday was spent working on writing the <code>WildcardSearch</code> module and getting stuck on a little bug with it.</p>
 
@@ -133,58 +133,58 @@ end
 <p>This was the first day that I got to pair with <a href='http://twitter.com/jasoncodes'>Jason Weathered (@jasoncodes)</a> and we carried on the good work that Lucas and I did the day before. Jason&#39;s been doing Rails for about a year now but is scarily on or very near my level. Dude is amazing.</p>
 
 <p>The first problem we fixed on Tuesday was that <code>rake spec</code> was running, but not returning anything. It turns out that it this is because we had <code>rspec-rails</code> in the <code>:test</code> group which means that its rake tasks were only being loaded in the <code>test</code> environment, where by running <code>rake spec</code> we need them to exist in the <code>:development</code> group. Moving this gem into a group block like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">group :development, :test do 
+<div class="highlight"><pre><code class="language-text" data-lang="text">group :development, :test do 
   gem &#39;rspec-rails&#39;, &#39;2.0.1&#39;
 end
 </code></pre></div>
 <p>This makes RSpec&#39;s rake tasks available in the <code>development</code> environment so we were able to run <code>rake spec.</code> All of Tuesday was spent trying to get the RSpec tests to pass once again. </p>
 
 <p>With the forked version of Searchlogic we were using, our <code>*_like_any</code> methods like the one used in this method:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">def text_contains(text)
+<div class="highlight"><pre><code class="language-text" data-lang="text">def text_contains(text)
   name_or_description_or_optional_originator_username_or_status_like_any
 end
 </code></pre></div>
 <p>Just weren&#39;t working. The methods were apparently undefined. The intention of this method is to find an Event with a name or description containing keywords. Let&#39;s assume that <code>text</code> in this context is &quot;foo bar&quot;, the query the <code>like_any</code> method uses here will look up an <code>Event</code> record which has a name containing either foo <em>OR</em> bar, or a description containing either foo <em>OR</em> bar, or a related user who&#39;s username contains either foo <em>OR</em> bar. It&#39;s a messy query, and this Searchlogic method generated it for us. I&#39;m not going to post the mess here. We replaced this method with v1 of our <code>WildcardSearch</code> module, the end-result (on Thursday) looking like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">def text_contains(text)
+<div class="highlight"><pre><code class="language-text" data-lang="text">def text_contains(text)
   self.includes(:originator).wildcard_search(:name, :description, { :originator =&gt; :username })
 end
 </code></pre></div>
 <p>We use <code>includes</code> here and pass it an association name. ARel&#39;s really smart and will know if we use the association name here what table to join. Even better than that, when we use a <code>where</code> later on in that same query, it will use a <code>LEFT OUTER JOIN</code> to join that table and run the query on the <code>events</code> and <code>users</code> tables. ARel is extremely capable of doing what Searchlogic did, it&#39;s Rails 3 compatible and it&#39;s supported by somebody who&#39;s fairly active in the community: Aaron Patterson. It was about this moment where we decided to scrap all usage of Searchlogic in our application favour of ARel. After this replacement, quite a few of our failing specs were passing.</p>
 
 <p>A large majority of this day was spent cherry-picking off failing specs. The first of these was that our tests making sure the validations were in place were checking that the error message contains a string:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">thing.errors[:user_id].should == &quot;has already been taken&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">thing.errors[:user_id].should == &quot;has already been taken&quot;
 </code></pre></div>
 <p>When in Rails 3, errors[:attribute] now returns an <code>Array</code>. The Rails 3 correct version of this is:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">thing.errors[:user_id].should == [&quot;has already been taken&quot;]
+<div class="highlight"><pre><code class="language-text" data-lang="text">thing.errors[:user_id].should == [&quot;has already been taken&quot;]
 </code></pre></div>
 <p>Fixing this fixed up even more of our specs, but we still had work to go. During the running of our specs we encountered a deprecation warning with our mailer:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Notifier.deliver_confirmation_instructions is deprecated, use Notifier.confirmation_instructions.deliver instead.
+<div class="highlight"><pre><code class="language-text" data-lang="text">Notifier.deliver_confirmation_instructions is deprecated, use Notifier.confirmation_instructions.deliver instead.
 </code></pre></div>
 <p>We fixed this up nice and quickly and looked through the application for <code>deliver_</code> and fixed those deprecations up too. Personally I prefer to use the <code>deliver!</code> alias method as a &quot;destructive&quot; / &quot;undoable&quot; method. </p>
 
 <p>The next issue we came across was to do with a little change between Rails 2 and 3 in regards to partial rendering. It had to do with a line like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">render :partial =&gt; &quot;some/partial&quot;, :collection =&gt; @things
+<div class="highlight"><pre><code class="language-text" data-lang="text">render :partial =&gt; &quot;some/partial&quot;, :collection =&gt; @things
 </code></pre></div>
 <p>In Rails 2, when you pass the <code>:collection</code> option to <code>render</code> like this, each of the objects are passed to the partial as <code>object</code>. In Rails 3, this changes to be the name of the partial itself mainly because now you can do things like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">render @things
+<div class="highlight"><pre><code class="language-text" data-lang="text">render @things
 </code></pre></div>
 <p>Let&#39;s assume for the time being that the <code>@things</code> variable is a collection of <code>Thing</code> objects. When you call <code>render @things</code> this will render, by default, the partial at <em>app/views/things/\</em>things.html.erb_. The objects of the collection are then passed through as the local variable <code>thing</code>. Our problem was that we were using the Rails 2 line, and so Rails 3 was assuming that we wanted the variables still called after the partial. To give the variables the right name we use lines like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">render :partial =&gt; &quot;some/partial&quot;, :collection =&gt; @things, :as =&gt; :other_thing
+<div class="highlight"><pre><code class="language-text" data-lang="text">render :partial =&gt; &quot;some/partial&quot;, :collection =&gt; @things, :as =&gt; :other_thing
 </code></pre></div>
 <p>Now the objects will be available in the partial as <code>other_thing</code>. This fixed most of the view breakages, although we had another big one coming up.</p>
 
 <p>That was the <code>nested_layouts</code> gem which is no longer compatible with Rails 3. To fix this, we used <a href='http://guides.rubyonrails.org/layouts_and_rendering.html#using-nested-layouts'>this section</a> from the bottom of the Layouts and Rendering guide for Rails 3. I think this is a much more elegant solution to the <code>nested_layouts</code> hackery.</p>
 
 <p>After fixing <em>that</em> test, the next problem was that one of our files in <em>lib</em> was not being loaded. This is because in Rails 2 the files in <em>lib</em> are autoloaded, where in Rails 3 you must manually require them. Or at least you would if you didn&#39;t have this option in <em>config/application.rb</em>:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">config.load_paths += %W( #{config.root}/lib )
+<div class="highlight"><pre><code class="language-text" data-lang="text">config.load_paths += %W( #{config.root}/lib )
 </code></pre></div>
 <p>If you wanted to add more directories to be autoloaded just add them to this array. With this small change we fixed some more &quot;broken&quot; tests.</p>
 
 <p>The next problem was that we were getting this error in some of our views:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">undefined local variable or method `form_remote_tag&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">undefined local variable or method `form_remote_tag&#39;
 </code></pre></div>
 <p>In Rails 2 the <code>form_remote_tag</code> and related methods have been moved out into a plugin called <code>prototype_legacy_helper</code>. We installed this plugin using this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rails plugin:install git://github.com/rails/prototype_legacy_helper
+<div class="highlight"><pre><code class="language-text" data-lang="text">rails plugin:install git://github.com/rails/prototype_legacy_helper
 </code></pre></div>
 <p>After installing this plugin our tests were <em>still</em> failing. We later found out that it was a bug with <code>prototype_legacy_helper</code> itself so I asked Jose Valim (the Rails core member) who maintains it. He replied &quot;I don&#39;t know&quot;. Uh oh. So Jason and I fixed the bug and in doing so I gained commit rights to the project. Therefore I suppose I&#39;m now the maintainer of it. If you want a bug fixed in it send in a patch and I&#39;ll apply it.</p>
 
@@ -205,10 +205,10 @@ end
 <p>We also had a plugin which had its <em>tasks</em> folder in the root of the directory, where Rails 3 expects it to be in <em>lib/tasks</em>. It was a plugin of our own making so we moved this folder into its proper spot.</p>
 
 <p>The application Sass extensively, so when we tried the application through <code>rails server</code>, it created new files at <em>public/stylesheets</em> for the parsed Sass stylesheets. This is incorrect, as the Hassle gem we had installed should have been putting them into a <em>tmp</em> folder and reading it from there because this application is deployed on Heroku. To fix this, we changed the <code>gem</code> specification of hassle in our <em>Gemfile</em> to this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;hassle&#39;, &#39;0.0.1&#39;, :git =&gt; &#39;git://github.com/fphilipe/hassle.git&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;hassle&#39;, &#39;0.0.1&#39;, :git =&gt; &#39;git://github.com/fphilipe/hassle.git&#39;
 </code></pre></div>
 <p>Next, we created an initializer to load Hassle in as a middleware, called <em>config/initializers/hassle.rb</em>:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Rails.configuration.middleware.use Hassle
+<div class="highlight"><pre><code class="language-text" data-lang="text">Rails.configuration.middleware.use Hassle
 </code></pre></div>
 <p>With fphilipe&#39;s fork of <code>hassle</code>, we were able to get the stylesheets to go in the correct directory.</p>
 
@@ -225,26 +225,26 @@ end
 <p>Next, we had a helper which was outputting HTML as a string. This is problematic because in Rails 3, all HTML-as-a-string is marked as unsafe, and is escaped. To fix this we used <code>html_safe</code> on the return value of this helper. There was also another helper in this file which we fixed up a little later on too.</p>
 
 <p>The next deprecation warning we came across wasn&#39;t to do with Rails, but Capybara. It was this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">DEPRECATED: #click is deprecated, please use #click_link_or_button instead
+<div class="highlight"><pre><code class="language-text" data-lang="text">DEPRECATED: #click is deprecated, please use #click_link_or_button instead
 </code></pre></div>
 <p>We found the offending step and changed it to use this new method.</p>
 
 <p>It was at about this point that we decided to scrap Searchlogic. On our <code>Person</code> model we had a boolean field called <code>active</code> which Searchlogic should have been defining a scope much like this for:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">scope :active, where(:active =&gt; true)
+<div class="highlight"><pre><code class="language-text" data-lang="text">scope :active, where(:active =&gt; true)
 </code></pre></div>
 <p>Sadly, this wasn&#39;t working. My suspicion was that it was defining it something like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">scope :active, where(:active =&gt; &#39;t&#39;)
+<div class="highlight"><pre><code class="language-text" data-lang="text">scope :active, where(:active =&gt; &#39;t&#39;)
 </code></pre></div>
 <p>or</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">scope :active, where(:active =&gt; &#39;true&#39;)
+<div class="highlight"><pre><code class="language-text" data-lang="text">scope :active, where(:active =&gt; &#39;true&#39;)
 </code></pre></div>
 <p>As I stated before, Searchlogic is a clusterfuck of a codebase and so I didn&#39;t really want go hunting in there. I also said before that ARel does exactly what Searchlogic did, so we scrapped Searchlogic. A quick run of the RSpec tests picked up any occurrences where we removed Something Important and we re-implemented the scopes with ARel. Probably took us all of 10 minutes.</p>
 
 <p>In some custom code we had this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">some_association.scoped(:include =&gt; :children)
+<div class="highlight"><pre><code class="language-text" data-lang="text">some_association.scoped(:include =&gt; :children)
 </code></pre></div>
 <p>It took me a little while before I realised that you can just use ARel for this too:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">some_association.includes(:children)
+<div class="highlight"><pre><code class="language-text" data-lang="text">some_association.includes(:children)
 </code></pre></div>
 <p>It was just one of those way-too-obvious fixes that you overlook initially and then gape in awe when you write it.</p>
 
@@ -257,24 +257,24 @@ end
 <p>We had some features that used the <code>WildcardSearch</code> module that were failing, even though we were <em>positive</em> it was correct. Turns out it wasn&#39;t case-insensitive! Also turns out that Rails 3.0.1 (well, actually the version of ARel that <em>comes with</em> Rails 3.0.1), doesn&#39;t support case-insensitive matching with the <em>matches</em> method. Thankfully there&#39;s a smart-cookie out there who&#39;s written <a href='https://rails.lighthouseapp.com/projects/8994/tickets/3174-add-support-for-postgresql-citext-column-type'>a beautiful patch</a> for it, <strong>but it only works with PostgreSQL</strong>. That&#39;s fine, we&#39;re smart so we use PostgreSQL. We used the patch&#39;s code in an initializer and it worked flawlessly.</p>
 
 <p>During the running of our tests, we used <code>Then show me the page</code> <strong>a lot</strong>. This resulted in lots of <em>capybara-[timestamp]</em> files in the root directory. To fix this little problem, we put this code in our <em>features/support/app.rb</em> file:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Capybara.save_and_open_page_path = Rails.root + &#39;tmp&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">Capybara.save_and_open_page_path = Rails.root + &#39;tmp&#39;
 </code></pre></div>
 <p>All fixed!</p>
 
 <p>One of our actions returned two formats: a <code>html</code> version and a <code>pdf</code> format. In the <code>pdf</code> <code>respond_to</code> block the code looked like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">@template.template_format = :html
+<div class="highlight"><pre><code class="language-text" data-lang="text">@template.template_format = :html
 kit = PDFKit.new(render_to_string)
 </code></pre></div>
 <p>It turns out that <code>@template</code> is no longer an accessible-from-the-controller variable. Who&#39;d have thunk it? To work around this problem, we had to use the (undocumented! grr) <code>:action</code> option for <code>render_to_string</code>, changing the final line to this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">kit = PDFKit.new(render_to_string(:action =&gt; &#39;print.html.haml&#39;))
+<div class="highlight"><pre><code class="language-text" data-lang="text">kit = PDFKit.new(render_to_string(:action =&gt; &#39;print.html.haml&#39;))
 </code></pre></div>
 <p>We simply wanted the <code>html</code> version of this template, where as this code was trying to render the <code>print.pdf.erb</code> template which simply didn&#39;t exist.</p>
 
 <p>The next issue was that we were using <code>find_or_create_by*</code> in a step like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">role = @project.roles.find_or_create_by_name(role_name, :category =&gt; category)
+<div class="highlight"><pre><code class="language-text" data-lang="text">role = @project.roles.find_or_create_by_name(role_name, :category =&gt; category)
 </code></pre></div>
 <p>This syntax isn&#39;t supported in Rails 3 (it thinks that <code>:category</code> is a key like <code>:joins</code> or <code>:includes</code>) and so we had to change it to the way-more-verbose this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">role = @project.roles.find_by_name(role_name) || @project.roles.create!(:name =&gt; role_name, :category =&gt; category)
+<div class="highlight"><pre><code class="language-text" data-lang="text">role = @project.roles.find_by_name(role_name) || @project.roles.create!(:name =&gt; role_name, :category =&gt; category)
 </code></pre></div>
 <p>That was the final Rails 3-caused issue that we came across on Friday, and by 4pm we had all the Cucumber features, RSpec specs, and test/unit tests all passing. Everything worked.</p>
 

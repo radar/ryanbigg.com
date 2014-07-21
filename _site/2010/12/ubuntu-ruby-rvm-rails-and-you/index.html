@@ -39,7 +39,7 @@
 <p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages. </p>
 
 <p>Next, we&#39;re going to install <code>curl</code>, which we&#39;ll use to fetch the RVM script:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install curl
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install curl
 </code></pre></div>
 <h3>RVM</h3>
 
@@ -48,54 +48,54 @@
 <p>We&#39;re going to use it to install only one version of Ruby, but we can <a href='http://rvm.io'>consult the documentation</a> if we want to install a different version of Ruby. </p>
 
 <p>With <code>curl</code> installed we&#39;ll be able to install RVM with this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">curl -L get.rvm.io | bash -s stable
+<div class="highlight"><pre><code class="language-text" data-lang="text">curl -L get.rvm.io | bash -s stable
 </code></pre></div>
 <p>The beautiful part of this is that it installs RVM to our home directory, providing us with a sandboxed RVM installation that no other user on the system can touch. This will also add a line to <code>~/.bashrc</code>:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+<div class="highlight"><pre><code class="language-text" data-lang="text">PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 </code></pre></div>
 <p>And a couple of lines to <code>~/.bash_profile</code>:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">[[ -s &quot;$HOME/.profile&quot; ]] &amp;&amp; source &quot;$HOME/.profile&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">[[ -s &quot;$HOME/.profile&quot; ]] &amp;&amp; source &quot;$HOME/.profile&quot;
 
 [[ -s &quot;$HOME/.rvm/scripts/rvm&quot; ]] &amp;&amp; source &quot;$HOME/.rvm/scripts/rvm&quot;
 </code></pre></div>
 <p>*For a good explanation of when these two files are used, please see the <a href="https://github.com/sstephenson/rbenv/wiki/Unix-shell-initialization">rbenv &quot;Unix Shell Initialization&quot; guide</a>.</p>
 
 <p>Then we&#39;ll need to source the <code>~/.rvm/scripts/rvm</code> file which we can do with this small command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">source ~/.rvm/scripts/rvm
+<div class="highlight"><pre><code class="language-text" data-lang="text">source ~/.rvm/scripts/rvm
 </code></pre></div>
 <p>The next command we run will install the packages we need for Ruby to work:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm requirements
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm requirements
 </code></pre></div>
 <p>Now our Ruby lives will be as painless as possible.</p>
 
 <h3>Ruby</h3>
 
 <p>With RVM and these packages we can install Ruby 2.1.0:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm install 2.1.0
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm install 2.1.0
 </code></pre></div>
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.1.0 installed. To begin using it we can use this lovely command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm use 2.1.0
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm use 2.1.0
 </code></pre></div>
 <p>Are we using 2.1.0? You betcha:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby -v
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby -v
 ruby 2.1.0p0 (2013-12-25 revision 44422) [x86_64-linux]
 </code></pre></div>
 <p>Or, even better, would be to make this the <em>default</em> for our user! Oooh, yes! Noting the &#39;2.0.0&#39; side-note above, lets take note of the patchlevel, which in this case is &#39;-p247&#39; and add that to our default selection.</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">rvm --default use 2.1.0
+<div class="highlight"><pre><code class="language-text" data-lang="text">rvm --default use 2.1.0
 </code></pre></div>
 <p>Now whenever we open a new bash session for this user we&#39;ll have Ruby available for us to use! Yay!</p>
 
 <h3>Rails</h3>
 
 <p>Now that RVM and a version of Ruby is installed, we can install Rails. Because RVM is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails -v 4.0.2
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.0.2
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
 <h3>MySQL</h3>
 
 <p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
+<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing mysql2:
     ERROR: Failed to build gem native extension.
 
@@ -125,7 +125,7 @@ need configuration options.
 <h3>PostgreSQL</h3>
 
 <p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
+<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing pg:
     ERROR: Failed to build gem native extension.
 
