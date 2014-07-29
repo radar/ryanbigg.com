@@ -13,7 +13,7 @@ I'm also a git for tricking you all:
 
 ----
 
-I'm not going to work for GitHub. I'm going to work at [LIFX](http://lifx.co) as a Ruby programmer there. It was exceptionally lonely working in this Melbourne timezone mostly by myself, and I was getting complacent at Spree. I want a bigger challenge while I still have the time and energy for it. 
+I'm not going to work for GitHub. I'm going to work at [LIFX](http://lifx.co) as a Ruby programmer there, starting August 4th. It was exceptionally lonely working in this Melbourne timezone mostly by myself, and I was getting complacent at Spree. I want a bigger challenge while I still have the time and energy for it. 
 
 LIFX seems like a perfect fit in regards to those things. I'll be working with people in an office in Richmond (not far from where I currently work at [Inspire9](http://inspire9.com.au)), and the work will be something different to the ecommerce work that I've been doing for 2.5 years. The Internet of Things is a really neat concept and I am really looking forward to working at LIFX.
 
