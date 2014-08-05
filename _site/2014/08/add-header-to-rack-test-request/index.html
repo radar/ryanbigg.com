@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - Add header to Rack::Test request</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link href='http://fonts.googleapis.com/css?family=Buenard' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='post'>
+      <article>
+        <a href="/2014/08/add-header-to-rack-test-request"><header>Add header to Rack::Test request</header></a>
+        <small>06 Aug 2014</small><br>
+        <p>I couldn&#39;t find any results on the Google for the title of this blog post, so I&#39;m writing it here.</p>
+
+<p>All I wanted to do was to send through a header. I tried this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+  get &#39;/test&#39;, {}, { &#39;Test-Header&#39; =&gt; &#39;Test value&#39; }
+  expect(last_response.status).to eq(200)
+end
+</code></pre></div>
+<p>That doesn&#39;t work, because that third argument is actually the Rack <code>env</code> object.</p>
+
+<p>The correct way to do it is this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+  header &#39;Test-Header&#39;, &#39;Test value&#39;
+  get &#39;/test&#39;
+  expect(last_response.status).to eq(200)
+end
+</code></pre></div>
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-353 http://ryanbigg.com/?p=RB-353'
+        var disqus_url = 'http://ryanbigg.com/2014/08/add-header-to-rack-test-request';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script type="text/javascript">
+      var _gauges = _gauges || [];
+      (function() {
+        var t   = document.createElement('script');
+        t.type  = 'text/javascript';
+        t.async = true;
+        t.id    = 'gauges-tracker';
+        t.setAttribute('data-site-id', '4e30f771f5a1f547c8000001');
+        t.src = '//secure.gaug.es/track.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(t, s);
+      })();
+    </script>   
+  </body>
+</html>

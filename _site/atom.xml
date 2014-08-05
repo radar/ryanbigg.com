@@ -4,13 +4,37 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2014-07-29T10:57:56+10:00</updated>
+ <updated>2014-08-06T09:20:20+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Add header to Rack::Test request</title>
+   <link href="http://ryanbigg.com/2014/08/add-header-to-rack-test-request"/>
+   <updated>2014-08-06T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2014/08/add-header-to-rack-test-request</id>
+   <content type="html"><![CDATA[<p>I couldn&#39;t find any results on the Google for the title of this blog post, so I&#39;m writing it here.</p>
+
+<p>All I wanted to do was to send through a header. I tried this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+  get &#39;/test&#39;, {}, { &#39;Test-Header&#39; =&gt; &#39;Test value&#39; }
+  expect(last_response.status).to eq(200)
+end
+</code></pre></div>
+<p>That doesn&#39;t work, because that third argument is actually the Rack <code>env</code> object.</p>
+
+<p>The correct way to do it is this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+  header &#39;Test-Header&#39;, &#39;Test value&#39;
+  get &#39;/test&#39;
+  expect(last_response.status).to eq(200)
+end
+</code></pre></div>]]></content>
+ </entry>
  
  <entry>
    <title>Ryan Bigg is now a Git...</title>
@@ -1293,41 +1317,6 @@ things like this. A little bit of courtesy on <em>both</em> sides of these types
 
 <p>I recorded it again at home last week and You can <a href="https://s3.amazonaws.com/ryanbigg_screencasts/004-engines_talk.mov">watch/download the video here</a>. It&#39;s a
 little over 30 minutes long, but I think it teaches you valuable lessons about engines in Rails.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Caffeine and Sleep</title>
-   <link href="http://ryanbigg.com/2012/04/caffeine-and-sleep"/>
-   <updated>2012-04-27T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2012/04/caffeine-and-sleep</id>
-   <content type="html"><![CDATA[<p>I used to drink a lot of Coca Cola. I think my record was 18 375ml cans of it during a LAN party once. I didn&#39;t feel so good the morning after. I used to not
-brush my teeth that often as well (compared with now, which is morning &amp; night as all good dentists recommend), and as a result I have very &quot;holey&quot; teeth and even had one extracted in February. I used to drink Coca Cola because it contained caffeine which would give me a pleasant buzz.</p>
-
-<p>Then my dentist suggested that I stop drinking drinks containing that much sugar, and so I did. I switched to Pepsi Max for a couple of years after that. Then,
-one day, I stopped. I can&#39;t remember the exact reason <em>why</em> I stopped drinking it, but I did. This was back in 2009.</p>
-
-<p>The first couple of days were interesting. I had trouble focussing for long periods of time. I never got the caffeine headaches that people talk about. But
-then it got gradually better and I&#39;ve been basically caffeine-free for close to 3 years now. Then it <em>kept getting better</em>. I found myself sleeping more
-solidly each night and being able to concentrate for longer and longer periods. I very rarely now have moments where I feel completely exhausted. When they do
-happen, having a some sugar helps for that last little bit.</p>
-
-<p>Then there was the change in sleeping pattern in 2010, when I started writing Rails 3 in Action. I swithced from getting up at 7:45am to getting up at 6:00am.
-And I did this every day, except where I stayed out late the night before. That extra time in the morning allowed me to do some internet catch up, do some
-writing, have a shower and get ready for the day and then still have more time to do even more writing. After a late night out, there&#39;s that buffer there that
-I can use to catch up on sleep that I&#39;ve otherwise missed. I can also use this time for exercise, which is awesome.</p>
-
-<p>When I get to work it&#39;s no longer just over an hour since I woke up. It&#39;s more like three hours. With me not being a morning person by nature, this is
-wonderful. I come in to work and I&#39;ve already woken up fully and I can just get to doing everything.</p>
-
-<p>Tim Riley <a href="http://icelab.com.au/articles/the-benefits-of-waking-up-early/">wrote about his experiences with getting up earlier too</a>. </p>
-
-<blockquote>
-<p>However, I&#39;ve found this new approach to be very effective. The early mornings are a good time. It is quiet. The day has just begun and my mind is clear of any distractions, so it is easy to concentrate. Because the time for work has a definite ending, it also encourages me to pick discrete and achievable goals for each morning. Rinse and repeat, and before long, I have demonstrable, consistent, incremental progress towards my goal.</p>
-</blockquote>
-
-<p><strong>So, my thing I want you to try is to go the whole month of May by changing one of these two habits. Either cut out caffeine completely from your diet, or start
-getting up early in the morning. If you want the &quot;Hard Mode&quot; variety, try both. It&#39;s really improved my life and I reckon it&#39;ll do the same to yours.</strong></p>
 ]]></content>
  </entry>
  
