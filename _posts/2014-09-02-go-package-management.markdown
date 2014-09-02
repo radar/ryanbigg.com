@@ -83,5 +83,5 @@ The third step is where it gets *even more difficult*. These first layer of depe
 
 I believe if project setup was done this way, multiple Go projects on the same machine can use varying dependencies very easily.
 
-There's of course caveats: potential disk usage problems, every project needs a `deps.json`, and the resolution problems. By no means am I suggesting that this is *The Way Things Should Be Done*. It's just something that occurred to me tonight that could be a potential beginning towards a solution for the Go package management puzzle
+There's of course caveats: potential disk usage problems, every project needs a `deps.json`, and the resolution problems. By no means am I suggesting that this is *The Way Things Should Be Done*. It's just something that occurred to me tonight that could be a potential beginning towards a solution for the Go package management puzzle.
 
