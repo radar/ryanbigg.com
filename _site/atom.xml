@@ -4,13 +4,197 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2014-10-02T21:56:37+10:00</updated>
+ <updated>2014-10-05T15:44:57+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Ubuntu, Ruby, ruby-install, chruby, Rails and You</title>
+   <link href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"/>
+   <updated>2014-10-05T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you</id>
+   <content type="html"><![CDATA[<p><strong>Last updated: Saturday 5th October 2014</strong></p>
+
+<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.1.3 using chruby+ruby-install and Rails 4.1.6 and is specifically written for a <em>development</em> environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
+
+<p><strong>If you&#39;re looking for a way to set this up on a production server then I would recommend the use of <a href="https://github.com/joshfng/railsready">the railsready script</a> which installs all the necessary packages for Ruby 2.1.3 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong></p>
+
+<h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what&#39;s best. Trust us.</h2>
+
+<p>This guide will cover installing a couple of things:</p>
+
+<ul>
+<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
+<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
+<li><strong>Ruby 2.1.3</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
+<li><strong>Rails 4.1.6</strong>: at the time of writing the newest current stable release of Rails.</li>
+</ul>
+
+<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
+
+<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
+
+<p>If you&#39;re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
+
+<h3>Housekeeping</h3>
+
+<p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages.</p>
+
+<p>Next, we&#39;ll run another command which will install the essential building tools that will be used to install Ruby:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install build-essential
+</code></pre></div>
+<p>And now we&#39;re ready to install ruby-install.</p>
+
+<h3>ruby-install</h3>
+
+<p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.4.3.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.4.3.tar.gz
+tar -xzvf ruby-install-0.4.3.tar.gz
+cd ruby-install-0.4.3/
+sudo make install
+</code></pre></div>
+<p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+</code></pre></div>
+<p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.4.3
+</code></pre></div>
+<h3>Ruby</h3>
+
+<p>Our next step is to install Ruby itself, which we can do with this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.1.3
+</code></pre></div>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.1.3 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.8.tar.gz \
+  https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz
+tar -xzvf chruby-0.3.8.tar.gz
+cd chruby-0.3.8/
+sudo make install
+</code></pre></div>
+<p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
+source /usr/local/share/chruby/auto.sh
+</code></pre></div>
+<p>In order for this to take effect, we&#39;ll need to source that file:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+</code></pre></div>
+<p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
+
+<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.1.3
+</code></pre></div>
+<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.1.3
+</code></pre></div>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.1.2</code> for example -- assuming that we have Ruby 2.1.2 installed first!</p>
+
+<p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.1.3p242 (2014-09-19 revision 47630) [x86_64-linux]
+</code></pre></div>
+<h3>Rails</h3>
+
+<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.1.6 --no-rdoc --no-ri
+</code></pre></div>
+<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
+
+<h3>MySQL</h3>
+
+<p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+ERROR:  Error installing mysql2:
+    ERROR: Failed to build gem native extension.
+
+    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+checking for ruby/thread.h... yes
+checking for rb_thread_call_without_gvl() in ruby/thread.h... yes
+checking for rb_thread_blocking_region()... yes
+checking for rb_wait_for_single_fd()... yes
+checking for rb_hash_dup()... yes
+checking for rb_intern3()... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lm... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lz... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lsocket... no
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lnsl... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lmygcc... no
+checking for mysql_query() in -lmysqlclient... no
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+</code></pre></div>
+<p>Install this package using <code>sudo apt-get install libmysqlclient-dev</code>.</p>
+
+<h3>PostgreSQL</h3>
+
+<p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+ERROR:  Error installing pg:
+    ERROR: Failed to build gem native extension.
+
+    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+checking for pg_config... no
+No pg_config... trying anyway. If building fails, please try again with
+ --with-pg-config=/path/to/pg_config
+checking for libpq-fe.h... no
+Can&#39;t find the &#39;libpq-fe.h header
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+</code></pre></div>
+<p>Install this package using <code>sudo apt-get install libpq-dev</code>.</p>
+
+<h3>SQLite3</h3>
+
+<p>Just like MySQL and PostgreSQL before it, attempting to install the <code>sqlite3</code> gem will result in this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
+
+    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+checking for sqlite3.h... no
+sqlite3.h is missing. Try &#39;port install sqlite3 +universal&#39;,
+&#39;yum install sqlite-devel&#39; or &#39;apt-get install libsqlite3-dev&#39;
+and check your shared library search path (the
+location where your sqlite3 shared library is located).
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+</code></pre></div>
+<p>Fix this issue by running <code>sudo apt-get install libsqlite3-dev</code>.</p>
+
+<h3>JavaScript Runtime</h3>
+
+<p>Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run <code>rake assets:precompile</code> without one of these, you&#39;ll see this message:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
+</code></pre></div>
+<p>To fix this error install <code>nodejs</code>, which comes with a JavaScript runtime:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install nodejs
+</code></pre></div>
+<h3>Fin</h3>
+
+<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a>.</p>
+
+<p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
+
+<h3>Postscript</h3>
+
+<p>A previous version of this guide used RVM. RVM has overtime become bloated and unwieldy. There are many features of RVM that developers simply don&#39;t use, and so using a simpler solution is a better way of doing things as it will lead to less confusion. For instance, RVM provides gemsets which is a feature that is no longer necessary with the advent of Bundler. Even if you don&#39;t want to use Bundler (i.e. you&#39;re crazy) then there&#39;s smaller more specifically-targeted tools for that, such as <a href="https://github.com/seattlerb/ohmygems">ohmygems</a>. RVM&#39;s days as the leading way to install Ruby are over, and this guide has been updated to reflect that. There are better tools.</p>
+
+<p>I&#39;ve opted for chruby+ruby-install in this guide because they&#39;ve consistently worked for me and are very, very easy to install. I know of a great many other people who have also used, and continue to use, these tools and I&#39;ve not heard of any of them complaining. Therefore I can only wholeheartedly recommend them to the readers of this post.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Working Remotely</title>
@@ -1129,37 +1313,6 @@ than I do.</p>
 <p>I&#39;m not going to talk about my work on Spree because -- and I say this without intending an arrogant tone -- the work itself is self-evident and you don&#39;t need to hear about it at a conference. I&#39;m especially <em>not</em> going to talk about my thoughts on how to split up a monolithic <em>engine</em> such as Spree into smaller, easier to manage components. That checkout state machine work that I did? Excuse my brashness, but that was fucking awesome and I&#39;m so damn proud of it, but I&#39;m not going to talk about <em>that</em> either. Allowing Spree stores to choose their authentication backend? Please. It was just this thing I did. It doesn&#39;t deserve a whole conference talk.</p>
 
 <p>I&#39;m quite happy, this time, to sit there and be an audience member who is learning about all the <em>new, cool and interesting stuff</em> <strong>other</strong> people are doing.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>JavaScript Arrays and Objects</title>
-   <link href="http://ryanbigg.com/2012/10/javascript-arrays-and-objects"/>
-   <updated>2012-10-03T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2012/10/javascript-arrays-and-objects</id>
-   <content type="html"><![CDATA[<p><a href="https://github.com/spree/spree/blob/bf0b85472e477f20f84d030c575382b9c0922903/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56">These three little lovely lines</a> of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.</p>
-
-<p>What was happening was that in Google Chrome, the page was giving an &quot;aw snap!&quot; error. So I went to Firefox, where the page didn&#39;t &quot;aw snap&quot;, but instead hung for a moment then asked if I wanted to stop the script.</p>
-
-<p>What could that JavaScript be doing? Well, it&#39;s not that hard to understand <em>now</em>, but it didn&#39;t click the first couple of times I read it.</p>
-
-<p>The script initializes a new JavaScript array, like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">var variant_prices = new Array();
-</code></pre></div>
-<p>Fairly innocuous. We would&#39;ve also accepted <code>var variant_prices = [];</code>.</p>
-
-<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant&#39;s id <em>as an index in the array</em>. If a variant has an <code>id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code>variant_prices[0]</code> being undefined, and <code>variant_prices[1]</code> being whatever value is assigned.</p>
-
-<p><em>However</em>, if the variant&#39;s <code>id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
-
-<p>Obviously, this is not very efficient and would lead to some performance degredations. Smart browsers would detect this early on and show a vague warning screen and dumber browsers would ask politely if you&#39;d like to stop the script. Which script? Well, they won&#39;t tell you that. You have to play guessing games, like most of the time with the beautiful language that is JavaScript.</p>
-
-<hr>
-
-<p>The <em>now obvious</em> solution to this problem is to <em>not</em> use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">var variant_prices = {};
-</code></pre></div>
-<p>Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.</p>
 ]]></content>
  </entry>
  
