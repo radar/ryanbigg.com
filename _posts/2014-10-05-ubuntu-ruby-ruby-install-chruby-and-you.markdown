@@ -44,10 +44,10 @@ And now we're ready to install ruby-install.
 The installation instructions can be found [on the README of ruby-install](https://github.com/postmodern/ruby-install#install), but I'll repeat them here so you don't have to go over there:
 
 ```
-wget -O ruby-install-0.4.3.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.4.3.tar.gz
-tar -xzvf ruby-install-0.4.3.tar.gz
-cd ruby-install-0.4.3/
+wget -O ruby-install-0.5.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+tar -xzvf ruby-install-0.5.0.tar.gz
+cd ruby-install-0.5.0/
 sudo make install
 ```
 
@@ -60,7 +60,7 @@ $ ruby-install -V
 If you see this, then you've successfully installed ruby-install:
 
 ```
-ruby-install: 0.4.3
+ruby-install: 0.5.0
 ```
 
 ### Ruby
