@@ -32,70 +32,184 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2014/10/rails-4-in-action-status"><header>Rails 4 in Action Status</header></a>
-  <small>26 Oct 2014</small><br>
-  <p>In (I think) April of 2012, I signed a contract with Manning to write a &quot;second edition&quot; of Rails 3 in Action, which almost immediately changed its name to &quot;Rails 4 in Action&quot;. The goal was to update the code for the book to Rails 4 as that was going to be released soon (it ended up being released in June 2013 -- a year and a bit later -- but still!). A short period of time later, I quit the project because of <a href="http://ryanbigg.com/2012/11/no-more-writing-for-manning/">my frustrations with Manning&#39;s tooling</a>. The same tooling which I&#39;ve offered to help them fix over the years, only to be told that they&#39;re already working on something. I have seen emails on the internal &quot;Agile Author&quot; mailing list showing that they&#39;ve been working on this tool since <em>at least</em> the beginning of 2012. I approached them in September of 2010 about helping them, but nothing came of it. Nothing has eventuated from Manning in just over 4 years. If they are still working on that project, it must be pretty demoralising for the team to have worked that long without shipping something.</p>
+  <a href="/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"><header>Ubuntu, Ruby, ruby-install, chruby, Rails and You</header></a>
+  <small>05 Oct 2014</small><br>
+  <p><strong>Last updated: Saturday 5th October 2014</strong></p>
 
-<p>Anyway, about the book: Nothing happened for a while on the book after I quit the project (for about a year), so I emailed Manning asking about it in January &#39;13 and I asked about getting the rights to the book:</p>
+<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.1.3 using chruby+ruby-install and Rails 4.1.6 and is specifically written for a <em>development</em> environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
 
-<blockquote>
-<p>I&#39;ve noticed that there hasn&#39;t been a lot of activity on the Rails 4 in Action book recently. I am curious if Manning is still interested in publishing the book, or if you are too tied up in the other numerous books you have to care about this one. I know this book was never a bestseller, right up there with the books like jQuery in Action. But I still deeply, deeply care about it because it was a part of my life for so long.</p>
+<p><strong>If you&#39;re looking for a way to set this up on a production server then I would recommend the use of <a href="https://github.com/joshfng/railsready">the railsready script</a> which installs all the necessary packages for Ruby 2.1.3 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong></p>
 
-<p>I&#39;d like to propose something. I want to take the rights for the Rails 4 in Action book and self-publish it, with a different name and a different cover. I understand that this is an unusual request, given that we&#39;ve signed contracts and what not.</p>
+<h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what&#39;s best. Trust us.</h2>
 
-<p>My main reason for doing this is two fold. 1) I want a decent reference for the Rails community that I can put my faith in and 2) I still care a ton about this book, but frankly not enough to come back to Manning to finish writing it.</p>
+<p>This guide will cover installing a couple of things:</p>
 
-<p>I understand that there&#39;d probably be some messy legal issues around doing this from your end, but I&#39;m genuinely interested in taking the entire project off Manning&#39;s hands completely. </p>
-</blockquote>
+<ul>
+<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
+<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
+<li><strong>Ruby 2.1.3</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
+<li><strong>Rails 4.1.6</strong>: at the time of writing the newest current stable release of Rails.</li>
+</ul>
 
-<p>My main contact at Manning, Mike Stephens, wrote back to me: </p>
+<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
 
-<blockquote>
-<p>Ryan,</p>
+<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
 
-<p>Sorry &#39;bout the delay. Another Manning editor has been responsible for moving the revision forward, and it took me a couple days to get an accurate status. I didn&#39;t want to reply until I had all the data. Short version is that we have someone solid lined up to do the R4 revision in a timeframe that I&#39;m happy with.</p>
+<p>If you&#39;re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
 
-<p>Let&#39;s talk later this week is we can find a workable time and I&#39;ll fill you in.</p>
+<h3>Housekeeping</h3>
 
-<p>Mike</p>
-</blockquote>
+<p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages.</p>
 
-<p>I can&#39;t find the conversations that we had past that email (I&#39;m guessing they were on Skype), but the outcome was that Manning was not interested in giving away the rights to the book, no matter how much I asked for it and explained how much it was something I deeply cared about it. I was, and still am to this day, very upset by this.</p>
+<p>Next, we&#39;ll run another command which will install the essential building tools that will be used to install Ruby:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install build-essential
+</code></pre></div>
+<p>And now we&#39;re ready to install ruby-install.</p>
 
-<p>Then Steve Klabnik joined the project. He was the &quot;someone solid&quot; that Mike talked about. &quot;Solid&quot; doesn&#39;t even <em>begin</em> to cover the work that Steve did on Rails 4 in Action. Steve did an amazing job upgrading the book to where it is today: with Rails 4 support. Steve has lost interest in the project and moved on to other things, helping out the Rust community and all the other stuff he&#39;s doing. I don&#39;t blame him for it because writing is (inherently) boring. During writing, nothing much happens for quite a long time and then BOOM at the end of it you have a book and (most) people like it. To have stayed the course as long as he did is a spectactular feat in and of itself.</p>
+<h3>ruby-install</h3>
 
-<p>I have been wanting to write a more up-to-date version of Rails 4 in Action covering the construction of the <a href="https://github.com/radar/twist">book review tool called Twist</a> that I wrote specifically as a way for readers of the Rails 3 in Action book to read it and leave notes in a super-easy fashion. I don&#39;t want to work on updating Rails 4 in Action because Manning&#39;s tooling drives me to tears and that&#39;s more than a metaphor. I thought a book covering this would be a fantastic addition to the current collection of intro-to-Rails books out there. More example applications and books can only make things better. I&#39;ve got about 8,000 words for this book already.</p>
+<p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.4.3.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.4.3.tar.gz
+tar -xzvf ruby-install-0.4.3.tar.gz
+cd ruby-install-0.4.3/
+sudo make install
+</code></pre></div>
+<p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+</code></pre></div>
+<p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.4.3
+</code></pre></div>
+<h3>Ruby</h3>
 
-<p>In order to cover my legal bases, I found the initial Manning contract that I signed back in 2010 and it states in Section 5:</p>
+<p>Our next step is to install Ruby itself, which we can do with this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.1.3
+</code></pre></div>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.1.3 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.8.tar.gz \
+  https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz
+tar -xzvf chruby-0.3.8.tar.gz
+cd chruby-0.3.8/
+sudo make install
+</code></pre></div>
+<p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
+source /usr/local/share/chruby/auto.sh
+</code></pre></div>
+<p>In order for this to take effect, we&#39;ll need to source that file:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+</code></pre></div>
+<p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
-<blockquote>
-<p>For a period of three years following the publication of any edition of the Work, the Author agrees not to, without the prior written consent of the Publisher, write for publication or post on the Internet any  other book-length work which covers the same subject as the Work and which is directly competitive with the Work.</p>
-</blockquote>
+<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.1.3
+</code></pre></div>
+<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.1.3
+</code></pre></div>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.1.2</code> for example -- assuming that we have Ruby 2.1.2 installed first!</p>
 
-<p>It may seem like I&#39;m in the legal clear here because Rails 3 in Action was published in September 2011, which is more than 3 years ago and therefore that means I&#39;m allowed to publish my new book. This would be wrong, because it <em>could</em> be argued that Rails 4 in Action is published, because its content is available online. If this is the case, then the next time that I can publish a new Rails book would be 3 years after the last edition of Rails 4 in Action has been published.</p>
+<p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.1.3p242 (2014-09-19 revision 47630) [x86_64-linux]
+</code></pre></div>
+<h3>Rails</h3>
 
-<p>That same clause states that I can ask for permission to publish a new book, and I have asked Mike Stephens for that permission last Tuesday (Oct 21), but have received no response back.</p>
+<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.1.6 --no-rdoc --no-ri
+</code></pre></div>
+<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
-<p>There&#39;s a clause later on which states that if the book is declared out of print by Manning, then the rights revert to the authors. Manning has declined my offer to declare the book &quot;out-of-print&quot;.</p>
+<h3>MySQL</h3>
 
-<p>I am effectively legally &quot;trapped&quot; by Manning&#39;s contract and my options are 1) forget about Rails 4 in Action, write the new book, get sued 2) put aside differences with Manning&#39;s tooling, update Rails 4 in Action 3) disappear into obscurity. </p>
+<p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+ERROR:  Error installing mysql2:
+    ERROR: Failed to build gem native extension.
 
-<p>I&#39;m going to choose #2 because #1 and #3 are not exactly my definition of a good time.</p>
+    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+checking for ruby/thread.h... yes
+checking for rb_thread_call_without_gvl() in ruby/thread.h... yes
+checking for rb_thread_blocking_region()... yes
+checking for rb_wait_for_single_fd()... yes
+checking for rb_hash_dup()... yes
+checking for rb_intern3()... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lm... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lz... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lsocket... no
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lnsl... yes
+checking for mysql_query() in -lmysqlclient... no
+checking for main() in -lmygcc... no
+checking for mysql_query() in -lmysqlclient... no
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+</code></pre></div>
+<p>Install this package using <code>sudo apt-get install libmysqlclient-dev</code>.</p>
 
-<p>Since I&#39;ve chosen to help out on Rails 4 in Action, I contacted Steve Klabnik on Tuesday (Oct 21) asking if he would like my help with the book. I learned that another author called &quot;Steven&quot; has been asked to perform a technical update on the book, but hasn&#39;t done much at all. Steve Klabnik put me in touch with his development editor, Susan, and Mike Stephens and we&#39;re going to talk about future work on Rails 4 in Action.</p>
+<h3>PostgreSQL</h3>
 
-<p>The things that I want to talk about during that conversation are:</p>
+<p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+ERROR:  Error installing pg:
+    ERROR: Failed to build gem native extension.
 
-<ol>
-<li>A possible transfer of rights to Rails 4 in Action to myself (again). I think Manning will again decline the offer, but I still really really wish for this. If I don&#39;t get the rights then I will be really heartbroken again.</li>
-<li>If getting the rights isn&#39;t possible, then I&#39;ll ask about what I can do to help out on Rails 4 in Action and get that across the line to publication. It&#39;s not fair on the wider community to have a book that <em>they&#39;ve paid for</em> to sit there stagnant for much longer. The Rails community deserves a great, up-to-date Rails book and so I would put aside my differences with Manning&#39;s tooling and publish it with them. Much to my own personal chagrin. I know, I&#39;m <em>such</em> a martyr. </li>
-</ol>
+    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+checking for pg_config... no
+No pg_config... trying anyway. If building fails, please try again with
+ --with-pg-config=/path/to/pg_config
+checking for libpq-fe.h... no
+Can&#39;t find the &#39;libpq-fe.h header
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+</code></pre></div>
+<p>Install this package using <code>sudo apt-get install libpq-dev</code>.</p>
 
-<p>This weekend I&#39;ve gone through the first three chapters of Rails 4 in Action book and have taken notes of things that need upgrading. There are a lot of things. So far, I&#39;ve found 70 things within the first 91 pages that I want/need to change. So there&#39;s definitely work to be done, I just need to know if Manning&#39;s interested in continuing this work or if they&#39;re willing to give me the rights and I continue it on myself and perhaps with other member&#39;s of the community&#39;s help.</p>
+<h3>SQLite3</h3>
 
-<p>The work Steve Klabnik did on the book brought it up to scratch with Rails 4 and the new RSpec expect syntax, but not RSpec 3. There is a large chunk of work still to be done upgrading it for Rails 4.2 and RSpec 3. There will probably be other parts that will need upgrading as well. The upgrade is going to take another couple of months from what I can tell, and given that we&#39;re getting to the tail-end of the year I wouldn&#39;t expect this book to be published any time before March next year.</p>
+<p>Just like MySQL and PostgreSQL before it, attempting to install the <code>sqlite3</code> gem will result in this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
 
-<p>Thanks for being patient with us all. We will get this damn thing published.</p>
+    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+checking for sqlite3.h... no
+sqlite3.h is missing. Try &#39;port install sqlite3 +universal&#39;,
+&#39;yum install sqlite-devel&#39; or &#39;apt-get install libsqlite3-dev&#39;
+and check your shared library search path (the
+location where your sqlite3 shared library is located).
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+</code></pre></div>
+<p>Fix this issue by running <code>sudo apt-get install libsqlite3-dev</code>.</p>
+
+<h3>JavaScript Runtime</h3>
+
+<p>Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run <code>rake assets:precompile</code> without one of these, you&#39;ll see this message:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
+</code></pre></div>
+<p>To fix this error install <code>nodejs</code>, which comes with a JavaScript runtime:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install nodejs
+</code></pre></div>
+<h3>Fin</h3>
+
+<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>. Or perhaps the documentation on the <a href='http://rvm.io'>RVM site</a>.</p>
+
+<p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
+
+<h3>Postscript</h3>
+
+<p>A previous version of this guide used RVM. RVM has overtime become bloated and unwieldy. There are many features of RVM that developers simply don&#39;t use, and so using a simpler solution is a better way of doing things as it will lead to less confusion. For instance, RVM provides gemsets which is a feature that is no longer necessary with the advent of Bundler. Even if you don&#39;t want to use Bundler (i.e. you&#39;re crazy) then there&#39;s smaller more specifically-targeted tools for that, such as <a href="https://github.com/seattlerb/ohmygems">ohmygems</a>. RVM&#39;s days as the leading way to install Ruby are over, and this guide has been updated to reflect that. There are better tools.</p>
+
+<p>I&#39;ve opted for chruby+ruby-install in this guide because they&#39;ve consistently worked for me and are very, very easy to install. I know of a great many other people who have also used, and continue to use, these tools and I&#39;ve not heard of any of them complaining. Therefore I can only wholeheartedly recommend them to the readers of this post.</p>
 
 </article>
 
@@ -103,8 +217,6 @@
   <h2>25 back</h2>
   <ul>
     
-      <li><a href="/2014/10/ubuntu-ruby-ruby-install-chruby-and-you">Ubuntu, Ruby, ruby-install, chruby, Rails and You</a><abbr>05 Oct 2014</abbr></li>
-  
       <li><a href="/2014/10/working-remotely">Working Remotely</a><abbr>02 Oct 2014</abbr></li>
   
       <li><a href="/2014/09/go-package-management">Go package management</a><abbr>02 Sep 2014</abbr></li>
@@ -152,6 +264,8 @@
       <li><a href="/2012/05/engines-talk">Engines talk</a><abbr>19 May 2012</abbr></li>
   
       <li><a href="/2012/04/caffeine-and-sleep">Caffeine and Sleep</a><abbr>27 Apr 2012</abbr></li>
+  
+      <li><a href="/2012/04/integration-testing-engines">Integration testing engines</a><abbr>26 Apr 2012</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
