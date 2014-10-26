@@ -20,9 +20,9 @@ My main contact at Manning, Mike Stephens, wrote back to me:
 
 > Ryan,
 >
-> Sorry ‘bout the delay. Another Manning editor has been responsible for moving the revision forward, and it took me a couple days to get an accurate status. I didn’t want to reply until I had all the data. Short version is that we have someone solid lined up to do the R4 revision in a timeframe that I’m happy with.
+> Sorry 'bout the delay. Another Manning editor has been responsible for moving the revision forward, and it took me a couple days to get an accurate status. I didn't want to reply until I had all the data. Short version is that we have someone solid lined up to do the R4 revision in a timeframe that I'm happy with.
 >
-> Let’s talk later this week is we can find a workable time and I’ll fill you in.
+> Let's talk later this week is we can find a workable time and I'll fill you in.
  
 > Mike
 
