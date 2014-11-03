@@ -153,7 +153,7 @@ end
 
 <p>We first disable internet connections using FakeWeb. We do this so we can stub out the response to Facebooker&#39;s internal call to <code>getUsersInfo</code> to Facebook and always return a valid user object. The fake XML <a href="http://gist.github.com/319392#file_get_users_info.xml"> can be viewed in this gist.</a></p>
 
-<p>After Fakeweb has done its thing we call the <code>setup_fb_connect_cookies</code> method which does exactly what it says on the box, it lives in the <em>spec/support/facebook\</em>helpers.rb_ file:</p>
+<p>After Fakeweb has done its thing we call the <code>setup_fb_connect_cookies</code> method which does exactly what it says on the box, it lives in the <em>spec/support/facebook_helpers.rb</em> file:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">def setup_fb_connect_cookies
   cookie_hash_for_auth.each {|k,v| request.cookies[ENV[&#39;FACEBOOK_API_KEY&#39;]+k] = CGI::Cookie.new(ENV[&#39;FACEBOOK_API_KEY&#39;]+k,v).first}
 end
@@ -209,7 +209,7 @@ end
 </code></pre></div>
 <p>The <code>facebook_user</code> method on our <code>User</code> object comes from defining it on the <code>User</code> model:</p>
 
-<script src="http://gist.github.com/296758.js?file=user.rb"></script>
+<p><script src="http://gist.github.com/296758.js?file=user.rb"></script></p>
 
 <p>Now with the steps and correct requires in place, we have our feature:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">Feature: Facebook
