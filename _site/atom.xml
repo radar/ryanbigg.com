@@ -4,13 +4,32 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2014-11-06T11:17:17+11:00</updated>
+ <updated>2014-12-03T14:08:09+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Filtering by index in Elasticsearch</title>
+   <link href="http://ryanbigg.com/2014/12/filtering-by-index-in-elasticsearch"/>
+   <updated>2014-12-03T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2014/12/filtering-by-index-in-elasticsearch</id>
+   <content type="html"><![CDATA[<p>Today I needed to filter by indexes in an Elasticsearch instance, and so I googled for how to do this but I couldn&#39;t find anything other than the <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-indices-filter.html">indicies filter</a> which isn&#39;t helpful without a proper context of where to use it in a query.</p>
+
+<p>Instead of that filter, this is what I came up with to do the filtering:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">.</span><span class="n">new</span>
+<span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="ss">index</span><span class="p">:</span> <span class="s2">&quot;logstash-2014.12.03,logstash-2014.12.02...&quot;</span><span class="p">,</span> <span class="ss">body</span><span class="p">:</span> <span class="p">{</span>
+  <span class="ss">query</span><span class="p">:</span> <span class="p">{</span>
+    <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div>
+<p>I hope this post can help other people who are looking for the same thing.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Ubuntu, Ruby, ruby-install, chruby, Rails and You</title>
@@ -1292,27 +1311,6 @@ than I do.</p>
 <hr>
 
 <p>All of that doesn&#39;t mean I&#39;ve stopped writing Rails material completely. Oh no no no. You just wait.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>I didn&#39;t submit a talk to RubyConf Australia</title>
-   <link href="http://ryanbigg.com/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia"/>
-   <updated>2012-11-01T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2012/11/i-didn-t-submit-a-talk-to-rubyconf-australia</id>
-   <content type="html"><![CDATA[<p>Because I have nothing interesting to talk about.</p>
-
-<p>Honestly: I can&#39;t think of a single thing that I think would be entertaining for a wide audience to listen to me talk about. I don&#39;t want to submit a talk based solely on the notion that I&#39;m supposed to be a mildly-famous member of the Australian Ruby community. What a crap premise to submit a talk on! What on earth could I possibly give a talk about and make informative for a large audience?</p>
-
-<p>I&#39;m not going to talk about writing a book because I already moan and bitch about that enough on Twitter. Plus, the actual act of writing a book isn&#39;t <em>exciting</em>.</p>
-
-<p>I&#39;m not going to talk about documentation because nobody gives a crap about proper documentation, save for a very small select group of people and the people who are reading it. Don&#39;t bullshit me. You know it&#39;s true.</p>
-
-<p>I&#39;m not going to talk about engines in general because there&#39;s already a great guide that covers 95% of what a conference audience needs to know. Chapter 17 of Rails 3 in Action covers it and a bit more also. No point giving a talk about something that&#39;s already been written about. Personally, I go to conferences to see <em>new, cool and interesting stuff</em>. Not things that I can read about or watch on the Internet.</p>
-
-<p>I&#39;m not going to talk about my work on Spree because -- and I say this without intending an arrogant tone -- the work itself is self-evident and you don&#39;t need to hear about it at a conference. I&#39;m especially <em>not</em> going to talk about my thoughts on how to split up a monolithic <em>engine</em> such as Spree into smaller, easier to manage components. That checkout state machine work that I did? Excuse my brashness, but that was fucking awesome and I&#39;m so damn proud of it, but I&#39;m not going to talk about <em>that</em> either. Allowing Spree stores to choose their authentication backend? Please. It was just this thing I did. It doesn&#39;t deserve a whole conference talk.</p>
-
-<p>I&#39;m quite happy, this time, to sit there and be an audience member who is learning about all the <em>new, cool and interesting stuff</em> <strong>other</strong> people are doing.</p>
 ]]></content>
  </entry>
  
