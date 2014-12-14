@@ -74,10 +74,10 @@ ruby-install ruby 2.1.3
 This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.1.3 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
 
 ```
-wget -O chruby-0.3.8.tar.gz \
-  https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz
-tar -xzvf chruby-0.3.8.tar.gz
-cd chruby-0.3.8/
+wget -O chruby-0.3.9.tar.gz \
+  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
+tar -xzvf chruby-0.3.9.tar.gz
+cd chruby-0.3.9/
 sudo make install
 ```
 
