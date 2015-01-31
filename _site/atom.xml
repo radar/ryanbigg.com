@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2014-12-05T12:27:21+11:00</updated>
+ <updated>2015-01-31T12:10:23+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -36,11 +36,9 @@
    <link href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"/>
    <updated>2014-10-05T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you</id>
-   <content type="html"><![CDATA[<p><strong>Last updated: Saturday 5th October 2014</strong></p>
+   <content type="html"><![CDATA[<p><strong>Last updated: Saturday 31st January 2014</strong></p>
 
-<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.1.3 using chruby+ruby-install and Rails 4.1.6 and is specifically written for a <em>development</em> environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
-
-<p><strong>If you&#39;re looking for a way to set this up on a production server then I would recommend the use of <a href="https://github.com/joshfng/railsready">the railsready script</a> which installs all the necessary packages for Ruby 2.1.3 and then that version of Ruby itself, Bundler and Rails. Then it leaves it up to you to install Apache or nginx to get your application online.</strong></p>
+<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.2.0 using chruby+ruby-install and Rails 4.2.0 and is specifically written for a <em>development</em> environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
 
 <h2>Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what&#39;s best. Trust us.</h2>
 
@@ -49,9 +47,9 @@
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
 <li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.1.3</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Ruby 2.2.0</strong>: at the time of writing the newest current stable release of Ruby.</li>
 <li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
-<li><strong>Rails 4.1.6</strong>: at the time of writing the newest current stable release of Rails.</li>
+<li><strong>Rails 4.2.0</strong>: at the time of writing the newest current stable release of Rails.</li>
 </ul>
 
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
@@ -87,13 +85,13 @@ sudo make install
 <h3>Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.1.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.2.0
 </code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.1.3 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.8.tar.gz \
-  https://github.com/postmodern/chruby/archive/v0.3.8.tar.gz
-tar -xzvf chruby-0.3.8.tar.gz
-cd chruby-0.3.8/
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.2.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
+  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
+tar -xzvf chruby-0.3.9.tar.gz
+cd chruby-0.3.9/
 sudo make install
 </code></pre></div>
 <p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
@@ -106,20 +104,20 @@ source /usr/local/share/chruby/auto.sh
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.1.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.0
 </code></pre></div>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.1.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.0
 </code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.1.2</code> for example -- assuming that we have Ruby 2.1.2 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.2.0</code> for example -- assuming that we have Ruby 2.2.0 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.1.3p242 (2014-09-19 revision 47630) [x86_64-linux]
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.2.0p0 (2014-12-25 revision 49005) [x86_64-linux]
 </code></pre></div>
 <h3>Rails</h3>
 
 <p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.1.6 --no-rdoc --no-ri
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.2.0 --no-rdoc --no-ri
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
@@ -130,7 +128,7 @@ source /usr/local/share/chruby/auto.sh
 ERROR:  Error installing mysql2:
     ERROR: Failed to build gem native extension.
 
-    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+    /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
 checking for ruby/thread.h... yes
 checking for rb_thread_call_without_gvl() in ruby/thread.h... yes
 checking for rb_thread_blocking_region()... yes
@@ -162,7 +160,7 @@ need configuration options.
 ERROR:  Error installing pg:
     ERROR: Failed to build gem native extension.
 
-    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+    /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
 checking for pg_config... no
 No pg_config... trying anyway. If building fails, please try again with
  --with-pg-config=/path/to/pg_config
@@ -180,7 +178,7 @@ need configuration options.
 <p>Just like MySQL and PostgreSQL before it, attempting to install the <code>sqlite3</code> gem will result in this:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
 
-    /home/ryan/.rubies/ruby-2.1.3/bin/ruby extconf.rb
+    /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
 checking for sqlite3.h... no
 sqlite3.h is missing. Try &#39;port install sqlite3 +universal&#39;,
 &#39;yum install sqlite-devel&#39; or &#39;apt-get install libsqlite3-dev&#39;
@@ -222,7 +220,7 @@ need configuration options.
    <id>http://ryanbigg.com/2014/10/working-remotely</id>
    <content type="html"><![CDATA[<p>The news came out today that <a href="http://venturebeat.com/2014/10/01/after-raising-50m-reddit-forces-remote-workers-to-relocate-to-sf-or-get-fired/">Reddit is requiring all workers to move to San Francisco</a>. Of course, DHH (the guy who wrote <a href="http://37signals.com/remote/">a book about working remotely</a>) had an opinion about this:</p>
 
-<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <blockquote class="twitter-tweet" lang="en"><p>What a coincidence <a href="https://twitter.com/sama">@sama</a> is &quot;not a fan of remote work&quot;, <a href="https://twitter.com/yishan">@yishan</a> sought his advice on canning remoters &quot;as friend&quot;, <a href="https://t.co/Bb5yjKZ68Q">https://t.co/Bb5yjKZ68Q</a></p>&mdash; DHH (@dhh) <a href="https://twitter.com/dhh/status/517475492296151040">October 2, 2014</a></blockquote>
 
@@ -388,7 +386,7 @@ end
 
 <blockquote class="twitter-tweet" lang="en"><p>Ryan Bigg is now a GitHubber! <a href="https://t.co/jYm8bKVV1z">https://t.co/jYm8bKVV1z</a></p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/statuses/491321781781684224">July 21, 2014</a></blockquote>
 
-<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <hr>
 
@@ -440,7 +438,7 @@ end
 
 <blockquote class="twitter-tweet" lang="en"><p>Realtalk: I think we’ve dug ourselves a nice hole in Spree by relying too much on callbacks + Factory Girl factories.</p>&mdash; The Bigg Man Himself (@ryanbigg) <a href="https://twitter.com/ryanbigg/statuses/478316786576674816">June 15, 2014</a></blockquote>
 
-<p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <p>Some people have asked me to explain what I mean by this, and hopefully I can do that in this blog post. </p>
 
