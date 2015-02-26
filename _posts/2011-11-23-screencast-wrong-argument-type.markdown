@@ -10,7 +10,7 @@ Game of Life</a> screencast was. Seems that everyone who watched it liked it, wh
 This week's screencast is a slightly more advanced topic: debugging a `wrong argument type Module (expected
 class)` error which was happening inside of the `spree_paypal_express` Spree extension.
 
-It's 28 minutes of debugging goodness and <a href='https://s3.amazonaws.com/ryanbigg_screencasts/002-wrong-argument-type.mov'>you can view it here</a>.
+It's 28 minutes of debugging goodness and <a href='hhttps://vimeo.com/120645266'>you can view it here</a>.
 
 ---
 
