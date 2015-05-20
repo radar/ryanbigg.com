@@ -27,6 +27,8 @@ chruby, Rails and You blog post](http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-
 install-chruby-and-you//) which will setup a proper development environment
 for you on Ubuntu.
 
+**Don't install Ruby packages from `apt`**. That way lies pain and suffering.
+
 ### Mac
 
 If you're on Mac, you can follow many of the same steps in the Ubuntu guide.
