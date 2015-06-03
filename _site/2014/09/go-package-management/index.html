@@ -14,12 +14,12 @@
         <a href="/2014/09/go-package-management"><header>Go package management</header></a>
         <small>02 Sep 2014</small><br>
         <p>In Ruby-land, we have a wonderful tool called Bundler to manage package dependencies. I can specify dependencies like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.5&#39;</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.5&#39;</span>
 </code></pre></div>
 <p>When I run <code>bundle install</code>, Bundler will install not only the <code>rails</code> dependency, but all of its dependencies and all of their dependencies and so on. It will then take note of the dependencies which have been resolved and save them to a <code>Gemfile.lock</code>. I can commit this file to Git and push it up to GitHub, then when other people work on my project they can clone it and run <code>bundle install</code> on their machine and work with the exact same dependencies. Another benefit of this is that I can have multiple versions of Rails installed on the machine and when I use Bundler, it will use the correct version of Rails as specified in the Gemfile.</p>
 
 <p>There&#39;s tools out there in Go-land, such as <a href="https://github.com/mattn/gom">gom</a> and <a href="https://github.com/tools/godep">godep</a> which provide similar functionality. I prefer <code>godep</code>, but truth be told I wish that there was a Bundler-for-Go. Godep saves the dependencies in a JSON file:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+<div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">{</span>
   <span class="nt">&quot;ImportPath&quot;</span><span class="p">:</span> <span class="s2">&quot;github.com/radar/my-project&quot;</span><span class="p">,</span>
   <span class="nt">&quot;GoVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;go1.3&quot;</span><span class="p">,</span>
   <span class="nt">&quot;Packages&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -47,7 +47,7 @@
 <hr>
 
 <p>Here&#39;s what I would like though: I want a way that I can specify dependencies for Go projects like I can specify for Ruby projects. Ruby projects have a <code>.gemspec</code> file <a href="http://git.io/teWNMw0">which lists dependencies</a>, and I would like Go projects to do the same thing. For instance, in my project I&#39;d like to specify my dependencies in a very simple JSON syntax (let&#39;s call it <code>deps.json</code>):</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span>
+<div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">[</span>
   <span class="p">{</span>
     <span class="err">path:</span> <span class="nt">&quot;github.com/codegangsta/cli&quot;</span><span class="p">,</span>
     <span class="err">rev:</span> <span class="nt">&quot;1.2.0&quot;</span><span class="p">,</span>
@@ -59,7 +59,7 @@
 <span class="p">]</span>
 </code></pre></div>
 <p>Then I would like to run a <code>bundle install</code>-equivalent which creates a <code>deps.json.lock</code>:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span>
+<div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">[</span>
   <span class="p">{</span>
     <span class="err">path:</span> <span class="nt">&quot;github.com/codegangsta/cli&quot;</span><span class="p">,</span>
     <span class="err">rev:</span> <span class="nt">&quot;565493f259bf868adb54d45d5f4c68d405117adf&quot;</span><span class="p">,</span>

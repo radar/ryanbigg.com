@@ -40,68 +40,68 @@
 <p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages.</p>
 
 <p>Next, we&#39;ll run another command which will install the essential building tools that will be used to install Ruby:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install build-essential
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install build-essential
 </code></pre></div>
 <p>And now we&#39;re ready to install ruby-install.</p>
 
 <h3>ruby-install</h3>
 
 <p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
+<div class="highlight"><pre><code class="text language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
   https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
 tar -xzvf ruby-install-0.5.0.tar.gz
 cd ruby-install-0.5.0/
 sudo make install
 </code></pre></div>
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ ruby-install -V
 </code></pre></div>
 <p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.5.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-install: 0.5.0
 </code></pre></div>
 <h3>Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.2.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-install ruby 2.2.0
 </code></pre></div>
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.2.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
+<div class="highlight"><pre><code class="text language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
 cd chruby-0.3.9/
 sudo make install
 </code></pre></div>
 <p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
+<div class="highlight"><pre><code class="text language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
 source /usr/local/share/chruby/auto.sh
 </code></pre></div>
 <p>In order for this to take effect, we&#39;ll need to source that file:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+<div class="highlight"><pre><code class="text language-text" data-lang="text">. ~/.bashrc
 </code></pre></div>
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-2.2.0
 </code></pre></div>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-2.2.0
 </code></pre></div>
 <p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.2.0</code> for example -- assuming that we have Ruby 2.2.0 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.2.0p0 (2014-12-25 revision 49005) [x86_64-linux]
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby 2.2.0p0 (2014-12-25 revision 49005) [x86_64-linux]
 </code></pre></div>
 <h3>Rails</h3>
 
 <p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.2.0 --no-rdoc --no-ri
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails -v 4.2.0 --no-rdoc --no-ri
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
 <h3>MySQL</h3>
 
 <p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing mysql2:
     ERROR: Failed to build gem native extension.
 
@@ -133,7 +133,7 @@ need configuration options.
 <h3>PostgreSQL</h3>
 
 <p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing pg:
     ERROR: Failed to build gem native extension.
 
@@ -153,7 +153,7 @@ need configuration options.
 <h3>SQLite3</h3>
 
 <p>Just like MySQL and PostgreSQL before it, attempting to install the <code>sqlite3</code> gem will result in this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
 
     /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
 checking for sqlite3.h... no
@@ -171,10 +171,10 @@ need configuration options.
 <h3>JavaScript Runtime</h3>
 
 <p>Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run <code>rake assets:precompile</code> without one of these, you&#39;ll see this message:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
 </code></pre></div>
 <p>To fix this error install <code>nodejs</code>, which comes with a JavaScript runtime:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install nodejs
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install nodejs
 </code></pre></div>
 <h3>Fin</h3>
 

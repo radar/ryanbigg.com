@@ -26,7 +26,7 @@
 <p>To do this I used something that comes with Apache called Apache Bench (<code>ab</code> on the command-line). This lets you bench how well a webserver responds to a number of requests and you can set, among other things, the concurrency of these requests. </p>
 
 <p>So I did <code>ab -n 100 http://127.0.0.1:3000/sports/sport_name/leagues/league_name/games/scores</code> and got in the results this like:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Requests per second:    5.52 [#/sec] (mean)
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Requests per second:    5.52 [#/sec] (mean)
 </code></pre></div>
 <p>Only 5 and a half requests a second! That&#39;s nothing! So what&#39;d I do?</p>
 
@@ -35,29 +35,29 @@
 <p>First stop was queries. We retrieved records from one model, and then based on that find we retrieved records from another model and based on <strong>that find</strong> more records, and even on <strong><em>that find</em> more records!</strong></p>
 
 <p>We used something like this example:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">@sport = Sport.find(params[:sport_id])
+<div class="highlight"><pre><code class="text language-text" data-lang="text">@sport = Sport.find(params[:sport_id])
 @league = @sport.leagues.find(params[:league_id])
 @season = @league.current_season
 @week = @season.current_week
 @competitions = @week.competitions 
 </code></pre></div>
 <p>In our app, sports are always going to have leagues and leagues are going to have seasons which are going to have weeks and weeks are going to have games, so we can use a <code>joins</code> option in our initial sport find in order to get it to cut down on the number of queries.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">@sport = Sport.find(params[:sport_id], :joins =&gt; { :leagues =&gt; { :seasons =&gt; { :weeks =&gt; :competitions } } })
+<div class="highlight"><pre><code class="text language-text" data-lang="text">@sport = Sport.find(params[:sport_id], :joins =&gt; { :leagues =&gt; { :seasons =&gt; { :weeks =&gt; :competitions } } })
 @league = @sport.leagues.find(params[:league_id])
 @season = @league.current_season
 @week = @season.current_week
 @competitions = @week.competitions 
 </code></pre></div>
 <p>At this stage we see a <strong>triple-fold</strong> increase plus a little bit more with our app now doing 17 requests per second! Woah!</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Requests per second:    17.43 [#/sec] (mean)
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Requests per second:    17.43 [#/sec] (mean)
 </code></pre></div>
 <h3>Caching</h3>
 
 <p>Since our action is most likely going to be hammered by a lot of users frantically refreshing to see the latest scores, caching is definitely the way to go here. Caching will store the page on disk and serve that file rather than going through the Rails stack which is, as we&#39;ve seen, only serving 17 requests a second. How do we cache? Well, for development mode we&#39;re going to have to turn on caching in <em>development.rb</em>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">config.action_controller.perform_caching = true
+<div class="highlight"><pre><code class="text language-text" data-lang="text">config.action_controller.perform_caching = true
 </code></pre></div>
 <p>And we&#39;re going to have to put in our controller a method call to tell Rails to cache the page:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">caches_page :scores
+<div class="highlight"><pre><code class="text language-text" data-lang="text">caches_page :scores
 </code></pre></div>
 <p>After this we&#39;ll restart the Rails server (Mongrel) and access our scores action. For the first request we&#39;ll see in our <em>log/development.log</em> that it says: <code>Cached page: /sports/sport_name/leagues/league_name/games/scores.json (1.6ms)</code> indicating that this page has been cached. Future requests to this page will not be logged in <em>development.log</em> because Rails is serving the file <em>sports/sport<em>name/leagues/league</em>name/games/score.json</em> directly from the <em>public</em> folder.</p>
 
@@ -78,7 +78,7 @@
 <p>This 578 times faster than our initial single-mongrel server! </p>
 
 <p>What&#39;s also interesting in this output is right at the bottom:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Percentage of the requests served within a certain time (ms)
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Percentage of the requests served within a certain time (ms)
   50%      3
   66%      3
   75%      3

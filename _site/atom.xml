@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2015-04-30T12:48:42+10:00</updated>
+ <updated>2015-06-03T10:51:20-07:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -15,7 +15,7 @@
  <entry>
    <title>Getting started with Ruby and Rails</title>
    <link href="http://ryanbigg.com/2015/04/getting-started-with-ruby-and-rails"/>
-   <updated>2015-04-30T00:00:00+10:00</updated>
+   <updated>2015-04-30T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2015/04/getting-started-with-ruby-and-rails</id>
    <content type="html"><![CDATA[<p>There are a lot of people who wish to get started with Ruby and Rails, but
 don&#39;t know where to start. I hope that this post will serve as a guide for
@@ -39,16 +39,18 @@ in that environment.</p>
 chruby, Rails and You blog post</a> which will setup a proper development environment
 for you on Ubuntu.</p>
 
+<p><strong>Don&#39;t install Ruby packages from <code>apt</code></strong>. That way lies pain and suffering.</p>
+
 <h3>Mac</h3>
 
 <p>If you&#39;re on Mac, you can follow many of the same steps in the Ubuntu guide.
 Install ruby-install, chruby as per that guide, and then you can install
 <a href="http://brew.sh/">Homebrew</a>, and then install PostgreSQL by running this
 command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">brew install postgresql
+<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install postgresql
 </code></pre></div>
 <p>Or MySQL with this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">brew install mysql
+<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install mysql
 </code></pre></div>
 <h2>Getting started with Ruby</h2>
 
@@ -141,12 +143,12 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
  <entry>
    <title>Filtering by index in Elasticsearch</title>
    <link href="http://ryanbigg.com/2014/12/filtering-by-index-in-elasticsearch"/>
-   <updated>2014-12-03T00:00:00+11:00</updated>
+   <updated>2014-12-03T00:00:00-08:00</updated>
    <id>http://ryanbigg.com/2014/12/filtering-by-index-in-elasticsearch</id>
    <content type="html"><![CDATA[<p>Today I needed to filter by indexes in an Elasticsearch instance, and so I googled for how to do this but I couldn&#39;t find anything other than the <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-indices-filter.html">indicies filter</a> which isn&#39;t helpful without a proper context of where to use it in a query.</p>
 
 <p>Instead of that filter, this is what I came up with to do the filtering:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">.</span><span class="n">new</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">.</span><span class="n">new</span>
 <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="ss">index</span><span class="p">:</span> <span class="s2">&quot;logstash-2014.12.03,logstash-2014.12.02...&quot;</span><span class="p">,</span> <span class="ss">body</span><span class="p">:</span> <span class="p">{</span>
   <span class="ss">query</span><span class="p">:</span> <span class="p">{</span>
     <span class="o">.</span><span class="n">.</span><span class="o">.</span>
@@ -160,7 +162,7 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
  <entry>
    <title>Ubuntu, Ruby, ruby-install, chruby, Rails and You</title>
    <link href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"/>
-   <updated>2014-10-05T00:00:00+10:00</updated>
+   <updated>2014-10-05T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you</id>
    <content type="html"><![CDATA[<p><strong>Last updated: Saturday 31st January 2014</strong></p>
 
@@ -189,68 +191,68 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
 <p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages.</p>
 
 <p>Next, we&#39;ll run another command which will install the essential building tools that will be used to install Ruby:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install build-essential
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install build-essential
 </code></pre></div>
 <p>And now we&#39;re ready to install ruby-install.</p>
 
 <h3>ruby-install</h3>
 
 <p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
+<div class="highlight"><pre><code class="text language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
   https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
 tar -xzvf ruby-install-0.5.0.tar.gz
 cd ruby-install-0.5.0/
 sudo make install
 </code></pre></div>
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$ ruby-install -V
 </code></pre></div>
 <p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.5.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-install: 0.5.0
 </code></pre></div>
 <h3>Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.2.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-install ruby 2.2.0
 </code></pre></div>
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.2.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
+<div class="highlight"><pre><code class="text language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
 cd chruby-0.3.9/
 sudo make install
 </code></pre></div>
 <p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
+<div class="highlight"><pre><code class="text language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
 source /usr/local/share/chruby/auto.sh
 </code></pre></div>
 <p>In order for this to take effect, we&#39;ll need to source that file:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+<div class="highlight"><pre><code class="text language-text" data-lang="text">. ~/.bashrc
 </code></pre></div>
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-2.2.0
 </code></pre></div>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.0
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby-2.2.0
 </code></pre></div>
 <p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.2.0</code> for example -- assuming that we have Ruby 2.2.0 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.2.0p0 (2014-12-25 revision 49005) [x86_64-linux]
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ruby 2.2.0p0 (2014-12-25 revision 49005) [x86_64-linux]
 </code></pre></div>
 <h3>Rails</h3>
 
 <p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.2.0 --no-rdoc --no-ri
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem install rails -v 4.2.0 --no-rdoc --no-ri
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
 <h3>MySQL</h3>
 
 <p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing mysql2:
     ERROR: Failed to build gem native extension.
 
@@ -282,7 +284,7 @@ need configuration options.
 <h3>PostgreSQL</h3>
 
 <p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Building native extensions.  This could take a while...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Building native extensions.  This could take a while...
 ERROR:  Error installing pg:
     ERROR: Failed to build gem native extension.
 
@@ -302,7 +304,7 @@ need configuration options.
 <h3>SQLite3</h3>
 
 <p>Just like MySQL and PostgreSQL before it, attempting to install the <code>sqlite3</code> gem will result in this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
 
     /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
 checking for sqlite3.h... no
@@ -320,10 +322,10 @@ need configuration options.
 <h3>JavaScript Runtime</h3>
 
 <p>Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run <code>rake assets:precompile</code> without one of these, you&#39;ll see this message:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
+<div class="highlight"><pre><code class="text language-text" data-lang="text">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
 </code></pre></div>
 <p>To fix this error install <code>nodejs</code>, which comes with a JavaScript runtime:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get install nodejs
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sudo apt-get install nodejs
 </code></pre></div>
 <h3>Fin</h3>
 
@@ -342,7 +344,7 @@ need configuration options.
  <entry>
    <title>Working Remotely</title>
    <link href="http://ryanbigg.com/2014/10/working-remotely"/>
-   <updated>2014-10-02T00:00:00+10:00</updated>
+   <updated>2014-10-02T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/10/working-remotely</id>
    <content type="html"><![CDATA[<p>The news came out today that <a href="http://venturebeat.com/2014/10/01/after-raising-50m-reddit-forces-remote-workers-to-relocate-to-sf-or-get-fired/">Reddit is requiring all workers to move to San Francisco</a>. Of course, DHH (the guy who wrote <a href="http://37signals.com/remote/">a book about working remotely</a>) had an opinion about this:</p>
 
@@ -369,15 +371,15 @@ need configuration options.
  <entry>
    <title>Go package management</title>
    <link href="http://ryanbigg.com/2014/09/go-package-management"/>
-   <updated>2014-09-02T00:00:00+10:00</updated>
+   <updated>2014-09-02T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/09/go-package-management</id>
    <content type="html"><![CDATA[<p>In Ruby-land, we have a wonderful tool called Bundler to manage package dependencies. I can specify dependencies like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.5&#39;</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">&#39;rails&#39;</span><span class="p">,</span> <span class="s1">&#39;4.1.5&#39;</span>
 </code></pre></div>
 <p>When I run <code>bundle install</code>, Bundler will install not only the <code>rails</code> dependency, but all of its dependencies and all of their dependencies and so on. It will then take note of the dependencies which have been resolved and save them to a <code>Gemfile.lock</code>. I can commit this file to Git and push it up to GitHub, then when other people work on my project they can clone it and run <code>bundle install</code> on their machine and work with the exact same dependencies. Another benefit of this is that I can have multiple versions of Rails installed on the machine and when I use Bundler, it will use the correct version of Rails as specified in the Gemfile.</p>
 
 <p>There&#39;s tools out there in Go-land, such as <a href="https://github.com/mattn/gom">gom</a> and <a href="https://github.com/tools/godep">godep</a> which provide similar functionality. I prefer <code>godep</code>, but truth be told I wish that there was a Bundler-for-Go. Godep saves the dependencies in a JSON file:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+<div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">{</span>
   <span class="nt">&quot;ImportPath&quot;</span><span class="p">:</span> <span class="s2">&quot;github.com/radar/my-project&quot;</span><span class="p">,</span>
   <span class="nt">&quot;GoVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;go1.3&quot;</span><span class="p">,</span>
   <span class="nt">&quot;Packages&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -405,7 +407,7 @@ need configuration options.
 <hr>
 
 <p>Here&#39;s what I would like though: I want a way that I can specify dependencies for Go projects like I can specify for Ruby projects. Ruby projects have a <code>.gemspec</code> file <a href="http://git.io/teWNMw0">which lists dependencies</a>, and I would like Go projects to do the same thing. For instance, in my project I&#39;d like to specify my dependencies in a very simple JSON syntax (let&#39;s call it <code>deps.json</code>):</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span>
+<div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">[</span>
   <span class="p">{</span>
     <span class="err">path:</span> <span class="nt">&quot;github.com/codegangsta/cli&quot;</span><span class="p">,</span>
     <span class="err">rev:</span> <span class="nt">&quot;1.2.0&quot;</span><span class="p">,</span>
@@ -417,7 +419,7 @@ need configuration options.
 <span class="p">]</span>
 </code></pre></div>
 <p>Then I would like to run a <code>bundle install</code>-equivalent which creates a <code>deps.json.lock</code>:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span>
+<div class="highlight"><pre><code class="json language-json" data-lang="json"><span class="p">[</span>
   <span class="p">{</span>
     <span class="err">path:</span> <span class="nt">&quot;github.com/codegangsta/cli&quot;</span><span class="p">,</span>
     <span class="err">rev:</span> <span class="nt">&quot;565493f259bf868adb54d45d5f4c68d405117adf&quot;</span><span class="p">,</span>
@@ -445,7 +447,7 @@ need configuration options.
  <entry>
    <title>Thoughts on Go</title>
    <link href="http://ryanbigg.com/2014/08/thoughts-on-go"/>
-   <updated>2014-08-08T00:00:00+10:00</updated>
+   <updated>2014-08-08T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/08/thoughts-on-go</id>
    <content type="html"><![CDATA[<p>I&#39;ve had an interest in Go now for about a year. I&#39;ve not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn&#39;t do much. I&#39;ve also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes&#39; go-lifx</a> project, which is Go bindings for LIFX lights. It&#39;s still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
 
@@ -458,14 +460,14 @@ need configuration options.
 <p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code>go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go&#39;s built-in tool: <code>go build</code>. </p>
 
 <p>I also enjoy the <code>go get</code> tool. It took me a while to figure out that if I structured my <code>~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Projects/go
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Projects/go
   -&gt; src
     -&gt; github.com
       -&gt; bjeanes
         -&gt; go-lifx
 </code></pre></div>
 <p>I&#39;ve set <code>GOPATH</code> to <code>~/Projects/go</code> and so then when I type <code>go get github.com/codegangsta/cli</code> it will install it into <code>~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">import (
+<div class="highlight"><pre><code class="text language-text" data-lang="text">import (
   &quot;github.com/codegangsta/cli&quot;
 )
 </code></pre></div>
@@ -480,12 +482,12 @@ need configuration options.
  <entry>
    <title>Add header to Rack::Test request</title>
    <link href="http://ryanbigg.com/2014/08/add-header-to-rack-test-request"/>
-   <updated>2014-08-06T00:00:00+10:00</updated>
+   <updated>2014-08-06T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/08/add-header-to-rack-test-request</id>
    <content type="html"><![CDATA[<p>I couldn&#39;t find any results on the Google for the title of this blog post, so I&#39;m writing it here.</p>
 
 <p>All I wanted to do was to send through a header. I tried this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+<div class="highlight"><pre><code class="text language-text" data-lang="text">it &quot;test&quot; do
   get &#39;/test&#39;, {}, { &#39;Test-Header&#39; =&gt; &#39;Test value&#39; }
   expect(last_response.status).to eq(200)
 end
@@ -493,7 +495,7 @@ end
 <p>That doesn&#39;t work, because that third argument is actually the Rack <code>env</code> object.</p>
 
 <p>The correct way to do it is this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+<div class="highlight"><pre><code class="text language-text" data-lang="text">it &quot;test&quot; do
   header &#39;Test-Header&#39;, &#39;Test value&#39;
   get &#39;/test&#39;
   expect(last_response.status).to eq(200)
@@ -504,7 +506,7 @@ end
  <entry>
    <title>Ryan Bigg is now a Git...</title>
    <link href="http://ryanbigg.com/2014/07/ryan-bigg-is-now-a-git"/>
-   <updated>2014-07-22T00:00:00+10:00</updated>
+   <updated>2014-07-22T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/07/ryan-bigg-is-now-a-git</id>
    <content type="html"><![CDATA[<p>Yes, the <a href="http://spreecommerce.com/blog/farewell-ryan-bigg">rumours are true</a>, I am leaving Spree Commerce. This makes me a git because there&#39;s one and only one Community Manager at Spree, and so that void will need to be filled by someone else. Thankfully Jeff Dutil is going to step into my role as interim Community Manager for the time being.</p>
 
@@ -539,7 +541,7 @@ end
  <entry>
    <title>Initial thoughts on Lotus</title>
    <link href="http://ryanbigg.com/2014/06/initial-thoughts-on-lotus"/>
-   <updated>2014-06-19T00:00:00+10:00</updated>
+   <updated>2014-06-19T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/06/initial-thoughts-on-lotus</id>
    <content type="html"><![CDATA[<p>Following on from my <a href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks/">last post</a>, I&#39;ve been experimenting some more with my <a href="https://github.com/radar/spree_poro">spree_poro</a>, and I&#39;ve been looking at how to work with some kind of data store persistence more sophisticated than the <code>Spree::Data</code> constant that I had used previously. I wanted something more sophisticated than running <code>select</code>s over arrays.</p>
 
@@ -558,7 +560,7 @@ end
  <entry>
    <title>Spree, Factories and Callbacks</title>
    <link href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks"/>
-   <updated>2014-06-17T00:00:00+10:00</updated>
+   <updated>2014-06-17T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/06/spree-factories-and-callbacks</id>
    <content type="html"><![CDATA[<p>During last week, I was trying to wrap my head around Spree&#39;s code again. I continued my efforts yesterday and tweeted this:</p>
 
@@ -618,7 +620,7 @@ end
  <entry>
    <title>Community Management</title>
    <link href="http://ryanbigg.com/2014/04/community-management"/>
-   <updated>2014-04-02T00:00:00+11:00</updated>
+   <updated>2014-04-02T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2014/04/community-management</id>
    <content type="html"><![CDATA[<p>I&#39;ve been the &quot;Community Manager&quot; for Spree for a couple of years now. It&#39;s a
 job where I answer user support requests wherever they happen: IM, email, IRC,
@@ -703,7 +705,7 @@ will be answered by someone else.</p>
  <entry>
    <title>Violence in the Ruby community</title>
    <link href="http://ryanbigg.com/2013/10/violence-in-the-ruby-community"/>
-   <updated>2013-10-14T00:00:00+11:00</updated>
+   <updated>2013-10-14T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2013/10/violence-in-the-ruby-community</id>
    <content type="html"><![CDATA[<p>This post was written by myself and my fiancee,
 <a href="https://twitter.com/smly_law">Sharon</a>, about the alleged sexual assault of Justine
@@ -811,7 +813,7 @@ that way towards women, has to be stopped.</p>
  <entry>
    <title>Order adjustments within Spree</title>
    <link href="http://ryanbigg.com/2013/09/order-adjustments"/>
-   <updated>2013-09-24T00:00:00+10:00</updated>
+   <updated>2013-09-24T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2013/09/order-adjustments</id>
    <content type="html"><![CDATA[<p>When buying anything these days, there are a lot of different offers:</p>
 
@@ -862,13 +864,13 @@ side of things, taxation rears its ugly head(s).</p>
 </ul>
 
 <p>First, we sum the line items and their adjustments, which would be this equation:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($50 - $10) + $50 = $90
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 - $10) + $50 = $90
 </code></pre></div>
 <p>The order&#39;s total so far is $90. Now we add the shipments:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($5 - $5) + $10 = $10
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($5 - $5) + $10 = $10
 </code></pre></div>
 <p>We add this number to the line items&#39; total and we get $100. Now we apply the order&#39;s adjustments to this subtotal amount:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$100 - $20 = $80
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$100 - $20 = $80
 </code></pre></div>
 <p>This results in the order&#39;s grand total of $80.</p>
 
@@ -889,19 +891,19 @@ side of things, taxation rears its ugly head(s).</p>
 </ul>
 
 <p>The first line item&#39;s total would be calculated like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($50 - $10) = $40 + (10% of $40) = $44
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 - $10) = $40 + (10% of $40) = $44
 ($40)       =        $40 + $4    = $44
 </code></pre></div>
 <p>Worth noting here is that the discount is applied first, <em>then</em> the tax rate. This is the most sensible option because if someone is purchasing an item with the intention of receiving that $10 off, it is more intuitive that the $10 is off the listing price, rather than the after-tax price. This is also the recommended behavior, as mentioned later in the &quot;Promotions and Tax&quot; section.</p>
 
 <p>The second line item would be calculated in roughly the same way:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($50 + (10% of $50) = $55
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 + (10% of $50) = $55
 ($50 + $5)          = $55
 </code></pre></div>
 <p>Note that in these situations we are calculating the adjustment amount (if it exists) and then the tax amount. The buyer of a product should only be taxed on the final adjusted price of the line item, rather than its base price. In the instance of the first line item, the base price is $40 rather than $50 due to do the -$10 adjustment. Therefore the tax for this item would be 10% of $40 ($4), rather than 10% of $50 ($5).</p>
 
 <p>Therefore the order&#39;s total so far is <code>$44 + $55</code>, $99. Now to calculate the shipments, it would be this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">       (Shipment #1)              (Shipment #2)
+<div class="highlight"><pre><code class="text language-text" data-lang="text">       (Shipment #1)              (Shipment #2)
 ($5 - $5) = $0 + (10% of $0)  +  $10 + (10% of $10) = $0 + $11 = $11
 </code></pre></div>
 <p>Because the first shipment has a &quot;free shipping&quot; adjustment, there is no additional tax adjustment to this shipment.</p>
@@ -913,22 +915,22 @@ side of things, taxation rears its ugly head(s).</p>
 <p>To further complicate matters, tax can also be <em>included</em> in the price, rather than being an additional cost applied.</p>
 
 <p>In Australia, there is a GST (Goods and Services Tax) applied to some items. This tax is a flat 10% and is included in the price of those items. An item that is worth $50 would have $4.545... of that amount made up by GST. The calculation is this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
 </code></pre></div>
 <p>This tax amount <em>must</em> be displayed on receipts (and similar) because stores need it for end of financial year taxation purposes, and so this is what Spree refers to as an &quot;included&quot; adjustment, which is an adjustment which will not modify the total price. Within Spree, an item that is $50 will have a $4.545... adjustment applied to it, but that item will still cost $50.</p>
 
 <p>To <em>even further</em> complicate matters, tax that is included in an item&#39;s price must be backed out in certain circumstances. For example, an item with a 10% VAT tax sold in a European country to a buyer outside of that country must have that 10% tax refunded.</p>
 
 <p>Taking again the example a single line item that costs $50, with 10% of that price being this 10% VAT tax. When this item is sold to someone outside the VAT zone, we must apply a negative adjustment to the line item to refund that tax. The calculation for the adjustment is the same as before:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 - ($50 / 110%) = $4.54545...
 </code></pre></div>
 <p>The adjustment is rounded up to the second decimal point, which will result in an adjustment of $4.55, rather than $4.54.</p>
 
 <p>This means that the adjusted price for the line item will be:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$50 - $4.55 = $45.45
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 - $4.55 = $45.45
 </code></pre></div>
 <p>If this item has a discount adjustment, then that discount is applied before the tax adjustment. Let&#39;s say that we have the $50 item with a $10 discount, and a tax rate of 10%. The calculation is then:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($50 - $10) - ($40 / 110%) = $3.6363636...
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 - $10) - ($40 / 110%) = $3.6363636...
 </code></pre></div>
 <p>With the adjustment, the sale price of the item would only be $40, therefore the tax subtraction for this item will be $3.63, rather than the original $4.55.</p>
 
@@ -947,10 +949,10 @@ side of things, taxation rears its ugly head(s).</p>
 <p>(Aside: for a demonstration about how much exactly tax rates can differ, click around a couple of times on <a href="https://taxcloud.net/find-a-rate/default.aspx">this map</a> within any one state. This service is what the <a href="https://github.com/bluehandtalking/spree_tax_cloud">Spree Tax Cloud extension</a> uses.)</p>
 
 <p>With adjustment information stored on a per-line item basis, it is now relatively easy to update a tax adjustment for a line item if that line item changes. Take for example our previous example of the $50 shirt with the 10% tax, but no other adjustment yet. To calculate that line item&#39;s tax, the calculation is this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$50 + (10% of $50) = $55
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 + (10% of $50) = $55
 </code></pre></div>
 <p>Now imagine that instead of 1 shirt, the buyer is actually buying 2. The calculation would only be this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($50 * 2) + (10% of $100) = $110
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 * 2) + (10% of $100) = $110
 </code></pre></div>
 <p>In previous versions of Spree, having one tax adjustment for the entire order makes things complex, because this tax adjustment would need to be recalculated for <em>all</em> line items, rather than just the one that has changed.</p>
 
@@ -975,10 +977,10 @@ side of things, taxation rears its ugly head(s).</p>
 <h3>In Practice: Updating adjustments</h3>
 
 <p>When a line item&#39;s quantity changes, its related adjustments must also be recalculated. Take for example the shirt worth $50 with a 10% tax again. To calculate the correct price for a shirt, the calculation is this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$50 + (10% of $50) = $55
+<div class="highlight"><pre><code class="text language-text" data-lang="text">$50 + (10% of $50) = $55
 </code></pre></div>
 <p>When there are two shirts however, the calculation is this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">($50 * 2) + (10% of ($50 * 2)) = $110
+<div class="highlight"><pre><code class="text language-text" data-lang="text">($50 * 2) + (10% of ($50 * 2)) = $110
 </code></pre></div>
 <p>Previous versions of Spree recalculate all the adjustments on the order, whereas this latest work only calculates the adjustments for things that have changed.</p>
 
@@ -1093,13 +1095,13 @@ there are 3 shirts, each worth $50, on the same line item, the tables turn.</p>
 <p>Store credits, on the other hand, are manually applied adjustments. For an order with a store credit applied to it, care must be taken to ensure the correct refund is issued.</p>
 
 <p>As an example, take the order that has been used as an example previously:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Line Item #1 (LI1): $50 shirt, $10 off. 10% tax.
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Line Item #1 (LI1): $50 shirt, $10 off. 10% tax.
 Line Item #2 (LI2): $50 pants. 10% tax.
 Shipment #1   (S1): Just the shirt. $5. 10% tax.
 Shipment #2   (S2): Just the pants. $5. 10% tax.
 </code></pre></div>
 <p>The order&#39;s sub total is calculated like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">LI1        = ($50 - $10) + 10% of ($50 - 10) = $44
+<div class="highlight"><pre><code class="text language-text" data-lang="text">LI1        = ($50 - $10) + 10% of ($50 - 10) = $44
  +                                              +
 LI2        = $50 + 10% of $50                = $55
                                                 =
@@ -1126,7 +1128,7 @@ Total      = $99 + $10                       = $109
  <entry>
    <title>Debugging Rails Controllers</title>
    <link href="http://ryanbigg.com/2013/09/debugging-rails-controllers"/>
-   <updated>2013-09-05T00:00:00+10:00</updated>
+   <updated>2013-09-05T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2013/09/debugging-rails-controllers</id>
    <content type="html"><![CDATA[<p>Here&#39;s my flow for debugging a misbehaving controller. Imagine that there&#39;s a form at <code>app/views/messages/new.html.erb</code> that is posting to <code>MessagesController#create</code>. The parameters aren&#39;t being passed through from the form to the controller, and the model is raising a validation error saying that a field is blank -- even though it&#39;s <em>clearly</em> not.</p>
 
@@ -1168,15 +1170,15 @@ Total      = $99 + $10                       = $109
  <entry>
    <title>Bundler local paths</title>
    <link href="http://ryanbigg.com/2013/08/bundler-local-paths"/>
-   <updated>2013-08-16T00:00:00+10:00</updated>
+   <updated>2013-08-16T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2013/08/bundler-local-paths</id>
    <content type="html"><![CDATA[<p>There&#39;s a little known feature of Bundler that allows you to use a local Git
 repository while developing locally, and a remote Git repo when deploying. This
 feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
 </code></pre></div>
 <p>And remote paths:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
 </code></pre></div>
 <p>How does it work?</p>
 
@@ -1184,10 +1186,10 @@ feature means that you no longer have to <em>constantly</em> switch between loca
 
 <p>Well, what you can do instead is tell Bundler that you have a local copy of
 this repository by running a command like this in your terminal:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
+<div class="highlight"><pre><code class="text language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
 </code></pre></div>
 <p>Then in your Gemfile whenever you reference a Git repo for this gem, like this...</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
 </code></pre></div>
 <p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
 
@@ -1202,12 +1204,12 @@ this repository by running a command like this in your terminal:</p>
  <entry>
    <title>Waiting for AJAX in Capybara</title>
    <link href="http://ryanbigg.com/2013/07/waiting-for-ajax-in-capybara"/>
-   <updated>2013-07-09T00:00:00+10:00</updated>
+   <updated>2013-07-09T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2013/07/waiting-for-ajax-in-capybara</id>
    <content type="html"><![CDATA[<p>In Spree recently, we&#39;ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree&#39;s API</a> for the Backend component. This means that we&#39;ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
 
 <p>Some of these test failures are that the tests just aren&#39;t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more ... bewildering:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">F
+<div class="highlight"><pre><code class="text language-text" data-lang="text">F
 An error occurred in an after hook
   ActiveRecord::StatementInvalid: 
     SQLite3::BusyException:
@@ -1217,10 +1219,10 @@ An error occurred in an after hook
 <p>This error happens when an AJAX request is still being processed by the server, but the test finishes and Database Cleaner attempts to wipe the database. The server has locked the database until it&#39;s done what it needs to do, and during that lock Database Cleaner attempts to wipe all the data and can&#39;t.</p>
 
 <p>To fix this, we just needed to wait for all AJAX requests to complete. This means replacing <code>sleep</code> with magic numbers, like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sleep(2)
+<div class="highlight"><pre><code class="text language-text" data-lang="text">sleep(2)
 </code></pre></div>
 <p>With this method:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">def wait_for_ajax
+<div class="highlight"><pre><code class="text language-text" data-lang="text">def wait_for_ajax
   counter = 0
   while page.execute_script(&quot;return $.active&quot;).to_i &gt; 0
     counter += 1
@@ -1238,12 +1240,12 @@ end
  <entry>
    <title>Finding SQL queries in Rails</title>
    <link href="http://ryanbigg.com/2013/06/finding-sql-queries-in-rails"/>
-   <updated>2013-06-26T00:00:00+10:00</updated>
+   <updated>2013-06-26T00:00:00-07:00</updated>
    <id>http://ryanbigg.com/2013/06/finding-sql-queries-in-rails</id>
    <content type="html"><![CDATA[<p>In my work on Spree, sometimes I&#39;ve been wanting to know <em>where</em> queries are coming from. Just like any large codebase, the &quot;magic&quot; that goes on inside it to make the cogs spin the right way can be a bit complex.</p>
 
 <p>Active Support&#39;s Notifications feature is really handy for this. All I need to do is subscribe to the <code>sql.active_record</code> event and get it to output the stacktrace of where the query is generated, like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Notifications</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s2">&quot;sql.active_record&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">details</span><span class="o">|</span>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Notifications</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s2">&quot;sql.active_record&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">details</span><span class="o">|</span>
   <span class="k">if</span> <span class="n">details</span><span class="o">[</span><span class="ss">:sql</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/INSERT INTO &quot;spree_inventory_units&quot;/</span>
     <span class="nb">puts</span> <span class="nb">caller</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">puts</span> <span class="s2">&quot;*&quot;</span> <span class="o">*</span> <span class="mi">50</span>
@@ -1257,7 +1259,7 @@ end
  <entry>
    <title>About spec/support</title>
    <link href="http://ryanbigg.com/2013/02/about-spec-support"/>
-   <updated>2013-02-02T00:00:00+11:00</updated>
+   <updated>2013-02-02T00:00:00-08:00</updated>
    <id>http://ryanbigg.com/2013/02/about-spec-support</id>
    <content type="html"><![CDATA[<p>I&#39;m going to expand on a tweet I wrote this morning:</p>
 
@@ -1271,7 +1273,7 @@ between an engine and an application, for an example in Chapter 4 of
 <a href="https://leanpub.com/multi-tenancy-rails">Multitenancy with Rails</a>. What I had
 originally was a file in <code>spec/support</code> called <code>SubdomainHelpers</code>, defined like
 this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">module SubdomainHelpers
+<div class="highlight"><pre><code class="text language-text" data-lang="text">module SubdomainHelpers
   def within_account_subdomain(&amp;block)
     context &quot;within a subdomain&quot; do
       let(:subdomain_url) { &quot;http://#{account.subdomain}.example.com&quot; }
@@ -1283,7 +1285,7 @@ this:</p>
 end
 </code></pre></div>
 <p>This module is then used to extend the RSpec <code>describe</code> blocks, like this</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">describe &quot;User sign in&quot; do
+<div class="highlight"><pre><code class="text language-text" data-lang="text">describe &quot;User sign in&quot; do
   extend SubdomainHelpers
   ...
 end
@@ -1295,7 +1297,7 @@ end
 <p>My problem with this is that this file is required <em>all the damn time</em>, even in
 tests which don&#39;t use Capybara. The culprit is this default line in
 <code>spec/spec_helper.rb</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Dir[File.dirname(__FILE__) + &quot;/support/**/*.rb&quot;].each {|f| require f }
+<div class="highlight"><pre><code class="text language-text" data-lang="text">Dir[File.dirname(__FILE__) + &quot;/support/**/*.rb&quot;].each {|f| require f }
 </code></pre></div>
 <p>This line is used for requiring all the files in <code>spec/support</code> so that you
 don&#39;t have to. Seems like a good idea, but isn&#39;t once you have a ton of things
@@ -1304,12 +1306,12 @@ in <code>spec/support</code>.</p>
 <p>Making it easy to require the file defining <code>SubdomainHelpers</code> in both the
 engine and the application involves moving the helper in to the <code>lib</code> directory
 of the engine, and then requiring that file in the appropriate places:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;subscribem/testing_support/subdomain_helpers&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;subscribem/testing_support/subdomain_helpers&#39;
 </code></pre></div>
 <p>Even if we <em>weren&#39;t</em> using an engine and an application and just had the
 application, I would much rather just be requiring just the files I need for a
 test, like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;support/subdomain_helpers&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;support/subdomain_helpers&#39;
 </code></pre></div>
 <p>Than having the full range of <code>spec/support</code> files loaded all at once on the
 off chance a spec might need it. I wouldn&#39;t expect this to <em>dramatically</em> increase a spec suite&#39;s
@@ -1320,7 +1322,7 @@ run time, but it&#39;s got to be helping somewhat.</p>
  <entry>
    <title>Multitenancy with Rails</title>
    <link href="http://ryanbigg.com/2013/01/multitenancy-with-rails"/>
-   <updated>2013-01-21T00:00:00+11:00</updated>
+   <updated>2013-01-21T00:00:00-08:00</updated>
    <id>http://ryanbigg.com/2013/01/multitenancy-with-rails</id>
    <content type="html"><![CDATA[<p>Well before I had even <a href="http://ryanbigg.com/2012/11/no-more-writing-for-manning/">split from
 Manning</a>, I had been
@@ -1372,13 +1374,13 @@ now</em>.</p>
  <entry>
    <title>A story about scaffolding</title>
    <link href="http://ryanbigg.com/2013/01/a-story-about-scaffolding"/>
-   <updated>2013-01-07T00:00:00+11:00</updated>
+   <updated>2013-01-07T00:00:00-08:00</updated>
    <id>http://ryanbigg.com/2013/01/a-story-about-scaffolding</id>
    <content type="html"><![CDATA[<p>When Rails was released, one of the &quot;showy&quot; features in it was the ability to get up and running quickly. That&#39;s always been the focus for Rails.</p>
 
 <p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code>rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code>scaffold</code>. In later Rails releases (can&#39;t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
 
-<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we&#39;re sticking with the Post scaffold idea. So you do that, but then you don&#39;t realise that you need to add the field to the <code>attr_accessible</code> list<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you&#39;d need to add it to the form partial as well. Newbies don&#39;t learn how to do these very, very basic things first off <em>if they&#39;re using scaffolding</em> and that&#39;s why it&#39;s a bad thing.</p>
+<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we&#39;re sticking with the Post scaffold idea. So you do that, but then you don&#39;t realise that you need to add the field to the <code>attr_accessible</code> list<a href="which%20you%20had%20no%20idea%20about%20until%20someone%20told%20you%20about%20it%20in%20the%20Rails%20channel">^1</a>, and you&#39;d need to add it to the form partial as well. Newbies don&#39;t learn how to do these very, very basic things first off <em>if they&#39;re using scaffolding</em> and that&#39;s why it&#39;s a bad thing.</p>
 
 <p>If you begin using scaffolding, you can indeed see exactly what functionality Rails is capable of. Goodo, you can create, read, update and delete things. The problem, however, is that you end up not learning how any of it works, and it seems like &quot;a wizard did it&quot;. Of course, as you get more knowledgeable about Rails you&#39;ll know that there&#39;s no such thing as wizards.</p>
 
@@ -1386,16 +1388,7 @@ now</em>.</p>
 
 <p>Scaffolding doesn&#39;t teach you the extreme basics of Rails development. Building things from scratch does. This foundation is absolutely critical to understanding how Rails works.</p>
 
-<div class="footnotes">
-<hr>
-<ol>
-
-<li id="fn1">
-<p><code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters&nbsp;<a href="#fnref1" rev="footnote">&#8617;</a></p>
-</li>
-
-</ol>
-</div>
+<p>[^1]: <code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters</p>
 ]]></content>
  </entry>
  
