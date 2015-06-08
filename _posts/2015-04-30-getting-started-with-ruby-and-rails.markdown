@@ -23,9 +23,8 @@ in that environment.
 ### Ubuntu
 
 Once you've got Ubuntu setup, you can follow my [Ubuntu, Ruby, ruby-install,
-chruby, Rails and You blog post](http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-
-install-chruby-and-you//) which will setup a proper development environment
-for you on Ubuntu.
+chruby, Rails and You blog post](http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/)
+which will setup a proper development environment for you on Ubuntu.
 
 **Don't install Ruby packages from `apt`**. That way lies pain and suffering.
 

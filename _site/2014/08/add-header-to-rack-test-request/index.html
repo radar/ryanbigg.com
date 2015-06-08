@@ -16,7 +16,7 @@
         <p>I couldn&#39;t find any results on the Google for the title of this blog post, so I&#39;m writing it here.</p>
 
 <p>All I wanted to do was to send through a header. I tried this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+<div class="highlight"><pre><code class="text language-text" data-lang="text">it &quot;test&quot; do
   get &#39;/test&#39;, {}, { &#39;Test-Header&#39; =&gt; &#39;Test value&#39; }
   expect(last_response.status).to eq(200)
 end
@@ -24,7 +24,7 @@ end
 <p>That doesn&#39;t work, because that third argument is actually the Rack <code>env</code> object.</p>
 
 <p>The correct way to do it is this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">it &quot;test&quot; do
+<div class="highlight"><pre><code class="text language-text" data-lang="text">it &quot;test&quot; do
   header &#39;Test-Header&#39;, &#39;Test value&#39;
   get &#39;/test&#39;
   expect(last_response.status).to eq(200)

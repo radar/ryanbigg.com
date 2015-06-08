@@ -16,10 +16,10 @@
         <p>There&#39;s a little known feature of Bundler that allows you to use a local Git
 repository while developing locally, and a remote Git repo when deploying. This
 feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :path =&gt; &quot;~/Projects/gems/spree&quot;
 </code></pre></div>
 <p>And remote paths:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
 </code></pre></div>
 <p>How does it work?</p>
 
@@ -27,10 +27,10 @@ feature means that you no longer have to <em>constantly</em> switch between loca
 
 <p>Well, what you can do instead is tell Bundler that you have a local copy of
 this repository by running a command like this in your terminal:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
+<div class="highlight"><pre><code class="text language-text" data-lang="text">bundle config local.spree ~/Projects/gems/spree
 </code></pre></div>
 <p>Then in your Gemfile whenever you reference a Git repo for this gem, like this...</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;spree&#39;, :github =&gt; &#39;spree/spree&#39;, :branch =&gt; &#39;master&#39;
 </code></pre></div>
 <p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
 

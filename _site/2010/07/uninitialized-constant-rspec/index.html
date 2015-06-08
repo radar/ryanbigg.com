@@ -14,7 +14,7 @@
         <a href="/2010/07/uninitialized-constant-rspec"><header>uninitialized constant RSpec with Cucumber</header></a>
         <small>05 Jul 2010</small><br>
         <p>Today I upgraded the Cucumber gem on my system (still had 0.7.something) only for it to break!</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">uninitialized constant RSpec (NameError)
+<div class="highlight"><pre><code class="text language-text" data-lang="text">uninitialized constant RSpec (NameError)
 /Library/Ruby/Gems/1.8/gems/cucumber-0.8.3/bin/../lib/cucumber/rb_support/rb_language.rb:51:in `enable_rspec_expectations_if_available&#39;
 </code></pre></div>
 <p>I saw this error last week on a workmate&#39;s computer and both times it was fixed by removing the <code>rspec-expectations</code> gem which is a part of the RSpec 2 gem collection. I had these left over from when I was playing around with Rails 3 (now I&#39;m using RVM). The latest version of Cucumber maintains compatibility between these two versions and does so by trying to require <em>rspec/expecatations</em> which will be available if the <code>rspec-expectations</code> gem is installed. So if you&#39;re trying to use RSpec 1 and 2 and Cucumber at the same time, you may run into this issue. So far the best solution I&#39;ve found is uninstalling <code>rspec-expectations</code>. </p>

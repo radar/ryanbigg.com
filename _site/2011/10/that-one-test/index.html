@@ -20,7 +20,7 @@
 <p>Or maybe not. Well, now you know.</p>
 
 <p>Anyway, this one test is testing some piece of obscure, but required, functionality. Whenever you try thinking about when you worked on it -- or even <em>if</em> you worked on it -- your mind starts going fuzzy and the room starts to spin widdershins. You run the test by itself and RSpec reports this back:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">.
+<div class="highlight"><pre><code class="text language-text" data-lang="text">.
 
 1 example, 0 failures
 </code></pre></div>
@@ -47,7 +47,7 @@
 <p>My <em>point</em> is that RSpec uses this as a kind of reporting tool to show you that progress is actually being made. The <em>great</em> thing about this is that you can write your own! With your own tool, you&#39;ll be able to output to a log what specs are being run and then use this as a base list of suspects.</p>
 
 <p>Create a new file called <code>spec/support/spec_logger.rb</code> and put this content in it:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;rspec/core/formatters/progress_formatter&#39;
+<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;rspec/core/formatters/progress_formatter&#39;
 class SpecLogger &lt; RSpec::Core::Formatters::ProgressFormatter
 
   def example_started(example)
