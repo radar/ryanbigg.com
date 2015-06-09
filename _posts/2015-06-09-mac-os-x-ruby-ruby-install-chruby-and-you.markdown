@@ -28,7 +28,7 @@ If you're looking for a good Rails book, I wrote one called [Rails 4 in Action](
 
 The first thing we're going to need to install is XCode which you can get from the Mac App Store. We'll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.
 
-    xcode-select install
+    xcode-select --install
 
 First of all, we're going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is [homebrew](https://brew.sh). We can install this by using this command:
 
