@@ -32,128 +32,120 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2015/04/getting-started-with-ruby-and-rails"><header>Getting started with Ruby and Rails</header></a>
-  <small>30 Apr 2015</small><br>
-  <p>There are a lot of people who wish to get started with Ruby and Rails, but
-don&#39;t know where to start. I hope that this post will serve as a guide for
-those people.</p>
+  <a href="/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you"><header>Mac OS X, Ruby, ruby-install, chruby and You</header></a>
+  <small>09 Jun 2015</small><br>
+  <p>
+  <strong>This beginner's guide will set up with Ruby 2.2.2, chruby, ruby-install and Rails 4.2.2 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+</p>
 
-<h2>Operating Systems</h2>
+<p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
 
-<h3>Windows</h3>
+<p>This guide will cover installing a couple of things:</p>
 
-<p>People try to develop Ruby and Ruby on Rails apps on Windows and they struggle
-with it. You can try developing on it, but know that it&#39;s going to be more
-painful than the other options (Linux or Mac).</p>
+<ul>
+<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
+<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
+<li><strong>Ruby 2.2.2</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
+<li><strong>Rails 4.2.2</strong>: at the time of writing the newest current stable release of Rails.</li>
+</ul>
 
-<p>It&#39;s for this reason that I recommend installing Ubuntu in a VM
-(using <a href="https://www.virtualbox.org/">VirtualBox</a>) on your Windows PC if you&#39;re
-in that environment.</p>
+<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
 
-<h3>Ubuntu</h3>
+<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
 
-<p>Once you&#39;ve got Ubuntu setup, you can follow my <a href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/">Ubuntu, Ruby, ruby-install,
-chruby, Rails and You blog post</a>
-which will setup a proper development environment for you on Ubuntu.</p>
+<p>If you&#39;re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
 
-<p><strong>Don&#39;t install Ruby packages from <code>apt</code></strong>. That way lies pain and suffering.</p>
+<h3>Housekeeping</h3>
 
-<h3>Mac</h3>
-
-<p>If you&#39;re on Mac, you can follow many of the same steps in the Ubuntu guide.
-Install ruby-install, chruby as per that guide, and then you can install
-<a href="http://brew.sh/">Homebrew</a>, and then install PostgreSQL by running this
-command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install postgresql
+<p>The first thing we&#39;re going to need to install is XCode which you can get from the Mac App Store. We&#39;ll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">xcode-select install
 </code></pre></div>
-<p>Or MySQL with this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">brew install mysql
+<p>First of all, we&#39;re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href="https://brew.sh">homebrew</a>. We can install this by using this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;
 </code></pre></div>
-<h2>Getting started with Ruby</h2>
+<p>Next, we&#39;ll need to install <code>wget</code> because some of the commands we&#39;re about to run use it.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install wget
+</code></pre></div>
+<h3>ruby-install</h3>
 
-<h3>The Ruby Koans</h3>
+<p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+tar -xzvf ruby-install-0.5.0.tar.gz
+cd ruby-install-0.5.0/
+sudo make install
+</code></pre></div>
+<p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+</code></pre></div>
+<p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.5.0
+</code></pre></div>
+<h3>Ruby</h3>
 
-<p><strong>FREE</strong></p>
+<p>Our next step is to install Ruby itself, which we can do with this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.2.2
+</code></pre></div>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.2.2 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
+  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
+tar -xzvf chruby-0.3.9.tar.gz
+cd chruby-0.3.9/
+sudo make install
+</code></pre></div>
+<p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
+source /usr/local/share/chruby/auto.sh
+</code></pre></div>
+<p>In order for this to take effect, we&#39;ll need to source that file:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+</code></pre></div>
+<p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
-<p>Your environment is now setup and now you&#39;re wondering where to go from here.
-I <em>always</em> recommend the <a href="http://rubykoans.com/">Ruby Koans</a> which, as their
-site says:</p>
+<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.2
+</code></pre></div>
+<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.2
+</code></pre></div>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.2.2</code> for example -- assuming that we have Ruby 2.2.2 installed first!</p>
 
-<blockquote>
-<p>The Koans walk you along the path to enlightenment in order to learn Ruby. The goal is to learn the Ruby language, syntax, structure, and some common functions and libraries. We also teach you culture. Testing is not just something we pay lip service to, but something we live. It is essential in your quest to learn and do great things in the language.</p>
-</blockquote>
+<p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-darwin14]
+</code></pre></div>
+<h3>Rails</h3>
 
-<p>The Koans are a fantastic introduction to Ruby and if I had my way, it&#39;d be
-where all newbies started to learn. You don&#39;t have to complete them all, just
-try your best. It&#39;s time I admitted: I&#39;ve never actually completed the Koans
-myself. One day I might.</p>
+<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.2.2 --no-rdoc --no-ri
+</code></pre></div>
+<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
-<h3>The Well-Grounded Rubyist</h3>
+<h3>MySQL</h3>
 
-<p><strong>NON-FREE</strong></p>
+<p>Before you can use MySQL, you&#39;ll need to install it with Homebrew:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install mysql
+</code></pre></div>
+<p>After this, <code>gem install mysql</code> should succeed.</p>
 
-<p>If a book is more your style, then <a href="http://manning.com/black3">The Well-Grounded
-Rubyist</a> is the one that I would recommend. The
-very first version of this book (Ruby for Rails) is what I learned Ruby from.
-I don&#39;t link to it here because it was out of date when I read it and that
-makes it even more out of date now.</p>
+<h3>PostgreSQL</h3>
 
-<h3>Jumpstart Labs Tutorials</h3>
+<p>Before you can use PostgreSQL, you&#39;ll need to install it with Homebrew:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install postgresql
+</code></pre></div>
+<p>After this, <code>gem install pg</code> should succeed.</p>
 
-<p><strong>FREE</strong></p>
+<h3>Fin</h3>
 
-<p>I also recommend checking out the <a href="http://tutorials.jumpstartlab.com/">Jumpstart Labs
-Tutorials</a>, which are written by the
-people who run <a href="http://turing.io">Turing Academy</a>. These include tutorials
-that will introduce you to Ruby in 100 minutes, as well as some Sinatra and
-Rails tutorials so that you can wrap your head around applying Ruby to web development.</p>
+<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>.</p>
 
-<h2>Getting started with Rails</h2>
+<p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 
-<h3>Rails 4 in Action</h3>
+<h3>Postscript</h3>
 
-<p><strong>NON-FREE</strong></p>
+<p>A previous version of this guide used RVM. RVM has overtime become bloated and unwieldy. There are many features of RVM that developers simply don&#39;t use, and so using a simpler solution is a better way of doing things as it will lead to less confusion. For instance, RVM provides gemsets which is a feature that is no longer necessary with the advent of Bundler. Even if you don&#39;t want to use Bundler (i.e. you&#39;re crazy) then there&#39;s smaller more specifically-targeted tools for that, such as <a href="https://github.com/seattlerb/ohmygems">ohmygems</a>. RVM&#39;s days as the leading way to install Ruby are over, and this guide has been updated to reflect that. There are better tools.</p>
 
-<p>It&#39;d be remiss of me to not mention my own book, <a href="https://manning.com/bigg2">Rails 4 in
-Action</a> in this section. In the book, we build a
-ticket-tracking application from the ground up using Behaviour Driven
-Development. Thousands of people have found it to be a great introduction to
-Rails, and some people have even gotten Rails jobs after having read it.</p>
-
-<h3>Rails Tutorial</h3>
-
-<p><strong>FREE</strong></p>
-
-<p>If you don&#39;t want to shell out the money for my book (and why not?!), then the
-free <a href="https://www.railstutorial.org/">Rails Tutorial</a> is the next-best-thing.
-In that tutorial, you build a Twitter-like application from scratch. </p>
-
-<h2>More reading / viewing / listening</h2>
-
-<p>Before you go ahead and read this list, you should take some time to go through the resources above and gain a basic understanding of Ruby + Rails. Consider these supplementary to the above list.</p>
-
-<h3>Books</h3>
-
-<ul>
-<li><a href="http://www.confidentruby.com/">Confident Ruby</a></li>
-<li><a href="http://www.amazon.com/Eloquent-Ruby-Addison-Wesley-Professional-Series/dp/0321584104">Eloquent Ruby</a></li>
-<li><a href="http://www.poodr.com/">Practical Object-Oriented Design in Ruby</a></li>
-</ul>
-
-<h3>Podcasts</h3>
-
-<ul>
-<li><a href="http://rubyrogues.com">Ruby Rogues</a></li>
-</ul>
-
-<h3>Screencasts</h3>
-
-<ul>
-<li><a href="http://rubytapas.com">Ruby Tapas</a> - Bite sized screencasts about Ruby</li>
-<li><a href="https://railscasts.com">Railscasts</a> - Screencasts about Ruby on Rails</li>
-</ul>
-
-<p>If you think of anything that should be added to this post, please leave a comment.</p>
+<p>I&#39;ve opted for chruby+ruby-install in this guide because they&#39;ve consistently worked for me and are very, very easy to install. I know of a great many other people who have also used, and continue to use, these tools and I&#39;ve not heard of any of them complaining. Therefore I can only wholeheartedly recommend them to the readers of this post.</p>
 
 </article>
 
@@ -161,6 +153,8 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2015/04/getting-started-with-ruby-and-rails">Getting started with Ruby and Rails</a><abbr>30 Apr 2015</abbr></li>
+  
       <li><a href="/2014/12/filtering-by-index-in-elasticsearch">Filtering by index in Elasticsearch</a><abbr>03 Dec 2014</abbr></li>
   
       <li><a href="/2014/10/ubuntu-ruby-ruby-install-chruby-and-you">Ubuntu, Ruby, ruby-install, chruby, Rails and You</a><abbr>05 Oct 2014</abbr></li>
@@ -208,8 +202,6 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
       <li><a href="/2012/05/on-hiring">On Hiring</a><abbr>25 May 2012</abbr></li>
   
       <li><a href="/2012/05/how-not-to-hire-me">How not to hire me</a><abbr>25 May 2012</abbr></li>
-  
-      <li><a href="/2012/05/engines-talk">Engines talk</a><abbr>19 May 2012</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

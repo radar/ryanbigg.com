@@ -48,7 +48,7 @@ Now you&#39;ll need to install ruby and all the associated packages, using the c
 <p>Ruby is now installed as ruby1.8. Now, if you&#39;re like me and don&#39;t like typing any more than you have to, you can symbolically link this ruby1.8 file to just /usr/bin/ruby. To do this, just type <span class="term">sudo ln -s /usr/bin/ruby1.8 /usr/bin/ruby</span> and it&#39;s all done. This way, you can type ruby AND ruby1.8 and it&#39;ll do the same thing.</p>
 
 <p>After that&#39;s all done, head over to the <a href="http://rubyforge.org/frs/?group_id=126">the rubygems download page</a> and get Rubygems 1.3.1, unpack it and install it yourself. Alternatively, you could use this command and it&#39;ll download it, unpack and install it for you and do some clean up after:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">wget http://rubyforge.org/frs/download.php/38646/rubygems-1.3.1.tgz &amp;&amp;
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget http://rubyforge.org/frs/download.php/38646/rubygems-1.3.1.tgz &amp;&amp;
 gunzip rubygems-1.3.1.tgz &amp;&amp;
 tar xf rubygems-1.3.1.tar &amp;&amp;
 cd rubygems-1.3.1 &amp;&amp;
@@ -65,12 +65,12 @@ rm -r rubygems-1.3.1*
 <p>The next step is to install apache: <span class="term">sudo apt-get install apache2-mpm-prefork apache2-prefork-dev</span> which will install a whole slew of packages including an apache2 server and the development headers for it, too many in fact that I shall not list them here! Just trust me on this one.</p>
 
 <p>After this is done, run <span class="term">sudo passenger-install-apache2-module</span> and follow the instructions there. After it&#39;s done pay attention to the last three lines it tells you to put into your apache configuration file:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
+<div class="highlight"><pre><code class="language-text" data-lang="text">LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
 PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6
 PassengerRuby /usr/bin/ruby1.8
 </code></pre></div>
 <p>For that last line, you can use either /usr/bin/ruby1.8 or /usr/bin/ruby, since we symbolically linked them all that time ago. We&#39;re going to put these lines into /etc/apache2/sites-enabled/000-default at the top of the file and change a few things in the file and our end result should look like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
+<div class="highlight"><pre><code class="language-text" data-lang="text">LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
 PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6
 PassengerRuby /usr/bin/ruby1.8
 
@@ -86,7 +86,7 @@ ServerSignature On
 <p>After editing this file you&#39;ll need to restart Apache by typing: <span class="term">sudo /etc/init.d/apache2 restart</span>. Also, you may want to remove the index.html file currently residing in /var/www by tpying <span class="term">sudo rm /var/www/index.html</span>
 <h2>Capistrano</h2>
 Now you want to deploy your uber-mega-ultra-hyper application to the server! To do this we can use Capistrano. If you haven&#39;t already, on your development machine install Capistrano by typing <span class="term">sudo gem install capistrano</span>. When Capistrano is installed go into your uber-mega-ultra-hyper application&#39;s root directory and type <span class="term">capify  .</span>. This will capify (say it out loud in an announcer-style voice, oh yeah) your application by creating a <em>Capfile</em> in the root path and a <em>deploy.rb</em> file in the <em>config</em> folder. What we&#39;re really interested in here is the <em>config/deploy.rb</em> file which now looks kind of sparse:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">set :application, &quot;set your application name here&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">set :application, &quot;set your application name here&quot;
 set :repository,  &quot;set your repository location here&quot;
 
 # If you aren&#39;t deploying to /u/apps/#{application} on the target
@@ -103,7 +103,7 @@ role :web, &quot;your web-server here&quot;
 role :db,  &quot;your db-server here&quot;, :primary =&gt; true
 </code></pre></div>
 <p>But we&#39;ll give it some lovin&#39;:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">set :application, &quot;uber-mega-ultra-hyper&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">set :application, &quot;uber-mega-ultra-hyper&quot;
 set :repository, &quot;git://github.com/you/uber-mega-ultra-hyper&quot;
 
 set :deploy_to, &quot;/home/deploy/app&quot;

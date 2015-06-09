@@ -40,10 +40,10 @@
 <p>So if you&#39;re ever doing anything in your application where you need to find by dates / times, why are you not using <a href='http://github.com/radar/by_star'>by_star</a>? Here&#39;s a good reason you should be using by_star:</p>
 
 <p><strong>Before by_star</strong></p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text"> Post.all(:conditions =&gt; [&quot;created_at &gt;= ? AND created_at &lt;= ?&quot;, &quot;01/01/#{Time.now.year}&quot;.to_time, &quot;31/01/#{Time.now.year}&quot;])
+<div class="highlight"><pre><code class="language-text" data-lang="text"> Post.all(:conditions =&gt; [&quot;created_at &gt;= ? AND created_at &lt;= ?&quot;, &quot;01/01/#{Time.now.year}&quot;.to_time, &quot;31/01/#{Time.now.year}&quot;])
 </code></pre></div>
 <p><strong>After by_star</strong></p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Post.by_month(1)
+<div class="highlight"><pre><code class="language-text" data-lang="text">Post.by_month(1)
 </code></pre></div>
 <p>This is only a <strong>taste</strong> of the shiny things in by_star! Use it!</p>
 

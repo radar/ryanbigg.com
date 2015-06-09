@@ -20,7 +20,7 @@
 <p>What could that JavaScript be doing? Well, it&#39;s not that hard to understand <em>now</em>, but it didn&#39;t click the first couple of times I read it.</p>
 
 <p>The script initializes a new JavaScript array, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">var variant_prices = new Array();
+<div class="highlight"><pre><code class="language-text" data-lang="text">var variant_prices = new Array();
 </code></pre></div>
 <p>Fairly innocuous. We would&#39;ve also accepted <code>var variant_prices = [];</code>.</p>
 
@@ -33,7 +33,7 @@
 <hr>
 
 <p>The <em>now obvious</em> solution to this problem is to <em>not</em> use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">var variant_prices = {};
+<div class="highlight"><pre><code class="language-text" data-lang="text">var variant_prices = {};
 </code></pre></div>
 <p>Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.</p>
 

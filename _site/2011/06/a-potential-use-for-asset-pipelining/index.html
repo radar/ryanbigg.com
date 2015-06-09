@@ -18,18 +18,18 @@
 <p>Anyway, asset pipelining! So I wanted to add theming support to forem because it&#39;s butt-ugly right now and I can&#39;t design for crap. Have you seen this blog? I wanted to make theming so dead-simple for forem that people just need to put one or two lines in their application and <em>BLAMMO</em> it would work.</p>
 
 <p>I have accomplished this goal tonight, in what was probably about 10 minutes of thinking, experimenting and saying &quot;wow, I can&#39;t believe it works&quot; when it actually worked. To make theming work on forem, it&#39;s as simple as putting this line in your <code>Gemfile</code> (<em>after</em> the <code>forem</code> gem, as it needs to be loaded first):</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;forem-theme-base&#39;, :git =&gt; &quot;git://github.com/radar/forem-theme-base&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;forem-theme-base&#39;, :git =&gt; &quot;git://github.com/radar/forem-theme-base&quot;
 </code></pre></div>
 <p>This gem is actually its own Rails engine, which means that it gets all the goodies that a Rails engine is bestowed, including the automatic hooks to the asset pipelining. This gem also contains this line:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Forem::Engine.theme = :base
+<div class="highlight"><pre><code class="language-text" data-lang="text">Forem::Engine.theme = :base
 </code></pre></div>
 <p>This (obviously) tells forem what theme to use, and can be overriden at your wish if you had multiple themes. I am considering having a settings panel for this in the backend.</p>
 
 <p>To actually style the forum you&#39;ll need to put this line in the layout that forem uses:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;%= forum_theme_tag %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;%= forum_theme_tag %&gt;
 </code></pre></div>
 <p>I would make this happen automatically, but other people may wish to apply their site&#39;s styles to the forum system without having to create another gem, and so I leave this as optional. This little tag generates a <code>stylesheet_link_tag</code> like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">&lt;%= stylesheet_link_tag &quot;assets/forem/base/style.css&quot; %&gt;
+<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;%= stylesheet_link_tag &quot;assets/forem/base/style.css&quot; %&gt;
 </code></pre></div>
 <p>Rails then will know where to serve this from because <code>forem-theme-base</code> is an engine.</p>
 

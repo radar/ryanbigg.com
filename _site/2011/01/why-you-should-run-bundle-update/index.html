@@ -16,7 +16,7 @@
         <h3>Prelude</h3>
 
 <p><code>bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code>Gemfile.lock</code> pre-existing, running <code>bundle install</code> will only install the versions specified in the <code>Gemfile.lock</code> and will complain that you have incompatible versions:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Bundler could not find compatible versions for gem &quot;activesupport&quot;:
+<div class="highlight"><pre><code class="language-text" data-lang="text">Bundler could not find compatible versions for gem &quot;activesupport&quot;:
   In snapshot (Gemfile.lock):
     activesupport (3.0.0)
 
@@ -40,7 +40,7 @@ the gems in your Gemfile, which may resolve the conflict.
 <p>Generally speaking, there&#39;s three parts of a version for a gem: the major, the minor and the tiny. For example, Rails right now has a major version of 3, a minor version of 0 and a tiny version of 3, making the full version <code>3.0.3</code> currently. </p>
 
 <p>The &quot;rule&quot; (or perhaps it&#39;s more of a guideline) of gem versioning is that any subsequent releases for the <em>same</em> minor version, but a newer, higher tiny version number should fix any bugs that existed in the previous version, without breaking any functionality. Therefore you should be able to have a gem dependency like this in your <code>Gemfile</code> without any fear that it would break:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">gem &#39;rails&#39;, &#39;~&gt; 3.0.0&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem &#39;rails&#39;, &#39;~&gt; 3.0.0&#39;
 </code></pre></div>
 <p>The <code>~&gt;</code> part of the version indicates that we want the latest version in the series that we&#39;ve specified. Because we&#39;ve specified a major, minor and tiny version here, we&#39;ll get the latest tiny release of the <code>3.0</code> series (<code>3.0.3</code> at current writing) when we run <code>bundle install</code>. In a new tiny release, there should be <em>no breaking changes</em>, only patches. Therefore, specifying versions like this is considered the safest method.</p>
 
@@ -55,7 +55,7 @@ the gems in your Gemfile, which may resolve the conflict.
 <p>If we follow these simple guidelines then we can live a peaceful life of Gem Dependency Heaven instead of Gem Dependency Hell (think pre-Bundler days).</p>
 
 <p>Whilst it&#39;s probably not a good idea to run <code>bundle update</code> (and Alex used stronger wording with the &quot;ever&quot; word), it&#39;s still useful in some contexts. Recently, David Chelimsky released a new tiny version of rspec-rails (2.4.1) which fixed a single bug. If I had <code>gem &#39;rspec-rails&#39;, &#39;~&gt; 2.4.0&#39;</code> and had <code>rspec-rails 2.4.0</code> installed but wanted to use the newest gem, I could update it by running a simple command:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">bundle update rspec-rails
+<div class="highlight"><pre><code class="language-text" data-lang="text">bundle update rspec-rails
 </code></pre></div>
 <p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
 

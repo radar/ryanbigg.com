@@ -24,14 +24,14 @@
 <p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code>go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go&#39;s built-in tool: <code>go build</code>. </p>
 
 <p>I also enjoy the <code>go get</code> tool. It took me a while to figure out that if I structured my <code>~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Projects/go
+<div class="highlight"><pre><code class="language-text" data-lang="text">Projects/go
   -&gt; src
     -&gt; github.com
       -&gt; bjeanes
         -&gt; go-lifx
 </code></pre></div>
 <p>I&#39;ve set <code>GOPATH</code> to <code>~/Projects/go</code> and so then when I type <code>go get github.com/codegangsta/cli</code> it will install it into <code>~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">import (
+<div class="highlight"><pre><code class="language-text" data-lang="text">import (
   &quot;github.com/codegangsta/cli&quot;
 )
 </code></pre></div>

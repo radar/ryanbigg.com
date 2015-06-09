@@ -32,7 +32,7 @@
 <p>First task was to take an SQL backup from the WordPress install that I had and move it over to my own system. Next, I imported this SQL into a local install of MySQL and made sure it was the latest-and-greatest. Sure, enough it was. Rohit had pointed me at the <a href='https://github.com/mojombo/jekyll/wiki/blog-migrations'>Blog migrations wiki page</a> for Jekyll and it had what appeared to be clear instructions for WordPress there.</p>
 
 <p>So I cloned the <a href='http://github.com/mojombo/jekyll'>Jekyll</a> project into my <code>~/Sites/gems</code> folder and ran just the wordpress commands because I have tunnel vision when reading documentation (note: not my real username and password):</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">$ export DB=ryanbigg
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ export DB=ryanbigg
 $ export USER=lolno 
 $ export PASS=nopass4u 
 $ ruby -r &#39;~/Sites/gems/jekyll/lib/jekyll/migrators/wordpress&#39; -e &#39;Jekyll::WordPress.process( &quot;#{ENV[&quot;DB&quot;]}&quot;, &quot;#{ENV[&quot;USER&quot;]}&quot;, &quot;#{ENV[&quot;PASS&quot;]}&quot;)&#39;

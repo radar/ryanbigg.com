@@ -22,7 +22,7 @@ ultimately didn&#39;t get accepted. Nevertheless...</p>
 
 <p>The first thing that I <a href="https://twitter.com/ryanbigg/status/194501115524554754">can recall disagreeing</a> with is Andy&#39;s suggestion to draw routes for the engine on the <code>Rails.application.routes</code> object, by putting
 this code inside the <code>config/routes.rb</code> file of the engine:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Rails.application.routes.draw do
+<div class="highlight"><pre><code class="language-text" data-lang="text">Rails.application.routes.draw do
   resources :people
 end
 </code></pre></div>
@@ -33,7 +33,7 @@ drawn after the application. </p>
 top-level of the namespace, i.e. <code>PeopleController</code>. This can lead to confusion as to where the controller is located. How can someone know if <code>PeopleController</code> is inside the engine or is inside the application? Furthermore, the more engines that get added to this application, the more confusing such a thing would get.</p>
 
 <p>By namespacing the routes <em>properly</em> (as we do in <a href="https://spreecommerce.com">Spree</a> and <a href="http://github.com/radar/forem">Forem</a>) , like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">Spree::Core::Engine.routes.draw do
+<div class="highlight"><pre><code class="language-text" data-lang="text">Spree::Core::Engine.routes.draw do
   resources :products
 end
 </code></pre></div>
@@ -44,7 +44,7 @@ Spree this namespace isolation is to the <code>Spree</code> module (i.e. <code>i
 <p>By using a completely isolated namespace like this, your controller would end up being correctly namespaced and then there&#39;s no confusion as to which engine
 the controller is located within. You can then mount your engine at whatever path you want inside your application by explicitly defining the mount point
 inside <code>config/application.rb</code> like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">mount Spree::Core::Engine, :at =&gt; &quot;/&quot;
+<div class="highlight"><pre><code class="language-text" data-lang="text">mount Spree::Core::Engine, :at =&gt; &quot;/&quot;
 </code></pre></div>
 <p>By mounting it at root, it will seem as if the engine were a part of the application itself. If you wanted to change where the engine was mounted, it&#39;s a
 simple matter of changing the <code>:at</code>: option and you can carry on like normal.</p>
@@ -54,12 +54,12 @@ your engine to avoid confusion.</p>
 
 <p>Oh, and one more thing: by doing this namespacing, if you want to get to an engine route from inside the application, you&#39;ll need to call the engine&#39;s routing
 proxy method, like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">spree.products_path
+<div class="highlight"><pre><code class="language-text" data-lang="text">spree.products_path
 </code></pre></div>
 <p>If you attempted to do <code>products_path</code> it would go to the application&#39;s <code>products_path</code>, which may be undefined.</p>
 
 <p>Similarly, to get to the application&#39;s routes from inside the engine, use <code>main_app</code>:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">main_app.people_path
+<div class="highlight"><pre><code class="language-text" data-lang="text">main_app.people_path
 </code></pre></div>
 <h3>Switching back and forth</h3>
 
@@ -77,23 +77,23 @@ switch back and forth from application to engine.</p>
 
 <p>If you have modifications for the engine inside your application, there&#39;s also a way to test that. With Spree, we provide a module called
 <code>Spree::Core::UrlHelpers</code> that you can include into your <code>RSpec.configure</code> block like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;spree/core/url_helpers&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;spree/core/url_helpers&#39;
 RSpec.configure do |c|
   c.include Spree::Core::UrlHelpers, :type =&gt; :integration
 end
 </code></pre></div>
 <p>Then in your integration tests it&#39;s simply a matter of referencing the Spree routes like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">visit spree.products_path
+<div class="highlight"><pre><code class="language-text" data-lang="text">visit spree.products_path
 </code></pre></div>
 <p>Now for when you want to test that a customization to a Spree controller is behaving as intended, we&#39;ve got a module for that too. It&#39;s called
 <code>Spree::Core::TestingSupport::ControllerRequests</code> and you can include it like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">require &#39;spree/core/testing_support/controller_requests&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">require &#39;spree/core/testing_support/controller_requests&#39;
 RSpec.configure do |c|
   c.include Spree::Core::TestingSupport::ControllerRequests, :type =&gt; :controller
 end
 </code></pre></div>
 <p>Then you can write your controller specs like this:</p>
-<div class="highlight"><pre><code class="text language-text" data-lang="text">describe Spree::ProductsController do
+<div class="highlight"><pre><code class="language-text" data-lang="text">describe Spree::ProductsController do
   it &quot;can see all the products&quot; do
     spree_get :index
   end
