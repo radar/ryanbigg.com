@@ -5,7 +5,7 @@ title: Mac OS X, Ruby, ruby-install, chruby and You
 ---
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 2.2.2, chruby, ruby-install and Rails 4.2.2 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 2.2.2, chruby, ruby-install and Rails 4.2.1 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
@@ -16,7 +16,7 @@ This guide will cover installing a couple of things:
 * [**chruby**](https://github.com/postmodern/chruby): a way to easily switch between those Ruby installs
 * **Ruby 2.2.2**: at the time of writing the newest current stable release of Ruby.
 * **Bundler**: a package dependency manager used in the Ruby community
-* **Rails 4.2.2**: at the time of writing the newest current stable release of Rails.
+* **Rails 4.2.1**: at the time of writing the newest current stable release of Rails.
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.
 
@@ -119,7 +119,7 @@ ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-darwin14]
 
 Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 4.2.2 --no-rdoc --no-ri
+    gem install rails -v 4.2.1 --no-document
 
 This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 
