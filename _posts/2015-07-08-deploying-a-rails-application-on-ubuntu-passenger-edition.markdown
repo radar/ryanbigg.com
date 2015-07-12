@@ -32,13 +32,13 @@ In order to install Ruby, we'll need to install the `build-essential` package. T
 We first need to make sure that our `apt` sources are up-to-date. If they're not, installing the `build-essential` pcakage might fail. We will do this by logging into the machine as root, and then running this command:
 
 ```
-sudo apt-get update
+apt-get update
 ```
 
 Next, we'll need to install the `build-essential` package itself:
 
 ```
-sudo apt-get install build-essential
+apt-get install build-essential
 ```
 
 With those tools installed, we will now install a Ruby version with the `ruby-install` tool. Follow the [install steps for ruby-install](https://github.com/postmodern/ruby-install#install) (reproduced here for your convienience):
@@ -47,7 +47,7 @@ With those tools installed, we will now install a Ruby version with the `ruby-in
 wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
 tar -xzvf ruby-install-0.5.0.tar.gz
 cd ruby-install-0.5.0/
-sudo make install
+make install
 ```
 
 We will now install Ruby 2.2.2 system-wide by running this command:
