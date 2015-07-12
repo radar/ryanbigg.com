@@ -11,8 +11,8 @@ If you find any mistakes in this guide, please let me know in the comments below
 In the guide, we'll be using:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): To install a Ruby version system-wide.
-* **apache2 (Apache)**: A webserver to serve our Rails application with
-* [**Passenger**](https://www.phusionpassenger.com/): The proxy between Apache and Rails which automatically starts + stops Rails application "worker processes".
+* **nginx**: A webserver to serve our Rails application with.
+* [**Passenger**](https://www.phusionpassenger.com/): The proxy between nginx and Rails which automatically starts + stops Rails application "worker processes".
 * **Capistrano**: A very helpful tool that automates your deployment workflow.
 
 While you _could_ serve traffic from your production site using `rails s`, there are many issues with that:
@@ -21,7 +21,7 @@ While you _could_ serve traffic from your production site using `rails s`, there
 2. If it dies, you will need to restart it manually.
 3. It will crash under heavy load because the web server it uses (WEBrick) has not been designed for production use.
 
-So instead, we'll be using Apache and Passenger.
+So instead, we'll be using nginx and Passenger.
 
 Before we can run our Ruby on Rails application on the server, we'll need to install Ruby.
 
@@ -201,9 +201,24 @@ There's two more thing to do before we can deploy the application to the server:
 
 Install one of the following packages as the `root` user on that machine:
 
-* By default, a Rails application uses SQLite3. To install SQLite3's development headers, run `apt-get install libsqlite3-dev`
-* If you're using MySQL, run `apt-get install libmysqlclient-dev`.
-* If you're using PostgreSQL, run `apt-get install libpq-dev`.
+* By default, a Rails application uses SQLite3. To install SQLite3's development headers, run this command:
+
+```
+apt-get install libsqlite3-dev
+```
+
+
+* If you're using MySQL, run:
+
+```
+apt-get install libmysqlclient-dev
+```
+
+* If you're using PostgreSQL, run:
+
+```
+apt-get install libpq-dev
+```
 
 If you're using MySQL or PostgreSQL, you'll need to install their servers.
 
@@ -237,67 +252,50 @@ The next step Capistrano will do is symlink the release directory to `/home/rail
 At the end of all of that, it will also check the number of releases in the application directory. If there are more than 5, it will delete the oldest ones and keep only the 5 most recent. Again: these are kept around so that you may choose to rollback if something goes wrong.
 
 
-With the application deployed, let's get it to serve our first production request by installing Apache + Passenger and then configuring them.
+With the application deployed, let's get it to serve our first production request by installing nginx + Passenger and then configuring them.
 
-## Installing Apache + Passenger
+## Installing nginx + Passenger
 
-We will install the Apache webserver by running `sudo apt-get install apache2` as root. To install Passenger, we will run `gem install passenger`, also as root. There are some other Apache packages we will need to install otherwise what we're about to do next will fail. Let's install them pre-emptively:
+We can install a standalone edition of nginx using the Passenger installer, which massively simplifies what we're about to do. Without it, we would need to install nginx and Passenger, then we would need to configure these to work with each other.
 
-```
-apt-get install libcurl4-openssl-dev apache2-threaded-dev libapr1-dev libaprutil1-dev
-```
-
-Alternatively, you could skip to the next section, go through and find out why we need those packages in the first place.
-
-Next, we'll need to install the Passenger Apache module, which we will do by running `passenger-install-apache2-module` and following the steps. We want to select Ruby when it prompts us for which languages we're interested in, of course.
-
-This is another part where we'll need to wait a bit while Passenger compiles all the things it needs. Once it's done, it will tell us to put this configuration in our Apache config:
+Before we can install that, we'll need to install one more package:
 
 ```
-LoadModule passenger_module /usr/local/lib/ruby/gems/2.2.0/gems/passenger-5.0.13/buildout/apache2/mod_passenger.so
-<IfModule mod_passenger.c>
-  PassengerRoot /usr/local/lib/ruby/gems/2.2.0/gems/passenger-5.0.13
-  PassengerDefaultRuby /usr/local/bin/ruby
-</IfModule>
+apt-get install libcurl4-openssl-dev
 ```
 
-Connect to the server in a separate tab as `root`, and add a new file at `/etc/apache2/mods-available/passenger.conf` with the content in it. We'll symlink it to make Apache load it:
+This installs Curl development headers with SSL support, which Passenger uses during the installation process.
+
+To install Passenger, we will run `gem install passenger`, as root.
+
+
+Next, we'll need to install Passenger and nginx, which we will do by running `passenger-install-nginx-module` and following the steps. We want to select Ruby when it prompts us for which languages we're interested in, of course. When it asks if we want Passenger to download + install nginx for us, we'll select the first option; "Yes: download, compile and install Nginx for me."
+
+This is another part where we'll need to wait a bit while Passenger compiles all the things it needs. Once it's done, it will tell us to put this configuration in our nginx config:
 
 ```
-ln -s /etc/apache2/mods-available/passenger.conf \
-      /etc/apache2/mods-enabled/passenger.conf
+server {
+   listen 80;
+   server_name www.yourhost.com;
+   root /somewhere/public;   # <--- be sure to point to 'public'!
+   passenger_enabled on;
+}
 ```
 
-Finally, we'll need to configure a `VirtualHost` block to tell Apache + Passenger where to find our application. Open up `/etc/apache2/sites-enabled/default`, clear out the content and replace it with this:
+The `listen` directive tells nginx to listen for connections on port 80. The `server_name` directive is the address of your server, and you should change this from `www.yourhost.com` to whatever your server is. The `root` directive tells nginx where to find the application. The `passenger_enabled` directive should be very obvious.
+
+Open `/opt/nginx/conf/nginx.conf` and delete the `server` block inside the `http` block, and replace it with the above example. Update the values in the example to be specific to your application.
+
+You can start nginx by running:
 
 ```
-<VirtualHost *:80>
-   PassengerUser rails_app
-   ServerName rails_app.example.com
-   # !!! Be sure to point DocumentRoot to 'public'!
-   DocumentRoot /home/rails_app/app/current/public
-   <Directory /home/rails_app/app/current/public>
-      # This relaxes Apache security settings.
-      AllowOverride all
-      # MultiViews must be turned off.
-      Options -MultiViews
-      Require all granted
-   </Directory>
-</VirtualHost>
+/opt/nginx/sbin/nginx
 ```
 
-The `PassengerUser` setting at the top of this tells Passenger to use the `rails_app` user when running this application. This sandboxes the application to this user's home directory. We point the `DocumentRoot` at the `public` directory of our current application's release because the comment says we should, and the `Directory` directive is also pointed there. To find out what the remaining options do is an exercise to the reader ;)
-
-For these configuration changes to take effect, we will need to restart the Apache server by running this command:
+If we try to access our application now, we'll see a "Incomplete response received from application" error. In order to diagnose one of these, we can look in `/opt/nginx/logs/error.log`, which will tell us what caused that:
 
 ```
-service apache2 restart
-```
-
-If we try to access our application now, we'll see a "Incomplete response received from application" error. In order to diagnose one of these, we can look in `/var/log/apache2/error.log`, which will tell us what caused that:
-
-```
-Exception RuntimeError in Rack application object (Missing `secret_token` and `secret_key_base` for 'production' environment, set these values in `config/secrets.yml`)
+*** Exception RuntimeError in Rack application object (Missing `secret_token` and `secret_key_base` for 'production' environment, set these values in `config/secrets.yml`) (process 5076, thread 0x007fd841f79d58(Worker 1)):
 ```
 
 It's telling us that we're missing the `secret_token` and `secret_key_base` for the production environment in `config/secrets.yml`. If we look at our application's `config/secrets.yml`, we'll see indeed that this is missing:

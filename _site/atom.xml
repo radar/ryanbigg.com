@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2015-07-12T21:04:45+10:00</updated>
+ <updated>2015-07-13T09:09:47+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -25,8 +25,8 @@
 
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: To install a Ruby version system-wide.</li>
-<li><strong>apache2 (Apache)</strong>: A webserver to serve our Rails application with</li>
-<li><a href="https://www.phusionpassenger.com/"><strong>Passenger</strong></a>: The proxy between Apache and Rails which automatically starts + stops Rails application &quot;worker processes&quot;.</li>
+<li><strong>nginx</strong>: A webserver to serve our Rails application with.</li>
+<li><a href="https://www.phusionpassenger.com/"><strong>Passenger</strong></a>: The proxy between nginx and Rails which automatically starts + stops Rails application &quot;worker processes&quot;.</li>
 <li><strong>Capistrano</strong>: A very helpful tool that automates your deployment workflow.</li>
 </ul>
 
@@ -38,7 +38,7 @@
 <li>It will crash under heavy load because the web server it uses (WEBrick) has not been designed for production use.</li>
 </ol>
 
-<p>So instead, we&#39;ll be using Apache and Passenger.</p>
+<p>So instead, we&#39;ll be using nginx and Passenger.</p>
 
 <p>Before we can run our Ruby on Rails application on the server, we&#39;ll need to install Ruby.</p>
 
@@ -171,11 +171,20 @@ chmod 600 /home/rails_app/.ssh/authorized_keys
 <p>Install one of the following packages as the <code>root</code> user on that machine:</p>
 
 <ul>
-<li>By default, a Rails application uses SQLite3. To install SQLite3&#39;s development headers, run <code>apt-get install libsqlite3-dev</code></li>
-<li>If you&#39;re using MySQL, run <code>apt-get install libmysqlclient-dev</code>.</li>
-<li>If you&#39;re using PostgreSQL, run <code>apt-get install libpq-dev</code>.</li>
+<li>By default, a Rails application uses SQLite3. To install SQLite3&#39;s development headers, run this command:</li>
 </ul>
-
+<div class="highlight"><pre><code class="language-text" data-lang="text">apt-get install libsqlite3-dev
+</code></pre></div>
+<ul>
+<li>If you&#39;re using MySQL, run:</li>
+</ul>
+<div class="highlight"><pre><code class="language-text" data-lang="text">apt-get install libmysqlclient-dev
+</code></pre></div>
+<ul>
+<li>If you&#39;re using PostgreSQL, run:</li>
+</ul>
+<div class="highlight"><pre><code class="language-text" data-lang="text">apt-get install libpq-dev
+</code></pre></div>
 <p>If you&#39;re using MySQL or PostgreSQL, you&#39;ll need to install their servers.</p>
 
 <ul>
@@ -208,50 +217,38 @@ chmod 600 /home/rails_app/.ssh/authorized_keys
 
 <p>At the end of all of that, it will also check the number of releases in the application directory. If there are more than 5, it will delete the oldest ones and keep only the 5 most recent. Again: these are kept around so that you may choose to rollback if something goes wrong.</p>
 
-<p>With the application deployed, let&#39;s get it to serve our first production request by installing Apache + Passenger and then configuring them.</p>
+<p>With the application deployed, let&#39;s get it to serve our first production request by installing nginx + Passenger and then configuring them.</p>
 
-<h2>Installing Apache + Passenger</h2>
+<h2>Installing nginx + Passenger</h2>
 
-<p>We will install the Apache webserver by running <code>sudo apt-get install apache2</code> as root. To install Passenger, we will run <code>gem install passenger</code>, also as root. There are some other Apache packages we will need to install otherwise what we&#39;re about to do next will fail. Let&#39;s install them pre-emptively:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">apt-get install libcurl4-openssl-dev apache2-threaded-dev libapr1-dev libaprutil1-dev
-</code></pre></div>
-<p>Alternatively, you could skip to the next section, go through and find out why we need those packages in the first place.</p>
+<p>We can install a standalone edition of nginx using the Passenger installer, which massively simplifies what we&#39;re about to do. Without it, we would need to install nginx and Passenger, then we would need to configure these to work with each other.</p>
 
-<p>Next, we&#39;ll need to install the Passenger Apache module, which we will do by running <code>passenger-install-apache2-module</code> and following the steps. We want to select Ruby when it prompts us for which languages we&#39;re interested in, of course.</p>
+<p>Before we can install that, we&#39;ll need to install one more package:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">apt-get install libcurl4-openssl-dev
+</code></pre></div>
+<p>This installs Curl development headers with SSL support, which Passenger uses during the installation process.</p>
 
-<p>This is another part where we&#39;ll need to wait a bit while Passenger compiles all the things it needs. Once it&#39;s done, it will tell us to put this configuration in our Apache config:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">LoadModule passenger_module /usr/local/lib/ruby/gems/2.2.0/gems/passenger-5.0.13/buildout/apache2/mod_passenger.so
-&lt;IfModule mod_passenger.c&gt;
-  PassengerRoot /usr/local/lib/ruby/gems/2.2.0/gems/passenger-5.0.13
-  PassengerDefaultRuby /usr/local/bin/ruby
-&lt;/IfModule&gt;
-</code></pre></div>
-<p>Connect to the server in a separate tab as <code>root</code>, and add a new file at <code>/etc/apache2/mods-available/passenger.conf</code> with the content in it. We&#39;ll symlink it to make Apache load it:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ln -s /etc/apache2/mods-available/passenger.conf \
-      /etc/apache2/mods-enabled/passenger.conf
-</code></pre></div>
-<p>Finally, we&#39;ll need to configure a <code>VirtualHost</code> block to tell Apache + Passenger where to find our application. Open up <code>/etc/apache2/sites-enabled/default</code>, clear out the content and replace it with this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">&lt;VirtualHost *:80&gt;
-   PassengerUser rails_app
-   ServerName rails_app.example.com
-   # !!! Be sure to point DocumentRoot to &#39;public&#39;!
-   DocumentRoot /home/rails_app/app/current/public
-   &lt;Directory /home/rails_app/app/current/public&gt;
-      # This relaxes Apache security settings.
-      AllowOverride all
-      # MultiViews must be turned off.
-      Options -MultiViews
-      Require all granted
-   &lt;/Directory&gt;
-&lt;/VirtualHost&gt;
-</code></pre></div>
-<p>The <code>PassengerUser</code> setting at the top of this tells Passenger to use the <code>rails_app</code> user when running this application. This sandboxes the application to this user&#39;s home directory. We point the <code>DocumentRoot</code> at the <code>public</code> directory of our current application&#39;s release because the comment says we should, and the <code>Directory</code> directive is also pointed there. To find out what the remaining options do is an exercise to the reader ;)</p>
+<p>To install Passenger, we will run <code>gem install passenger</code>, as root.</p>
 
-<p>For these configuration changes to take effect, we will need to restart the Apache server by running this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">service apache2 restart
+<p>Next, we&#39;ll need to install Passenger and nginx, which we will do by running <code>passenger-install-nginx-module</code> and following the steps. We want to select Ruby when it prompts us for which languages we&#39;re interested in, of course. When it asks if we want Passenger to download + install nginx for us, we&#39;ll select the first option; &quot;Yes: download, compile and install Nginx for me.&quot;</p>
+
+<p>This is another part where we&#39;ll need to wait a bit while Passenger compiles all the things it needs. Once it&#39;s done, it will tell us to put this configuration in our nginx config:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">server {
+   listen 80;
+   server_name www.yourhost.com;
+   root /somewhere/public;   # &lt;--- be sure to point to &#39;public&#39;!
+   passenger_enabled on;
+}
 </code></pre></div>
-<p>If we try to access our application now, we&#39;ll see a &quot;Incomplete response received from application&quot; error. In order to diagnose one of these, we can look in <code>/var/log/apache2/error.log</code>, which will tell us what caused that:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Exception RuntimeError in Rack application object (Missing `secret_token` and `secret_key_base` for &#39;production&#39; environment, set these values in `config/secrets.yml`)
+<p>The <code>listen</code> directive tells nginx to listen for connections on port 80. The <code>server_name</code> directive is the address of your server, and you should change this from <code>www.yourhost.com</code> to whatever your server is. The <code>root</code> directive tells nginx where to find the application. The <code>passenger_enabled</code> directive should be very obvious.</p>
+
+<p>Open <code>/opt/nginx/conf/nginx.conf</code> and delete the <code>server</code> block inside the <code>http</code> block, and replace it with the above example. Update the values in the example to be specific to your application.</p>
+
+<p>You can start nginx by running:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">/opt/nginx/sbin/nginx
+</code></pre></div>
+<p>If we try to access our application now, we&#39;ll see a &quot;Incomplete response received from application&quot; error. In order to diagnose one of these, we can look in <code>/opt/nginx/logs/error.log</code>, which will tell us what caused that:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">*** Exception RuntimeError in Rack application object (Missing `secret_token` and `secret_key_base` for &#39;production&#39; environment, set these values in `config/secrets.yml`) (process 5076, thread 0x007fd841f79d58(Worker 1)):
 </code></pre></div>
 <p>It&#39;s telling us that we&#39;re missing the <code>secret_token</code> and <code>secret_key_base</code> for the production environment in <code>config/secrets.yml</code>. If we look at our application&#39;s <code>config/secrets.yml</code>, we&#39;ll see indeed that this is missing:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">development:
