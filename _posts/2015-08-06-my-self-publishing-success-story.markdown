@@ -75,6 +75,11 @@ Contrast it with the royalties I get from Manning from June 2010 to the current 
 
 ![Manning Royalties](/images/success-story/manning-royalties.png)
 
+To be fair, the dry-spell since January 2012 is partly because Manning
+overpaid my royalties by $3.8k. Just a small clerical error, I'm sure. But
+since then, Rails 4 in Action has been earning money I haven't seen anything
+for our work on it.
+
 The monthly income is a great motivator to the writing process because it's a
 monthly reminder that people think it's worthwhile buying and (probably)
 reading the books that I publish on Leanpub.
