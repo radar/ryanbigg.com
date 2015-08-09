@@ -124,8 +124,10 @@ rate, I don't know Yehuda's!)
 
 Manning receives over two-thirds of the money earned for Rails 3 in Action and
 will earn the same split for Rails 4 in Action. This is a personal sore point
-for me, because I'm a greedy bastard and for plenty of other reasons... but
-let's not dwell on that point for too long.
+for me, because I'm a greedy bastard and for plenty of other reasons. For
+instance, it makes sense that the royalties earned for a print book are low,
+because producing print books takes effort, time and money. So that's logical.
+But a 50/50 cut for ebooks seems a bit, well, unbalanced.
 
 Clearly though, publishing my books through Leanpub is the better option if
 what I'm optimising for is money. Leanpub gets 10% + 50c of whatever book I
