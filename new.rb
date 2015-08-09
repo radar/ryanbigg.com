@@ -27,7 +27,7 @@ filepath = File.join(TARGET_DIR, filename)
 # Create a copy of the template with the title replaced
 new_post = File.read("_layouts/" + TEMPLATE)
 new_post.gsub!('TITLE', title);
-new_post.gsub!('RB-ID', "RB-" + (Dir["_posts/*.markdown"].count + 10).to_s)
+new_post.gsub!('RB-ID', "RB-" + (Dir["_posts/*.markdown"].count + 11).to_s)
 
 # Write out the file to the target directory
 new_post_file = File.open(filepath, 'w')
