@@ -53,10 +53,10 @@ make install
 We will now install Ruby 2.2.2 system-wide by running this command:
 
 ```
-ruby-install --system ruby 2.2.2
+ruby-install --system ruby 2.2.2 -- --disable-install-rdoc
 ```
 
-We're installing it system-wide so that it's available for all users on this machine. 
+We're installing it system-wide so that it's available for all users on this machine.  The `--disable-install-rdoc` tells Ruby to skip the part about installing RDoc documentation for Ruby on this machine. This is a production machine and we don't need RDoc.
 
 > Eventually, we'll be having each application have its own user on this machine. While we *could* use `ruby-install` on a per-user basis, it makes much more sense (and is easier!) to have it on a system-wide level.
 

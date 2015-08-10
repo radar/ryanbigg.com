@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2015-08-09T13:31:55+10:00</updated>
+ <updated>2015-08-10T14:23:17+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -316,9 +316,9 @@ cd ruby-install-0.5.0/
 make install
 </code></pre></div>
 <p>We will now install Ruby 2.2.2 system-wide by running this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install --system ruby 2.2.2
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install --system ruby 2.2.2 -- --disable-install-rdoc
 </code></pre></div>
-<p>We&#39;re installing it system-wide so that it&#39;s available for all users on this machine. </p>
+<p>We&#39;re installing it system-wide so that it&#39;s available for all users on this machine.  The <code>--disable-install-rdoc</code> tells Ruby to skip the part about installing RDoc documentation for Ruby on this machine. This is a production machine and we don&#39;t need RDoc.</p>
 
 <blockquote>
 <p>Eventually, we&#39;ll be having each application have its own user on this machine. While we <em>could</em> use <code>ruby-install</code> on a per-user basis, it makes much more sense (and is easier!) to have it on a system-wide level.</p>
