@@ -4,13 +4,129 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2015-10-18T16:31:50+11:00</updated>
+ <updated>2015-11-10T17:28:08+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Active Record, change_column and scales</title>
+   <link href="http://ryanbigg.com/2015/11/active-record-change_column-and-scales"/>
+   <updated>2015-11-10T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2015/11/active-record-change_column-and-scales</id>
+   <content type="html"><![CDATA[<p>I discovered a fun quirk of Active Record today. I&#39;m not sure if it&#39;s a bug or if it&#39;s just me doing something silly, but in these kinds of cases I&#39;ve learned to lean more towards the latter. Here&#39;s how it&#39;s done.</p>
+
+<p>Start with a fresh Rails app, using MySQL:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">rails new shop -d mysql
+</code></pre></div>
+<p>Create a new <code>Variant</code> model:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">rails g model variant price:decimal
+</code></pre></div>
+<p>We just so happen to know that we need to specify a precision (numbers before the decimal) and scale (numbers after the decimal) for this column, and we (read: I) can never remember the syntax for that in the <code>generate</code> command, so we edit the migration to provide both a <code>precision</code> and <code>scale</code> for this column, turning it into this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">class CreateVariants &lt; ActiveRecord::Migration
+  def change
+    create_table :variants do |t|
+      t.decimal :price, precision: 10, scale: 2
+
+      t.timestamps null: false
+    end
+  end
+end
+</code></pre></div>
+<p>Running this migration with <code>rake db:migrate</code> will generate a <code>db/schema.rb</code> which looks like this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ActiveRecord::Schema.define(version: 20151110060233) do
+  create_table &quot;variants&quot;, force: :cascade do |t|
+    t.decimal  &quot;price&quot;,      precision: 10, scale: 2
+    t.datetime &quot;created_at&quot;,                          null: false
+    t.datetime &quot;updated_at&quot;,                          null: false
+  end
+end
+</code></pre></div>
+<p>A <code>show columns from variants;</code> MySQL query will show this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">+------------+---------------+------+-----+---------+----------------+
+| Field      | Type          | Null | Key | Default | Extra          |
++------------+---------------+------+-----+---------+----------------+
+| id         | int(11)       | NO   | PRI | NULL    | auto_increment |
+| price      | decimal(10,2) | YES  |     | NULL    |                |
+| created_at | datetime      | NO   |     | NULL    |                |
+| updated_at | datetime      | NO   |     | NULL    |                |
++------------+---------------+------+-----+---------+----------------+
+</code></pre></div>
+<p>Note here that the <code>price</code> field has a <code>precision</code> of 10 and <code>scale</code> of 2; that&#39;s indicated by <code>decimal(10,2)</code>. That&#39;s good, because that&#39;s what we specified inside our migration.</p>
+
+<p>Let&#39;s stop here and create two variants in our console:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">rails console
+Variant.create(price: 26.99)
+Variant.create(price: null)
+</code></pre></div>
+<p>These are just for demonstration purposes. No real data was harmed in the writing of this blog post.</p>
+
+<p>The <code>price</code> column here doesn&#39;t have a default value and it allows for null values. There&#39;s data in here already which has <code>null</code> and that just won&#39;t do, because we want prices to always be a decimal number to make it easy to manage in our code. Having to do <code>to_f</code> to convert <code>nil</code> to <code>0.0</code> is not that smart. We&#39;re better than that!</p>
+
+<p>So we&#39;ll go ahead and create a new migration to do the the <code>default</code> and <code>null</code> modifications to this <code>price</code> column:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">rails g migration add_default_to_variants_price
+</code></pre></div>
+<p>Inside that migration, we write this:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">class AddDefaultToVariantsPrice &lt; ActiveRecord::Migration
+  def change
+    Variant.where(price: nil).update_all(&quot;price = 0&quot;)
+    change_column :variants, :price, :decimal, default: 0.0, null: false
+  end
+end
+</code></pre></div>
+<p>Pretty simple stuff. We change all the variants where the price is <code>nil</code> (<code>null</code>) to have a price set to <code>0</code>. Then we set the <code>default</code> to be <code>0.0</code> and also tell it that we don&#39;t want <code>null</code> values in this column. If we didn&#39;t do the <code>update_all</code> call first, AR would bomb out because we tried to set <code>null: false</code> on a column which already had nulls.</p>
+
+<p>We then run this migration (<code>rake db:migrate</code>), and this is where things go bad.</p>
+
+<p>To start with, let&#39;s open <code>rails console</code> and run <code>Variant.first</code>. This is the variant that has a price set to <code>26.99</code>. Well, it&#39;s not that any more:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">#&lt;Variant id: 1, price: 27,
+</code></pre></div>
+<p>Yes, it&#39;s now 27.</p>
+
+<p>What happened? Let&#39;s look at our <code>schema.rb</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ActiveRecord::Schema.define(version: 20151110061535) do
+
+  create_table &quot;variants&quot;, force: :cascade do |t|
+    t.decimal  &quot;price&quot;,      precision: 10, default: 0, null: false
+    t.datetime &quot;created_at&quot;,                            null: false
+    t.datetime &quot;updated_at&quot;,                            null: false
+  end
+
+end
+</code></pre></div>
+<p>Ok, that says it&#39;s got a <code>precision: 10</code>, but where&#39;s the scale from the first migration gone? It&#39;s gone away.</p>
+
+<p>Let&#39;s confirm this in MySQL too:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">mysql&gt; SHOW COLUMNS from variants;
++------------+---------------+------+-----+---------+----------------+
+| Field      | Type          | Null | Key | Default | Extra          |
++------------+---------------+------+-----+---------+----------------+
+| id         | int(11)       | NO   | PRI | NULL    | auto_increment |
+| price      | decimal(10,0) | NO   |     | 0       |                |
+| created_at | datetime      | NO   |     | NULL    |                |
+| updated_at | datetime      | NO   |     | NULL    |                |
++------------+---------------+------+-----+---------+----------------+
+</code></pre></div>
+<p>The precision has stayed at 10, but the scale has changed to 0.</p>
+
+<p>But why does this happen?</p>
+
+<p>Because in the second migration, we didn&#39;t specify a precision and a scale.</p>
+
+<p>Instead of this line:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">change_column :variants, :price, :decimal, default: 0.0, null: false
+</code></pre></div>
+<p>We should have:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">change_column :variants, :price, :decimal, precision: 10, scale: 2, default: 0.0, null: false
+</code></pre></div>
+<p>Otherwise, it defaults to a precision of 10 and scale of 0 <em>and</em> helpfully rounds up your prices for you.</p>
+
+<p>Isn&#39;t that handy?</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>My self-publishing success story</title>
@@ -1933,25 +2049,6 @@ end
 <p>This code will call <code>$.active</code> which is jQuery-code for &quot;how many <code>$.ajax</code> requests are still active?&quot;, and if that returns more than 0, then it will sleep for a moment, and check again. This code gives AJAX requests 5 seconds to wrap up before raising an exception and moving on.</p>
 
 <p>Use this <code>wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Finding SQL queries in Rails</title>
-   <link href="http://ryanbigg.com/2013/06/finding-sql-queries-in-rails"/>
-   <updated>2013-06-26T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2013/06/finding-sql-queries-in-rails</id>
-   <content type="html"><![CDATA[<p>In my work on Spree, sometimes I&#39;ve been wanting to know <em>where</em> queries are coming from. Just like any large codebase, the &quot;magic&quot; that goes on inside it to make the cogs spin the right way can be a bit complex.</p>
-
-<p>Active Support&#39;s Notifications feature is really handy for this. All I need to do is subscribe to the <code>sql.active_record</code> event and get it to output the stacktrace of where the query is generated, like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Notifications</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s2">&quot;sql.active_record&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">details</span><span class="o">|</span>
-  <span class="k">if</span> <span class="n">details</span><span class="o">[</span><span class="ss">:sql</span><span class="o">]</span> <span class="o">=~</span> <span class="sr">/INSERT INTO &quot;spree_inventory_units&quot;/</span>
-    <span class="nb">puts</span> <span class="nb">caller</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">puts</span> <span class="s2">&quot;*&quot;</span> <span class="o">*</span> <span class="mi">50</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div>
-<p>Whenever a query that inserts a new record into the <code>spree_inventory_units</code> table is issued through Active Record, this code will give me a complete stacktrace of where that came from.</p>
 ]]></content>
  </entry>
  
