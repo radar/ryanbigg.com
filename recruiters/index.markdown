@@ -3,7 +3,7 @@ layout: no-header
 title: Recruiters
 ---
 
-Hello! You probably have been sent this page because you're a recruiter.
+Hello! You probably have been sent this page because you're a recruiter. A mass-mailing recruiter too, probably. The worst kind.
 
 <a href='http://ryanbigg.com/about-me'>My "About me" page</a> has this paragraph:
 
