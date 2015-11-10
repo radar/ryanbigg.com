@@ -36,3 +36,5 @@ This works wonders. The only recruiter to have successfully approached me for a 
 Can you do that for me? I would really appreciate it.
 
 Thank you for your time.
+
+P.S. I don't refer my friends onto recruiters. Ever.
