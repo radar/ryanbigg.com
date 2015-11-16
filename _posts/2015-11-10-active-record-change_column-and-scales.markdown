@@ -59,10 +59,11 @@ A `show columns from variants;` MySQL query will show this:
 
 Note here that the `price` field has a `precision` of 10 and `scale` of 2; that's indicated by `decimal(10,2)`. That's good, because that's what we specified inside our migration.
 
-Let's stop here and create two variants in our console:
+Let's stop here and create three variants in our console:
 
 ```
 rails console
+Variant.create(price: 18.49)
 Variant.create(price: 26.99)
 Variant.create(price: null)
 ```

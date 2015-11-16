@@ -53,8 +53,9 @@ end
 </code></pre></div>
 <p>Note here that the <code>price</code> field has a <code>precision</code> of 10 and <code>scale</code> of 2; that&#39;s indicated by <code>decimal(10,2)</code>. That&#39;s good, because that&#39;s what we specified inside our migration.</p>
 
-<p>Let&#39;s stop here and create two variants in our console:</p>
+<p>Let&#39;s stop here and create three variants in our console:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">rails console
+Variant.create(price: 18.49)
 Variant.create(price: 26.99)
 Variant.create(price: null)
 </code></pre></div>
