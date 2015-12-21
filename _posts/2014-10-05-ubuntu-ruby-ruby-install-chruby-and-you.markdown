@@ -79,17 +79,19 @@ cd chruby-0.3.9/
 sudo make install
 ```
 
-After this has been installed, we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
+After this has been installed, we'll need to load chruby automatically, which we can do by adding these lines to your shells configuration file using the following command:
 
 ```
+cat >> ~/.$(basename $SHELL)rc <<EOF
 source /usr/local/share/chruby/chruby.sh
 source /usr/local/share/chruby/auto.sh
+EOF
 ```
 
-In order for this to take effect, we'll need to source that file:
+In order for this to take effect, we'll reload the shell
 
 ```
-. ~/.bashrc
+exec $SHELL
 ```
 
 Alternatively, opening a new terminal tab/window will do the same thing.
