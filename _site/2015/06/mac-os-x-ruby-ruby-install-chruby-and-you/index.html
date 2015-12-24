@@ -1,0 +1,155 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - Mac OS X, Ruby, ruby-install, chruby and You</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link href='http://fonts.googleapis.com/css?family=Buenard' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+    <link rel='stylesheet' href='/css/highlight.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='post'>
+      <article>
+        <a href="/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you"><header>Mac OS X, Ruby, ruby-install, chruby and You</header></a>
+        <small>09 Jun 2015</small><br>
+        <p><strong>Last updated: December 7th, 2015</strong></p>
+
+<p>
+  <strong>This beginner's guide will set up with Ruby 2.2.3, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+</p>
+
+<p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
+
+<p>This guide will cover installing a couple of things:</p>
+
+<ul>
+<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
+<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
+<li><strong>Ruby 2.2.3</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
+<li><strong>Rails 4.2.5</strong>: at the time of writing the newest current stable release of Rails.</li>
+</ul>
+
+<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
+
+<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
+
+<p>If you&#39;re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
+
+<h3>Housekeeping</h3>
+
+<p>The first thing we&#39;re going to need to install is XCode which you can get from the Mac App Store. We&#39;ll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">xcode-select --install
+</code></pre></div>
+<p>First of all, we&#39;re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href="https://brew.sh">homebrew</a>. We can install this by using this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;
+</code></pre></div>
+<p>Next, we&#39;ll need to install <code>wget</code> because some of the commands we&#39;re about to run use it.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install wget
+</code></pre></div>
+<h3>ruby-install</h3>
+
+<p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+tar -xzvf ruby-install-0.5.0.tar.gz
+cd ruby-install-0.5.0/
+sudo make install
+</code></pre></div>
+<p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+</code></pre></div>
+<p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.5.0
+</code></pre></div>
+<h3>Ruby</h3>
+
+<p>Our next step is to install Ruby itself, which we can do with this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.2.3
+</code></pre></div>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.2.3 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
+  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
+tar -xzvf chruby-0.3.9.tar.gz
+cd chruby-0.3.9/
+sudo make install
+</code></pre></div>
+<p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/share/chruby/chruby.sh
+source /usr/local/share/chruby/auto.sh
+</code></pre></div>
+<p>In order for this to take effect, we&#39;ll need to source that file:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+</code></pre></div>
+<p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
+
+<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.3
+</code></pre></div>
+<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.3
+</code></pre></div>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.2.3</code> for example -- assuming that we have Ruby 2.2.3 installed first!</p>
+
+<p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.2.3p173 (2015-08-18 revision 51636) [x86_64-darwin14]
+</code></pre></div>
+<h3>Rails</h3>
+
+<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install rails -v 4.2.5 --no-document
+</code></pre></div>
+<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
+
+<h3>MySQL</h3>
+
+<p>Before you can use MySQL, you&#39;ll need to install it with Homebrew:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install mysql
+</code></pre></div>
+<p>After this, <code>gem install mysql</code> should succeed.</p>
+
+<h3>PostgreSQL</h3>
+
+<p>Before you can use PostgreSQL, you&#39;ll need to install it with Homebrew:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">brew install postgresql
+</code></pre></div>
+<p>After this, <code>gem install pg</code> should succeed.</p>
+
+<h3>Fin</h3>
+
+<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>.</p>
+
+<p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
+
+<h3>Postscript</h3>
+
+<p>A previous version of this guide used RVM. RVM has overtime become bloated and unwieldy. There are many features of RVM that developers simply don&#39;t use, and so using a simpler solution is a better way of doing things as it will lead to less confusion. For instance, RVM provides gemsets which is a feature that is no longer necessary with the advent of Bundler. Even if you don&#39;t want to use Bundler (i.e. you&#39;re crazy) then there&#39;s smaller more specifically-targeted tools for that, such as <a href="https://github.com/seattlerb/ohmygems">ohmygems</a>. RVM&#39;s days as the leading way to install Ruby are over, and this guide has been updated to reflect that. There are better tools.</p>
+
+<p>I&#39;ve opted for chruby+ruby-install in this guide because they&#39;ve consistently worked for me and are very, very easy to install. I know of a great many other people who have also used, and continue to use, these tools and I&#39;ve not heard of any of them complaining. Therefore I can only wholeheartedly recommend them to the readers of this post.</p>
+
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-363 http://ryanbigg.com/?p=RB-363'
+        var disqus_url = 'http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60556315-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
