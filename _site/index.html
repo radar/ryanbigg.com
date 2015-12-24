@@ -31,19 +31,31 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2015/11/open-source-work"><header>Open source work</header></a>
-  <small>16 Nov 2015</small><br>
-  <p>As of today I am quitting all maintenance roles / responsibilities of any open source project I am involved in. I am now looking for maintainers for any of those projects. Volunteers can contact me@ryanbigg.com to discuss handovers.</p>
+  <a href="/2015/12/programming-phoenix-halfway-review"><header>Programming Phoenix: Halfway Review</header></a>
+  <small>24 Dec 2015</small><br>
+  <p>During this Christmas break I&#39;ve been taking some time off from writing Multitenancy with Rails --which I&#39;ll get back to <em>after</em> Christmas is over -- and instead of writing books I&#39;m reading them.</p>
 
-<p>I work full-time, a full 40 hours a week. Outside of that work, I am writing <a href="https://leanpub.com/multi-tenancy-rails-2">Multitenancy with Rails, 2nd Edition</a>. That work gets done primarily on my way into and out of the office, a 30 minute train journey one-way. I also spend the occasional weekend day doing some writing.</p>
+<p><a href="https://pragprog.com/titles/phoenix/">Programming Phoenix</a> is what I&#39;ve been reading so far, and I&#39;ve made it to the halfway point in this book, so that&#39;s the first 7 (of currently 12) chapters done. Despite that I&#39;ve filed over 30 errata on the book (hey, it is a beta book) I am <em>mostly</em> enjoying the book. </p>
 
-<p>Outside of this full-time work, I have lots of &quot;life stuff&quot; that I&#39;d like to do. Things like spending time with my wife, going outside or just generally relaxing. Having open source emails sitting in my inbox during those times makes me feel guilty for doing those things instead of working on open source.</p>
+<p>It takes you through building a complete Phoenix application, introducing familiar concepts like controllers, models and templates. Those parts are familiar because they&#39;re much the same in Phoenix as they are in Rails; with some differences. Models have changesets. Templates relate to Views. Unlike Rails&#39; &quot;magical&quot; callbacks (in both models and controllers), these are just simply defined and used functions in Phoenix.</p>
 
-<p>I do not have the time or energy to invest in open source any more. I am not being paid at all to do any open source work, and so the work that I do there is time that I could be spending doing &quot;life stuff&quot;, or writing. It is not fair to expect me to do <em>even more work</em> outside of my regular work, and then not get fairly compensated (time or money) for it. It&#39;s also a great recipe for burnout and making me just generally grumpy. To have an open source email sit in the inbox for days or weeks at a time just leads me to feeling more guilty about not having found time + energy to get to it yet.</p>
+<p>The book is written by José &quot;The Elixir Guy&quot; Valim, Chris &quot;The Phoenix Guy&quot; McCord and Bruce &quot;The <a href="https://pragprog.com/book/btlang/seven-languages-in-seven-weeks">Seven Languages</a> Guy&quot; Tate. It&#39;s great to see that it&#39;s the core developers who are invested in writing documentation for the community. Unlike a certain other community who has a main core developer who tells contributors to go fuck themselves when they ask for documentation regarding new features. Further to that point, both José and Chris are extremely active on the #elixir-lang channel on Freenode, which is also great to see.</p>
 
-<p>It&#39;s for this reason that I&#39;ve decided to end all my engagements with open source effective today. I will not be responding to any comments, issues or pull requests that get filed on any repository that I am in charge of. The only thing I will be responding to (in this regard) is volunteers who want to take over the maintenance of the projects.</p>
+<p>I am not sure if it is because the book has three authors, but there are some parts where I&#39;m reading it and enjoying it. Then there are sections like &quot;Anatomy of a Plug&quot; which goes <em>way too deep</em> into what a Plug is and how it works, and &quot;Exploring Ecto in the Console&quot; which, again, goes rather deep but doesn&#39;t tie that content <em>solidly</em> back to what we&#39;re doing in the book at that present moment. It&#39;d be like a fiction book <em>intracately</em> explaining what&#39;s in the house of the neighbour of the protagonist, but then the neighbour is not mentioned any more past that. </p>
 
-<p>Thank you for respecting my decision.</p>
+<p>Like, why does it even matter that Ecto supports &quot;search functions like <code>ilike</code> and <code>like</code>&quot; or that Plug has <code>path_info</code> and <code>scheme</code> fields? Neither of those are relevant to the content at-hand at that point of time, and it feels disconnected. Those things should be mentioned in their respective guides, not in this book. Perhaps those sections will mysteriously disappear once this book reaches the production editing phase. </p>
+
+<p>It feels like it would be better off showing what a Plug is within the context of the application... and they do that later on. Then after that go into the detail. But I could do without the pages and pages of extra seemingly &quot;useless&quot; info <em>before</em> I get hooked on what you&#39;re trying to sell.</p>
+
+<p>In addition to that, there are some places where the content feels like it&#39;s saying &quot;we&#39;re going to do this now because I said we&#39;re going to do it&quot;; particularly in Chapter 5, the Authentication chapter. The chapter jumps to creating a registration changeset with no reason why it needs to be created, then later on explains why it has to be created. The explanation needs work there.</p>
+
+<p>This is where the TDD/BDD of Rails 4 in Action hold up: &quot;we&#39;re going to do this because the test says we need to do it&quot;. Programming Phoenix saves that kind of testing for Chapter 8, with the given reason being that having testing throughout every chapter can be distracting and repetitive. While I can see the point there -- there was vigorous nodding over here reading Chapter 8&#39;s intro -- that very same testing can be helpful for demonstrating industry best-practices to newbies. Otherwise what you&#39;ll get is a bunch of newbies who read the first 7 chapters and think that writing code without tests is How It Is Done(tm). Having tests also helps show off the usefulness of regression testing too. A thing broke and now we&#39;re going to write a test for a fix, watch the test go red, fix the thing, and watch the test go green. I think that kind of thing is helpful to newbies to have, as they&#39;re the most likely to make mistakes within their application.</p>
+
+<p>Despite these complaints, the book has been worthwhile reading. I am mainly nitpicking, because I&#39;m an author of another programming book and I have moments where I think that I could write parts better. That has yet to be proven.</p>
+
+<p>The parallels between Rails and Phoenix are helping with the learning of the new framework, and the differences between them are not too mind-bending to be beyond comprehension. The first 8 chapters cover topics that should be familiar to any Rails developer: starting a new project, adding in models and controllers. Adding validations to the model with changesets -- which are a <em>very</em> cool feature that I wouldn&#39;t be surprised if Active Record 6.0 picked up. </p>
+
+<p>The half of Programming Phoenix that I&#39;ve read so far has proven to be a great introduction to the Phoenix framework, and I recommend reading it when you get a moment over this Christmas break, or whenever you make the time for it.</p>
 
 </article>
 
@@ -51,6 +63,8 @@
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2015/11/open-source-work">Open source work</a><abbr>16 Nov 2015</abbr></li>
+  
       <li><a href="/2015/11/active-record-change_column-and-scales">Active Record, change_column and scales</a><abbr>10 Nov 2015</abbr></li>
   
       <li><a href="/2015/08/my-self-publishing-success-story">My self-publishing success story</a><abbr>06 Aug 2015</abbr></li>
@@ -98,8 +112,6 @@
       <li><a href="/2013/01/multitenancy-with-rails">Multitenancy with Rails</a><abbr>21 Jan 2013</abbr></li>
   
       <li><a href="/2013/01/a-story-about-scaffolding">A story about scaffolding</a><abbr>07 Jan 2013</abbr></li>
-  
-      <li><a href="/2012/11/no-more-writing-for-manning">No more writing for Manning</a><abbr>12 Nov 2012</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
