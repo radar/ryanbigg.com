@@ -4,10 +4,10 @@ layout: post
 title: Ubuntu, Ruby, ruby-install, chruby, Rails and You
 ---
 
-**Last updated: Saturday 31st January 2014**
+**Last updated: 7th December 2015**
 
 
-**This beginner's guide will set your machine up with Ruby 2.2.3 using chruby+ruby-install and Rails 4.2.4 and is specifically written for a _development_ environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
+**This beginner's guide will set your machine up with Ruby 2.2.3 using chruby+ruby-install and Rails 4.2.5 and is specifically written for a _development_ environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
 
 ## Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
 
@@ -17,7 +17,7 @@ This guide will cover installing a couple of things:
 * [**chruby**](https://github.com/postmodern/chruby): a way to easily switch between those Ruby installs
 * **Ruby 2.2.3**: at the time of writing the newest current stable release of Ruby.
 * **Bundler**: a package dependency manager used in the Ruby community
-* **Rails 4.2.4**: at the time of writing the newest current stable release of Rails.
+* **Rails 4.2.5**: at the time of writing the newest current stable release of Rails.
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.
 
@@ -118,7 +118,7 @@ ruby 2.2.3p173 (2015-08-18 revision 51636) [x86_64-linux]
 
 Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 4.2.4 --no-rdoc --no-ri
+    gem install rails -v 4.2.5 --no-rdoc --no-ri
 
 This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 

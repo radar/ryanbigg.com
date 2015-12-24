@@ -4,6 +4,8 @@ layout: post
 title: Mac OS X, Ruby, ruby-install, chruby and You
 ---
 
+**Last updated: December 7th, 2015**
+
 <p>
   <strong>This beginner's guide will set up with Ruby 2.2.3, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
