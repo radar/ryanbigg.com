@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2015-12-24T17:15:56+11:00</updated>
+ <updated>2015-12-31T12:13:22+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,15 +13,25 @@
 
  
  <entry>
-   <title>Programming Phoenix: Halfway Review</title>
-   <link href="http://ryanbigg.com/2015/12/programming-phoenix-halfway-review"/>
+   <title>Programming Phoenix Review</title>
+   <link href="http://ryanbigg.com/2015/12/programming-phoenix"/>
    <updated>2015-12-24T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2015/12/programming-phoenix-halfway-review</id>
-   <content type="html"><![CDATA[<p>During this Christmas break I&#39;ve been taking some time off from writing Multitenancy with Rails --which I&#39;ll get back to <em>after</em> Christmas is over -- and instead of writing books I&#39;m reading them.</p>
+   <id>http://ryanbigg.com/2015/12/programming-phoenix</id>
+   <content type="html"><![CDATA[<p>During this Christmas break I&#39;ve been taking some time off from writing Multitenancy with Rails -- which I&#39;ll get back to <em>after</em> Christmas is over -- and instead of writing books I&#39;m reading them.</p>
 
-<p><a href="https://pragprog.com/titles/phoenix/">Programming Phoenix</a> is what I&#39;ve been reading so far, and I&#39;ve made it to the halfway point in this book, so that&#39;s the first 7 (of currently 12) chapters done. Despite that I&#39;ve filed over 30 errata on the book (hey, it is a beta book) I am <em>mostly</em> enjoying the book. </p>
+<p><a href="https://pragprog.com/titles/phoenix/">Programming Phoenix</a> is the only book that I&#39;ve been reading so far. I&#39;ve now read through the whole thing. Despite that I&#39;ve filed over 40 errata on the book (hey, it is a beta book) I <em>mostly</em> enjoyed the book.</p>
 
-<p>It takes you through building a complete Phoenix application, introducing familiar concepts like controllers, models and templates. Those parts are familiar because they&#39;re much the same in Phoenix as they are in Rails; with some differences. Models have changesets. Templates relate to Views. Unlike Rails&#39; &quot;magical&quot; callbacks (in both models and controllers), these are just simply defined and used functions in Phoenix.</p>
+<hr>
+
+<p>Programming Phoenix takes you through building a complete Phoenix application, introducing familiar concepts like controllers, models and templates. Those parts are familiar because they&#39;re much the same in Phoenix as they are in Rails; with some differences. Models have changesets. Templates relate to Views. Unlike Rails&#39; &quot;magical&quot; callbacks (in both models and controllers), these are just simply defined and used functions in Phoenix.</p>
+
+<p>The latter chapters cover a range of things, like adding in live &quot;annotations&quot; to a video as its being watched. Think of that kind of like a live chatroom, except as the video plays, the annotations from previous watches also appear. This is done using Websockets, which are supported in Rails now with ActionCable, but it just <em>feels</em> a lot less hacky with Phoenix than it does with Rails. Elixir handles it better, <a href="http://www.phoenixframework.org/blog/the-road-to-2-million-websocket-connections">reaching two million connections recently</a> to a single (albeit quite beefy) server. I can&#39;t myself think of something to use Websockets for, but it is still exciting nevertheless.</p>
+
+<p>The final two chapters, &quot;OTP&quot; (Open Telecom Platform) and &quot;Observer and Umbrellas&quot; cover some of the real strengths of Elixir and its underlying foundation of Erlang. These two chapters get you to build a system which connects to Wolfram Alpha&#39;s API, and then demonstrate how to keep this new system separate from the original application, while still being able to connect these two systems together and communicate between them. In the Ruby world, typically this would be done with HTTP calls, but in the Elixir world it is just a matter of communicating across Elixir processes. This inter-process communication is quite quick in comparison to HTTP because it doesn&#39;t have that overhead.</p>
+
+<p>What I loved from these final chapters was seeing Elixir&#39;s supervision capabilities in action. In one of those latter chapters, you create a small application (<code>Rumbl.Counter</code>) which dies after a couple of seconds. A Supervisor for the main application (<code>Rumbl</code>) restarts this smaller application automatically when it dies. Ruby doesn&#39;t have that kind of capability; instead you need to rely on tools like upstart. It&#39;s quite nice having it built into the language because then you don&#39;t have to learn something completely different to ensure your servers don&#39;t fall over.</p>
+
+<hr>
 
 <p>The book is written by José &quot;The Elixir Guy&quot; Valim, Chris &quot;The Phoenix Guy&quot; McCord and Bruce &quot;The <a href="https://pragprog.com/book/btlang/seven-languages-in-seven-weeks">Seven Languages</a> Guy&quot; Tate. It&#39;s great to see that it&#39;s the core developers who are invested in writing documentation for the community. Unlike a certain other community who has a main core developer who tells contributors to go fuck themselves when they ask for documentation regarding new features. Further to that point, both José and Chris are extremely active on the #elixir-lang channel on Freenode, which is also great to see.</p>
 
@@ -33,13 +43,17 @@
 
 <p>In addition to that, there are some places where the content feels like it&#39;s saying &quot;we&#39;re going to do this now because I said we&#39;re going to do it&quot;; particularly in Chapter 5, the Authentication chapter. The chapter jumps to creating a registration changeset with no reason why it needs to be created, then later on explains why it has to be created. The explanation needs work there.</p>
 
-<p>This is where the TDD/BDD of Rails 4 in Action hold up: &quot;we&#39;re going to do this because the test says we need to do it&quot;. Programming Phoenix saves that kind of testing for Chapter 8, with the given reason being that having testing throughout every chapter can be distracting and repetitive. While I can see the point there -- there was vigorous nodding over here reading Chapter 8&#39;s intro -- that very same testing can be helpful for demonstrating industry best-practices to newbies. Otherwise what you&#39;ll get is a bunch of newbies who read the first 7 chapters and think that writing code without tests is How It Is Done(tm). Having tests also helps show off the usefulness of regression testing too. A thing broke and now we&#39;re going to write a test for a fix, watch the test go red, fix the thing, and watch the test go green. I think that kind of thing is helpful to newbies to have, as they&#39;re the most likely to make mistakes within their application.</p>
+<p>This is where the TDD/BDD of Rails 4 in Action holds up. In that book, it&#39;s more like &quot;we&#39;re going to do this because the test says we need to do it&quot;. Programming Phoenix saves that kind of testing for Chapter 8, with the given reason being that having testing throughout every chapter can be distracting and repetitive. While I can see the point there -- there was vigorous nodding over here reading Chapter 8&#39;s intro -- that very same testing can be helpful for demonstrating industry best-practices to newbies. Otherwise what you&#39;ll get is a bunch of newbies who read the first 7 chapters and think that writing code without tests is How It Is Done(tm). </p>
+
+<p>Having tests also helps show off the usefulness of regression testing too. A thing broke and now we&#39;re going to write a test for a fix, watch the test go red, fix the thing, and watch the test go green. I think that kind of thing is helpful to newbies to have, as they&#39;re the most likely to make mistakes within their application.</p>
 
 <p>Despite these complaints, the book has been worthwhile reading. I am mainly nitpicking, because I&#39;m an author of another programming book and I have moments where I think that I could write parts better. That has yet to be proven.</p>
 
 <p>The parallels between Rails and Phoenix are helping with the learning of the new framework, and the differences between them are not too mind-bending to be beyond comprehension. The first 8 chapters cover topics that should be familiar to any Rails developer: starting a new project, adding in models and controllers. Adding validations to the model with changesets -- which are a <em>very</em> cool feature that I wouldn&#39;t be surprised if Active Record 6.0 picked up. </p>
 
-<p>The half of Programming Phoenix that I&#39;ve read so far has proven to be a great introduction to the Phoenix framework, and I recommend reading it when you get a moment over this Christmas break, or whenever you make the time for it.</p>
+<p>The remaining 4 chapters of the book venture off into territory that is probably unexplored by most Rails developers. I know that I personally have never spent time using Websockets or having to do anything like inter-process communication in Ruby. These last four chapters were a breath of fresh air for my skills. I feel like I really learned something valuable in those chapters.</p>
+
+<p>Overall, Programming Phoenix is a fantastic book that will become even better once the authors spend more time on it and the editors do their bit. I really recommend reading this book, but with a small caveat: read <a href="https://pragprog.com/book/elixir/programming-elixir">Programming Elixir</a> first to get familiar with the underlying language of the Phoenix framework. Then it&#39;ll be smooth sailing for you.</p>
 ]]></content>
  </entry>
  
