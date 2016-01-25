@@ -3,7 +3,7 @@
   <head>
     <title>Blog of Ryan Bigg - Active Record, change_column and scales</title>
     <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-    <link href='http://fonts.googleapis.com/css?family=Buenard' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/css/style.css' media='screen'>
     <link rel='stylesheet' href='/css/mobile.css'>
     <link rel='stylesheet' href='/css/highlight.css'>
@@ -22,24 +22,24 @@
 <div class="highlight"><pre><code class="language-text" data-lang="text">rails g model variant price:decimal
 </code></pre></div>
 <p>We just so happen to know that we need to specify a precision (numbers before the decimal) and scale (numbers after the decimal) for this column, and we (read: I) can never remember the syntax for that in the <code>generate</code> command, so we edit the migration to provide both a <code>precision</code> and <code>scale</code> for this column, turning it into this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">class CreateVariants &lt; ActiveRecord::Migration
-  def change
-    create_table :variants do |t|
-      t.decimal :price, precision: 10, scale: 2
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CreateVariants</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+  <span class="k">def</span> <span class="nf">change</span>
+    <span class="n">create_table</span> <span class="ss">:variants</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+      <span class="n">t</span><span class="o">.</span><span class="n">decimal</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">precision</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="ss">scale</span><span class="p">:</span> <span class="mi">2</span>
 
-      t.timestamps null: false
-    end
-  end
-end
+      <span class="n">t</span><span class="o">.</span><span class="n">timestamps</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 </code></pre></div>
 <p>Running this migration with <code>rake db:migrate</code> will generate a <code>db/schema.rb</code> which looks like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ActiveRecord::Schema.define(version: 20151110060233) do
-  create_table &quot;variants&quot;, force: :cascade do |t|
-    t.decimal  &quot;price&quot;,      precision: 10, scale: 2
-    t.datetime &quot;created_at&quot;,                          null: false
-    t.datetime &quot;updated_at&quot;,                          null: false
-  end
-end
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Schema</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="ss">version</span><span class="p">:</span> <span class="mi">20151110060233</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">create_table</span> <span class="s2">&quot;variants&quot;</span><span class="p">,</span> <span class="ss">force</span><span class="p">:</span> <span class="ss">:cascade</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">decimal</span>  <span class="s2">&quot;price&quot;</span><span class="p">,</span>      <span class="ss">precision</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="ss">scale</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>                          <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>                          <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 </code></pre></div>
 <p>A <code>show columns from variants;</code> MySQL query will show this:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">+------------+---------------+------+-----+---------+----------------+
@@ -67,12 +67,12 @@ Variant.create(price: null)
 <div class="highlight"><pre><code class="language-text" data-lang="text">rails g migration add_default_to_variants_price
 </code></pre></div>
 <p>Inside that migration, we write this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">class AddDefaultToVariantsPrice &lt; ActiveRecord::Migration
-  def change
-    Variant.where(price: nil).update_all(&quot;price = 0&quot;)
-    change_column :variants, :price, :decimal, default: 0.0, null: false
-  end
-end
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">AddDefaultToVariantsPrice</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
+  <span class="k">def</span> <span class="nf">change</span>
+    <span class="no">Variant</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">price</span><span class="p">:</span> <span class="kp">nil</span><span class="p">)</span><span class="o">.</span><span class="n">update_all</span><span class="p">(</span><span class="s2">&quot;price = 0&quot;</span><span class="p">)</span>
+    <span class="n">change_column</span> <span class="ss">:variants</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:decimal</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 </code></pre></div>
 <p>Pretty simple stuff. We change all the variants where the price is <code>nil</code> (<code>null</code>) to have a price set to <code>0</code>. Then we set the <code>default</code> to be <code>0.0</code> and also tell it that we don&#39;t want <code>null</code> values in this column. If we didn&#39;t do the <code>update_all</code> call first, AR would bomb out because we tried to set <code>null: false</code> on a column which already had nulls.</p>
 
@@ -84,15 +84,15 @@ end
 <p>Yes, it&#39;s now 27.</p>
 
 <p>What happened? Let&#39;s look at our <code>schema.rb</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ActiveRecord::Schema.define(version: 20151110061535) do
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Schema</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="ss">version</span><span class="p">:</span> <span class="mi">20151110061535</span><span class="p">)</span> <span class="k">do</span>
 
-  create_table &quot;variants&quot;, force: :cascade do |t|
-    t.decimal  &quot;price&quot;,      precision: 10, default: 0, null: false
-    t.datetime &quot;created_at&quot;,                            null: false
-    t.datetime &quot;updated_at&quot;,                            null: false
-  end
+  <span class="n">create_table</span> <span class="s2">&quot;variants&quot;</span><span class="p">,</span> <span class="ss">force</span><span class="p">:</span> <span class="ss">:cascade</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">decimal</span>  <span class="s2">&quot;price&quot;</span><span class="p">,</span>      <span class="ss">precision</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="s2">&quot;created_at&quot;</span><span class="p">,</span>                            <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="s2">&quot;updated_at&quot;</span><span class="p">,</span>                            <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+  <span class="k">end</span>
 
-end
+<span class="k">end</span>
 </code></pre></div>
 <p>Ok, that says it&#39;s got a <code>precision: 10</code>, but where&#39;s the scale from the first migration gone? It&#39;s gone away.</p>
 
@@ -114,10 +114,10 @@ end
 <p>Because in the second migration, we didn&#39;t specify a precision and a scale.</p>
 
 <p>Instead of this line:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">change_column :variants, :price, :decimal, default: 0.0, null: false
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">change_column</span> <span class="ss">:variants</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:decimal</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
 </code></pre></div>
 <p>We should have:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">change_column :variants, :price, :decimal, precision: 10, scale: 2, default: 0.0, null: false
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">change_column</span> <span class="ss">:variants</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:decimal</span><span class="p">,</span> <span class="ss">precision</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="ss">scale</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="ss">default</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
 </code></pre></div>
 <p>Otherwise, it defaults to a precision of 10 and scale of 0 <em>and</em> helpfully rounds up your prices for you.</p>
 

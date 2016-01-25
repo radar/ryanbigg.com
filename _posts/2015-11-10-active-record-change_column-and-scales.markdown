@@ -20,7 +20,7 @@ rails g model variant price:decimal
 
 We just so happen to know that we need to specify a precision (numbers before the decimal) and scale (numbers after the decimal) for this column, and we (read: I) can never remember the syntax for that in the `generate` command, so we edit the migration to provide both a `precision` and `scale` for this column, turning it into this:
 
-```
+```ruby
 class CreateVariants < ActiveRecord::Migration
   def change
     create_table :variants do |t|
@@ -34,7 +34,7 @@ end
 
 Running this migration with `rake db:migrate` will generate a `db/schema.rb` which looks like this:
 
-```
+```ruby
 ActiveRecord::Schema.define(version: 20151110060233) do
   create_table "variants", force: :cascade do |t|
     t.decimal  "price",      precision: 10, scale: 2
@@ -80,7 +80,7 @@ rails g migration add_default_to_variants_price
 
 Inside that migration, we write this:
 
-```
+```ruby
 class AddDefaultToVariantsPrice < ActiveRecord::Migration
   def change
     Variant.where(price: nil).update_all("price = 0")
@@ -103,7 +103,7 @@ Yes, it's now 27.
 
 What happened? Let's look at our `schema.rb`:
 
-```
+```ruby
 ActiveRecord::Schema.define(version: 20151110061535) do
 
   create_table "variants", force: :cascade do |t|
@@ -139,13 +139,13 @@ Because in the second migration, we didn't specify a precision and a scale.
 
 Instead of this line:
 
-```
+```ruby
 change_column :variants, :price, :decimal, default: 0.0, null: false
 ```
 
 We should have:
 
-```
+```ruby
 change_column :variants, :price, :decimal, precision: 10, scale: 2, default: 0.0, null: false
 ```
 
