@@ -7,7 +7,7 @@ title: Ubuntu, Ruby, ruby-install, chruby, Rails and You
 **Last updated: 7th December 2015**
 
 
-**This beginner's guide will set your machine up with Ruby 2.2.3 using chruby+ruby-install and Rails 4.2.5 and is specifically written for a _development_ environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
+**This beginner's guide will set your machine up with Ruby 2.3.0 using chruby+ruby-install and Rails 4.2.5 and is specifically written for a _development_ environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
 
 ## Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
 
@@ -15,7 +15,7 @@ This guide will cover installing a couple of things:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): a very lightweight way to install multiple Rubies on the same box.
 * [**chruby**](https://github.com/postmodern/chruby): a way to easily switch between those Ruby installs
-* **Ruby 2.2.3**: at the time of writing the newest current stable release of Ruby.
+* **Ruby 2.3.0**: at the time of writing the newest current stable release of Ruby.
 * **Bundler**: a package dependency manager used in the Ruby community
 * **Rails 4.2.5**: at the time of writing the newest current stable release of Rails.
 
@@ -66,10 +66,10 @@ ruby-install: 0.5.0
 Our next step is to install Ruby itself, which we can do with this command:
 
 ```
-ruby-install ruby 2.2.3
+ruby-install ruby 2.3.0
 ```
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.2.3 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.0 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
 
 ```
 wget -O chruby-0.3.9.tar.gz \
@@ -99,21 +99,21 @@ Alternatively, opening a new terminal tab/window will do the same thing.
 To verify that chruby is installed and has detected our Ruby installation, run `chruby`. If you see this, then it's working:
 
 ```
-ruby-2.2.3
+ruby-2.3.0
 ```
 
 Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called `~/.ruby-version` with this content:
 
 ```
-ruby-2.2.3
+ruby-2.3.0
 ```
 
-This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.2.3` for example -- assuming that we have Ruby 2.2.3 installed first!
+This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.3.0` for example -- assuming that we have Ruby 2.3.0 installed first!
 
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.2.3p173 (2015-08-18 revision 51636) [x86_64-linux]
+ruby 2.3.0p0 (2015-12-25 revision 53290) [x86_64-linux]
 ```
 
 ### Rails
@@ -132,7 +132,7 @@ If you're planning on using the `mysql2` gem for your application then you'll wa
     ERROR:  Error installing mysql2:
         ERROR: Failed to build gem native extension.
 
-        /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
+        /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
     checking for ruby/thread.h... yes
     checking for rb_thread_call_without_gvl() in ruby/thread.h... yes
     checking for rb_thread_blocking_region()... yes
