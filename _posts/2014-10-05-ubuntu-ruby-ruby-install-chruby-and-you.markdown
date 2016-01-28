@@ -165,7 +165,7 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
     ERROR:  Error installing pg:
         ERROR: Failed to build gem native extension.
 
-        /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
+        /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
     checking for pg_config... no
     No pg_config... trying anyway. If building fails, please try again with
      --with-pg-config=/path/to/pg_config
@@ -184,7 +184,7 @@ Just like MySQL and PostgreSQL before it, attempting to install the `sqlite3` ge
 
     Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
 
-        /home/ryan/.rubies/ruby-2.2.0/bin/ruby extconf.rb
+        /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
     checking for sqlite3.h... no
     sqlite3.h is missing. Try 'port install sqlite3 +universal',
     'yum install sqlite-devel' or 'apt-get install libsqlite3-dev'
