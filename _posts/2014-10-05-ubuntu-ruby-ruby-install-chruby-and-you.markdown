@@ -42,10 +42,10 @@ And now we're ready to install ruby-install.
 The installation instructions can be found [on the README of ruby-install](https://github.com/postmodern/ruby-install#install), but I'll repeat them here so you don't have to go over there:
 
 ```
-wget -O ruby-install-0.5.0.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
-tar -xzvf ruby-install-0.5.0.tar.gz
-cd ruby-install-0.5.0/
+wget -O ruby-install-0.6.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.6.0.tar.gz
+tar -xzvf ruby-install-0.6.0.tar.gz
+cd ruby-install-0.6.0/
 sudo make install
 ```
 
@@ -58,7 +58,7 @@ $ ruby-install -V
 If you see this, then you've successfully installed ruby-install:
 
 ```
-ruby-install: 0.5.0
+ruby-install: 0.6.0
 ```
 
 ### Ruby
@@ -66,7 +66,7 @@ ruby-install: 0.5.0
 Our next step is to install Ruby itself, which we can do with this command:
 
 ```
-ruby-install ruby 2.3.0
+ruby-install --latest ruby 2.3.0
 ```
 
 This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.0 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:

@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2016-01-28T17:09:47+11:00</updated>
+ <updated>2016-01-28T17:12:24+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -780,7 +780,7 @@ rails_app=&gt;
    <content type="html"><![CDATA[<p><strong>Last updated: December 7th, 2015</strong></p>
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 2.2.3, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 2.3.0, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
@@ -790,7 +790,7 @@ rails_app=&gt;
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
 <li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.2.3</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Ruby 2.3.0</strong>: at the time of writing the newest current stable release of Ruby.</li>
 <li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
 <li><strong>Rails 4.2.5</strong>: at the time of writing the newest current stable release of Rails.</li>
 </ul>
@@ -815,24 +815,24 @@ rails_app=&gt;
 <h3>ruby-install</h3>
 
 <p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
-tar -xzvf ruby-install-0.5.0.tar.gz
-cd ruby-install-0.5.0/
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.6.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.6.0.tar.gz
+tar -xzvf ruby-install-0.6.0.tar.gz
+cd ruby-install-0.6.0/
 sudo make install
 </code></pre></div>
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
 </code></pre></div>
 <p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.5.0
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.6.0
 </code></pre></div>
 <h3>Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.2.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install --latest ruby
 </code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.2.3 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.3.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
@@ -849,15 +849,15 @@ source /usr/local/share/chruby/auto.sh
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.3.0
 </code></pre></div>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.2.3
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-2.3.0
 </code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.2.3</code> for example -- assuming that we have Ruby 2.2.3 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.3.0</code> for example -- assuming that we have Ruby 2.3.0 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.2.3p173 (2015-08-18 revision 51636) [x86_64-darwin14]
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby 2.3.0p0 (2015-12-25 revision 53290) [x86_64-darwin14]
 </code></pre></div>
 <h3>Rails</h3>
 
@@ -1080,22 +1080,22 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
 <h3>ruby-install</h3>
 
 <p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.5.0.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
-tar -xzvf ruby-install-0.5.0.tar.gz
-cd ruby-install-0.5.0/
+<div class="highlight"><pre><code class="language-text" data-lang="text">wget -O ruby-install-0.6.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.6.0.tar.gz
+tar -xzvf ruby-install-0.6.0.tar.gz
+cd ruby-install-0.6.0/
 sudo make install
 </code></pre></div>
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
 </code></pre></div>
 <p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.5.0
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.6.0
 </code></pre></div>
 <h3>Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install ruby 2.3.0
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install --latest ruby 2.3.0
 </code></pre></div>
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.3.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">wget -O chruby-0.3.9.tar.gz \

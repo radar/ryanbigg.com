@@ -7,7 +7,7 @@ title: Mac OS X, Ruby, ruby-install, chruby and You
 **Last updated: December 7th, 2015**
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 2.2.3, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 2.3.0, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
@@ -16,7 +16,7 @@ This guide will cover installing a couple of things:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): a very lightweight way to install multiple Rubies on the same box.
 * [**chruby**](https://github.com/postmodern/chruby): a way to easily switch between those Ruby installs
-* **Ruby 2.2.3**: at the time of writing the newest current stable release of Ruby.
+* **Ruby 2.3.0**: at the time of writing the newest current stable release of Ruby.
 * **Bundler**: a package dependency manager used in the Ruby community
 * **Rails 4.2.5**: at the time of writing the newest current stable release of Rails.
 
@@ -45,10 +45,10 @@ Next, we'll need to install `wget` because some of the commands we're about to r
 The installation instructions can be found [on the README of ruby-install](https://github.com/postmodern/ruby-install#install), but I'll repeat them here so you don't have to go over there:
 
 ```
-wget -O ruby-install-0.5.0.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
-tar -xzvf ruby-install-0.5.0.tar.gz
-cd ruby-install-0.5.0/
+wget -O ruby-install-0.6.0.tar.gz \
+  https://github.com/postmodern/ruby-install/archive/v0.6.0.tar.gz
+tar -xzvf ruby-install-0.6.0.tar.gz
+cd ruby-install-0.6.0/
 sudo make install
 ```
 
@@ -61,7 +61,7 @@ $ ruby-install -V
 If you see this, then you've successfully installed ruby-install:
 
 ```
-ruby-install: 0.5.0
+ruby-install: 0.6.0
 ```
 
 ### Ruby
@@ -69,10 +69,10 @@ ruby-install: 0.5.0
 Our next step is to install Ruby itself, which we can do with this command:
 
 ```
-ruby-install ruby 2.2.3
+ruby-install --latest ruby
 ```
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.2.3 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.0 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
 
 ```
 wget -O chruby-0.3.9.tar.gz \
@@ -100,21 +100,21 @@ Alternatively, opening a new terminal tab/window will do the same thing.
 To verify that chruby is installed and has detected our Ruby installation, run `chruby`. If you see this, then it's working:
 
 ```
-ruby-2.2.3
+ruby-2.3.0
 ```
 
 Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called `~/.ruby-version` with this content:
 
 ```
-ruby-2.2.3
+ruby-2.3.0
 ```
 
-This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.2.3` for example -- assuming that we have Ruby 2.2.3 installed first!
+This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.3.0` for example -- assuming that we have Ruby 2.3.0 installed first!
 
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.2.3p173 (2015-08-18 revision 51636) [x86_64-darwin14]
+ruby 2.3.0p0 (2015-12-25 revision 53290) [x86_64-darwin14]
 ```
 
 ### Rails
