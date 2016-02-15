@@ -6,14 +6,18 @@ title: Polymorphic Routes
 
 Really early on in Rails, you would write routes like this:
 
-    redirect_to :controller => "posts", :action => "show", :id => @post.id
+```ruby
+redirect_to :controller => "posts", :action => "show", :id => @post.id
+```
 
 What this would do is dutifully redirect to the `show` action inside the `PostsController` and pass along the `id` parameter with a
 value of whatever `@post.id` returns. Typical 302 response.
 
 Then Rails 1.2 came along and allowed you to use routing helpers, like this:
 
-    redirect_to post_path(@post)
+```ruby
+redirect_to post_path(@post)
+```
 
 And the people rejoiced.
 
@@ -22,7 +26,9 @@ like `/posts/1` and then `redirect_to` would send back a 302 response to that ro
 
 Then later versions (I can't remember which one), allowed syntax like this:
 
-    redirect_to @post
+```ruby
+redirect_to @post
+```
 
 And the people rejoiced a second time.
 
@@ -39,9 +45,11 @@ database somewhere by calling `persisted?` on it.
 
 By "persisted", I mean that a Ruby object has a matching record in the database somewhere. The `persisted?` method in Active Record is implemented like this:
 
-    def persisted?
-      !(new_record? || destroyed?)
-    end
+```ruby
+def persisted?
+  !(new_record? || destroyed?)
+end
+```
 
 If the object wasn't created through a call such as `Model.new` then it won't be a new record, and if it hasn't had the `destroy` method called on it won't be
 destroyed either. If both of these cases are true, then that makes the object has most likely been _persisted_ to the database in the form of a record.
@@ -53,11 +61,15 @@ in the `to_param` value of this object which is usually the `id`.
 
 In short, it's effectively doing this:
 
-    #{@post.class.downcase}_path(@post.to_param)
+```ruby
+#{@post.class.downcase}_path(@post.to_param)
+```
 
 Which comes out to being this:
 
-    post_path(1)
+```ruby
+post_path(1)
+```
 
 And when that method is called you would get this little string:
 
@@ -72,18 +84,24 @@ attempt to work out the correct URL of what to use.
 
 Now, when you're coding Rails you may have used `form_for` like this a very long time ago:
 
-    <% form_for @post, :url => { :controller => "posts", :action => "create" } do |f| %>
+```erb
+<% form_for @post, :url => { :controller => "posts", :action => "create" } do |f| %>
+```
 
 Of course, with advancements in Rails you could simplify it to this:
 
-    <% form_for @post, :url => posts_path do |f| %>
+```erb
+<% form_for @post, :url => posts_path do |f| %>
+```
 
 Because the form is going to default to having a `POST` HTTP method and therefore a request to `posts_path` is going to go to the
 `create` action of `PostsController`, rather than the `index` action, which is what would result if it were a `GET` request.
 
 But why stop there? Why not just write this?
 
-    <%= form_for @post do |f| %>
+```erb
+<%= form_for @post do |f| %>
+```
 
 Personally, I see no reason not to... if it's something as simple as this. The `form_for` method uses `url_for` underneath, just like
 `redirect_to` to work out where the form should go. It knows that the `@post` object is of the `Post` class (again, we assume) and it
@@ -101,7 +119,9 @@ more common these days for people to even put their whole `form_for` tags into a
 So `form_for` is fairly simple for when you pass a normal object, but what happens if you pass an array of objects? Like this, for
 instance:
 
-    <%= form_for [@post, @comment] do |f| %>
+```erb
+<%= form_for [@post, @comment] do |f| %>
+```
 
 Well, both `url_for` and `form_for` have you covered there too.
 
@@ -134,7 +154,9 @@ you keep it to just two parts.
 Now that we've covered using an array containing objects for `form_for`, let's take a look at another common use. An array containing
 at least one Symbol object, like this:
 
-    <%= form_for [:admin, @post, @comment] do |f| %>
+```erb
+<%= form_for [:admin, @post, @comment] do |f| %>
+```
 
 What the `url_for` method does here is very simple. It sees that there's a `Symbol` and takes it as it is. The first part of the
 `url` will simply be the same as the symbol: `admin`. The URL that `url_for` knows of at this point is just `[:admin]`.
@@ -146,7 +168,9 @@ and `comment` too, resulting in `[:admin, :post, :comment]`.
 Then the joining happens, resulting in a method of `admin_post_comment_path`, and because both `@post` and `@comment` are persisted here,
 they're passed in, resulting in this method call:
 
-    admin_post_comment_path(@post, @comment)
+```ruby
+admin_post_comment_path(@post, @comment)
+```
 
 Which (usually) turns into this path:
 
