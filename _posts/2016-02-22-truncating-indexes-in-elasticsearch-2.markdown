@@ -18,7 +18,7 @@ it from Elasticsearch's own package repo, it will be at
 
 I'm using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I'm using to truncate the indexes:
 
-```
+```ruby
 module Index
   class Indexers
     def truncate_indexes
