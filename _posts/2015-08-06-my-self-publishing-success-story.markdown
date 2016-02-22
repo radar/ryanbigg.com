@@ -9,7 +9,7 @@ going through a traditional publisher with Rails 3 in Action and have that
 fail, and then discovering joy and happiness through the path of self-
 publishing my own books through Leanpub.
 
-### Rails 3 in Action
+### <a name='rails-3-in-action'></a><a href='#rails-3-in-action'>Rails 3 in Action</a>
 
 I was approached in 2010 to write a book called [Rails 3 in
 Action](https://manning.com/katz). I was so very excited to join that project
@@ -34,7 +34,7 @@ proofing through Manning's processes. And by "currently" I mean it's been in
 there since April. 3 months to proof and print a book seems a bit long in my
 opinion, but what can you do about it?
 
-### Multitenancy with Rails
+### <a name='multitenancy-with-rails'></a><a href='#multitenancy-with-rails'>Multitenancy with Rails</a>
 
 After I quit Rails 3 in Action I was burned out quite heavily. I took time off
 from writing and at the end of 2011 I moved from Sydney to Melbourne. Then when I got to Melbourne,
@@ -65,7 +65,7 @@ This had two awesome effects:
 1. I would get money each month as more people bought it.
 2. I would get feedback on the early drafts from readers.
 
-### Royalties
+### <a name='royalties'></a><a href='#royalties'>Royalties</a>
 
 Here's the royalties chart for all of my income from Leanpub since Feb 2012 to the current day.
 
@@ -147,7 +147,7 @@ comes first to make sure that a good book comes out at the end.
 
 That's a nice segue into our next topic: writing tools and feedback cycles.
 
-### Writing tools and feedback cycles
+### <a name='writing-tools'></a><a href='#writing-tools'>Writing tools and feedback cycles</a>
 
 When publishing a book, you kinda want to know immediately if anyone's reading
 it. Peoeple _buying_ the book is different to people _reading_ the book. A
