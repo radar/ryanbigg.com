@@ -1,5 +1,5 @@
 --- 
-wordpress_id: RB-369
+wordpress_id: RB-370
 layout: post
 title: Truncating indexes in Elasticsearch 2
 ---
