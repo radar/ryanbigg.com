@@ -3,38 +3,41 @@ layout: no-header
 title: Recruiters
 ---
 
-Hello! You probably have been sent this page because you're a recruiter. A mass-mailing recruiter too, probably. The worst kind.
+Hello! You probably have been sent this page because you're a recruiter.
 
-<a href='http://ryanbigg.com/about-me'>My "About me" page</a> has this paragraph:
-
-> I am not actively looking for any more jobs. If you still really really really feel like contacting me about a job, **include the phrase "Bravo Foxtrot Uniform"**. 
-
-Followed immediately by:
+<a href='https://au.linkedin.com/in/ryan-bigg-73379b9a'>My LinkedIn profile</a> says this:
 
 > No recruiters, thanks.
 
-If you're a recruiter and you're reading this page: you have probably already failed my first two tests. You *didn't* include the magical phrase and you *didn't* follow my precise "no recruiters" instructions.
+<a href='http://ryanbigg.com/about-me'>My "About me" page</a> has this paragraph:
 
-All hope is not lost, however. Here's how you can be better at your job and get people to respect you.
+> I am not actively looking for any more jobs. If you still really really really feel like contacting me about a job, **include the phrase "Bravo Foxtrot Uniform"**, just so I know you've done your research. If you do not include this phrase, I will assume you have not done your research. I get contacted quite often by recruiters, and this phrase is what I use to weed out those who have done their research and those who haven't.
 
-## How to be a better recruiter
 
-There's this one weird tip that you can use to be a better recruiter.
+If you're a recruiter and you're reading this page: you have probably already
+failed my first two tests. You *didn't* include the magical phrase and you
+*didn't* follow my precise "no recruiters" instructions.
 
-It's a long-held secret, that only the best recruiters know about. If you're on this page, you don't know about it.
+I have these two checks in place for a _very_ good reason: I get contacted by
+a lot of people (recruiters and otherwise) about jobs, career opportunities,
+and related things. these two tests are the only way that I know that you've
+done your research on me and that you've figured out that I'm an _especially_
+good fit for the job, and not just another warm body. There are plenty of
+places that could hire me for my warm-bodyness, and a select few that would
+hire me for my skills and good fit into the company and their culture.
 
-But I am willing to share it with you.
+<small>
+  [Read here about the time I was (almost) successfully recruited](/recruiters/almost-successful.html)
+</small>
 
-Are you ready?
+**If you've reached this page, you're treating me like a warm body.** In my
+professional experience, these kinds of job placements don't pan out well, and
+so I'm actively trying to avoid them.
 
-Here it is:
+**I will only consider job offers from people who have done their research.**
 
-### Actually care about the people who you're contacting.
+Thanks for respecting my wishes.
 
-This works wonders. The only recruiter to have successfully approached me for a job interview has shown that they _cared_ about me. That's all that you have to do. That is literally your job.
+**Ryan Bigg**
 
-Can you do that for me? I would really appreciate it.
-
-Thank you for your time.
-
-P.S. I don't refer my friends onto recruiters. Ever.
+---
