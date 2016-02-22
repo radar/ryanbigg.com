@@ -4,13 +4,48 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2016-01-28T17:15:47+11:00</updated>
+ <updated>2016-02-22T12:45:07+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Truncating indexes in Elasticsearch 2</title>
+   <link href="http://ryanbigg.com/2016/02/truncating-indexes-in-elasticsearch-2"/>
+   <updated>2016-02-22T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2016/02/truncating-indexes-in-elasticsearch-2</id>
+   <content type="html"><![CDATA[<p>In pre-2.0 versions of elasticsearch, you may have been truncating indexes using <code>delete_by_query</code>. This has been moved in Elasticsearch 2.0 out to a plugin, which can be installed with:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">bin/plugin install delete-by-query
+</code></pre></div>
+<p>Where <code>bin/plugin</code> is located wherever you installed Elasticsearch. On my Mac,
+that path is <code>/usr/local/Cellar/elasticsearch/2.2.0_1/libexec</code> because I
+installed Elasticsearch with Homebrew. If you&#39;re on Ubuntu and you installed
+it from Elasticsearch&#39;s own package repo, it will be at
+<code>/usr/share/elasticsearch</code>.</p>
+
+<p>I&#39;m using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I&#39;m using to truncate the indexes:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">module Index
+  class Indexers
+    def truncate_indexes
+      client = Elasticsearch::Client.new
+      client.delete_by_query(index: index_names, body: { query: { match_all: {} } })
+      client.indices.flush(index: index_names)
+    end
+  end
+end
+</code></pre></div>
+<p>This method is called after each spec has finished running. The <code>index_names</code>
+is just a list of indexes that the <code>Index::Indexers</code> class knows about. The
+<code>delete_by_query</code> functionality is available here from the <code>delete-by-query</code>
+plugin that was installed. The <code>indices.flush</code> call is necessary because the
+next query may return data that the <code>delete_by_query</code> request was supposed to
+delete. The <code>flush</code> call clears the transaction log and memory and writes data
+to disk, ensuring that the next query won&#39;t return data that was deleted.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Programming Phoenix Review</title>
@@ -2006,48 +2041,6 @@ Total      = $99 + $10                       = $109
 <p>If you have any comments or corrections to offer, please email me at ryan@spreecommerce.com.</p>
 
 <p>Last revision: 25th September, 2013.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Debugging Rails Controllers</title>
-   <link href="http://ryanbigg.com/2013/09/debugging-rails-controllers"/>
-   <updated>2013-09-05T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2013/09/debugging-rails-controllers</id>
-   <content type="html"><![CDATA[<p>Here&#39;s my flow for debugging a misbehaving controller. Imagine that there&#39;s a form at <code>app/views/messages/new.html.erb</code> that is posting to <code>MessagesController#create</code>. The parameters aren&#39;t being passed through from the form to the controller, and the model is raising a validation error saying that a field is blank -- even though it&#39;s <em>clearly</em> not.</p>
-
-<h3>Step 0: Does restarting the server fix the problem?</h3>
-
-<h3>Step 1: Check the form</h3>
-
-<ul>
-<li>Is the attribute defined in the correct place? </li>
-<li>Is it using the form builder helper (i.e. <code>f.text_field</code>) or is it using <code>text_field_tag</code>? If it&#39;s supposed to be <code>params[:message][:body]</code> then it should be using the form builder. If not, then it should be using <code>text_field_tag</code> or similar.</li>
-<li>Unlikely, but still possible: Is the field disabled before submission of the form? Disabled fields are not passed through as parameters.</li>
-</ul>
-
-<h3>Step 2: Check the controller</h3>
-
-<ul>
-<li>Is the route to the controller defined correctly in <code>config/routes.rb</code>?</li>
-<li>Is the controller set up to receive the right parameters?</li>
-<li>Did I spell &#39;message&#39; with the correct number of &#39;s&#39;s within <code>params[:message]</code>?</li>
-<li>Are the parameters from the form permitted using strong_parameters?</li>
-<li>Are <em>all</em> the parameters from the form permitted?</li>
-<li>Did I spell the parameters correctly? </li>
-<li>What does the log output say for this controller? Does it contain the parameters I want with the values I want?</li>
-<li>Can I place a <code>binding.pry</code> statement at the top of the action and print out <code>params</code> to see the correct parameters there too?</li>
-</ul>
-
-<h3>Step 3: Check the model</h3>
-
-<ul>
-<li>If using <code>attr_accessible</code>, are the attribute marked as accessible?</li>
-<li>Did I accidentally use <code>attr_accessor</code> when I meant to use <code>attr_accessible</code>?</li>
-<li>Did I define a setter method for this attribute accidentally that doesn&#39;t actually set the attribute?</li>
-<li>Is there a callback that unsets this parameter somehow?</li>
-<li>If it&#39;s nested attributes that are being sent through, go check the nested model for the above.</li>
-</ul>
 ]]></content>
  </entry>
  
