@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2016-02-22T12:45:07+11:00</updated>
+ <updated>2016-02-22T12:48:27+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -27,15 +27,15 @@ it from Elasticsearch&#39;s own package repo, it will be at
 <code>/usr/share/elasticsearch</code>.</p>
 
 <p>I&#39;m using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I&#39;m using to truncate the indexes:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">module Index
-  class Indexers
-    def truncate_indexes
-      client = Elasticsearch::Client.new
-      client.delete_by_query(index: index_names, body: { query: { match_all: {} } })
-      client.indices.flush(index: index_names)
-    end
-  end
-end
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Index</span>
+  <span class="k">class</span> <span class="nc">Indexers</span>
+    <span class="k">def</span> <span class="nf">truncate_indexes</span>
+      <span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span>
+      <span class="n">client</span><span class="o">.</span><span class="n">delete_by_query</span><span class="p">(</span><span class="ss">index</span><span class="p">:</span> <span class="n">index_names</span><span class="p">,</span> <span class="ss">body</span><span class="p">:</span> <span class="p">{</span> <span class="ss">query</span><span class="p">:</span> <span class="p">{</span> <span class="ss">match_all</span><span class="p">:</span> <span class="p">{}</span> <span class="p">}</span> <span class="p">})</span>
+      <span class="n">client</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="ss">index</span><span class="p">:</span> <span class="n">index_names</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
 </code></pre></div>
 <p>This method is called after each spec has finished running. The <code>index_names</code>
 is just a list of indexes that the <code>Index::Indexers</code> class knows about. The
