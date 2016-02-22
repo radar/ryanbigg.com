@@ -37,3 +37,4 @@ plugin that was installed. The `indices.flush` call is necessary because the
 next query may return data that the `delete_by_query` request was supposed to
 delete. The `flush` call clears the transaction log and memory and writes data
 to disk, ensuring that the next query won't return data that was deleted.
+ 
