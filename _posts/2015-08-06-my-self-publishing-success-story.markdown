@@ -149,6 +149,10 @@ That's a nice segue into our next topic: writing tools and feedback cycles.
 
 ### <a name='writing-tools'></a><a href='#writing-tools'>Writing tools and feedback cycles</a>
 
+I want to talk about two things here: feedback cycles and writing tools.
+
+#### Feedback cycles 
+
 When publishing a book, you kinda want to know immediately if anyone's reading
 it. Peoeple _buying_ the book is different to people _reading_ the book. A
 good indicator for this is the feedback that comes through in the form of,
@@ -212,6 +216,12 @@ For Multitenancy with Rails, I've gone with more of a personal approach: I've
 included my email in the foreword to the book and asked if people encounter
 errors that they email me directly. This system works really well as I use the
 unarchived emails as an indication of what book bugs haven't been fixed yet.
+
+TODO: mention Twist here too
+
+#### Picking a tool to write a book in
+
+* Discuss Word, Docbook, Markdown and AsciiDoc here.
 
 ### Conclusion
 
