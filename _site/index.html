@@ -28,35 +28,35 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2016/02/truncating-indexes-in-elasticsearch-2"><header>Truncating indexes in Elasticsearch 2</header></a>
-  <small>22 Feb 2016</small><br>
-  <p>In pre-2.0 versions of elasticsearch, you may have been truncating indexes using <code>delete_by_query</code>. This has been moved in Elasticsearch 2.0 out to a plugin, which can be installed with:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">bin/plugin install delete-by-query
-</code></pre></div>
-<p>Where <code>bin/plugin</code> is located wherever you installed Elasticsearch. On my Mac,
-that path is <code>/usr/local/Cellar/elasticsearch/2.2.0_1/libexec</code> because I
-installed Elasticsearch with Homebrew. If you&#39;re on Ubuntu and you installed
-it from Elasticsearch&#39;s own package repo, it will be at
-<code>/usr/share/elasticsearch</code>.</p>
+  <a href="/2016/03/working-with-date-ranges-in-active-record"><header>Working with date ranges in Active Record</header></a>
+  <small>09 Mar 2016</small><br>
+  <p><strong>TL;DR: <a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</strong></p>
 
-<p>I&#39;m using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I&#39;m using to truncate the indexes:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Index</span>
-  <span class="k">class</span> <span class="nc">Indexers</span>
-    <span class="k">def</span> <span class="nf">truncate_indexes</span>
-      <span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span>
-      <span class="n">client</span><span class="o">.</span><span class="n">delete_by_query</span><span class="p">(</span><span class="ss">index</span><span class="p">:</span> <span class="n">index_names</span><span class="p">,</span> <span class="ss">body</span><span class="p">:</span> <span class="p">{</span> <span class="ss">query</span><span class="p">:</span> <span class="p">{</span> <span class="ss">match_all</span><span class="p">:</span> <span class="p">{}</span> <span class="p">}</span> <span class="p">})</span>
-      <span class="n">client</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="ss">index</span><span class="p">:</span> <span class="n">index_names</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+<p>When you&#39;re trying to get records for a particular date range in Active Record, for example from the beginning of the month to the end of the month, you may be tempted to write code like this:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">beginning_of_month</span>
+<span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">end_of_month</span>
+<span class="no">Post</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">created_at</span><span class="p">:</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">.end_of_month</span><span class="p">)</span>
 </code></pre></div>
-<p>This method is called after each spec has finished running. The <code>index_names</code>
-is just a list of indexes that the <code>Index::Indexers</code> class knows about. The
-<code>delete_by_query</code> functionality is available here from the <code>delete-by-query</code>
-plugin that was installed. The <code>indices.flush</code> call is necessary because the
-next query may return data that the <code>delete_by_query</code> request was supposed to
-delete. The <code>flush</code> call clears the transaction log and memory and writes data
-to disk, ensuring that the next query won&#39;t return data that was deleted.</p>
+<p>Let&#39;s say that the month is March 2016 (and it is, at the time of writing). This query will get you all posts between the 1st of March and the 31st of March, but not in the way you expect it. It will get you all posts between 00:00:00 of the 1st of March and 00:00:00 of 31st of March, which is probably not what you want, as it misses the last days posts completely. </p>
+
+<p>What you&#39;ll want is all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March.</p>
+
+<p>To do this, you <em>could</em> use <code>Time.current</code> instead:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">beginning_of_month</span>
+<span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">end_of_month</span>
+<span class="no">Post</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">created_at</span><span class="p">:</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">.end_of_month</span><span class="p">)</span>
+</code></pre></div>
+<p>This will give you the right set of posts, because <code>Time.current.end_of_month</code> is something like <code>Thu, 31 Mar 2016 23:59:59 UTC +00:00</code> (or it might even be in your local time zone, like `Wed, 09 Mar 2016 14:39:25 AEDT +11:00).</p>
+
+<p>Or you could use <a href="https://github.com/radar/by_star">the <code>by_star</code> gem</a>. I wrote this gem to easily query date /
+time ranges in Active Record and it has saved me a lot of frustration. The above code examples would then become:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">by_month</span><span class="p">(</span><span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
+</code></pre></div>
+<p>This will retrieve all posts by the current month, and that means all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March will be returned if I ran this query today.</p>
+
+<h2>Conclusion</h2>
+
+<p><a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</p>
 
 </article>
 
@@ -64,6 +64,8 @@ to disk, ensuring that the next query won&#39;t return data that was deleted.</p
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2016/02/truncating-indexes-in-elasticsearch-2">Truncating indexes in Elasticsearch 2</a><abbr>22 Feb 2016</abbr></li>
+  
       <li><a href="/2015/12/programming-phoenix">Programming Phoenix Review</a><abbr>24 Dec 2015</abbr></li>
   
       <li><a href="/2015/11/open-source-work">Open source work</a><abbr>16 Nov 2015</abbr></li>
@@ -111,8 +113,6 @@ to disk, ensuring that the next query won&#39;t return data that was deleted.</p
       <li><a href="/2013/06/finding-sql-queries-in-rails">Finding SQL queries in Rails</a><abbr>26 Jun 2013</abbr></li>
   
       <li><a href="/2013/02/about-spec-support">About spec/support</a><abbr>02 Feb 2013</abbr></li>
-  
-      <li><a href="/2013/01/multitenancy-with-rails">Multitenancy with Rails</a><abbr>21 Jan 2013</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>

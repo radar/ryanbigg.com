@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Blog of Ryan Bigg - Working with date ranges in Active Record</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+    <link rel='stylesheet' href='/css/highlight.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>The Life of a Radar</a></h1>
+    <div id='post'>
+      <article>
+        <a href="/2016/03/working-with-date-ranges-in-active-record"><header>Working with date ranges in Active Record</header></a>
+        <small>09 Mar 2016</small><br>
+        <p><strong>TL;DR: <a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</strong></p>
+
+<p>When you&#39;re trying to get records for a particular date range in Active Record, for example from the beginning of the month to the end of the month, you may be tempted to write code like this:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">beginning_of_month</span>
+<span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">end_of_month</span>
+<span class="no">Post</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">created_at</span><span class="p">:</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">.end_of_month</span><span class="p">)</span>
+</code></pre></div>
+<p>Let&#39;s say that the month is March 2016 (and it is, at the time of writing). This query will get you all posts between the 1st of March and the 31st of March, but not in the way you expect it. It will get you all posts between 00:00:00 of the 1st of March and 00:00:00 of 31st of March, which is probably not what you want, as it misses the last days posts completely. </p>
+
+<p>What you&#39;ll want is all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March.</p>
+
+<p>To do this, you <em>could</em> use <code>Time.current</code> instead:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">beginning_of_month</span>
+<span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">end_of_month</span>
+<span class="no">Post</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">created_at</span><span class="p">:</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">.end_of_month</span><span class="p">)</span>
+</code></pre></div>
+<p>This will give you the right set of posts, because <code>Time.current.end_of_month</code> is something like <code>Thu, 31 Mar 2016 23:59:59 UTC +00:00</code> (or it might even be in your local time zone, like `Wed, 09 Mar 2016 14:39:25 AEDT +11:00).</p>
+
+<p>Or you could use <a href="https://github.com/radar/by_star">the <code>by_star</code> gem</a>. I wrote this gem to easily query date /
+time ranges in Active Record and it has saved me a lot of frustration. The above code examples would then become:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="o">.</span><span class="n">by_month</span><span class="p">(</span><span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
+</code></pre></div>
+<p>This will retrieve all posts by the current month, and that means all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March will be returned if I ran this query today.</p>
+
+<h2>Conclusion</h2>
+
+<p><a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</p>
+
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-370 http://ryanbigg.com/?p=RB-370'
+        var disqus_url = 'http://ryanbigg.com/2016/03/working-with-date-ranges-in-active-record';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60556315-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
