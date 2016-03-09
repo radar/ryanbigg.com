@@ -21,12 +21,23 @@ What you'll want is all the posts between 00:00:00 of the 1st of March and 23:59
 To do this, you _could_ use `Time.current` instead:
 
 ```ruby
-beginning_of_month = Date.today.beginning_of_month
+beginning_of_month = Time.current.beginning_of_month
 end_of_month = beginning_of_month.end_of_month
 Post.where(created_at: beginning_of_month..end_of_month)
 ```
 
-This will give you the right set of posts, because `Time.current.end_of_month` is something like `Thu, 31 Mar 2016 23:59:59 UTC +00:00` (or it might even be in your local time zone, like `Wed, 09 Mar 2016 14:39:25 AEDT +11:00).
+
+This will give you the right set of posts, because `Time.current.end_of_month` is something like `Thu, 31 Mar 2016 23:59:59 UTC +00:00` (or it might even be in your local time zone, like `Thu, 31 Mar 2016 23:59:59 AEDT +11:00).
+
+Or you could even do this:
+
+```ruby
+beginning_of_month = Date.today.beginning_of_month
+beginning_of_next_month = beginning_of_month.next_month
+Post.where(created_at: beginning_of_month..beginning_of_next_month)
+```
+
+This will also give you the right set of posts, because `beginning_of_month.next_month` is something like `Fri, 1 Apr 2016 00:00:00 UTC +00:00` (or it might even be in your local time zone, like `Thu, 31 Mar 2016 23:59:59 AEDT +11:00).
 
 Or you could use [the `by_star` gem](https://github.com/radar/by_star). I wrote this gem to easily query date /
 time ranges in Active Record and it has saved me a lot of frustration. The above code examples would then become:

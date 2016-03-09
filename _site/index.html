@@ -42,11 +42,18 @@
 <p>What you&#39;ll want is all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March.</p>
 
 <p>To do this, you <em>could</em> use <code>Time.current</code> instead:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">beginning_of_month</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">beginning_of_month</span>
 <span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">end_of_month</span>
 <span class="no">Post</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">created_at</span><span class="p">:</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">.end_of_month</span><span class="p">)</span>
 </code></pre></div>
-<p>This will give you the right set of posts, because <code>Time.current.end_of_month</code> is something like <code>Thu, 31 Mar 2016 23:59:59 UTC +00:00</code> (or it might even be in your local time zone, like `Wed, 09 Mar 2016 14:39:25 AEDT +11:00).</p>
+<p>This will give you the right set of posts, because <code>Time.current.end_of_month</code> is something like <code>Thu, 31 Mar 2016 23:59:59 UTC +00:00</code> (or it might even be in your local time zone, like `Thu, 31 Mar 2016 23:59:59 AEDT +11:00).</p>
+
+<p>Or you could even do this:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">beginning_of_month</span>
+<span class="n">beginning_of_next_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">next_month</span>
+<span class="no">Post</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">created_at</span><span class="p">:</span> <span class="n">beginning_of_month</span><span class="o">.</span><span class="n">.beginning_of_next_month</span><span class="p">)</span>
+</code></pre></div>
+<p>This will also give you the right set of posts, because <code>beginning_of_month.next_month</code> is something like <code>Fri, 1 Apr 2016 00:00:00 UTC +00:00</code> (or it might even be in your local time zone, like `Thu, 31 Mar 2016 23:59:59 AEDT +11:00).</p>
 
 <p>Or you could use <a href="https://github.com/radar/by_star">the <code>by_star</code> gem</a>. I wrote this gem to easily query date /
 time ranges in Active Record and it has saved me a lot of frustration. The above code examples would then become:</p>
