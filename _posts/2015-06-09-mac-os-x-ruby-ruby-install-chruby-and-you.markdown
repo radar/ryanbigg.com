@@ -36,21 +36,11 @@ First of all, we're going to need to install some package management script so t
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-Next, we'll need to install `wget` because some of the commands we're about to run use it.
+Next, we'll install `chruby`, `ruby-install` and `wget`.
 
-    brew install wget
+    brew install chruby ruby-install wget
 
 ### ruby-install
-
-The installation instructions can be found [on the README of ruby-install](https://github.com/postmodern/ruby-install#install), but I'll repeat them here so you don't have to go over there:
-
-```
-wget -O ruby-install-0.6.0.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.6.0.tar.gz
-tar -xzvf ruby-install-0.6.0.tar.gz
-cd ruby-install-0.6.0/
-sudo make install
-```
 
 First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:
 
@@ -72,17 +62,9 @@ Our next step is to install Ruby itself, which we can do with this command:
 ruby-install --latest ruby
 ```
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.0 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.0 installed.
 
-```
-wget -O chruby-0.3.9.tar.gz \
-  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
-tar -xzvf chruby-0.3.9.tar.gz
-cd chruby-0.3.9/
-sudo make install
-```
-
-After this has been installed, we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
+Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
 
 ```
 source /usr/local/share/chruby/chruby.sh
