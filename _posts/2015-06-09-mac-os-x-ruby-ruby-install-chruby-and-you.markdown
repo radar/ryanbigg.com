@@ -4,10 +4,10 @@ layout: post
 title: Mac OS X, Ruby, ruby-install, chruby and You
 ---
 
-**Last updated: December 7th, 2015**
+**Last updated: April 26th, 2016**
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 2.3.0, chruby, ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 2.3.1, chruby, ruby-install and Rails 4.2.6 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
@@ -16,9 +16,9 @@ This guide will cover installing a couple of things:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): a very lightweight way to install multiple Rubies on the same box.
 * [**chruby**](https://github.com/postmodern/chruby): a way to easily switch between those Ruby installs
-* **Ruby 2.3.0**: at the time of writing the newest current stable release of Ruby.
+* **Ruby 2.3.1**: at the time of writing the newest current stable release of Ruby.
 * **Bundler**: a package dependency manager used in the Ruby community
-* **Rails 4.2.5**: at the time of writing the newest current stable release of Rails.
+* **Rails 4.2.6**: at the time of writing the newest current stable release of Rails.
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.
 
@@ -36,21 +36,11 @@ First of all, we're going to need to install some package management script so t
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-Next, we'll need to install `wget` because some of the commands we're about to run use it.
+Next, we'll install `chruby` and `ruby-install`.
 
-    brew install wget
+    brew install chruby ruby-install
 
 ### ruby-install
-
-The installation instructions can be found [on the README of ruby-install](https://github.com/postmodern/ruby-install#install), but I'll repeat them here so you don't have to go over there:
-
-```
-wget -O ruby-install-0.6.0.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.6.0.tar.gz
-tar -xzvf ruby-install-0.6.0.tar.gz
-cd ruby-install-0.6.0/
-sudo make install
-```
 
 First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:
 
@@ -72,17 +62,9 @@ Our next step is to install Ruby itself, which we can do with this command:
 ruby-install --latest ruby
 ```
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.0 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.1 installed.
 
-```
-wget -O chruby-0.3.9.tar.gz \
-  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
-tar -xzvf chruby-0.3.9.tar.gz
-cd chruby-0.3.9/
-sudo make install
-```
-
-After this has been installed, we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
+Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
 
 ```
 source /usr/local/share/chruby/chruby.sh
@@ -100,28 +82,28 @@ Alternatively, opening a new terminal tab/window will do the same thing.
 To verify that chruby is installed and has detected our Ruby installation, run `chruby`. If you see this, then it's working:
 
 ```
-ruby-2.3.0
+ruby-2.3.1
 ```
 
 Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called `~/.ruby-version` with this content:
 
 ```
-ruby-2.3.0
+ruby-2.3.1
 ```
 
-This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.3.0` for example -- assuming that we have Ruby 2.3.0 installed first!
+This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.3.1` for example -- assuming that we have Ruby 2.3.1 installed first!
 
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.3.0p0 (2015-12-25 revision 53290) [x86_64-darwin14]
+ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
 ```
 
 ### Rails
 
 Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 4.2.5 --no-document
+    gem install rails -v 4.2.6 --no-document
 
 This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 
