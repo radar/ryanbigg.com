@@ -36,9 +36,9 @@ First of all, we're going to need to install some package management script so t
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-Next, we'll install `chruby`, `ruby-install` and `wget`.
+Next, we'll install `chruby` and `ruby-install`.
 
-    brew install chruby ruby-install wget
+    brew install chruby ruby-install
 
 ### ruby-install
 
