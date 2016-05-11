@@ -67,8 +67,7 @@ This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go o
 Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
 
 ```
-source /usr/local/share/chruby/chruby.sh
-source /usr/local/share/chruby/auto.sh
+source /usr/local/opt/chruby/share/chruby/auto.sh
 ```
 
 In order for this to take effect, we'll need to source that file:
