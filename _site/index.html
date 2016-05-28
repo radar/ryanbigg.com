@@ -28,25 +28,18 @@
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="/2016/05/multitenancy-with-rails-2nd-edition"><header>Multitenancy with Rails 2nd Edition</header></a>
-  <small>22 May 2016</small><br>
-  <p><a href="https://leanpub.com/multi-tenancy-rails-2/c/fin">Multitenancy with Rails 2nd edition</a> is now &quot;content complete&quot;. I have now finished doing the majority of the work on this book and all that is left is to go through it and &quot;proof&quot; it.</p>
+  <a href="/2016/05/elixir-tip-enum-any-match"><header>Elixir Tip: Enum.any? + match?</header></a>
+  <small>28 May 2016</small><br>
+  <p>I recently found out about the <a href="http://elixir-lang.org/docs/stable/elixir/Kernel.html#match?/2">match?/2</a> function in Elixir through the #elixir-lang IRC channel on Freenode.</p>
 
-<p>The book has been updated for Rails 4.2 and uses industry best practices of
-building a multitenanted Rails application, and the best practices of using
-Braintree or Stripe to add subscription features to that application.</p>
-
-<p><strong>If you&#39;ve read <a href="http://manning.com/bigg2">Rails 4 in Action</a> or something of a
-similar level to that, this book is a perfect &quot;next step&quot; for you. It adds
-features which are more complicated than a basic &quot;CRUD&quot; app to an existing
-codebase. If that appeals to you, <a href="https://leanpub.com/multi-tenancy-rails-2/c/fin">use the coupon code &quot;fin&quot; to get 50% off</a>.</strong></p>
-
-<p>This update has been quite a long time coming: it took me 298 days from when I
-started updating Chapter 1 to this current point. Next up, I&#39;ll go through the
-book and make sure there&#39;s as few bugs and typos as possible. Once I&#39;m done
-with that, then I will consider the book to be complete.</p>
-
-<p>Thanks everyone for buying this book, reading it and providing feedback along the way.</p>
+<p>What this function allows you to do is to determine if a given pattern matches a given expression. For instance, if you wanted to know if a list of maps contained a particular key + value combination, you could do this:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">people</span> <span class="p">=</span> <span class="p">[%{</span><span class="ss">name</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">},</span> <span class="p">%{</span><span class="ss">name</span><span class="p">:</span> <span class="s2">&quot;Jane&quot;</span><span class="p">}]</span>
+<span class="nc">Enum</span><span class="p">.</span><span class="n">any?</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="k">fn</span> <span class="p">(</span><span class="n">person</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">match?</span><span class="p">(%{</span><span class="ss">name</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">},</span> <span class="n">person</span><span class="p">)</span> <span class="k">end</span><span class="p">)</span>
+</code></pre></div>
+<p>This code will get Elixir to tell you if any of the people have the name &quot;John&quot;. In this case, the result would be <code>true</code>. You could even get fancy and use a shorter function:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="nc">Enum</span><span class="p">.</span><span class="n">any?</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">match?</span><span class="p">(%{</span><span class="ss">name</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">},</span> <span class="ni">&amp;1</span><span class="p">)))</span>
+</code></pre></div>
+<p>This shorter function defines the same function in the first example, but instead of having a named argument to the function, <code>&amp;1</code> is used instead.</p>
 
 </article>
 
@@ -54,6 +47,8 @@ with that, then I will consider the book to be complete.</p>
   <h2>25 back</h2>
   <ul>
     
+      <li><a href="/2016/05/multitenancy-with-rails-2nd-edition">Multitenancy with Rails 2nd Edition</a><abbr>22 May 2016</abbr></li>
+  
       <li><a href="/2016/04/hiring-juniors">Hiring Juniors</a><abbr>22 Apr 2016</abbr></li>
   
       <li><a href="/2016/03/working-with-date-ranges-in-active-record">Working with date ranges in Active Record</a><abbr>09 Mar 2016</abbr></li>
@@ -101,8 +96,6 @@ with that, then I will consider the book to be complete.</p>
       <li><a href="/2013/09/debugging-rails-controllers">Debugging Rails Controllers</a><abbr>05 Sep 2013</abbr></li>
   
       <li><a href="/2013/08/bundler-local-paths">Bundler local paths</a><abbr>16 Aug 2013</abbr></li>
-  
-      <li><a href="/2013/07/waiting-for-ajax-in-capybara">Waiting for AJAX in Capybara</a><abbr>09 Jul 2013</abbr></li>
   
   </ul>
   <center><a href='/blogography.html'>The Complete Blogography</a></center>
