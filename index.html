@@ -7,7 +7,7 @@ title: Home
 <!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
      http://litanyagainstfear.com -->
 <article>
-  <a href="{{ first_post.url }}"><header>{{ first_post.title }}</header></a>
+  <a href="{{ first_post.url }}"><h2>{{ first_post.title }}</h2></a>
   <small>{{ first_post.date | date_to_string }}</small><br>
   {{ first_post.content }}
 </article>
@@ -19,5 +19,5 @@ title: Home
       <li><a href="{{ post.url }}">{{ post.title }}</a><abbr>{{ post.date | date_to_string }}</abbr></li>
   {% endfor %}
   </ul>
-  <center><a href='/blogography.html'>The Complete Blogography</a></center>
+  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
 </div>

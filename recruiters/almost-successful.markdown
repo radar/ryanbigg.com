@@ -1,5 +1,5 @@
 ---
-layout: no-header
+layout: default
 title: Recruiters - An (almost) successful recruitment
 ---
 
