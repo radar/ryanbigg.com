@@ -9,7 +9,9 @@ title: Ubuntu, Ruby, ruby-install, chruby, Rails and You
 
 **This beginner's guide will set your machine up with Ruby 2.3.0 using chruby+ruby-install and Rails 4.2.5 and is specifically written for a _development_ environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
 
-## Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
+<div class="warning">
+  Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
+</div>
 
 This guide will cover installing a couple of things:
 
