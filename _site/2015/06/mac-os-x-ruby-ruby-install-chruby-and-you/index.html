@@ -51,7 +51,7 @@
 <h3>ruby-install</h3>
 
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ ruby-install -V
+<div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install -V
 </code></pre></div>
 <p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">ruby-install: 0.6.0
@@ -63,11 +63,14 @@
 </code></pre></div>
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.3.1 installed.</p>
 
-<p>Now we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code>:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/opt/chruby/share/chruby/auto.sh
+<p>Now we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bashrc</code> (or <code>~/.zshrc</code> if you&#39;re using ZSH):</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">source /usr/local/opt/chruby/share/chruby/chruby.sh
+source /usr/local/opt/chruby/share/chruby/auto.sh
 </code></pre></div>
 <p>In order for this to take effect, we&#39;ll need to source that file:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">. ~/.bashrc
+# or (if you&#39;re using ZSH)
+. ~/.zshrc
 </code></pre></div>
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
