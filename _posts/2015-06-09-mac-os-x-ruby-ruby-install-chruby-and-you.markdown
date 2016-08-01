@@ -45,7 +45,7 @@ Next, we'll install `chruby` and `ruby-install`.
 First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:
 
 ```
-$ ruby-install -V
+ruby-install -V
 ```
 
 If you see this, then you've successfully installed ruby-install:
@@ -64,9 +64,10 @@ ruby-install --latest ruby
 
 This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.1 installed.
 
-Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc`:
+Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc` (or `~/.zshrc` if you're using ZSH):
 
 ```
+source /usr/local/opt/chruby/share/chruby/chruby.sh
 source /usr/local/opt/chruby/share/chruby/auto.sh
 ```
 
@@ -74,6 +75,8 @@ In order for this to take effect, we'll need to source that file:
 
 ```
 . ~/.bashrc
+# or (if you're using ZSH)
+. ~/.zshrc
 ```
 
 Alternatively, opening a new terminal tab/window will do the same thing.
