@@ -60,7 +60,7 @@ defmodule MyApp.Response do
         }
       },
       "type" => "object",
-      "required" => [survey_id", "answers"],
+      "required" => ["survey_id", "answers"],
       "properties" => %{
         "survey_id" => %{
           "type" => "string"
