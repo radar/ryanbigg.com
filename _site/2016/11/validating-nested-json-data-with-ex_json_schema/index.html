@@ -1,29 +1,19 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Home - Ryan Bigg</title>
+    <title>Ryan Bigg - Validating nested JSON data with ex_json_schema</title>
     <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
     <link href='https://fonts.googleapis.com/css?family=Cabin:400,700' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/css/style.css' media='screen'>
     <link rel='stylesheet' href='/css/mobile.css'>
     <link rel='stylesheet' href='/css/highlight.css'>
-
   <body>
-    <header>
-      <h1><a href='/'>Ryan Bigg</a></h1>
-      <a href='/about-me'>About me</a>
-    </header>
-
-    <div id='page'>
-      <h2></h2>
-      
-
-<!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog 
-     http://litanyagainstfear.com -->
-<article>
-  <a href="/2016/11/validating-nested-json-data-with-ex_json_schema"><h2>Validating nested JSON data with ex_json_schema</h2></a>
-  <small>24 Nov 2016</small><br>
-  <p>I&#39;ve been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
+    <h1 align='center'><a href='http://ryanbigg.com'>Ryan Bigg</a></h1>
+    <div id='post'>
+      <article>
+        <a href="/2016/11/validating-nested-json-data-with-ex_json_schema"><h2>Validating nested JSON data with ex_json_schema</h2></a>
+        <small>24 Nov 2016</small><br>
+        <p>I&#39;ve been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">MyApp.Event</span> <span class="k">do</span>
   <span class="kd">def</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
     <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="n">type</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span> <span class="p">=&gt;</span> <span class="n">body</span><span class="p">}</span> <span class="p">=</span> <span class="n">data</span>
@@ -153,67 +143,19 @@
 </code></pre></div>
 <p>It&#39;s clear from this output that the event wasn&#39;t processed because the <code>survey_id</code> is missing, and the <code>comment</code> is missing from the first answer.</p>
 
-</article>
-
-<div id='archive'>
-  <h2>25 back</h2>
-  <ul>
-    
-      <li><a href="/2016/05/elixir-tip-enum-any-match">Elixir Tip: Enum.any? + match?</a><abbr>28 May 2016</abbr></li>
-  
-      <li><a href="/2016/05/multitenancy-with-rails-2nd-edition">Multitenancy with Rails 2nd Edition</a><abbr>22 May 2016</abbr></li>
-  
-      <li><a href="/2016/04/hiring-juniors">Hiring Juniors</a><abbr>22 Apr 2016</abbr></li>
-  
-      <li><a href="/2016/03/working-with-date-ranges-in-active-record">Working with date ranges in Active Record</a><abbr>09 Mar 2016</abbr></li>
-  
-      <li><a href="/2016/02/truncating-indexes-in-elasticsearch-2">Truncating indexes in Elasticsearch 2</a><abbr>22 Feb 2016</abbr></li>
-  
-      <li><a href="/2015/12/programming-phoenix">Programming Phoenix Review</a><abbr>24 Dec 2015</abbr></li>
-  
-      <li><a href="/2015/11/open-source-work">Open source work</a><abbr>16 Nov 2015</abbr></li>
-  
-      <li><a href="/2015/11/active-record-change_column-and-scales">Active Record, change_column and scales</a><abbr>10 Nov 2015</abbr></li>
-  
-      <li><a href="/2015/08/my-self-publishing-success-story">My self-publishing success story</a><abbr>06 Aug 2015</abbr></li>
-  
-      <li><a href="/2015/07/deploying-a-rails-application-on-ubuntu-passenger-edition">Deploying a Rails application on Ubuntu: Passenger Edition</a><abbr>08 Jul 2015</abbr></li>
-  
-      <li><a href="/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you">Mac OS X, Ruby, ruby-install, chruby and You</a><abbr>09 Jun 2015</abbr></li>
-  
-      <li><a href="/2015/04/getting-started-with-ruby-and-rails">Getting started with Ruby and Rails</a><abbr>30 Apr 2015</abbr></li>
-  
-      <li><a href="/2014/12/filtering-by-index-in-elasticsearch">Filtering by index in Elasticsearch</a><abbr>03 Dec 2014</abbr></li>
-  
-      <li><a href="/2014/10/ubuntu-ruby-ruby-install-chruby-and-you">Ubuntu, Ruby, ruby-install, chruby, Rails and You</a><abbr>05 Oct 2014</abbr></li>
-  
-      <li><a href="/2014/10/working-remotely">Working Remotely</a><abbr>02 Oct 2014</abbr></li>
-  
-      <li><a href="/2014/09/go-package-management">Go package management</a><abbr>02 Sep 2014</abbr></li>
-  
-      <li><a href="/2014/08/thoughts-on-go">Thoughts on Go</a><abbr>08 Aug 2014</abbr></li>
-  
-      <li><a href="/2014/08/add-header-to-rack-test-request">Add header to Rack::Test request</a><abbr>06 Aug 2014</abbr></li>
-  
-      <li><a href="/2014/07/ryan-bigg-is-now-a-git">Ryan Bigg is now a Git...</a><abbr>22 Jul 2014</abbr></li>
-  
-      <li><a href="/2014/06/initial-thoughts-on-lotus">Initial thoughts on Lotus</a><abbr>19 Jun 2014</abbr></li>
-  
-      <li><a href="/2014/06/spree-factories-and-callbacks">Spree, Factories and Callbacks</a><abbr>17 Jun 2014</abbr></li>
-  
-      <li><a href="/2014/04/community-management">Community Management</a><abbr>02 Apr 2014</abbr></li>
-  
-      <li><a href="/2013/10/violence-in-the-ruby-community">Violence in the Ruby community</a><abbr>14 Oct 2013</abbr></li>
-  
-      <li><a href="/2013/09/order-adjustments">Order adjustments within Spree</a><abbr>24 Sep 2013</abbr></li>
-  
-      <li><a href="/2013/09/debugging-rails-controllers">Debugging Rails Controllers</a><abbr>05 Sep 2013</abbr></li>
-  
-  </ul>
-  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
-</div>
-
+      </article>
     </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-374 http://ryanbigg.com/?p=RB-374'
+        var disqus_url = 'http://ryanbigg.com/2016/11/validating-nested-json-data-with-ex_json_schema';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -4,13 +4,150 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2016-08-23T07:48:05+10:00</updated>
+ <updated>2016-11-24T13:19:51+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Validating nested JSON data with ex_json_schema</title>
+   <link href="http://ryanbigg.com/2016/11/validating-nested-json-data-with-ex_json_schema"/>
+   <updated>2016-11-24T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2016/11/validating-nested-json-data-with-ex_json_schema</id>
+   <content type="html"><![CDATA[<p>I&#39;ve been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">MyApp.Event</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
+    <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="n">type</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span> <span class="p">=&gt;</span> <span class="n">body</span><span class="p">}</span> <span class="p">=</span> <span class="n">data</span>
+    <span class="p">%</span><span class="bp">__MODULE__</span><span class="p">{</span>
+      <span class="ss">id</span><span class="p">:</span> <span class="n">id</span><span class="p">,</span>
+      <span class="ss">type</span><span class="p">:</span> <span class="n">type</span><span class="p">,</span>
+      <span class="ss">body</span><span class="p">:</span> <span class="n">body</span> <span class="o">|&gt;</span> <span class="n">event_module</span><span class="p">.</span><span class="n">deserialize</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>It&#39;s invoked like <code>Event.deserialize(Response, data)</code>, where <code>data</code> looks something like:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="p">%{</span>
+  <span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;response&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;body&quot;</span> <span class="p">=&gt;</span> <span class="p">%{</span>
+    <span class="s2">&quot;survey_id&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;123456&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;answers&quot;</span> <span class="p">=&gt;</span> <span class="p">[</span>
+      <span class="p">%{</span>
+        <span class="s2">&quot;comment&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;Some text goes here&quot;</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>I&#39;ve come across an issue where <em>sometimes</em> the event&#39;s data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I&#39;ve chosen to do this is to use <code>ex_json_schema</code>, which allows you to validate that an Elixir <code>Map</code>  matches a <a href="http://json-schema.org/">JSON Schema</a> specification, which is also defined as an Elixir <code>Map</code>.</p>
+
+<p>In the case of the above data, I want to make sure that the data <em>definitely</em> contains the <code>survey_id</code>, and <code>answers</code> properties, and that every answer has a <code>comment</code> property. If these conditions aren&#39;t met, then the data should be declared invalid and the event should not be processed.</p>
+
+<p>To do this, I first declare a schema in the <code>Response</code> module:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">MyApp.Response</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">schema</span> <span class="k">do</span>
+    <span class="p">%{</span>
+      <span class="s2">&quot;definitions&quot;</span> <span class="p">=&gt;</span> <span class="p">%{</span>
+        <span class="s2">&quot;answer&quot;</span> <span class="p">=&gt;</span> <span class="p">%{</span>
+          <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;required&quot;</span> <span class="p">=&gt;</span> <span class="p">[</span><span class="s2">&quot;comment&quot;</span><span class="p">],</span>
+          <span class="s2">&quot;properties&quot;</span> <span class="p">=&gt;</span> <span class="p">%{</span>
+            <span class="s2">&quot;comment&quot;</span> <span class="p">=&gt;</span> <span class="p">%{</span>
+              <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;string&quot;</span>
+            <span class="p">},</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;required&quot;</span> <span class="p">=&gt;</span> <span class="p">[</span><span class="n">survey_id</span><span class="s2">&quot;, &quot;</span><span class="n">answers</span><span class="s2">&quot;],</span>
+<span class="s2">      &quot;</span><span class="n">properties</span><span class="s2">&quot; =&gt; %{</span>
+<span class="s2">        &quot;</span><span class="n">survey_id</span><span class="s2">&quot; =&gt; %{</span>
+<span class="s2">          &quot;</span><span class="n">type</span><span class="s2">&quot; =&gt; &quot;</span><span class="n">string</span><span class="s2">&quot;</span>
+<span class="s2">        },</span>
+<span class="s2">        &quot;</span><span class="n">answers</span><span class="s2">&quot; =&gt; %{</span>
+<span class="s2">          &quot;</span><span class="n">type</span><span class="s2">&quot; =&gt; &quot;</span><span class="n">array</span><span class="s2">&quot;,</span>
+<span class="s2">          &quot;</span><span class="n">items</span><span class="s2">&quot; =&gt; %{</span>
+<span class="s2">            &quot;</span><span class="err">$</span><span class="n">ref</span><span class="s2">&quot; =&gt; &quot;</span><span class="c1">#/definitions/answer&quot;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="o">|&gt;</span> <span class="nc">ExJsonSchema.Schema</span><span class="p">.</span><span class="n">resolve</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>This schema defines that the <code>survey_id</code> and <code>answers</code> properties within the &quot;root&quot; of the <code>Map</code> that I&#39;m providing are present, and also validates that all the items within <code>answers</code> have a <code>comment</code> property. Not only this, but it also validates the type of the data that&#39;s incoming too. The <code>survey_id</code> and <code>comment</code> properties should <em>always</em> be strings. If they aren&#39;t, then the data will be invalid according to this schema.</p>
+
+<p>To use this schema, we first have to <em>resolve</em> it. The <code>ex_json_schema</code> documentation suggests resolving the schema only once:</p>
+
+<blockquote>
+<p>You should only resolve a schema once to avoid the overhead of resolving it in every validation call.</p>
+</blockquote>
+
+<p>In order to follow that instruction, I pass the schema to the <code>deserialize</code> function:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">MyApp.Event</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
+    <span class="p">...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>To validate that the data matches the schema, I&#39;m doing this:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">MyApp.Event</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">process</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">validate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+    <span class="o">|&gt;</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="kd">defp</span> <span class="n">validate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
+    <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span> <span class="p">=&gt;</span> <span class="n">body</span><span class="p">}</span> <span class="p">=</span> <span class="n">event</span>
+
+    <span class="k">case</span> <span class="nc">ExJsonSchema.Validator</span><span class="p">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="k">do</span>
+      <span class="ss">:ok</span> <span class="p">-&gt;</span> <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">event</span><span class="p">}</span>
+      <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">errors</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="kd">defp</span> <span class="n">deserialize</span><span class="p">({</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">event_module</span><span class="p">,</span> <span class="n">event</span><span class="p">},</span> <span class="n">event_module</span><span class="p">)</span> <span class="k">do</span>
+    <span class="p">%{</span><span class="s2">&quot;id&quot;</span> <span class="p">=&gt;</span> <span class="n">id</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span> <span class="p">=&gt;</span> <span class="n">type</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span> <span class="p">=&gt;</span> <span class="n">body</span><span class="p">}</span> <span class="p">=</span> <span class="n">event</span>
+    <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="p">%</span><span class="bp">__MODULE__</span><span class="p">{</span>
+      <span class="ss">id</span><span class="p">:</span> <span class="n">id</span><span class="p">,</span>
+      <span class="ss">type</span><span class="p">:</span> <span class="n">type</span><span class="p">,</span>
+      <span class="ss">body</span><span class="p">:</span> <span class="n">body</span> <span class="o">|&gt;</span> <span class="n">event_module</span><span class="p">.</span><span class="n">deserialize</span><span class="p">,</span>
+    <span class="p">}}</span>
+  <span class="k">end</span>
+
+  <span class="kd">defp</span> <span class="n">deserialize</span><span class="p">({</span><span class="ss">:error</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">},</span> <span class="bp">_</span><span class="p">),</span> <span class="ss">do</span><span class="p">:</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>There&#39;s now two new functions in this <code>Event</code> module: <code>process</code> and <code>validate</code>. The <code>process</code> function serves as the new entrypoint for this module, and it validates and deserializes the data. The <code>validate</code> function uses the schema to validate the data. If the data is valid, it returns <code>{:ok, data}</code>, and if it&#39;s not, then it returns <code>{:error, errors, id}</code>. That return value is then passed to <code>deserialize</code>, which will then deserialize a valid event, and pass through the errors if the data was not valid.</p>
+
+<p>This <code>Event.process/3</code> function can then be invoked like this:</p>
+<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="kd">defmodule</span> <span class="nc">MyApp.EventProcessor</span> <span class="k">do</span>
+  <span class="kd">def</span> <span class="n">process_events</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">schema</span> <span class="p">=</span> <span class="n">event_module</span><span class="p">.</span><span class="n">schema</span> <span class="c1"># schema may be resolved earlier than this</span>
+    <span class="nc">Enum</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="k">fn</span> <span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="p">-&gt;</span>
+      <span class="n">process_event</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+    <span class="k">end</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="kd">def</span> <span class="n">process_event</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nc">Event</span><span class="p">.</span><span class="n">process</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">{</span><span class="ss">:ok</span><span class="p">,</span> <span class="n">event</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">process_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+      <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">}</span> <span class="p">-&gt;</span> <span class="n">handle_error</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>If, for example, a blank event was sent to <code>Event.process/3</code>, it would return the <code>{:error, id, errors}</code> tuple with some errors, which are very readable:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{&quot;Required property survey_id was not present.&quot;, &quot;#&quot;},
+{&quot;Required property comment was not present.&quot;, &quot;#/answer/0&quot;},
+</code></pre></div>
+<p>It&#39;s clear from this output that the event wasn&#39;t processed because the <code>survey_id</code> is missing, and the <code>comment</code> is missing from the first answer.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Elixir Tip: Enum.any? + match?</title>
@@ -1863,25 +2000,6 @@ end
 <hr>
 
 <p>Lastly, I&#39;d like to thank Matt Allen from <a href="http://lookahead.com.au">Lookahead Search</a> for talking with me about this decision and other jobs. There&#39;s quite a lot of jobs out there (for someone with my supposed talents) and it was hard making the decision between the places that I had talked to during my job hunt. Matt is extremely patient and a good friend and I appreciate his help a ton.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Initial thoughts on Lotus</title>
-   <link href="http://ryanbigg.com/2014/06/initial-thoughts-on-lotus"/>
-   <updated>2014-06-19T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2014/06/initial-thoughts-on-lotus</id>
-   <content type="html"><![CDATA[<p>Following on from my <a href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks/">last post</a>, I&#39;ve been experimenting some more with my <a href="https://github.com/radar/spree_poro">spree_poro</a>, and I&#39;ve been looking at how to work with some kind of data store persistence more sophisticated than the <code>Spree::Data</code> constant that I had used previously. I wanted something more sophisticated than running <code>select</code>s over arrays.</p>
-
-<p><a href="http://lotusrb.org">Lotus</a> bills itself as a &quot;complete web framework for Ruby&quot; and also uses the words &quot;simple&quot;, &quot;fast&quot;, and &quot;lightweight&quot;. In my limited experience of only using the <code>Lotus::Model</code> part of the framework, I can say it&#39;s all of those things. <code>Lotus::Model</code> itself is less than 600 lines and my tests (now 50 of them) still run in &lt;0.05 seconds.</p>
-
-<p><code>Lotus::Model</code> departs from the ActiveRecord way of doing things by having four main types of objects: entities, mappers, repositories and adapters. The creator of Lotus (Luca Guida) has <a href="http://lucaguidi.com/2014/04/23/introducing-lotus-model.html">a great post outlining what each of those do</a>.</p>
-
-<p>I&#39;ve added <code>Lotus::Model</code> to spree_poro (in a <a href="https://github.com/radar/spree_poro/tree/lotus">new branch</a>) and I have it persisting zones, tax rates, tax categories and products; not to a database but to memory. It would be very easy for me to switch this over to an SQL database, thanks to how Lotus is designed. </p>
-
-<p>Having the entities separate from the persistence code means there&#39;s a clear separation between the business logic of the entities and the persistence logic of the repositories. If I want to test that finding tax rates based on an order&#39;s tax zone works, I no longer test that on the <code>Spree::TaxRate</code> model. Instead, that responsibility falls to the <code>Spree::TaxRateRepository</code>, and so <a href="https://github.com/radar/spree_poro/blob/fac4921d87c6a047e8b2df380137f3866cac2442/spec/spree/repositories/tax_rate_spec.rb">that is where it&#39;s tested</a>. This means that I could even get away with stubbing <code>Spree::TaxRateRepository.match</code> in the normal <code>TaxRate</code> specs to return some plain Ruby objects, and those tests do not need to care about any persistence layer at all.</p>
-
-<p>I am very interested to see how this whole Lotus thing pans out. It&#39;s very easy to understand at this point in time, other than that I can&#39;t work out how to properly do polymorphic associations (as is necessary for promotions within Spree, sadly). Perhaps that would be a feature that comes eventually to Lotus, or we re-architect the way Spree is designed to work more with Lotus.</p>
 ]]></content>
  </entry>
  
