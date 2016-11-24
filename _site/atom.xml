@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2016-11-24T13:19:51+11:00</updated>
+ <updated>2016-11-24T13:22:12+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -43,7 +43,7 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>I&#39;ve come across an issue where <em>sometimes</em> the event&#39;s data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I&#39;ve chosen to do this is to use <code>ex_json_schema</code>, which allows you to validate that an Elixir <code>Map</code>  matches a <a href="http://json-schema.org/">JSON Schema</a> specification, which is also defined as an Elixir <code>Map</code>.</p>
+<p>I&#39;ve come across an issue where <em>sometimes</em> the event&#39;s data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I&#39;ve chosen to do this is to use <a href="https://github.com/jonasschmidt/ex_json_schema"><code>ex_json_schema</code></a>, which allows you to validate that an Elixir <code>Map</code>  matches a <a href="http://json-schema.org/">JSON Schema</a> specification, which is also defined as an Elixir <code>Map</code>.</p>
 
 <p>In the case of the above data, I want to make sure that the data <em>definitely</em> contains the <code>survey_id</code>, and <code>answers</code> properties, and that every answer has a <code>comment</code> property. If these conditions aren&#39;t met, then the data should be declared invalid and the event should not be processed.</p>
 

@@ -4,6 +4,8 @@ layout: post
 title: Validating nested JSON data with ex_json_schema
 ---
 
+
+
 I've been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:
 
 ```elixir
@@ -36,7 +38,7 @@ It's invoked like `Event.deserialize(Response, data)`, where `data` looks someth
 }
 ```
 
-I've come across an issue where _sometimes_ the event's data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I've chosen to do this is to use `ex_json_schema`, which allows you to validate that an Elixir `Map`  matches a [JSON Schema](http://json-schema.org/) specification, which is also defined as an Elixir `Map`.
+I've come across an issue where _sometimes_ the event's data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I've chosen to do this is to use [`ex_json_schema`](https://github.com/jonasschmidt/ex_json_schema), which allows you to validate that an Elixir `Map`  matches a [JSON Schema](http://json-schema.org/) specification, which is also defined as an Elixir `Map`.
 
 In the case of the above data, I want to make sure that the data _definitely_ contains the `survey_id`, and `answers` properties, and that every answer has a `comment` property. If these conditions aren't met, then the data should be declared invalid and the event should not be processed.
 
