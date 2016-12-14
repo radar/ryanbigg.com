@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Ryan Bigg - When to Cuke</title>
+    <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+    <link href='https://fonts.googleapis.com/css?family=Cabin:400,700' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='/css/style.css' media='screen'>
+    <link rel='stylesheet' href='/css/mobile.css'>
+    <link rel='stylesheet' href='/css/highlight.css'>
+  <body>
+    <h1 align='center'><a href='http://ryanbigg.com'>Ryan Bigg</a></h1>
+    <div id='post'>
+      <article>
+        <a href="/2011/03/when-to-cuke"><h2>When to Cuke</h2></a>
+        <small>03 Mar 2011</small><br>
+        <p>I think <a href='http://github.com/aslakhellesoy/cucumber'>Cucumber</a> is great, but not great for everything. Many people (including myself) use it and swear by it. You get to write <em>features</em> in <em>English</em> (or other languages), man. It&#39;s really awesome if you want to show these stories to people who you&#39;re developing for as they can read it and understand it.</p>
+
+<p>I personally feel, in some cases, Cucumber isn&#39;t the right solution. If you&#39;re developing something that has no non-Ruby savvy stakeholder, why would you write it in Cucumber? I personally don&#39;t see the point. It overly complicates things.</p>
+
+<p>Take this example: I want to create a feature for posting a new comment on a post. It would go like this:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Feature: Comments
+In order to tell the masses what's on my mind
+As a user
+I want to post comments on the site
+
+Background:
+  Given there is a post:
+    | title        | text                         |
+    | When to Cuke | I think Cucumber is great... |
+
+Scenario: Creating a comment
+  Given I am on the homepage
+  When I follow "When to Cuke"
+  And I fill in "Text" with "I am posting a comment. Look at me go!"
+  And I press "Post Comment"
+  Then I should see "I am posting a comment." within "#comments"
+</code></pre></div>
+<p>I&#39;ve tried to keep it as simple as I can here, but it should demonstrate the point I am trying to make. The logic of how the &quot;Given there is a post&quot; step is defined something like this:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Given /^there is a post:$/ do |table|
+  hash = table.hashes.first
+  @post = Post.create!(hash)
+end
+</code></pre></div>
+<p>Where&#39;s it defined? Well, it could be anywhere. That&#39;s the problem! Usually, I&#39;d define this in a file at <code>features/step_definitions/post_steps.rb</code> because it deals with <code>Post</code> objects, but that&#39;s just me. People have different tastes and therefore, undoubtedly, will do it differently. Maybe I&#39;ve been too mollycoddled by Rails, but this is completely arbitrarily decided by whoever&#39;s writing the feature at the time. It gets to me.</p>
+
+<p>Oh, then what happens if you want to have some kind of association, say you want to add an author to that post, transforming the step into this:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Given there is a post:
+  | title        | text                         | author                  |
+  | When to Cuke | I think Cucumber is great... | radarlistener@gmail.com |
+</code></pre></div>
+<p>Yes, it&#39;s an email address. But what does it mean? Well, that behaviour would have to be defined in the step definition, which is &quot;in another castle&quot;.</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Given /^there is a post:$/ do |table|
+   hash = table.hashes.first
+   hash["author"] = Factory(:user, :email =&gt; hash["author"])
+   @post = Post.create!(hash)
+ end
+</code></pre></div>
+<p>There&#39;s no way you can specify a pre-existing Ruby object to be a value for one of the keys in the table in Cucumber. Therefore, you have to hack around it like this.</p>
+
+<p>Additional gripe: I&#39;m constantly typing &quot;Given I&quot; and &quot;When I&quot; and &quot;And I&quot;. <strong>Boring</strong>. I&#39;m a programmer, coding a site that programmers will use. Why am I writing it in English?</p>
+
+<h2>Enter: Capybara</h2>
+
+<p>Now let&#39;s see this <em>same</em> test, but written as a Capybara integration test:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">describe "Comments" do
+  before do
+    Factory(:post, :title =&gt; "When to Cuke",
+                   :text =&gt; "I think Cucumber is great...",
+                   :user =&gt; Factory(:user, :email =&gt; "radarlistener@gmail.com"))
+  end
+
+  it "creating a comment" do
+    visit root_path
+    click_link "When to Cuke"
+    fill_in "Text", :with =&gt; "I am posting a comment. Look at me go!"
+    click_button "Post Comment"
+    within("#comments") do
+      page.should have_content("I am posting a comment. Look at me go!")
+    end
+  end
+end
+</code></pre></div>
+<p>No bullshit, everything&#39;s there that I need to understand the spec. There are no step definitions. I can &quot;parse&quot; this code much faster in my head than I can with its Cucumber brother, allowing me to be a more productive developer. There&#39;s nothing extra on the lines. No &quot;Given&quot;, no &quot;When&quot;, it just <em>does</em> things. There&#39;s nobody on my team that doesn&#39;t understand this code.</p>
+
+<p>Note also here how I&#39;m able to pass through an object to the <code>user</code> key in the <code>Post</code> factory without having to hack around it.</p>
+
+<p>Simple, elegant and effective. Yes please. Oh, and it&#39;s shorter too. I&#39;m using RSpec + Capybara to develop the <a href='http://github.com/radar/forem'>forem gem</a> (eventual aim: a decent forum engine for Rails 3) and I&#39;m loving it. It just works, and there&#39;s no extraneous syntax in my specs.</p>
+
+<p>If you&#39;re working with people who aren&#39;t technically-inclined then perhaps it would be easier to use Cucumber, as it is the easiest to read. But when working on a team of Ruby developers, developing something internal, I think Capybara is the way to go. If you&#39;re looking for a way to combine the two techniques then I&#39;d recommend taking a look at <a href='http://github.com/cavalle/steak'>cavalle&#39;s steak</a> gem, or <a href='http://jeffkreeftmeijer.com/2011/acceptance-testing-using-capybaras-new-rspec-dsl/'>this post by Jeff Kreeftmeijer</a>, showing how to do it with straight Capybara.</p>
+
+      </article>
+    </div>
+    <div id='disqus_thread'></div>
+    <script type="text/javascript">
+        var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
+
+        var disqus_identifier = 'RB-300 http://ryanbigg.com/?p=RB-300'
+        var disqus_url = 'http://ryanbigg.com/2011/03/when-to-cuke';
+    </script>
+    <script src='http://ryanbigg.disqus.com/embed.js'></script>
+    
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60556315-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
