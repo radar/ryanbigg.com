@@ -1,10 +1,15 @@
 ---
 ---
 
+// https://coolors.co/283044-5fa8d3-fefefe-d33f49-d7c0d0
+
+$body-bg: #fefefe;
 $coolor: #5FA8D3;
 $regular-font: "Titillium Web";
 $code-font: "Source Code Pro";
 $line-height: 175%;
+$blockquote-bg: #212733;
+
 
 
 html {
@@ -13,7 +18,7 @@ html {
 }
 
 body {
-  background: #fefefe;
+  background: $body-bg;
   font: 15pt "Titillium Web";
   color: #666;
   margin: 0;
@@ -36,10 +41,37 @@ header a {
   text-decoration: none;
 }
 
-blockquote p, blockquote ul {
+blockquote, aside {
+  background: $blockquote-bg;
+  color: #D9D7CE;
+  padding: 10px 16px;
+  margin: 0;
   font-size: 90%;
-  color: #777;
-  font-style: italic;
+}
+
+aside {
+  color: $body-bg;
+}
+
+blockquote p {
+  margin: 0;
+}
+
+blockquote ul, aside ul {
+  margin: 0px;
+  padding-left: 20px;
+
+  li {
+    padding: 0px;
+  }
+}
+
+aside {
+  background: #D33F49;
+}
+
+aside a {
+  color: #fefeff;
 }
 
 h1 {
@@ -76,11 +108,12 @@ article .highlight pre {
 }
 
 code {
+  border-radius: 5px;
   font-family: $code-font;
   color: $coolor;
 }
 
-article p code {
+article p code, li code {
   color: $coolor;
   background: white;
   padding: 2px;
@@ -90,17 +123,6 @@ article p code {
 article p a code {
   background: transparent;
   border: 0;
-}
-
-
-aside {
-  background: #FE654F;
-  color: #fefeff;
-  padding: 5px 8px;
-}
-
-aside a {
-  color: #fefeff;
 }
 
 .warning {
