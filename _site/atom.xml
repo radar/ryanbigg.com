@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-01-24T09:32:53+11:00</updated>
+ <updated>2017-02-08T09:54:28+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -1625,9 +1625,9 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
    <link href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"/>
    <updated>2014-10-05T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you</id>
-   <content type="html"><![CDATA[<p><strong>Last updated: 28th January 2016</strong></p>
+   <content type="html"><![CDATA[<p><strong>Last updated: 8th February 2017</strong></p>
 
-<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.3.0 using chruby+ruby-install and Rails 4.2.5 and is specifically written for a <em>development</em> environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
+<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.4.0 using chruby+ruby-install and Rails 5.0.1 and is specifically written for a <em>development</em> environment on Ubuntu 14.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
 
 <div class="warning">
   Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
@@ -1638,9 +1638,9 @@ In that tutorial, you build a Twitter-like application from scratch. </p>
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
 <li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.3.0</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Ruby 2.4.0</strong>: at the time of writing the newest current stable release of Ruby.</li>
 <li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
-<li><strong>Rails 4.2.5</strong>: at the time of writing the newest current stable release of Rails.</li>
+<li><strong>Rails 5.0.1</strong>: at the time of writing the newest current stable release of Rails.</li>
 </ul>
 
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
@@ -1676,9 +1676,9 @@ sudo make install
 <h3>Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install --latest ruby 2.3.0
+<div class="highlight"><pre><code class="language-" data-lang="">ruby-install --latest ruby 2.4.0
 </code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.3.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.4.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
@@ -1697,20 +1697,20 @@ EOF
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.3.0
+<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.0
 </code></pre></div>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.3.0
+<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.0
 </code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.3.0</code> for example -- assuming that we have Ruby 2.3.0 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.4.0</code> for example -- assuming that we have Ruby 2.4.0 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.3.0p0 (2015-12-25 revision 53290) [x86_64-linux]
+<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.4.0p0 (2016-12-24 revision 57164) [x86_64-linux]
 </code></pre></div>
 <h3>Rails</h3>
 
 <p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem install rails -v 4.2.5 --no-rdoc --no-ri
+<div class="highlight"><pre><code class="language-" data-lang="">gem install rails -v 5.0.1 --no-rdoc --no-ri
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
@@ -1744,7 +1744,7 @@ Could not create Makefile due to some reason, probably lack of necessary
 libraries and/or headers.  Check the mkmf.log file for more details.  You may
 need configuration options.
 </code></pre></div>
-<p>Install this package using <code>sudo apt-get install libmysqlclient-dev</code>.</p>
+<p>Install this package using <code>sudo apt-get install libmysqlclient-dev</code> and then the <code>mysql2</code> gem will install fine.</p>
 
 <h3>PostgreSQL</h3>
 
