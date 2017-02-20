@@ -13,6 +13,81 @@
 
  
  <entry>
+   <title>Toy Robot, Deep Dive Rails and AsciiDoc Toolchain</title>
+   <link href="http://ryanbigg.com/2017/02/toy-robot-deep-dive-rails-and-asciidoc-toolchain"/>
+   <updated>2017-02-20T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2017/02/toy-robot-deep-dive-rails-and-asciidoc-toolchain</id>
+   <content type="html"><![CDATA[<p>This really should be three separate blog posts, but since they&#39;re all tangentially related to writing they&#39;re going to be one blog post. Here goes.</p>
+
+<h2>Toy Robot</h2>
+
+<p>I went to write a blog post here in December about how to do the Toy Robot exercise (the one <a href="https://joneaves.wordpress.com/2014/07/21/toy-robot-coding-test/">written by Jon Eaves</a>). I thought that post would be about 10k-15k words. It ended up being 25k. My buddy <a href="https://twitter.com/parndt">Phil Arndt</a> suggested that I make it into a book because it&#39;s so long.</p>
+
+<p>I&#39;ve done just that: <strong><a href="https://leanpub.com/toyrobot/">The Toy Robot book</a> is now available for as little as $5 on Leanpub.</strong></p>
+
+<p>The book is a guided walkthrough on how I would personally implement the Toy Robot exercise, and it isn&#39;t designed to be a <em>100% perfect implementation that makes every coder weep at its joy</em>. It&#39;s just one attempt at the problem, and I put it out there because I think perhaps some people can learn from my approach and the explanation that goes along with it in the book. A few Ruby newbies I&#39;ve talked to have found the Toy Robot hard to do (they don&#39;t know where to start, usually). This is a book for those people. It breaks the problem down into small chunks and tackles them one-at-a-time. If you know of any Ruby newbies, be sure to let them know about this book.</p>
+
+<p>I&#39;ve heard from a couple of those Ruby newbies that they love the book and have learned some things from it. Things like:</p>
+
+<blockquote>
+<p>I would like to say that your toy robot book is fantastic!</p>
+</blockquote>
+
+<p>So that&#39;s nice.</p>
+
+<h2>Deep Dive Rails</h2>
+
+<p>I started writing <a href="https://leanpub.com/ddr">Deep Dive Rails</a>, according to the Git logs, in April of 2015.</p>
+
+<p>This was around the time that I picked back up on <a href="https://www.manning.com/books/rails-4-in-action">Rails 4 in Action</a> and worked on finishing it with <a href="https://twitter.com/sevenseacat">Rebecca Skinner</a>. That was a process. After that, I took a short writing break for a few months and then went about writing <a href="https://leanpub.com/multi-tenancy-rails-2">the 2nd edition of Multitenancy with Rails</a>. I finished that near the end of June last year. Then my daughter was born in September and I&#39;ve been busy since.</p>
+
+<p>Enough people have bought Deep Dive Rails (50 at this moment) that I think I am obliged to finish it. I think I&#39;ve now got enough time on train journeys and whatnot to finish it, and that&#39;s what I&#39;m going to be focussing on for the remainder of this year.</p>
+
+<p>I was going through the refunds page for this book just out of interest and I found this choice quote:</p>
+
+<blockquote>
+<p>The book is basically taking you through what already exists. <a href="http://guides.rubyonrails.org/initialization.html">The Rails Initialization Guide</a>. Granted, there are some filled in details but even those are not necessarily comprehensive. For example, even when starting out, the first examples entirely depend on what Ruby distribution platform you are using, such as RVM or rbenv. Essentially, the paths of where to look for things can be a bit different. When I had to search out those things on my own, that&#39;s when I came across the existing material that this author was clearly cribbing from. Again, this isn&#39;t to say that the book is not trying to offer something perhaps new or at least more in-depth but right now that simply doesn&#39;t exist in the book.</p>
+</blockquote>
+
+<p>This refund reason is extremely ironic, because I wrote the original version of this guide. The guide has been an idea I&#39;ve had since about 2010. I explain as much in the intro to the book:</p>
+
+<blockquote>
+<p>This book has been a long time coming. I (Ryan) originally started writing
+something along these same lines when I was taking donations to work on Rails
+documentation back at the end of 2010. I got about 8,000 words into writing it
+as a Rails guide and figured that nobody would want to read a guide that long
+and so I gave up.</p>
+</blockquote>
+
+<p>Interestingly, Deep Dive Rails is now around 15,000 words long and given that 50 people have purchased a copy, I&#39;d say that there definitely <em>are</em> people interested in reading it. 2010-Ryan was wrong.</p>
+
+<p>I hope that this reader that got the refund realises the error of their ways and buys Deep Dive Rails once more.</p>
+
+<p>So yes, I will continue working on Deep Dive Rails this year. I&#39;m currently working on updating it for Rails 5. Once I&#39;m done updating the existing content for that version of Rails, I&#39;ll release a new version. That should happen within the next couple of weeks. Then I&#39;ll be adding new content to the book. No idea of when I&#39;ll be finished with it. When it&#39;s done, I guess.</p>
+
+<h2>AsciiDoc Toolchain</h2>
+
+<p>In the process of writing Rails 4 in Action and <a href="https://leanpub.com/ddr">Deep Dive Rails</a>, we built a toolchain to help us work with the <a href="http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/">AsciiDoc markup language</a>. We chose AsciiDoc for Rails 4 in Action because it was a much more pleasant experience than XML or Microsoft Word to write a book in, and it compiles down to DocBook (XML). Writing books in DocBook is not advisable or safe for your mental health. AsciiDoc certainly is though.</p>
+
+<p>Compare and contrast.</p>
+
+<p>Here&#39;s some DocBook XML:</p>
+
+<p><img src="/images/asciidoc/docbook.png" alt="Docbook"></p>
+
+<p>Here&#39;s some AsciiDoc for the exact same text:</p>
+
+<p><img src="/images/asciidoc/asciidoc.png" alt="AsciiDoc"></p>
+
+<p>I certainly know which one I prefer. I wish somebody told me about AsciiDoc sooner. It&#39;s really nice to write in.</p>
+
+<p>(The IDs on the XML elements in the DocBook example is because Manning&#39;s review tool required each element to have a unique ID so that it could track notes on individual elements over the course of their lives.)</p>
+
+<p>Recently, another author has asked me about how I write in AsciiDoc, and so I&#39;ve decided to <a href="https://github.com/radar/asciidoc-toolchain">put the toolchain up on GitHub</a>. If you want to start writing a book in AsciiDoc, you can clone this repo and that&#39;ll provide you with a good starting point. It comes with Rake tasks that will allow you to generate good looking HTML and PDF editions of your book, but I can&#39;t say the same for the epub and mobi formats. Patches welcome.</p>
+]]></content>
+ </entry>
+ 
+ <entry>
    <title>Validating nested JSON data with ex_json_schema</title>
    <link href="http://ryanbigg.com/2016/11/validating-nested-json-data-with-ex_json_schema"/>
    <updated>2016-11-24T00:00:00+11:00</updated>
@@ -1966,41 +2041,6 @@ end
   expect(last_response.status).to eq(200)
 end
 </code></pre></div>]]></content>
- </entry>
- 
- <entry>
-   <title>Ryan Bigg is now a Git...</title>
-   <link href="http://ryanbigg.com/2014/07/ryan-bigg-is-now-a-git"/>
-   <updated>2014-07-22T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2014/07/ryan-bigg-is-now-a-git</id>
-   <content type="html"><![CDATA[<p>Yes, the <a href="http://spreecommerce.com/blog/farewell-ryan-bigg">rumours are true</a>, I am leaving Spree Commerce. This makes me a git because there&#39;s one and only one Community Manager at Spree, and so that void will need to be filled by someone else. Thankfully Jeff Dutil is going to step into my role as interim Community Manager for the time being.</p>
-
-<p>I&#39;m also a git for tricking you all:</p>
-
-<blockquote class="twitter-tweet" lang="en"><p>Ryan Bigg is now a GitHubber! <a href="https://t.co/jYm8bKVV1z">https://t.co/jYm8bKVV1z</a></p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/statuses/491321781781684224">July 21, 2014</a></blockquote>
-
-<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<hr>
-
-<p>I&#39;m not going to work for GitHub. I&#39;m going to work at <a href="http://lifx.co">LIFX</a> as a Ruby programmer there, starting August 4th. It was exceptionally lonely working in this Melbourne timezone mostly by myself, and I was getting complacent at Spree. I want a bigger challenge while I still have the time and energy for it. </p>
-
-<p>LIFX seems like a perfect fit in regards to those things. I&#39;ll be working with people in an office in Richmond (not far from where I currently work at <a href="http://inspire9.com.au">Inspire9</a>), and the work will be something different to the ecommerce work that I&#39;ve been doing for 2.5 years. The Internet of Things is a really neat concept and I am really looking forward to working at LIFX.</p>
-
-<hr>
-
-<p>I first worked with Spree when I worked with my old job building the <a href="https://shop.abc.net.au/">ABC online store</a>. I was also working on the <a href="https://guides.rubyonrails.org/engines.html">Engines Guide</a> at this point, so my interest around Rails engines was still quite intense. </p>
-
-<p>Josh Adams pinged me about <a href="https://groups.google.com/forum/#!msg/spree-user/P0iywDQokto">a discussion regarding namespaces on the spree user mailing list</a> and I just <a href="https://groups.google.com/forum/#!msg/spree-user/P0iywDQokto/jhtAftv7RK8J">had to reply</a>. That week, Sean from Spree messaged me over IRC and asked if I wanted a job. A month later I started working there on the namespacing work and gradually took over the maintenance of the project from Sean and Brian while they worked on developing Spree Commerce as a business.</p>
-
-<p>As a result of that, I&#39;ve made <a href="https://github.com/spree/spree/graphs/contributors">over 3000 commits</a> and posted 7,000 issue comments. Over two and a half years, that averages out to 3 commits per day and almost 8 comments. I&#39;ve also posted 15,000 messages in the Spree IRC channel. I don&#39;t know the email stats, but I would guess it falls within the same range. I apologise for all the spam.</p>
-
-<p>I&#39;m immensely proud of my work at Spree. It&#39;s been an interesting challenge to work on building something as complex as an ecommerce platform and still keeping it neat and tidy in comparison to certain other ecommerce frameworks. I know the Spree team will keep up the great work that they&#39;ve been doing on Wombat. The future of Spree is looking bright, and I wish them all the best.</p>
-
-<hr>
-
-<p>Lastly, I&#39;d like to thank Matt Allen from <a href="http://lookahead.com.au">Lookahead Search</a> for talking with me about this decision and other jobs. There&#39;s quite a lot of jobs out there (for someone with my supposed talents) and it was hard making the decision between the places that I had talked to during my job hunt. Matt is extremely patient and a good friend and I appreciate his help a ton.</p>
-]]></content>
  </entry>
  
  
