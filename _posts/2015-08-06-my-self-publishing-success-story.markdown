@@ -1,4 +1,4 @@
---- 
+---
 wordpress_id: RB-365
 layout: post
 title: My self-publishing success story
@@ -151,7 +151,7 @@ That's a nice segue into our next topic: writing tools and feedback cycles.
 
 I want to talk about two things here: feedback cycles and writing tools.
 
-#### Feedback cycles 
+#### Feedback cycles
 
 When publishing a book, you kinda want to know immediately if anyone's reading
 it. Peoeple _buying_ the book is different to people _reading_ the book. A
@@ -176,7 +176,7 @@ With Manning, the process was this:
 8. Click the gear icon.
 9. Find the chapter that you updated.
 10. Scroll down the list of revisions for that chapter.
-11. Click the radio button to select "Latest" (which uses the latest version of that chapter) and then click "Update". This flags this particular revision to be ready for Manning's system. 
+11. Click the radio button to select "Latest" (which uses the latest version of that chapter) and then click "Update". This flags this particular revision to be ready for Manning's system.
 12. Wait for someone from Manning to publish a new MEAP copy, which can take weeks.
 
 12 steps and it takes a couple of weeks (usually) until the book is updated. Oh, and at step #11 you might be told that somewhere in your 2,000+ line XML file, something is invalid.
@@ -217,11 +217,14 @@ included my email in the foreword to the book and asked if people encounter
 errors that they email me directly. This system works really well as I use the
 unarchived emails as an indication of what book bugs haven't been fixed yet.
 
-TODO: mention Twist here too
-
-#### Picking a tool to write a book in
-
-* Discuss Word, Docbook, Markdown and AsciiDoc here.
+I also built a review tool called [Twist](https://github.com/radar/twist),
+originally for Manning's DocBook format but then ported that across to
+Leanpub's Markdown format. The README there has a great image showing you what
+it looks like. The purpose of this was for people to leave comments on
+particular _elements_ (paragraphs, code blocks, images) of the book and then I
+could see specifically what element they were commenting on. That worked
+really well for Rails 3 in Action and both editions for Multitenancy with
+Rails too.
 
 ### Conclusion
 
