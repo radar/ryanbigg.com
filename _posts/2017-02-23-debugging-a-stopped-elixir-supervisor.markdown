@@ -7,11 +7,11 @@ published: true
 
 We've been doing a lot of work with Elixir at [Culture Amp](https://www.cultureamp.com/), building out several microservices in it and we're also using event sourcing to pass events from our Rails monolith (called "Murmur") out to these services. In order to pass these events out to the services, we built a microservice called Event Hub.
 
-Event Hub was built to receive events from Murmur and then to provide streams for these events that our other microservices could then read from. This way, we could have multiple microservices consuming the same streams without issue.
+Event Hub was built to receive events from Murmur and then to provide streams for these events that our other microservices could then read from. Writing the events directly to the microservices would mean that we would need to keep a list of microservices to write to and update that if we added in any new service. By writing the events to the Event Hub instead, we could have multiple microservices consuming the same streams from the Event Hub without issue. It's up to each microservice to keep track of what event it has currently read up to in the stream.
 
-However, we ran into an issue a ways into our implementation when we wanted to take a point-in-time snapshot of our databases. Attempting to take a snapshot of a Mongo database (Murmur) and a PostgreSQL database (Event Hub) at the same point in time proved to be too difficult. So we changed tactics and ended up writing events directly Murmur's Mongo database. This way, we can choose to backup Murmur's Mongo database and the microservices independently from each other. If we restore a microservice from backup and it's behind in its events, we can catch it up by reading those events from Event Hub.
+However, we ran into an issue a ways into our implementation when we wanted to take a point-in-time snapshot of our databases. Attempting to take a snapshot of a Mongo database (Murmur) and a PostgreSQL database (Event Hub) at the same point in time proved to be too difficult. So we changed tactics and ended up writing events directly Murmur's Mongo database. This way, we can choose to backup Murmur's Mongo database and the microservices independently from each other. If we restore a microservice from backup and it's behind in its events, we can catch it up by reading those events from a restored Event Hub.
 
-We then needed a way to get events from Murmur's Mongo database into Event Hub, as we wanted Event Hub to work separately from Murmur. For this, we built another microservice: Copy Cat.
+We then needed a way to get events from Murmur's Mongo database into Event Hub, as we wanted Event Hub to be able to work separately from Murmur. If Murmur goes down, we don't want it to affect Event Hub and vice versa. For this transferral of events we built another microservice: Copy Cat.
 
 ## Copy Cat
 
@@ -74,7 +74,7 @@ defmodule CopyCat.ImportSupervisor do
   end
 ```
 
-We designed the supervision tree this way so that if one event importer process crashed it wouldn't take down any of the others.
+We designed the supervision tree this way so that if one event importer process crashed it wouldn't take down any of the others. We have also designed the events so that they can be imported into this system completely independently from any other event.
 
 Each event importer process works off a unique stream. If that event impoter process crashes, then it will be restarted automatically because of it living underneath `CopyCat.ImportSupervisor`. This supervisor has the default `max_restarts` and `max_seconds` values of 3 and 5 respectively, which means that if there are 3 process restarts within the space of 5 seconds then this will cause the `CopyCat.ImportSupervisor` to be restarted too.
 
@@ -86,7 +86,7 @@ None of us could figure it out at all, with most of us having less than a year's
 
 ## Splunk alerting to the rescue (temporarily)
 
-The application was still running and responding to heartbeat checks -- each of our microservices has a `/status` endpoint -- but it appeared that the workers had stopped running completely. We'd notice the workers stopped working because their status messages -- that look like this:
+The application was still running and responding to heartbeat checks -- each of our microservices has a `/status` endpoint -- but it appeared that the workers had stopped running completely. We'd notice the workers stopped working because their status messages -- messages that look like this:
 
 ```
 13:42:10.155 [info] Fetched 0 CopyCat.Murmur.SurveyEvent from Murmur
@@ -158,7 +158,11 @@ The `CopyCat.ImportSupervisor` won't be resurrected by `CopyCat.Supervisor` in t
 
 After this work was done, the bug happened again. Initially, we thought it was because our endpoint to stop the `CopyCat.ImportSupervisor` was called, but we didn't see any evidence of that. It was being stopped by something else, but we didn't have any indication as to what to go on.
 
-I looked up on Elixir's GitHub issues the phrase "supervisor stop" hoping that someone else had come across a similar issue and it turned up [this completely unrelated issue](https://github.com/elixir-lang/elixir/issues/2432) which mentions using [`:dbg`](http://erlang.org/doc/man/dbg.html) to investigate messages being sent through Erlang. This looked like exactly what I wanted: a way to see what was telling the process to shutdown.
+<aside>
+I should also mention at this point that CopyCat.ImportSupervisor certainly exhibited this "silent crashing" behaviour <em>before</em> the transient restart code was added. Attempts to reproduce the bug without having CopyCat.ImportSupervisor in the "transient restart" mode so far have been unsuccessful.
+</aside>
+
+I looked up on Elixir's GitHub issues the phrase "supervisor stop" hoping that someone else had come across a similar issue and it turned up [this completely unrelated issue](https://github.com/elixir-lang/elixir/issues/2432) which mentions using [`:dbg`](http://erlang.org/doc/man/dbg.html) to investigate messages being sent through Erlang. This looked like exactly what I wanted: a way to see what was sending a message to the `CopyCat.ImportSupervisor` process telling it to shut down.
 
 ## dbg to the rescue
 
@@ -178,7 +182,9 @@ def start_link do
 end
 ```
 
-I then got this change code reviewed + deployed to our staging server. Then I had to wait for this bug to happen again. Luckily, it happened again the very next day. This time, we had some logs:
+As the comments say, this sets up `dbg` tracer and then monitors all the messages sent or received by the process.
+
+I then got this change code reviewed + deployed to our staging server. Then I had to wait for this bug to happen again. Luckily, it happened again the very next day. This time, we had some logs from dbg:
 
 ```
  (<0.404.0>) << {'EXIT',<0.409.0>,
@@ -265,7 +271,9 @@ By starting the `:sasl` application, I could then get some info regarding the pr
 
 The `copy_lion` application will on-purpose cause a query to take longer than 5 seconds, and so we get the same kind of "timeout" exit that's happen here too. When this happens, `CopyLion.ImportSupervisor` restarts `CopyLion.EventImporter` processes. However, when `CopyLion.ImportSupervisor` is changed to use `restart: :transient` then `CopyLion.ImportSupervisor` doesn't get restarted and we see the same kind of behaviour we were seeing only intermittently before.
 
-The best part about using the `:sasl` application here is that we're now getting valuable logs of what's happening with our supervisors and the processes they monitor.
+If the timeouts here were raising exceptions, it would be a different story. The `CopyCat.ImportSupervisor` would receive exceptions from its children and then -- with enough of them -- would restart itself. Since these timeouts are not exceptional, the `CopyCat.ImportSupervisor` is not restarted automatically by `CopyCat.Supervisor`.
+
+The best part about using the `:sasl` application here is that we're now getting valuable logs of what's happening with our supervisors and the processes they monitor, whereas before we didn't have a single line of information to go on.
 
 ## The fix
 
@@ -284,7 +292,7 @@ I used this new version of the `mongodb` package on `copy_lion` (which you can s
     (elixir) lib/enum.ex:2346: Enum.to_list/1
 ```
 
-This gives me a large amount of confidence that the latest version of the `mongodb` package will no longer cause `CopyCat.ImportSupervisor` to exit normally, but will instead raise exceptions when a timeout is encountered.
+This gives me a large amount of confidence that the latest version of the `mongodb` package will no longer cause `CopyCat.ImportSupervisor` to exit normally, but will instead raise exceptions when a timeout is encountered. When this happens, `CopyCat.ImportSupervisor` will exit with an exception too, causing `CopyCat.Supervisor` to restart it.
 
 I've now got a pull request in the works for Copy Cat to use this `ecto-2` branch, but that only means that an exception will now be raised when a timeout is encountered. It doesn't make the timeout go away.
 
