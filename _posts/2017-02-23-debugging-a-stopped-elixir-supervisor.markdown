@@ -2,7 +2,7 @@
 wordpress_id: RB-376
 layout: post
 title: Debugging a stopped Elixir Supervisor
-published: true
+published: false
 ---
 
 We've been doing a lot of work with Elixir at [Culture Amp](https://www.cultureamp.com/), building out several microservices in it and we're also using event sourcing to pass events from our Rails monolith (called "Murmur") out to these services. In order to pass these events out to the services, we built a microservice called Event Hub.
