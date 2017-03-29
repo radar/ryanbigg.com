@@ -80,13 +80,13 @@ Each event importer process works off a unique stream. If that event impoter pro
 
 Because `CopyCat.ImportSupervisor` is supervised in turn by `CopyCat.Supervisor`, the same rule applies: if `CopyCat.ImportSupervisor` restarts 3 times within 5 seconds then the application will die.
 
-Shortly after we deployed Copy Cat to our production environment (near the end of January), we observed issues where the importing of events would just stop suddenly. Nothing was output to the log file, which is what we expected to happen if one of the `EventImporter` workers encountered an exception. It was almost as if all the workers were waiting for _something_ to happen, but we didn't have any information on what that might've been. A few days later, this issue happened on our staging server and a developer's Mac.
+Shortly after we deployed Copy Cat to our production environment, we observed issues where the importing of events would just stop suddenly. Nothing was output to the log file, which is what we expected to happen if one of the `EventImporter` workers encountered an exception. It was almost as if all the workers were waiting for _something_ to happen, but we didn't have any information on what that might've been. A few days later, this issue happened on several other machines too. It wasn't an isolated issue.
 
-None of us could figure it out at all, with most of us having less than a year's worth of using-Elixir-in-production experience. This issue continued for almost a month with nobody being able to figure it out.
+None of us could figure it out at all, with most of us being relatively new to running Elixir in production. This issue continued for almost a month with nobody being able to figure it out.
 
 ## Splunk alerting to the rescue (temporarily)
 
-The application was still running and responding to heartbeat checks -- each of our microservices has a `/status` endpoint -- but it appeared that the workers had stopped running completely. We'd notice the workers stopped working because their status messages -- messages that look like this:
+The application was still running and responding to heartbeat checks -- each of our microservices has a health check endpoint -- but it appeared that the workers had stopped running completely. We'd notice the workers stopped working because their status messages -- messages that look like this:
 
 ```
 13:42:10.155 [info] Fetched 0 CopyCat.Murmur.SurveyEvent from Murmur

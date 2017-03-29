@@ -4,13 +4,28 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-02-24T19:26:09+11:00</updated>
+ <updated>2017-03-30T08:38:12+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Rails 5 in Action</title>
+   <link href="http://ryanbigg.com/2017/03/rails-5-in-action"/>
+   <updated>2017-03-30T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2017/03/rails-5-in-action</id>
+   <content type="html"><![CDATA[<p>I have been asked a few times since Rails 5 was released when Rails 5 in Action (an update to <a href="https://www.manning.com/books/rails-4-in-action">Rails 4 in Action</a>) will be published. The short answer is that it won&#39;t be.</p>
+
+<p>After Rails 4 in Action, I cut ties with Manning due to problems I&#39;ve outlined in many previous posts. Most recently <a href="http://ryanbigg.com/2015/08/my-self-publishing-success-story">&quot;My self-publishing success story&quot;</a>. It just isn&#39;t worth any more energy/time to continue to work with that particular publisher. Since they are the ones that own the rights to the Rails * in Action series and the IP of the book, working on an update to Rails 4 in Action would mean working with the publisher, and that&#39;s not something that I would choose to do again.</p>
+
+<p>Couple this with a 3-year &quot;no-compete&quot; clause that means I won&#39;t be able to publish any book-length Rails beginner content. So even a competing book to Rails 4 in Action is out of the question (at least for the next two and a bit years).</p>
+
+<p>So Rails 5 in Action is <em>never</em> coming out. <a href="https://github.com/rubysherpas/r4ia_examples/">Rails 4 in Action&#39;s code</a> will still work with Rails 5 (mostly) and it&#39;s a valuable demonstration of how to build a decently sized Rails application.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Toy Robot, Deep Dive Rails and AsciiDoc Toolchain</title>
@@ -2018,30 +2033,6 @@ need configuration options.
 
 <p>Overall, I enjoy the language and look forward to learning more about it, as well as finding other situations where we can use it at LIFX.</p>
 ]]></content>
- </entry>
- 
- <entry>
-   <title>Add header to Rack::Test request</title>
-   <link href="http://ryanbigg.com/2014/08/add-header-to-rack-test-request"/>
-   <updated>2014-08-06T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2014/08/add-header-to-rack-test-request</id>
-   <content type="html"><![CDATA[<p>I couldn&#39;t find any results on the Google for the title of this blog post, so I&#39;m writing it here.</p>
-
-<p>All I wanted to do was to send through a header. I tried this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">it "test" do
-  get '/test', {}, { 'Test-Header' =&gt; 'Test value' }
-  expect(last_response.status).to eq(200)
-end
-</code></pre></div>
-<p>That doesn&#39;t work, because that third argument is actually the Rack <code>env</code> object.</p>
-
-<p>The correct way to do it is this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">it "test" do
-  header 'Test-Header', 'Test value'
-  get '/test'
-  expect(last_response.status).to eq(200)
-end
-</code></pre></div>]]></content>
  </entry>
  
  
