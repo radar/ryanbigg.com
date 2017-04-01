@@ -1,196 +1,140 @@
 ---
 ---
 
-// https://coolors.co/283044-5fa8d3-fefefe-d33f49-d7c0d0
-
-$body-bg: #fefefe;
-$coolor: #5FA8D3;
-$regular-font: "Titillium Web";
-$code-font: "Source Code Pro";
-$line-height: 175%;
-$blockquote-bg: #212733;
-
-
-
-html {
-  margin: 0;
-  padding: 0;
+html, body {
+  height: 100%;
 }
 
 body {
-  background: $body-bg;
-  font: 15pt "Titillium Web";
-  color: #666;
-  margin: 0;
-  padding: 0;
-}
-
-a {
-  color: $coolor;
-}
-
-p {
-  line-height: $line-height;
-}
-
-header {
-  text-align: center;
-}
-
-header a {
-  text-decoration: none;
-}
-
-blockquote, aside {
-  background: $blockquote-bg;
-  color: $body-bg;
-  padding: 10px 16px;
-  margin: 0;
-  font-size: 90%;
-}
-
-blockquote p {
+  font: 14pt "Titillium Web";
+  background: #484851;
   margin: 0;
 }
 
-blockquote ul, aside ul {
-  margin: 0px;
-  padding-left: 20px;
-
-  li {
-    padding: 0px;
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 568px) {
+  body {
+    font-size: 225%;
   }
 }
 
-aside {
-  background: #45D89B;
-  color: invert($body-bg);
+a {
+  color: #3CBC98;
 }
 
-aside a, aside a:visited {
-  color: #DDFC74;
+.container {
+  display: flex;
+  min-height: 100%;
 }
 
-h1 {
-  font-weight: bold;
-  font-size: 300%;
+
+.menu {
+  background: #303036;
+  border-right: 5px solid #3CBC98;
+  color: #efefef;
+  min-width: 15rem;
+  padding: 2.5% 0 0 0;
+  text-align: center;
+
+  img {
+    width: 175px;
+    margin-top: 2rem;
+  }
+
+  h1 {
+    margin-bottom: 0;
+  }
+
+  .desc {
+    color: darken(#efefef, 50);
+  }
+
+  ul {
+    text-align: left;
+    list-style-type: none;
+    margin: 10% 0 0 0;
+    padding: 0;
+  }
+
+  ul li {
+    padding: 5%;
+    text-align: center;
+    background: #3CBC98;
+    transition: background-color 0.5s ease;
+
+    &:hover {
+      background: #A3F7B5;
+
+      a {
+        color: #3CBC98;
+      }
+    }
+  }
+
+  a {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: #efefef;
+  }
 }
 
-hr {
-  height: 0px;
-  border: 1px dashed #ccc;
+@media only screen
+and (max-width: 750px) {
+  .menu {
+    min-width: 7.5rem;
+
+    img {
+      width: 85px;
+    }
+  }
+}
+
+.content {
+  background: white;
+}
+
+h2 {
+  color: #484851;
 }
 
 article {
-  padding: 15px 0 15px 0;
-  -webkit-border-radius: 5px;
-}
-
-article img {
-  max-width: 100%;
-}
-
-article h2 {
-  font-size: 200%;
-  margin-bottom: 30px;
-  font-weight: bold;
-}
-
-article .highlight pre {
-  padding: 10px;
-  font: 0.7em $code-font;
-  overflow: auto;
-  line-height: 150%;
-}
-
-code {
-  border-radius: 5px;
-  font-family: $code-font;
-  color: $coolor;
-}
-
-article p code, li code {
-  color: $coolor;
+  margin: 0% 2% 0% 2%;
+  padding: 3rem 2rem 1rem 3rem;
   background: white;
-  padding: 2px;
-  font-size: 0.9rem;
+  line-height: 165%;
 }
 
-article p a code {
-  background: transparent;
-  border: 0;
+.large {
+  font-size: 125%;
 }
 
-.warning {
-  font-size: 40px;
-  font-weight: bold;
-  line-height: 125%;
-}
+#books {
+  .book {
+    border-bottom: 2px solid #3CBC98;
 
-figure {
-  text-align: center;
-}
-
-figure figcaption {
-  font-size: 80%;
-  font-style: italic;
-}
-
-#page, #header, article, #post {
-  margin-left: 10%;
-  margin-right: 10%;
-}
-
-#header {
-  text-shadow: white 0px 2px 0px;
-  line-height: 190%;
-}
-
-
-#archive abbr {
-  float: right;
+    img {
+      float: right;
+      max-width: 200px;
+      margin-left: 3rem;
+    }
+  }
 }
 
 #archive {
-  font-size: 85%;
-  margin-left: 15%;
-  margin-right: 15%;
-  margin-bottom: 10%;
+  margin-left: 6%;
+  width: 88%;
+
+  ul {
+    list-style-type: none;
+  }
+
+  abbr {
+    float: right;
+  }
 }
 
-#archive ul {
-  list-style-type: none;
-}
-
-#archive li {
-  margin: 10px 0;
-}
-
-#archive h2 {
-  text-align: center;
-}
-
-#recentcomments {
-  padding-left: 10%;
-  background: #343434;
-  color: white;
-}
-
-#disqus_thread {
-  margin-left: 10%;
-  margin-right: 10%;
-}
-
-#dsq-post-button {
-  color: white;
-}
-
-#dsq-comment-message {
-  font-size: 15px;
-}
-
-#about-me img {
-  margin: 25px;
-  float: right;
-  width: 240px;
+hr {
+  border: 2px solid #3CBC98;
 }

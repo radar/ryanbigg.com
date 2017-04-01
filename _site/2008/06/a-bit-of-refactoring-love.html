@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Ryan Bigg - A bit of refactoring love</title>
+    <title>A bit of refactoring love - Ryan Bigg</title>
     <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Titillium+Web" rel="stylesheet">
     <link rel='stylesheet' href='/css/style.css' media='screen'>
@@ -10,8 +10,25 @@
     <script src='/js/prism.js'></script>
 
   <body>
-    <h1 align='center'><a href='http://ryanbigg.com'>Ryan Bigg</a></h1>
-    <div id='post'>
+    <div class="container">
+      <div class="menu">
+        <h1>Ryan Bigg</h1>
+        <small class='desc'>Programmer / Author / Mentor</small>
+        <img src='/images/me.png' />
+        <ul>
+          <li>
+            <a href="/">Who?</a>
+          </li>
+          <li>
+            <a href="/blog">Blog</a>
+          </li>
+          <li>
+            <a href="/now">Now</a>
+          </li>
+          <li>
+            <a href="/books">My books</a>
+          </li>
+      </div>
       <article>
         <a href="/2008/06/a-bit-of-refactoring-love"><h2>A bit of refactoring love</h2></a>
         <small>13 Jun 2008</small><br>
@@ -111,9 +128,11 @@ end
 
 <p>As long as there&#39;s a <span class='term'>#to<em>s</span> method in the Forum model it will insert that as the phrase shown to the user for the link. All of the above should produce the same URL, with the exception of the first which will produce <span class='term'>/forums/show/1</span>, and going down the list they&#39;re just shorter ways of writing the same thing. If you had nested routes such as <span class='term'>forum</em>topic<em>path(@forum, @topic)</span> you could do <span class='term'>&lt;%= link</em>to @topic, [@forum, @topic] %&gt;</span> as the extremely short version of it. The reason why we can&#39;t do just <span class='term'>&lt;%= link<em>to [@forum, @topic] %&gt;</span> is because this will show the to</em>s version of @forum, followed immediately by the to_s version of @topic.</p>
 
+
+        <div id='disqus_thread'></div>
       </article>
     </div>
-    <div id='disqus_thread'></div>
+
     <script type="text/javascript">
         var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
 

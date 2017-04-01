@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Ryan Bigg - Spree, Factories and Callbacks</title>
+    <title>Spree, Factories and Callbacks - Ryan Bigg</title>
     <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
     <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Titillium+Web" rel="stylesheet">
     <link rel='stylesheet' href='/css/style.css' media='screen'>
@@ -10,8 +10,25 @@
     <script src='/js/prism.js'></script>
 
   <body>
-    <h1 align='center'><a href='http://ryanbigg.com'>Ryan Bigg</a></h1>
-    <div id='post'>
+    <div class="container">
+      <div class="menu">
+        <h1>Ryan Bigg</h1>
+        <small class='desc'>Programmer / Author / Mentor</small>
+        <img src='/images/me.png' />
+        <ul>
+          <li>
+            <a href="/">Who?</a>
+          </li>
+          <li>
+            <a href="/blog">Blog</a>
+          </li>
+          <li>
+            <a href="/now">Now</a>
+          </li>
+          <li>
+            <a href="/books">My books</a>
+          </li>
+      </div>
       <article>
         <a href="/2014/06/spree-factories-and-callbacks"><h2>Spree, Factories and Callbacks</h2></a>
         <small>17 Jun 2014</small><br>
@@ -68,9 +85,11 @@
 
 <p>If I was going to re-architect Spree -- or any large Rails app for that matter -- something like <a href="https://github.com/radar/spree_poro">spree_poro</a> is where I would start. I wouldn&#39;t start with a Rails app, or even a Rails engine. I would start here: in a small repo of code that has tests written before any code, then the code implements the business rules and the tests pass. Refactoring happens then, because otherwise <a href="https://codeclimate.com/github/radar/spree_poro">CodeClimate</a> would say nasty things about the code. The Rails engine can call out to it later.</p>
 
+
+        <div id='disqus_thread'></div>
       </article>
     </div>
-    <div id='disqus_thread'></div>
+
     <script type="text/javascript">
         var disqus_shortname = 'ryanbigg'; // required: replace example with your forum shortname
 
