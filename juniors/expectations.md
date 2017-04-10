@@ -1,0 +1,85 @@
+---
+layout: default
+title: Expectations - Juniors
+---
+
+## What do employers expect of juniors?
+
+<small>Last updated: 11th April 2017</small>
+
+<p class='large'>
+  This post is <a href='/juniors.html'>part of a series of my replies to junior developer questions</a>.
+</p>
+
+----
+
+<p class='large'>
+I <a href='https://twitter.com/ryanbigg/status/850526920072495104'>asked a variant of this question on Twitter in April 2017</a>, as I've been asked it a few times by juniors.
+
+Here are the replies I received:
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> to be inquisitive and an active learner. And not necessarily a net productivity boost initially. It’s a long term investment.</p>&mdash; James Sadler (@freshtonic) <a href="https://twitter.com/freshtonic/status/850532116035018752">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Listening, learning, asking good questions</p>&mdash; 🐭tamouse.{rb,js,py} (@tamouse) <a href="https://twitter.com/tamouse/status/850541277766615041">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Demonstrating that learning by solving problems</p>&mdash; 🐭tamouse.{rb,js,py} (@tamouse) <a href="https://twitter.com/tamouse/status/850541493697880064">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 1) Great Attitude 2) Willingness to learn 3) Be a contributor on small features or bug fixes</p>&mdash; Rich Blumer (@richblumer) <a href="https://twitter.com/richblumer/status/850541559707840514">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> I&#39;d hope just a basic knowledge of the language/framework. But more important, to be eager to learn, ask questions, open to new ideas</p>&mdash; Rebecca Skinner (@sevenseacat) <a href="https://twitter.com/sevenseacat/status/850554722024947714">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Learning,  good attitude</p>&mdash; rorykoehler (@rorykoehler) <a href="https://twitter.com/rorykoehler/status/850561575542857728">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Read a lot, ask many questions, learn fast…</p>&mdash; Jérémy Lecour (@jlecour) <a href="https://twitter.com/jlecour/status/850597327777800192">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> It’d depend on the job, but things about the day-to-day tools, the concepts and vocabulary…</p>&mdash; Jérémy Lecour (@jlecour) <a href="https://twitter.com/jlecour/status/850622215062204416">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> encourage experimentation. help exploring the docs. answer any questions, and if I can&#39;t immediately answer, we can work it out together</p>&mdash; Rebecca Skinner (@sevenseacat) <a href="https://twitter.com/sevenseacat/status/850632560166158337">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Hopefully, know their way around the framework, are open to exploring by themselves, google problems &amp; speak up if they run into problems.</p>&mdash; Alexia 🌐 (@TheSpacepony) <a href="https://twitter.com/TheSpacepony/status/850633629562810368">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> <a href="https://twitter.com/bytemeorg">@bytemeorg</a> good problem solving instincts. Knowing when to speak up for help. Hunger to learn and grow.</p>&mdash; Sean Kelly (@StabbyCutyou) <a href="https://twitter.com/StabbyCutyou/status/850851790128021511">April 8, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 2) essentially a juniors job immediately is to learn, and learn as they contribute. My job is to be patient and help.</p>&mdash; Tom Ridge (@tjridge) <a href="https://twitter.com/tjridge/status/851182930089066496">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Someone willing to learn new skills &amp; new ways to do things... the ability to figure out basic software/tools - ie:google it. The rest easy.</p>&mdash; _utah_get_me_three_ (@fighella) <a href="https://twitter.com/fighella/status/851182022907150336">April 9, 2017</a></blockquote>
+
+<p class='large'>
+  Then there's this "tweet storm" from <a href='https://cultureamp.com'>Culture Amp's</a> most recent (5 months ago) junior hire, Lauren Hennessey:
+</p>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> The things I was capable of 5 months ago... whatever that was 😂</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851185726368620544">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> Srsly what I offered (not necessarily what CA look for in all juniors):<br>1 beginner skills for most things I would be working with.</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851187542229565440">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 2 curiosity about the things I didn&#39;t know<br>3 desire to write &quot;good&quot; code, but not always knowing what that should look like</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851187861965553664">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 4 ability to take constructive feedback / guidance and turn it around quickly into action / improvement</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851188464133431296">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="fr" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 5 attitude: energy / excitement / compassion / sense of humour</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851188799480578048">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 6 past and ongoing contributions to the community</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851189023129214976">April 9, 2017</a></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" data-lang="en"><p lang="en" dir="ltr"><a href="https://twitter.com/ryanbigg">@ryanbigg</a> 7 background in psychology ( great for any job really, but especially useful at CA )</p>&mdash; Lauren 👾 Hennessy (@Zajakot) <a href="https://twitter.com/Zajakot/status/851189391171100672">April 9, 2017</a></blockquote>
+
+(Coincidentally, Lauren is also [Ruby Australia's](http://ruby.org.au) newest President. Her election campaign was "fuck it, why not?" and she's ended up being one of the best Presidents the organisation has ever had.)
+
+You'll notice a common theme here which is that nearly everyone expects an eagerness to learn. Nobody wants to mentor someone who's a reluctant learner, as mentoring someone like that is hard work.
+
+Personally, my favourite people to mentor are those that come across a problem, try to solve it for a while to the best of their ability by trying different things or trying to find the answer online, reach the point where they feel stuck and then they try just a bit more. If after this point they are still stuck, I expect them to be capable of telling me what it is they're trying to do, what they've tried to accomplish it, and how they're stuck. If I can know all that, I can usually provide some good guidance on what to do to get through that roadblock.
+
+Those that come against a problem and whinge about it and then refuse to learn "yet another new thing" frustrate me. I try to encourage the eagerness of learning in people, but sometimes some people don't get it. Or maybe I don't encourage that enough. People are hard.
+
+So yeah. That eagerness to learn new things is essential.
+
+----
+
+On a related note: "Have the courage to be vulnerable" is one of [Culture Amp's](https://cultureamp.com) morals and I think it is totally applicable in the mentoring / mentored relationship too. I've adopted it as one of my own morals too. It's essential that the mentored person admit when they don't know something and also essential for the person doing the mentoring to leave a space for that sort of thing. The absolute worst thing the mentor can do is say something along the lines of "Oh my god! how could you not know that?". That kind of line _destroys_ confidence. Mentoring should be about building it up, not crushing it.
+
+The way I think about it is that it's not annoying/bad/wrong if someone doesn't know something; there's tons of stuff that I didn't know. What it is just another opportunity for the mentor to share their knowledge and that's a great thing.
+
+What's even greater is when the mentored person comes across something or asks a question about something that the mentor _doesn't_ know the answer too. Then it's a great opportunity for the mentor to show their vulnerability too and to work through this problem with the one being mentored.
+
+It's totally OK to not know things. If you have the eagerness to learn and a good support network out there then there'll always be someone who can point you in the right direction. It's just about having that courage to admit you don't know first which really kickstarts that whole learning process.
