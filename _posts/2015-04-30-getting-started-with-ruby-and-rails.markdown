@@ -1,4 +1,4 @@
---- 
+---
 wordpress_id: RB-361
 layout: post
 title: Getting started with Ruby and Rails
@@ -23,14 +23,14 @@ in that environment.
 ### Ubuntu
 
 Once you've got Ubuntu setup, you can follow my [Ubuntu, Ruby, ruby-install,
-chruby, Rails and You blog post](http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/)
+chruby, Rails and You guide](http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/)
 which will setup a proper development environment for you on Ubuntu.
 
 **Don't install Ruby packages from `apt`**. That way lies pain and suffering.
 
 ### Mac
 
-If you're on Mac, you can follow many of the same steps in the Ubuntu guide.
+If you're on Mac, you can follow my [Mac OS X, Ruby, ruby-instlal, chruby and You guide](http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you).
 Install ruby-install, chruby as per that guide, and then you can install
 [Homebrew](http://brew.sh/), and then install PostgreSQL by running this
 command:
@@ -64,7 +64,7 @@ myself. One day I might.
 
 ### The Well-Grounded Rubyist
 
-**NON-FREE**
+**PAID**
 
 If a book is more your style, then [The Well-Grounded
 Rubyist](http://manning.com/black3) is the one that I would recommend. The
@@ -82,6 +82,12 @@ people who run [Turing Academy](http://turing.io). These include tutorials
 that will introduce you to Ruby in 100 minutes, as well as some Sinatra and
 Rails tutorials so that you can wrap your head around applying Ruby to web development.
 
+### Practical Object-Oriented Design in Ruby (POODR)
+
+**PAID**
+
+The [POODR book by Sandi Metz](http://www.poodr.com/) is one of my favourite Ruby books and gives some great examples of how to write excellent Ruby code in an easy-to-read style. Sandi Metz's conference talks are also wonderful watching.
+
 ## Getting started with Rails
 
 ### Rails 4 in Action
@@ -94,13 +100,13 @@ ticket-tracking application from the ground up using Behaviour Driven
 Development. Thousands of people have found it to be a great introduction to
 Rails, and some people have even gotten Rails jobs after having read it.
 
-### Rails Tutorial 
+### Rails Tutorial
 
 **FREE**
 
 If you don't want to shell out the money for my book (and why not?!), then the
 free [Rails Tutorial](https://www.railstutorial.org/) is the next-best-thing.
-In that tutorial, you build a Twitter-like application from scratch. 
+In that tutorial, you build a Twitter-like application from scratch.
 
 ## More reading / viewing / listening
 
@@ -110,11 +116,6 @@ Before you go ahead and read this list, you should take some time to go through 
 
 * [Confident Ruby](http://www.confidentruby.com/)
 * [Eloquent Ruby](http://www.amazon.com/Eloquent-Ruby-Addison-Wesley-Professional-Series/dp/0321584104)
-* [Practical Object-Oriented Design in Ruby](http://www.poodr.com/)
-
-### Podcasts
-
-* [Ruby Rogues](http://rubyrogues.com)
 
 ### Screencasts
 

@@ -45,35 +45,37 @@ Learn what browsers are capable of doing.
 
 ---
 
-Then there are the terminal aliases and functions. I have aliased `git push` to simply `push`, `bundle` to `b` and `bundle exec rspec` to `ber`... there's so many more aliases like that that I have in my [dot-files repo](https://github.com/radar/dot-files).
+Then there are the terminal aliases and functions. I have aliased `git push` to simply `push`, `bundle` to `b` and `bundle exec rspec` to `ber`... there's so many more aliases like that that I have in my [dot-files repo](https://github.com/radar/dot-files) (look at the `ryan-aliases` and `gitaliases` files).
 
 I add to these as I find myself repeating commands again and again. These are shortcuts and helpers I've built up for myself (cribbing them from others too) over a lifetime of development. Well, since really about 2009. I cannot overstate how helpful these have been to making me more productive.
 
 ---
 
-Git is the version control system you'll be using the most of. It's incredibly powerful. Learn about branching (particularly helpful when working on the same project with other people), what merging means, the difference between merging and rebasing, what an "interactive rebase" is and what bisecting means. Learn about `git add -p` and its opposite, `git checkout -p`.
+Git is the version control system you'll be using the most of. It's incredibly powerful. Learn about the difference between staging your changes and committing them. Learn about branching (particularly helpful when working on the same project with other people), what merging means, the difference between merging and rebasing, what an "interactive rebase" is. Learn about stashing. What it means to bisect. Learn about `git add -p` and its opposite, `git checkout -p`.
 
-You don't have to learn _everything_ about Git, but wow it really helps to know it and how to use it. The Pro Git book (https://git-scm.com/book/en/v2) helps a lot with this.
+You don't have to learn _everything_ about Git, but wow it really helps to know it and how to use it. [The Pro Git book](https://git-scm.com/book/en/v2) helps a lot with this.
 
 ---
 
-Learn about databases; you'll be working with a lot of them. Learn what "denormalisation" is and why it is important. Explore libraries other than Active Record to build queries in Ruby. Get out of your Rails comfort-zone. Learn how to write database queries without using Ruby. Do not be afraid of opening `mysql` or `psql` to run these queries.
+Learn about databases; you'll be working with a lot of them. Learn what "denormalisation" is and why it is important. Learn about the different types of database joins and how they work. Explore libraries other than Active Record to build queries in Ruby. Get out of your Rails comfort-zone. Learn how to write database queries without using Ruby. Do not be afraid of opening `mysql` or `psql` to run these queries.
 
 ----
 
 Knowing design patterns in Ruby is critical. Read [Sandi Metz's books](https://www.sandimetz.com/products/) and treat them like the bibles of good software design that they are.
 
-There's also [Confident Ruby](http://www.confidentruby.com/) by Avdi Grimm and [Clean Ruby](http://clean-ruby.com/) by Jim Gay that I would recommend too. You're probably already past the foundational stage now, but I'd recommend The Well Grounded Rubyist too (https://www.manning.com/books/the-well-grounded-rubyist-second-edition).
+There's also [Confident Ruby](http://www.confidentruby.com/) by Avdi Grimm and [Clean Ruby](http://clean-ruby.com/) by Jim Gay that I would recommend too. You're probably already past the foundational stage now, but I'd recommend [The Well Grounded Rubyist](https://www.manning.com/books/the-well-grounded-rubyist-second-edition). You should also read my book: [Rails 4 in Action](https://manning.com/books/rails-4-in-action).
 
-Write tests! Tests prove that your code works and will continue to prove it for as long as they're around. I wrote tests _six years ago_ for https://github.com/radar/twist (the app I use to get people to review all my books) which are still providing value to this day. If you aren't writing tests, are you going to manually test your application every time? Tests are another one of those things that'll save you time. It may not feel like it immediately ("I'm writing twice as much code to do the same thing!") but it's a long term investment in any codebase you work on.
+Going through the [Ruby Koans]()
+
+Write tests! Tests prove that your code works and will continue to prove it for as long as they're around. I wrote tests _six years ago_ for [Twist](https://github.com/radar/twist) (the app I use to get people to review all my books) which are still providing value to this day. If you aren't writing tests, are you going to manually test your application every time? Tests are another one of those things that'll save you time. It may not feel like it immediately ("I'm writing twice as much code to do the same thing!") but it's a long term investment in any codebase you work on. I have a [based-on-a-true-story blog post about tests here](http://ryanbigg.com/2010/02/congratulations) that you might like to read.
 
 ----
 
 Finally, knowing where to look up things is another useful skill to have.
 
-I have a hard time remembering the arguments to Enumerable#inject in Ruby. Is the block argument accumulator first, or element first? I can _never_ remember -- even though I've been doing this for 10 years! -- but I _do_ remember that I can simply look it up in the documentation, through an app called Dash.app. I use Dash.app to look up a lot of things, especially stuff about Elixir (the most recent language I have learned). It's not a bad thing to go and consult the docs. There's so much "stuff" we need to remember and we can't be expected to remember it all.
+I have a hard time remembering the arguments to Enumerable#inject in Ruby. Is the block argument accumulator first, or element first? I can _never_ remember -- even though I've been doing this for 10 years! -- but I _do_ remember that I can simply look it up in the documentation, through an app called [Dash.app](https://kapeli.com/dash). I use [Dash.app](https://kapeli.com/dash) to look up a lot of things and Ruby and Rails, and especially stuff about Elixir; the most recent language I have learned. It's not a bad thing to go and consult the docs. Even the pros do it. There's so much "stuff" we need to remember and we can't be expected to remember it all.
 
-Another example: I wrote the Active Record Querying guide and I _still_ have to look stuff up in it to remember how some of it works.
+Another example: I wrote the [Active Record Query Interface](http://guides.rubyonrails.org/active_record_querying.html) guide and I _still_ have to look stuff up in it to remember how some of it works.
 
 Knowing that there's things like [Stack Overflow](http://stackoverflow.com/), the [Rails Guides](http://guides.rubyonrails.org), the Ruby documentation, your colleagues and your support network out there that you can ask questions of is definitely a useful skill.
 
