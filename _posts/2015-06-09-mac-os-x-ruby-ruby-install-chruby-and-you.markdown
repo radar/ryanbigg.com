@@ -1,4 +1,4 @@
---- 
+---
 wordpress_id: RB-363
 layout: post
 title: Mac OS X, Ruby, ruby-install, chruby and You
@@ -64,7 +64,7 @@ ruby-install --latest ruby
 
 This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.1 installed.
 
-Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bashrc` (or `~/.zshrc` if you're using ZSH):
+Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bash_profile` (or `~/.zshrc` if you're using ZSH):
 
 ```
 source /usr/local/opt/chruby/share/chruby/chruby.sh
@@ -74,7 +74,7 @@ source /usr/local/opt/chruby/share/chruby/auto.sh
 In order for this to take effect, we'll need to source that file:
 
 ```
-. ~/.bashrc
+. ~/.bash_profile
 # or (if you're using ZSH)
 . ~/.zshrc
 ```
