@@ -203,7 +203,8 @@ Fix this issue by running `sudo apt-get install libsqlite3-dev`.
 
 Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run `rake assets:precompile` without one of these, you'll see this message:
 
-    ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See https://github.com/sstephenson/execjs for a list of available runtimes.
+    ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See
+    https://github.com/sstephenson/execjs for a list of available runtimes.
 
 To fix this error install `nodejs`, which comes with a JavaScript runtime:
 
