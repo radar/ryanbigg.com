@@ -52,6 +52,7 @@ Again, it is not explicit when you're looking at the `run_long_running_thing` me
 
 There doesn't appear to be anywhere in the `CurrentAttributes` code -- as far as I can tell -- where it would reset the state of this `Current` object in between each test. Therefore, setting it in one test like what I've done above now makes it bleed through "magically" into other tests. That behaviour seems like a horrible thing to have in a codebase. You could very well have situations where you're _expecting_ `Current.user` to be `nil` but instead it's set to some vaule because some other test set it. Now which of the 500 tests in my application did that? Good luck finding it.
 
+
 ### Convention over configuration, and perhaps explicitness over implicitness?
 
 Rails is still a good framework. I know DHH's rebuttal to this will be "don't use it then" or something along those lines. Similar to his response to [my reverting of callback suppression](https://github.com/rails/rails/pull/25115) a while back.
@@ -84,5 +85,163 @@ end
 ```
 
 In both of these cases, it is _very_ clear how `user` arrives in the `run_long_running_thing` method: it is passed in as an argument.
+
+Let's finish by taking a look at the code from the pull request and look at how it can be written more explicitly.
+
+### DHH's CurrentAttributes code vs my explicit code
+
+```ruby
+# app/models/current.rb
+class Current < ActiveSupport::CurrentAttributes
+  attribute :account, :user
+  attribute :request_id, :user_agent, :ip_address
+
+  resets { Time.zone = nil }
+
+  def user=(user)
+    super
+    self.account = user.account
+    Time.zone = user.time_zone
+  end
+end
+
+# app/controllers/concerns/authentication.rb
+module Authentication
+  extend ActiveSupport::Concern
+
+  included do
+    before_action :set_current_authenticated_user
+  end
+
+  private
+    def set_current_authenticated_user
+      Current.user = User.find(cookies.signed[:user_id])
+    end
+end
+
+# app/controllers/concerns/set_current_request_details.rb
+module SetCurrentRequestDetails
+  extend ActiveSupport::Concern
+
+  included do
+    before_action do
+      Current.request_id = request.uuid
+      Current.user_agent = request.user_agent
+      Current.ip_address = request.ip
+    end
+  end
+end
+
+class ApplicationController < ActionController::Base
+  include Authentication
+  include SetCurrentRequestDetails
+end
+```
+
+Including the `Authentication` module into `ApplicationController` to add a single method seems like a bit of premature extraction. Let's ignore that for now.
+
+This implementation with its `before_action` to `set_current_authenticated_user` will mean that `Current.user` is set on all requests, even those which don't refer to the `current_user` at all.
+
+A better implementation would be a `current_user` method which evaluates its `find` when it is called. You'll see this pattern in a lot of Rails applications.
+
+```ruby
+def current_user
+  @current_user ||= User.find(cookies.signed[:user_id])
+end
+```
+
+In fact, this is similar to [how Devise presents its `current_user` method](https://github.com/plataformatec/devise/blob/master/lib/devise/controllers/helpers.rb#L123-L125). It uses `warden` instead of `cookies.signed`, but it's implementation is similar enough:
+
+```ruby
+def current_#{mapping}
+  @current_#{mapping} ||= warden.authenticate(scope: :#{mapping})
+end
+```
+
+Ok, so now we've got a `current_user` method which is available in the _controllers_ but what if we want to use it in the view? For instance, if we want to say `Hello, #{current_user.name}` in a layout? Easy enough: make it a helper method.
+
+```ruby
+def current_user
+  @current_user ||= User.find(cookies.signed[:user_id])
+end
+helper_method :current_user
+```
+
+Great, so now it's available in controllers, helpers and views. All without making it available _everywhere_ in the current thread.
+
+Now I would like to focus on the second half of DHH's code:
+
+```ruby
+class MessagesController < ApplicationController
+  def create
+    Current.account.messages.create(message_params)
+  end
+end
+
+class Message < ApplicationRecord
+  belongs_to :creator, default: -> { Current.user }
+  after_create { |message| Event.create(record: message) }
+end
+
+class Event < ApplicationRecord
+  before_create do
+    self.request_id = Current.request_id
+    self.user_agent = Current.user_agent
+    self.ip_address = Current.ip_address
+  end
+end
+```
+
+Here, DHH is _implicitly_ linking the message's creator to the `Current.user` by using the `default` option on `belongs_to`. I believe that this violates the MVC layer abstraction. The `Current.user` is just "magically" available in the model, with absolutely no context of how it got there in the first place.
+
+A common pattern in Rails applications is not to do this, but instead to explicitly set the `creator` at the point of creation:
+
+```ruby
+def create
+  @message = current_account.messages.create(message_params)
+  @message.creator = current_user
+```
+
+Let's assume `current_account` is a similar abstraction to the `current_user` one. It's clear here that in the controller that _this_ is where the `creator` is assigned. With DHH's code, it is not immediately clear from the controller code itself that `creator` is assigned at all.
+
+Not only that, but this also lends itself to being abstracted into a "service object" which is responsible for creating a message. Let's say that you want to log an `Event` whenever a `Message` is created. Oh, I see DHH's code does that already with an `after_create` callback. Well then.
+
+In the case of DHH's code, the `after_create` callback will happen whenever a `Message` is created anywhere in your application. This might be suitable in a controller, but what if you want to test some database logic, or something else which requires a persisted message, and you don't care about an event being there at the same time? What if when you created an event you had extra logic on it which caused _another_ record to be created too?
+
+Having such a callback irrevocably ties together messages and events _implicitly_.
+
+As I mentioned before, it would be better to abstract this into a "service object".
+
+```ruby
+class CreateMessageWithCreator
+  def self.run(params, current_user)
+    message = current_account.messages.create(message_params)
+    message.creator = current_user
+    message.save
+  end
+end
+```
+
+You can then call this code in your controller like this:
+
+```ruby
+def create
+  if CreateMessageWithCreator.run(message_params, current_user)
+    Event.create(record: record)
+    flash[:notice] = "Message sent!"
+    redirect_to :index
+  else
+    flash[:alert] = "Message failed to send."
+    render :new
+  end
+end
+```
+
+This way, then you would know that in _this particular case_ you're _definitely_ creating a message with a linked creator and it frees you up to create messages without creators or events, if the need did arise.
+
+I think having these dependencies clearly highlighted in the code rather than magically abstracted away is a much, much better solution.
+
+## Conclusion
+
 
 Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it's DHH's change and it's his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.

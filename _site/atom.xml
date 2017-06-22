@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-06-22T15:42:48+10:00</updated>
+ <updated>2017-06-22T16:32:38+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -93,6 +93,139 @@
 <span class="k">end</span>
 </code></pre></div>
 <p>In both of these cases, it is <em>very</em> clear how <code>user</code> arrives in the <code>run_long_running_thing</code> method: it is passed in as an argument.</p>
+
+<p>Let&#39;s finish by taking a look at the code from the pull request and look at how it can be written more explicitly.</p>
+
+<h3>DHH&#39;s CurrentAttributes code vs my explicit code</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># app/models/current.rb</span>
+<span class="k">class</span> <span class="nc">Current</span> <span class="o">&lt;</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">CurrentAttributes</span>
+  <span class="n">attribute</span> <span class="ss">:account</span><span class="p">,</span> <span class="ss">:user</span>
+  <span class="n">attribute</span> <span class="ss">:request_id</span><span class="p">,</span> <span class="ss">:user_agent</span><span class="p">,</span> <span class="ss">:ip_address</span>
+
+  <span class="n">resets</span> <span class="p">{</span> <span class="no">Time</span><span class="p">.</span><span class="nf">zone</span> <span class="o">=</span> <span class="kp">nil</span> <span class="p">}</span>
+
+  <span class="k">def</span> <span class="nf">user</span><span class="o">=</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">super</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">account</span> <span class="o">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">account</span>
+    <span class="no">Time</span><span class="p">.</span><span class="nf">zone</span> <span class="o">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">time_zone</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># app/controllers/concerns/authentication.rb</span>
+<span class="k">module</span> <span class="nn">Authentication</span>
+  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">before_action</span> <span class="ss">:set_current_authenticated_user</span>
+  <span class="k">end</span>
+
+  <span class="kp">private</span>
+    <span class="k">def</span> <span class="nf">set_current_authenticated_user</span>
+      <span class="no">Current</span><span class="p">.</span><span class="nf">user</span> <span class="o">=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">cookies</span><span class="p">.</span><span class="nf">signed</span><span class="p">[</span><span class="ss">:user_id</span><span class="p">])</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># app/controllers/concerns/set_current_request_details.rb</span>
+<span class="k">module</span> <span class="nn">SetCurrentRequestDetails</span>
+  <span class="kp">extend</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Concern</span>
+
+  <span class="n">included</span> <span class="k">do</span>
+    <span class="n">before_action</span> <span class="k">do</span>
+      <span class="no">Current</span><span class="p">.</span><span class="nf">request_id</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">uuid</span>
+      <span class="no">Current</span><span class="p">.</span><span class="nf">user_agent</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">user_agent</span>
+      <span class="no">Current</span><span class="p">.</span><span class="nf">ip_address</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">ip</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">ApplicationController</span> <span class="o">&lt;</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">Base</span>
+  <span class="kp">include</span> <span class="no">Authentication</span>
+  <span class="kp">include</span> <span class="no">SetCurrentRequestDetails</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Including the <code>Authentication</code> module into <code>ApplicationController</code> to add a single method seems like a bit of premature extraction. Let&#39;s ignore that for now.</p>
+
+<p>This implementation with its <code>before_action</code> to <code>set_current_authenticated_user</code> will mean that <code>Current.user</code> is set on all requests, even those which don&#39;t refer to the <code>current_user</code> at all.</p>
+
+<p>A better implementation would be a <code>current_user</code> method which evaluates its <code>find</code> when it is called. You&#39;ll see this pattern in a lot of Rails applications.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">current_user</span>
+  <span class="vi">@current_user</span> <span class="o">||=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">cookies</span><span class="p">.</span><span class="nf">signed</span><span class="p">[</span><span class="ss">:user_id</span><span class="p">])</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>In fact, this is similar to <a href="https://github.com/plataformatec/devise/blob/master/lib/devise/controllers/helpers.rb#L123-L125">how Devise presents its <code>current_user</code> method</a>. It uses <code>warden</code> instead of <code>cookies.signed</code>, but it&#39;s implementation is similar enough:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">current_</span><span class="c1">#{mapping}</span>
+  <span class="vi">@current_</span><span class="c1">#{mapping} ||= warden.authenticate(scope: :#{mapping})</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Ok, so now we&#39;ve got a <code>current_user</code> method which is available in the <em>controllers</em> but what if we want to use it in the view? For instance, if we want to say <code>Hello, #{current_user.name}</code> in a layout? Easy enough: make it a helper method.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">current_user</span>
+  <span class="vi">@current_user</span> <span class="o">||=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">cookies</span><span class="p">.</span><span class="nf">signed</span><span class="p">[</span><span class="ss">:user_id</span><span class="p">])</span>
+<span class="k">end</span>
+<span class="n">helper_method</span> <span class="ss">:current_user</span>
+</code></pre></div>
+<p>Great, so now it&#39;s available in controllers, helpers and views. All without making it available <em>everywhere</em> in the current thread.</p>
+
+<p>Now I would like to focus on the second half of DHH&#39;s code:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">MessagesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">create</span>
+    <span class="no">Current</span><span class="p">.</span><span class="nf">account</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">message_params</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Message</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+  <span class="n">belongs_to</span> <span class="ss">:creator</span><span class="p">,</span> <span class="ss">default: </span><span class="o">-&gt;</span> <span class="p">{</span> <span class="no">Current</span><span class="p">.</span><span class="nf">user</span> <span class="p">}</span>
+  <span class="n">after_create</span> <span class="p">{</span> <span class="o">|</span><span class="n">message</span><span class="o">|</span> <span class="no">Event</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">record: </span><span class="n">message</span><span class="p">)</span> <span class="p">}</span>
+<span class="k">end</span>
+
+<span class="k">class</span> <span class="nc">Event</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+  <span class="n">before_create</span> <span class="k">do</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">request_id</span> <span class="o">=</span> <span class="no">Current</span><span class="p">.</span><span class="nf">request_id</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">user_agent</span> <span class="o">=</span> <span class="no">Current</span><span class="p">.</span><span class="nf">user_agent</span>
+    <span class="nb">self</span><span class="p">.</span><span class="nf">ip_address</span> <span class="o">=</span> <span class="no">Current</span><span class="p">.</span><span class="nf">ip_address</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Here, DHH is <em>implicitly</em> linking the message&#39;s creator to the <code>Current.user</code> by using the <code>default</code> option on <code>belongs_to</code>. I believe that this violates the MVC layer abstraction. The <code>Current.user</code> is just &quot;magically&quot; available in the model, with absolutely no context of how it got there in the first place.</p>
+
+<p>A common pattern in Rails applications is not to do this, but instead to explicitly set the <code>creator</code> at the point of creation:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@message</span> <span class="o">=</span> <span class="n">current_account</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">message_params</span><span class="p">)</span>
+  <span class="vi">@message</span><span class="p">.</span><span class="nf">creator</span> <span class="o">=</span> <span class="n">current_user</span>
+</code></pre></div>
+<p>Let&#39;s assume <code>current_account</code> is a similar abstraction to the <code>current_user</code> one. It&#39;s clear here that in the controller that <em>this</em> is where the <code>creator</code> is assigned. With DHH&#39;s code, it is not immediately clear from the controller code itself that <code>creator</code> is assigned at all.</p>
+
+<p>Not only that, but this also lends itself to being abstracted into a &quot;service object&quot; which is responsible for creating a message. Let&#39;s say that you want to log an <code>Event</code> whenever a <code>Message</code> is created. Oh, I see DHH&#39;s code does that already with an <code>after_create</code> callback. Well then.</p>
+
+<p>In the case of DHH&#39;s code, the <code>after_create</code> callback will happen whenever a <code>Message</code> is created anywhere in your application. This might be suitable in a controller, but what if you want to test some database logic, or something else which requires a persisted message, and you don&#39;t care about an event being there at the same time? What if when you created an event you had extra logic on it which caused <em>another</em> record to be created too?</p>
+
+<p>Having such a callback irrevocably ties together messages and events <em>implicitly</em>.</p>
+
+<p>As I mentioned before, it would be better to abstract this into a &quot;service object&quot;.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">CreateMessageWithCreator</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">run</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">current_user</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">current_account</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">message_params</span><span class="p">)</span>
+    <span class="n">message</span><span class="p">.</span><span class="nf">creator</span> <span class="o">=</span> <span class="n">current_user</span>
+    <span class="n">message</span><span class="p">.</span><span class="nf">save</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>You can then call this code in your controller like this:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+  <span class="k">if</span> <span class="no">CreateMessageWithCreator</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">message_params</span><span class="p">,</span> <span class="n">current_user</span><span class="p">)</span>
+    <span class="no">Event</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">record: </span><span class="n">record</span><span class="p">)</span>
+    <span class="n">flash</span><span class="p">[</span><span class="ss">:notice</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Message sent!"</span>
+    <span class="n">redirect_to</span> <span class="ss">:index</span>
+  <span class="k">else</span>
+    <span class="n">flash</span><span class="p">[</span><span class="ss">:alert</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Message failed to send."</span>
+    <span class="n">render</span> <span class="ss">:new</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>This way, then you would know that in <em>this particular case</em> you&#39;re <em>definitely</em> creating a message with a linked creator and it frees you up to create messages without creators or events, if the need did arise.</p>
+
+<p>I think having these dependencies clearly highlighted in the code rather than magically abstracted away is a much, much better solution.</p>
+
+<h2>Conclusion</h2>
 
 <p>Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it&#39;s DHH&#39;s change and it&#39;s his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.</p>
 ]]></content>
