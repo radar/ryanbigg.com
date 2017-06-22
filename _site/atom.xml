@@ -4,13 +4,99 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-06-16T09:37:10+10:00</updated>
+ <updated>2017-06-22T14:56:20+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>CurrentAttributes considered harmful</title>
+   <link href="http://ryanbigg.com/2017/06/current-considered-harmful"/>
+   <updated>2017-06-22T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2017/06/current-considered-harmful</id>
+   <content type="html"><![CDATA[<p>I was made aware of <a href="https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56">this commit</a> recently (thanks to Rebecca Skinner) to Rails which introduces what is effectively a global state to Rails applications.</p>
+
+<p>Rather than writing why global state in-general is a bad thing myself, I will instead link you to this <a href="https://softwareengineering.stackexchange.com/questions/148108/why-is-global-state-so-evil">excellent question + answer on the Software Engineering Stack Exchange</a>.</p>
+
+<blockquote>
+<p>Very briefly, it makes program state unpredictable.</p>
+
+<p>To elaborate, imagine you have a couple of objects that both use the same global variable. Assuming you&#39;re not using a source of randomness anywhere within either module, then the output of a particular method can be predicted (and therefore tested) if the state of the system is known before you execute the method.</p>
+</blockquote>
+
+<p>This implementation also chooses to use <a href="https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56#diff-3c3c0f647bc4702f9453c173a707aa06R90">thread-local variables</a> which <a href="https://stackoverflow.com/a/8291218/15245">this answer over on Stack Overflow</a> explains is not a good choice because:</p>
+
+<blockquote>
+<ul>
+<li>It&#39;s harder to test them, as you will have to remember to set the thread-local variables when you&#39;re testing out code that uses it</li>
+<li>Classes who use thread locals will need knowledge that these objects are not available for them but inside a thread-local variable and this kind of indirection usually breaks the law of demeter</li>
+<li>Not cleaning up thread-locals might be an issue if your framework reuses threads (the thread-local variable would be already initiated and code that relies on ||= calls to initialize variables might fail</li>
+</ul>
+</blockquote>
+
+<p>Not to mention that this also violates the well-established <a href="https://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a> too. Suddenly, <code>Current</code> is available <em>anywhere</em> in your application. Good code is <em>explicit</em> in how it makes data available to its methods / functions. This <code>CurrentAttributes</code> feature is not good code, nor is it making it <em>explicitly clear</em> how <code>Current.user</code> arrives in the model. It is just there &quot;magically&quot;.</p>
+
+<p>I enjoy and have benefited from Rails magic in the past. Some of my favourite features are <code>render @collection</code> and the <a href="http://ryanbigg.com/2012/03/polymorphic-routes">polymorphic routing</a>. Those are great features because their scope is limited. I know that I can render a collection in a view. I know I can use polymorphic routing in controllers, models and helpers.</p>
+
+<p>This <code>CurrentAttributes</code> is much too magical for my liking because of how it introduces a thread-local global state which hides where the actual work of setting values on <code>Current</code> is done, and because it is <em>implicit</em> about where those values come from.</p>
+
+<p>&quot;They&#39;re just set in the controller!&quot;, may be a defense for this. But what if you don&#39;t have a controller? What if you have a background job instead? How about a test? True, in both cases you could use <code>Current</code> to provide the values:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">post_id</span><span class="p">)</span>
+  <span class="no">Current</span><span class="p">.</span><span class="nf">user</span> <span class="o">=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">find_by</span><span class="p">(</span><span class="n">post_id</span><span class="p">)</span>
+  <span class="n">post</span><span class="p">.</span><span class="nf">run_long_running_thing</span>
+  <span class="c1"># code to run the job goes here</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Here, <code>Post#run_long_running_thing</code> can simply access the current user by accessing <code>Current.user</code>. But it is not immediately clear -- if all you&#39;re looking at is the <code>Post#run_long_running_thing</code> method -- where <code>Current.user</code> is being set in the first place. It&#39;s implied that it&#39;s set somewhere else, but to attempt to find where it&#39;s set in this context may be difficult. Doing a find in the project for <code>Current.user =</code> may turn up multiple places (controllers, jobs, etc.) where the variable is set. Which one is the right one <em>for this context</em>?</p>
+
+<p>As for tests, for those you would need to setup <code>Current.user</code> before hand if you had any code relying on that. I&#39;d imagine something like:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">let</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryGirl</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
+<span class="n">before</span> <span class="p">{</span> <span class="no">Current</span><span class="p">.</span><span class="nf">user</span> <span class="o">=</span> <span class="n">user</span> <span class="p">}</span>
+
+<span class="n">it</span> <span class="s2">"runs the long running thing"</span> <span class="k">do</span>
+  <span class="n">post</span><span class="p">.</span><span class="nf">run_long_running_thing</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Again, it is not explicit when you&#39;re looking at the <code>run_long_running_thing</code> method or its tests where <code>Current.user</code> is being set.</p>
+
+<p>There doesn&#39;t appear to be anywhere in the <code>CurrentAttributes</code> code -- as far as I can tell -- where it would reset the state of this <code>Current</code> object in between each test. Therefore, setting it in one test like what I&#39;ve done above now makes it bleed through &quot;magically&quot; into other tests. That behaviour seems like a horrible thing to have in a codebase. You could very well have situations where you&#39;re <em>expecting</em> <code>Current.user</code> to be <code>nil</code> but instead it&#39;s set to some vaule because some other test set it. Now which of the 500 tests in my application did that? Good luck finding it.</p>
+
+<h3>Convention over configuration, and perhaps explicitness over implicitness?</h3>
+
+<p>Rails is still a good framework. I know DHH&#39;s rebuttal to this will be &quot;don&#39;t use it then&quot; or something along those lines. Similar to his response to <a href="https://github.com/rails/rails/pull/25115">my reverting of callback suppression</a> a while back.</p>
+
+<blockquote>
+<p>Protecting programmers from themselves is explicitly not in the charter for Rails when it comes to providing features that have a valid use case but could be abused.</p>
+</blockquote>
+
+<p>I just can&#39;t reason with the guy at all. We have vastly different opinions on this sort of thing.</p>
+
+<p>I think Rails choosing to go with ultra-implicitness -- like in this <code>Current</code> case -- is a vastly wrong move that will lead to a lot of frustration with Rails codebases that use this feature. I think Rails should, in situations like this, choose to opt for explicitness over implicitness. Rails has enough magic in it and it certainly doesn&#39;t need any more.</p>
+
+<p>This feature is not something that was sought after (it appears like DHH thought it was a good idea one day and just <em>did it</em>), and we have much better ways of doing this. For instance, in the job code above, it would be better to pass it explicitly:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">post_id</span><span class="p">)</span>
+  <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+  <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">find_by</span><span class="p">(</span><span class="n">post_id</span><span class="p">)</span>
+  <span class="n">post</span><span class="p">.</span><span class="nf">run_long_running_thing</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+  <span class="c1"># code to run the job goes here</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Similarly, in the test explictness also wins:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">let</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryGirl</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="n">it</span> <span class="s2">"runs the long running thing"</span> <span class="k">do</span>
+  <span class="n">post</span><span class="p">.</span><span class="nf">run_long_running_thing</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>In both of these cases, it is <em>very</em> clear how <code>user</code> arrives in the <code>run_long_running_thing</code> method: it is passed in as an argument.</p>
+
+<p>Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it&#39;s DHH&#39;s change and it&#39;s his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Rails 5 in Action</title>
@@ -1997,41 +2083,6 @@ https://github.com/sstephenson/execjs for a list of available runtimes.
 <p>I believe if project setup was done this way, multiple Go projects on the same machine can use varying dependencies very easily.</p>
 
 <p>There&#39;s of course caveats: potential disk usage problems, every project needs a <code>deps.json</code>, and the resolution problems. By no means am I suggesting that this is <em>The Way Things Should Be Done</em>. It&#39;s just something that occurred to me tonight that could be a potential beginning towards a solution for the Go package management puzzle.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Thoughts on Go</title>
-   <link href="http://ryanbigg.com/2014/08/thoughts-on-go"/>
-   <updated>2014-08-08T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2014/08/thoughts-on-go</id>
-   <content type="html"><![CDATA[<p>I&#39;ve had an interest in Go now for about a year. I&#39;ve not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn&#39;t do much. I&#39;ve also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes&#39; go-lifx</a> project, which is Go bindings for LIFX lights. It&#39;s still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
-
-<p>This was the first week that not only that I wrote Go code <em>for my job</em>, but I actually got to deploy it in a live production context. And it was the first week at my new job at LIFX, too. All this little program does now is read some stats from a JSON file and report them back to our analytics service. The earlier version was written in Ruby, which meant that Ruby needed to be compiled on this box just for one little script. Having the little script in Go means that we no longer need to compile Ruby on that box; a small victory but a victory nonetheless.</p>
-
-<p>I dislike that I don&#39;t know much about Go still at this stage. That probably boils down to me not really having a proper use for it until recent. It could also be because a lot of the Go documentation out there is similar to a cookbook that only explains the properties of the ingredients, rather than having recipes. I enjoy learning by example and I think other people do also, because they bought <a href="https://manning.com/bigg2">a book that I wrote</a> that&#39;s all about the examples.</p>
-
-<p>I like that the Go packages themselves are pretty well-documented. I especially like that I know what <em>type</em> of object I&#39;m supposed to be passing in. Take <a href="http://golang.org/pkg/time/#Unix"><code>time.Unix</code></a> for example. It works similarly to <code>Time.at(unix_time)</code> in Ruby. The Go documentation for <code>time.Unix</code> clearly indicates that it takes two arguments, both of which are of the <code>int64</code> type, and that it returns a Time &quot;instance&quot;. That&#39;s something that I didn&#39;t think I would like, given that I&#39;ve been doing Ruby for so long and it has a little thing called duck-typing where methods can be defined on anything and everything. A Ruby motto could perhaps be: &quot;If it quacks like a duck, let&#39;s pretend it is a duck for fear of finding out what it truly is.&quot; In Ruby, methods can return whatever they want and more often than not, to know what a method returns you have to look at how that method is defined. Oh, and in Go methods can return multiple values, like <code>json.Marshal</code> (like <code>to_json</code> in Ruby) which will return the marshalled JSON (as an array of bytes) as well as (possibly) an error if that marshalling fails for some reason.</p>
-
-<p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code>go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go&#39;s built-in tool: <code>go build</code>. </p>
-
-<p>I also enjoy the <code>go get</code> tool. It took me a while to figure out that if I structured my <code>~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Projects/go
-  -&gt; src
-    -&gt; github.com
-      -&gt; bjeanes
-        -&gt; go-lifx
-</code></pre></div>
-<p>I&#39;ve set <code>GOPATH</code> to <code>~/Projects/go</code> and so then when I type <code>go get github.com/codegangsta/cli</code> it will install it into <code>~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">import (
-  "github.com/codegangsta/cli"
-)
-</code></pre></div>
-<p>That way, if I want to use it in another project then I can do it in exactly the same way.</p>
-
-<p>Finally, the <code>go fmt</code> tool is the tool to end all (most?) coding syntax debates. It enforces tab-indentation, and blank spaces for alignment. It does a couple more things, which are <a href="http://golang.org/cmd/gofmt/">explained in gofmt&#39;s documentation</a>.</p>
-
-<p>Overall, I enjoy the language and look forward to learning more about it, as well as finding other situations where we can use it at LIFX.</p>
 ]]></content>
  </entry>
  
