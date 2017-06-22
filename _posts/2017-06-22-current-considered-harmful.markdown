@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-379
 layout: post
-title: CurrentAttributes considered harmful
+title: Rails' CurrentAttributes considered harmful
 ---
 
 I was made aware of [this commit](https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56) recently (thanks to Rebecca Skinner) to Rails which introduces what is effectively a global state to Rails applications.
