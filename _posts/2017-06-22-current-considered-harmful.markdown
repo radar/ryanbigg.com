@@ -1,5 +1,5 @@
 ---
-wordpress_id: RB-378
+wordpress_id: RB-379
 layout: post
 title: CurrentAttributes considered harmful
 ---
