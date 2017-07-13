@@ -12,8 +12,6 @@ rails_version: 5.1.2
   <strong>This beginner's guide will set up with Ruby {{page.ruby_version}}, chruby, ruby-install and Rails {{page.rails_version}} and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
-<p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
-
 This guide will cover installing a couple of things:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): a very lightweight way to install multiple Rubies on the same box.
@@ -133,10 +131,3 @@ After this, `gem install pg` should succeed.
 And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>.
 
 The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.
-
-### Postscript
-
-A previous version of this guide used RVM. RVM has overtime become bloated and unwieldy. There are many features of RVM that developers simply don't use, and so using a simpler solution is a better way of doing things as it will lead to less confusion. For instance, RVM provides gemsets which is a feature that is no longer necessary with the advent of Bundler. Even if you don't want to use Bundler (i.e. you're crazy) then there's smaller more specifically-targeted tools for that, such as [ohmygems](https://github.com/seattlerb/ohmygems). RVM's days as the leading way to install Ruby are over, and this guide has been updated to reflect that. There are better tools.
-
-I've opted for chruby+ruby-install in this guide because they've consistently worked for me and are very, very easy to install. I know of a great many other people who have also used, and continue to use, these tools and I've not heard of any of them complaining. Therefore I can only wholeheartedly recommend them to the readers of this post.
-
