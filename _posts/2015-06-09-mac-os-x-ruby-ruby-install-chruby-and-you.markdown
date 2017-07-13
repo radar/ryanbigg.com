@@ -2,12 +2,14 @@
 wordpress_id: RB-363
 layout: post
 title: Mac OS X, Ruby, ruby-install, chruby and You
+ruby_version: 2.4.1
+rails_version: 5.1.2
 ---
 
-**Last updated: April 26th, 2016**
+**Last updated: July 13th, 2016**
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 2.3.1, chruby, ruby-install and Rails 4.2.6 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby {{page.ruby_version}}, chruby, ruby-install and Rails {{page.rails_version}} and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my older <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but it's written primarily for Mac OS X.</p>
@@ -16,9 +18,9 @@ This guide will cover installing a couple of things:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): a very lightweight way to install multiple Rubies on the same box.
 * [**chruby**](https://github.com/postmodern/chruby): a way to easily switch between those Ruby installs
-* **Ruby 2.3.1**: at the time of writing the newest current stable release of Ruby.
+* **Ruby {{page.ruby_version}}**: at the time of writing the newest current stable release of Ruby.
 * **Bundler**: a package dependency manager used in the Ruby community
-* **Rails 4.2.6**: at the time of writing the newest current stable release of Rails.
+* **Rails {{page.rails_version}}**: at the time of writing the newest current stable release of Rails.
 
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.
 
@@ -51,7 +53,7 @@ ruby-install -V
 If you see this, then you've successfully installed ruby-install:
 
 ```
-ruby-install: 0.6.0
+ruby-install: 0.6.1
 ```
 
 ### Ruby
@@ -62,7 +64,7 @@ Our next step is to install Ruby itself, which we can do with this command:
 ruby-install --latest ruby
 ```
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.3.1 installed.
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby {{page.ruby_version}} installed.
 
 Now we'll need to load chruby automatically, which we can do by adding these lines to `~/.bash_profile` (or `~/.zshrc` if you're using ZSH):
 
@@ -84,28 +86,28 @@ Alternatively, opening a new terminal tab/window will do the same thing.
 To verify that chruby is installed and has detected our Ruby installation, run `chruby`. If you see this, then it's working:
 
 ```
-ruby-2.3.1
+ruby-{{page.ruby_version}}
 ```
 
 Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called `~/.ruby-version` with this content:
 
 ```
-ruby-2.3.1
+ruby-{{page.ruby_version}}
 ```
 
-This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-2.3.1` for example -- assuming that we have Ruby 2.3.1 installed first!
+This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-{{page.ruby_version}}` for example -- assuming that we have Ruby {{page.ruby_version}} installed first!
 
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.3.1p112 (2016-04-26 revision 54768) [x86_64-darwin15]
+ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-darwin16]
 ```
 
 ### Rails
 
 Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v 4.2.6 --no-document
+    gem install rails -v {{page.rails_version}} --no-document
 
 This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 
