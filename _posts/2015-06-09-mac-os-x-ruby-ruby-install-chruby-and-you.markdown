@@ -12,6 +12,8 @@ rails_version: 5.1.2
   <strong>This beginner's guide will set up with Ruby {{page.ruby_version}}, chruby, ruby-install and Rails {{page.rails_version}} and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
+<p>This guide is <em>almost</em> a copy of my <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but this one has instructions for Macs.</p>
+
 This guide will cover installing a couple of things:
 
 * [**ruby-install**](https://github.com/postmodern/ruby-install): a very lightweight way to install multiple Rubies on the same box.
@@ -124,7 +126,6 @@ Before you can use PostgreSQL, you'll need to install it with Homebrew:
     brew install postgresql
 
 After this, `gem install pg` should succeed.
-
 
 ### Fin
 
