@@ -4,13 +4,62 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-07-27T20:26:33+10:00</updated>
+ <updated>2017-07-30T14:56:44+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Joy of Elixir</title>
+   <link href="http://ryanbigg.com/2017/07/joy-of-elixir"/>
+   <updated>2017-07-27T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2017/07/joy-of-elixir</id>
+   <content type="html"><![CDATA[<p>I&#39;ve been using Elixir at work professionally for the past year and more recently I&#39;ve been starting to do some mentoring around Elixir. I&#39;ve noticed that while there are some very solid intermediate books/resources like <a href='https://elixir-lang.org/getting-started/introduction.html'>Getting Started guide on elixir-lang.org</a> the <a href='https://pragprog.com/book/elixir13/programming-elixir-1-3'>Programming Elixir</a> book and even <a href='https://elixirschool.com/'>Elixir School</a>, there doesn&#39;t seem to be anything at all book-wise directed at newbies.</p>
+
+<p><strong>So I decided to write a little book called <a href='https://joyofelixir.com'><em>Joy of Elixir</em></a>.</strong></p>
+
+<p><a href='https://joyofelixir.com'><img src='https://joyofelixir.com/images/small-cover.png' width='250px' style="float: right; margin-left: 20px;"></a></p>
+
+<p>
+  <strong>Joy of Elixir avoids assuming knowledge of <em>anything</em> about programming while teaching people about their first programming language: Elixir.</strong>
+</p>
+
+<aside>
+  <header>Shut up and take my money!</header>
+
+  <p>
+    This book is available <a href='https://joyofelixir.com'>for free online</a> (under <a href='https://github.com/radar/joyofelixir/blob/master/license.txt'>the CC-BY-SA 4.0</a> license), and the book's <a href='https://github.com/radar/joyofelixir'>HTML + CSS-based source is on GitHub</a>.
+  </p>
+
+  <p>
+    However, if you still want to throw a few dollars my way you can still buy <a href='https://leanpub.com/joyofelixir'>buy a PDF version</a> from Leanpub.
+  </p>
+</aside>
+
+<p>
+  It seemed like there is a vast, empty, <em>cavernous void</em> where there should be something like the excellent <a href='https://pine.fm/LearnToProgram/'>Learn to Program book by Chris Pine</a>. That book is for <a href='https://www.ruby-lang.org'>Ruby</a>; but there feels like there should be an equivalent to that for Elixir. I'm hoping <em>Joy of Elixir</em> can be that equivalent.
+</p>
+
+<p>
+We have people completely new to programming <em>wanting</em> to learn Elixir -- because people who have learned Elixir already told them about it and how cool it is! -- but the support is not-quite-there yet. So this is an attempt to fill that void. Essentially a response to: <em>"Why won't <u>somebody</u> think of the newbies?"</em>. Well, someone <em>is</em> thinking of the newbies.
+</p>
+
+<p>
+  Elixir is a great first language to get started with because its syntax is very newbie friendly and the initial concepts are very easy to learn. I would even go as far as to say that Elixir is easier to learn than Ruby because of Elixir's immutability and the way Elixir puts functions into modules -- (rather than the functions just being available, i.e. through inheritance or monkey-patching). I find it easier to navigate through other people's Elixir code, than I do to navigate through other people's Ruby code.
+</p>
+
+<p>
+  I want Joy of Elixir to be the go-to-resource for teaching people programming <em>for the very first time</em> using Elixir. I want them to experience the <em>joy</em> that Elixir (and programming in general) can bring to people. I want people to feel like them have power over the machine because of the knowledge contained within this book.
+</p>
+
+<p>I want to have a book that I can confidently recommend to newbies when they ask about how they can learn Elixir. If you have a newbie in your life that wants to learn Elixir, point them at this book and let them read it. I&#39;m very keen to get some feedback from newbies (and everyone else) on how the content could be improved. There&#39;s instructions on how to give that feedback <a href='https://joyofelixir.com/about.html'>over on the &quot;About&quot; page</a>.</p>
+
+<p>I aim to continue writing this book over the next couple of months and hope to have a finished edition by the end of the year. What&#39;s there at the moment is roughly a month&#39;s worth of work -- or put another way: 15,000 words (50ish pages). I&#39;m aiming for the book to be at about 50,000 words (125-150 pages) by the time it is done.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Rails' CurrentAttributes considered harmful</title>
@@ -2128,82 +2177,6 @@ https://github.com/sstephenson/execjs for a list of available runtimes.
 <p>No, they&#39;ll just work the same as they did before. They&#39;ll still slack off because humans aren&#39;t robots and like taking breaks every now and again from their work. It&#39;s actually provably beneficial to let people take breaks when they feel it&#39;s necessary to do so.</p>
 
 <p>It&#39;ll be very interesting to see or hear about how bringing Reddit&#39;s team together works, or doesn&#39;t work and how many Redditors decide that the SF move is not for them.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Go package management</title>
-   <link href="http://ryanbigg.com/2014/09/go-package-management"/>
-   <updated>2014-09-02T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2014/09/go-package-management</id>
-   <content type="html"><![CDATA[<p>In Ruby-land, we have a wonderful tool called Bundler to manage package dependencies. I can specify dependencies like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'rails'</span><span class="p">,</span> <span class="s1">'4.1.5'</span>
-</code></pre></div>
-<p>When I run <code>bundle install</code>, Bundler will install not only the <code>rails</code> dependency, but all of its dependencies and all of their dependencies and so on. It will then take note of the dependencies which have been resolved and save them to a <code>Gemfile.lock</code>. I can commit this file to Git and push it up to GitHub, then when other people work on my project they can clone it and run <code>bundle install</code> on their machine and work with the exact same dependencies. Another benefit of this is that I can have multiple versions of Rails installed on the machine and when I use Bundler, it will use the correct version of Rails as specified in the Gemfile.</p>
-
-<p>There&#39;s tools out there in Go-land, such as <a href="https://github.com/mattn/gom">gom</a> and <a href="https://github.com/tools/godep">godep</a> which provide similar functionality. I prefer <code>godep</code>, but truth be told I wish that there was a Bundler-for-Go. Godep saves the dependencies in a JSON file:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span><span class="w">
-  </span><span class="nt">"ImportPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"github.com/radar/my-project"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"GoVersion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"go1.3"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"Packages"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="s2">"./..."</span><span class="w">
-  </span><span class="p">],</span><span class="w">
-  </span><span class="nt">"Deps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"ImportPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"github.com/codegangsta/cli"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"Comment"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.0-22-g687db20"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"Rev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"687db20fc379d1686465a28e9959707cd1acc990"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"ImportPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"github.com/fatih/color"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"Rev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3161cccfa22c6243e02aa984cf2886d022024cec"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="p">{</span><span class="w">
-      </span><span class="nt">"ImportPath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gopkg.in/check.v1"</span><span class="p">,</span><span class="w">
-      </span><span class="nt">"Rev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"5b76b26efe7f426789852e983fbde4de62c42282"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">]</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div>
-<p>This is a pretty good solution. <code>godep save</code> will update the dependencies (similar to <code>bundle update</code>), and <code>godep restore</code> will install the dependencies (similar to <code>bundle install</code>) if they aren&#39;t available in <code>GOPATH</code> already.</p>
-
-<hr>
-
-<p>Here&#39;s what I would like though: I want a way that I can specify dependencies for Go projects like I can specify for Ruby projects. Ruby projects have a <code>.gemspec</code> file <a href="http://git.io/teWNMw0">which lists dependencies</a>, and I would like Go projects to do the same thing. For instance, in my project I&#39;d like to specify my dependencies in a very simple JSON syntax (let&#39;s call it <code>deps.json</code>):</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="err">path:</span><span class="w"> </span><span class="nt">"github.com/codegangsta/cli"</span><span class="err">,</span><span class="w">
-    </span><span class="err">rev</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.2.0"</span><span class="p">,</span><span class="w">
-  </span><span class="err">}</span><span class="p">,</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="err">path:</span><span class="w"> </span><span class="nt">"github.com/fatih/color"</span><span class="err">,</span><span class="w">
-    </span><span class="err">rev</span><span class="p">:</span><span class="w"> </span><span class="s2">"master"</span><span class="p">,</span><span class="w">
-  </span><span class="err">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre></div>
-<p>Then I would like to run a <code>bundle install</code>-equivalent which creates a <code>deps.json.lock</code>:</p>
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="err">path:</span><span class="w"> </span><span class="nt">"github.com/codegangsta/cli"</span><span class="err">,</span><span class="w">
-    </span><span class="err">rev</span><span class="p">:</span><span class="w"> </span><span class="s2">"565493f259bf868adb54d45d5f4c68d405117adf"</span><span class="p">,</span><span class="w">
-  </span><span class="err">}</span><span class="p">,</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="err">path:</span><span class="w"> </span><span class="nt">"github.com/fatih/color"</span><span class="err">,</span><span class="w">
-    </span><span class="err">rev</span><span class="p">:</span><span class="w"> </span><span class="s2">"3161cccfa22c6243e02aa984cf2886d022024cec"</span><span class="p">,</span><span class="w">
-  </span><span class="err">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre></div>
-<p>That&#39;s the first step. The second step is a lot more complex than that, and it involves fetching the dependencies from their sources and setting up a proper <code>GOPATH</code>. See, the issue with the normal <code>GOPATH</code> is that all your dependencies are thrown into the one <code>src</code> directory. This means that if you want to use &quot;Version A&quot; of a project in &quot;Codebase A&quot; and &quot;Version B&quot; of that same project in &quot;Codebase B&quot;, you&#39;re going to have a bad time. This is why I think having a <em>global</em> <code>GOPATH</code> is a terrible idea.</p>
-
-<p>Instead, there should be a project-specific <code>GOPATH</code>. It looks the same as a normal <code>GOPATH</code>, but has the correct dependencies in it. For instance, instead of having a <code>~/Projects/go/src/github.com/radar/my-project</code>, I would have <code>~/Projects/go/my-project</code>, and then underneath that it would have <code>bin</code>, <code>pkg</code> and <code>src</code> directories relevant only to that project. The project&#39;s code itself would exist within <code>Projects/go/my-project/src/github.com/radar/my-project</code>, only because that&#39;s what Go expects.</p>
-
-<p>To setup the project, I would create <code>~/Projects/go/my-project/src/github.com/radar/my-project</code>, and then run that <code>bundle install</code> equivalent. This would clone <code>github.com/codegangsta/cli</code> into <code>~/Projects/go/my-project/src/github.com/codegangsta/cli</code>, and check it out to the ref specified in <code>deps.json.lock</code>. It would then do the same thing with <code>github.com/fatih/color</code>. Now I have the first layer of dependencies that <code>my-project</code> needs.</p>
-
-<p>The third step is where it gets <em>even more difficult</em>. These first layer of dependencies <em>might</em> have dependencies themselves, and so this tool should check for <code>deps.json.lock</code> (or <code>deps.json</code>) within those projects and resolve them as well. This is difficult because you may run into issues like circular dependencies and conflicting version requirements.</p>
-
-<p>I believe if project setup was done this way, multiple Go projects on the same machine can use varying dependencies very easily.</p>
-
-<p>There&#39;s of course caveats: potential disk usage problems, every project needs a <code>deps.json</code>, and the resolution problems. By no means am I suggesting that this is <em>The Way Things Should Be Done</em>. It&#39;s just something that occurred to me tonight that could be a potential beginning towards a solution for the Go package management puzzle.</p>
 ]]></content>
  </entry>
  
