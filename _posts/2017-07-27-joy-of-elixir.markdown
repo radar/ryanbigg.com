@@ -23,7 +23,7 @@ I've been using Elixir at work professionally for the past year and more recentl
   </p>
 
   <p>
-    However, if you still want to throw a few dollars my way you can still buy <a href='https://leanpub.com/joyofelixir'>buy a PDF version</a> from Leanpub.
+    However, if you still want to throw a few dollars my way you can still <a href='https://leanpub.com/joyofelixir'>buy a PDF version</a> from Leanpub.
   </p>
 </aside>
 
