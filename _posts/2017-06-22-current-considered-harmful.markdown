@@ -4,6 +4,8 @@ layout: post
 title: Rails' CurrentAttributes considered harmful
 ---
 
+This blog post has been [translated into Japanese](https://techracho.bpsinc.jp/hachi8833/2017_08_01/43810).
+
 I was made aware of [this commit](https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56) recently (thanks to Rebecca Skinner) to Rails which introduces what is effectively a global state to Rails applications.
 
 Rather than writing why global state in-general is a bad thing myself, I will instead link you to this [excellent question + answer on the Software Engineering Stack Exchange](https://softwareengineering.stackexchange.com/questions/148108/why-is-global-state-so-evil).
