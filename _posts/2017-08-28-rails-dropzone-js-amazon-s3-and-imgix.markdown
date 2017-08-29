@@ -2,7 +2,6 @@
 wordpress_id: RB-1503872748
 layout: post
 title: Rails, Dropzone.js, Amazon S3 and imgix
-published: false
 ---
 
 In this tutorial I'll cover how you can upload files directly to S3 by using a feature called `PresignedPost`. I'll then show how you can use [imgix](https://imgix.com) to resize these images dynamically after they've been uploaded.
@@ -15,7 +14,7 @@ I got the attachments through to Paperclip by using the wonderful [Dropzone.js](
 
 But then I wanted to add video support to this application. It's at this point that I should mention three things: 1) this application is hosted on Heroku 2) Heroku's request timeout is set to a hard 30 seconds 3) Australian internet is prohibitively slow and iPhone videos are so big that any video longer than 25 seconds does not upload within that 30 second window.
 
-So I had to come up with an inventive solution. Googling for other people's attempts to solve or workaround this problem suggest that the best solution was to upload to s3 directly; but then I would lose the automatic resizing that comes with Paperclip. Fortunately, I knew about [imgix](https:/imgix.com).
+So I had to come up with an inventive solution. Googling for other people's attempts to solve or workaround this problem suggest that the best solution was to upload to s3 directly; but then I would lose the automatic resizing for images that comes with Paperclip. Fortunately, I knew about [imgix](https:/imgix.com).
 
 A lot of the other writings on the internet don't really cover it from start-to-finish, and so I pieced all this together from many, many blog posts and documentation pages.
 
@@ -72,7 +71,7 @@ This action would use Paperclip to do the processing and resizing. The configura
 
 ```ruby
 has_attached_file :photo,
-  styles: { thumb: "250x250#", large: "1000x1000#"}
+  styles: { small: "250x250#", large: "1000x1000#"}
 ```
 
 This would all result in the files being stored locally, in the `public/system` directory of the application. This might suit some, but for an application hosted on Heroku it is a terrible idea, because Heroku's filesystem is read-only; your uploads would fail.
@@ -252,13 +251,15 @@ $(document).ready(function() {
   var myDropzone = new Dropzone('#uploader', { timeout: 0 });
 
   myDropzone.on("success", function(file, request) {
+    console.log(request);
     var resp = $.parseXML(request);
-    var fileKey = $(resp).find("Key").text();
+    var filePath = $(resp).find("Key").text();
 
     $.post('/uploads', {
+      authenticity_token: $.rails.csrfToken(),
       upload: {
-        key: fileKey,
-        type: file.type,
+        path: filePath,
+        file_type: file.type,
         last_modified: file.lastModified
       }
     })
@@ -274,7 +275,7 @@ Then we go about configuring the custom Dropzone component. We start by linking 
 
 The `on` function call then sets a handler for a "success" event, which is what happens right after a file has been uploaded. The first argument to this callback is the `file` which has just been uploaded, and contains some handy information like the file's content type and its last modification date.
 
-The content type can come in handy if you want to display different files differently. For instance, for images you might want to display a thumbnail but for a video or a PDF file you might want to display an icon.
+The content type can come in handy if you want to display different files differently. For instance, for images you might want to display a smallnail but for a video or a PDF file you might want to display an icon.
 
 The `request` argument represents the response that we get back from S3 after the file has been uploaded. Because of that `success_action_status` configuration in our controller, this response will be a short XML document.
 
@@ -288,7 +289,9 @@ The `request` argument represents the response that we get back from S3 after th
 </PostResponse>
 ```
 
-From this XML response, we extract the `Key` element by using jQuery's `$.parseXML` function, and then send that through in a `POST` request with `$.post` to `/uploads`. This request will hit the `create` action of our `UploadsController` which doesn't yet exist, so let's create it:
+From this XML response, we extract the `Key` element by using jQuery's `$.parseXML` function, and then send that through in a `POST` request with `$.post` to `/uploads`. With this request, we need to send through the authenticity token, which we get with `$.rails.csrfToken`.
+
+This request will hit the `create` action of our `UploadsController` which doesn't yet exist, so let's create it:
 
 ```ruby
 def create
@@ -300,18 +303,173 @@ end
 private
 
 def upload_params
-  params.require(:upload).permit(:key, :type, :last_modified)
+  params.require(:upload).permit(:path, :file_type, :last_modified)
 end
 ```
 
+With all this hooked up, we should now see uploads coming through to this controller. Go ahead and upload one and give it a spin. If it's successful, you'll see something like this in the Rails server output:
 
+```
+Started POST "/uploads" for 127.0.0.1 at 2017-08-29 10:36:38 +1000
+Processing by UploadsController#create as */*
+  Parameters: {
+    "authenticity_token"=>"[token]",
+    "upload"=>{
+      "path"=>"uploads/1503966995/joe.png",
+      "file_type"=>"image/png",
+      "last_modified"=>"1503965717000"
+    }}
+   (0.1ms)  begin transaction
+  SQL (0.5ms)  INSERT INTO "uploads" ...
+   (1.5ms)  commit transaction
+Completed 200 OK in 21ms (ActiveRecord: 2.8ms)
+```
 
+Hooray!
 
+One issue though: if we display these uploads from S3 then they'll be displayed in their original resolutions. With Paperclip, it automatically resized uploads to smallnail or smaller versions, but with direct-to-S3 upload we're missing out on that feature. Let's look at how we can add that feature back to our app with imgix.
 
 ### Serving images using imgix
 
-* Images are going to be big, blah blah blah, let's resize them using imgix!
-* imgix is a real-time image processor + CDN
+[imgix](https://imgix.com) is a real-time image processing and CDN service. We can use them to dynamically resize the photos uploaded to our application.
+
+imgix takes image hosting quite seriously. [Take a look at their "Building a Graphics Card for the Internet" writeup + photos](http://photos.imgix.com/building-a-graphics-card-for-the-internet) just to see how serious they are about it.
+
+Signing up is free, and they give you a $10 credit on signing up. That should be plenty to at least trial this.
+
+Sign up to imgix, and create a new source. For the "Source Type" you'll want to choose "Amazon S3", and then you'll need to fill in the AWS Settings. The images do not have a path prefix, so leave that blank. Under "Security" check "Secure URLs". For why you'd want to check that box, read [this page from imgix's docs](https://docs.imgix.com/setup/securing-images).
+
+Once you've setup the source, you'll need to get the token from under the "Security" section. It will look like `5pXdqzZw69drsRgB`. We'll use this token to securely sign our imgix URLs.
+
+To generate these URLs, we can use the `imgix` gem. Let's add that to the `Gemfile`:
+
+```ruby
+gem 'imgix', '~> 1.1.0'
+```
+
+Then run `bundle install`. Let's add our secure token to the `.env` file, just so it's not in our committed code. We'll also add in the subdomain for the source that we setup:
+
+```
+IMGIX_TOKEN=5pXdqzZw69drsRgB
+IMGIX_SUBDOMAIN=[your subdomain goes here]
+```
+
+We're adding in the subdomain here as it will be different for our production environment. The subdomain here should be a _development-specific_ one.
+
+With that there, let's now try generating an imgix URL with this gem in the rails console. First, we'll need an `Imgix::Client`:
+
+```ruby
+client = Imgix::Client.new(
+  host: "#{ENV.fetch("IMGIX_SUBDOMAIN")}.imgix.net",
+  secure_url_token: ENV.fetch("IMGIX_TOKEN")
+)
+```
+
+Then to sign a URL, we can use `Imgix::Client#path`. By this point, we should have at least one upload, so let's use that upload's path to generate this URL:
+
+```ruby
+path = client.path(Upload.last.path)
+```
+
+This gives us an `Imgix::Path` object. We can transform this path into a URL with the `to_url` method:
+
+```ruby
+path.to_url
+```
+
+The URL returned here will look something like:
+
+```
+https://[imgix subdomain].imgix.net/uploads/[path]?ixlib=rb-1.1.0&s=[signature]
+```
+
+If you open this URL in your browser you'll see the image that you have just uploaded, at the resolution you uploaded it. This is a good thing, as it proves that imgix's proxying service is working: imgix is fetching the image from the S3 bucket and serving the image through the imgix CDN.
+
+The next step that we want to acheive is to get imgix to dynamically resize these photos. Let's say that we want an image that's 250×250 pixels to use as our smallnail. To get imgix to generate an image like that, we need to pass some options to `to_url`:
+
+```
+path.to_url(w: 250, h: 250)
+```
+
+This will return an image that maintains its aspect ratio, but at least the width or the height is a maximum of 250 pixels. Let me explain what I mean by this with an example: I have an image hosted through imgix that is 3264×2448 pixels. With the above options, imgix resizes this image to 250×188, effectively reducing the measurements of the photo by a ratio of 13.058.
+
+However, in this particular application I want images that are perfect squares because I display these photos in a grid fashion. You might want this too, and so to generate images like this we can use the `:fit` option in `to_url`:
+
+```
+path.to_url(w: 250, h: 250, fit: 'crop')
+```
+
+imgix will now crop the image so that it fits neatly into a 250×250 square. There are [other styles of cropping, which are explained here](https://docs.imgix.com/apis/url/size/fit). You can load up the two images in two browser tabs to compare what they look like.
+
+Let's make our images do this now through our view, and not just through the console. We can create a new class for this at `lib/upload_url.rb`:
+
+```ruby
+class UploadURL
+  def initialize
+    @client = Imgix::Client.new(
+      host: "#{ENV.fetch("IMGIX_SUBDOMAIN")}.imgix.net",
+      secure_url_token: ENV.fetch("IMGIX_TOKEN")
+    )
+  end
+
+  def small_url(path)
+    @client.path(path).to_url(w: 250, h: 250, fit: 'crop')
+  end
+
+  def large_url(path)
+    @client.path(path).to_url(w: 1000, h: 1000, fit: 'crop')
+  end
+end
+```
+
+Then we can use this new class in `UploadsHelper`:
+
+*app/helpers/uploads_helper.rb*
+```
+require_dependency 'upload_url'
+
+module UploadsHelper
+  def small_image(upload)
+    image_tag(upload_url.small_url(upload.path))
+  end
+
+  def large_image(upload)
+    image_tag(upload_url.large_url(upload.path))
+  end
+
+  private
+
+  def upload_url
+    @upload_url ||= UploadURL.new
+  end
+end
+```
+
+We can then use these helpers to display smallnail versions of our image on the `index` template:
+
+**app/views/uploads/index.html.erb**
+```erb
+<h1>Uploads</h1>
+
+<% @uploads.each do |upload| %>
+  <%= small_image(upload) %>
+<% end %>
+```
+
+Or large images on the `show` template:
+
+**app/views/uploads/show.html.erb**
+```erb
+...
+  <%= large_image(@upload) %>
+...
+```
+
+### Summary
+
+Dropzone, S3 and imgix allow us to upload and host our images very easily, without the need of the paperclip gem. By uploading directly to S3, we avoid tying up our application's processes with lengthy file uploads too.
+
+If you found this post helpful, chuck a few bucks my way on PayPal: https://paypal.me/ryanbigg
 
 
 
