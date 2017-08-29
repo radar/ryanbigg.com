@@ -431,6 +431,7 @@ end
 Then we can use this new class in `UploadsHelper`:
 
 *app/helpers/uploads_helper.rb*
+
 ```
 require_dependency 'upload_url'
 
@@ -454,6 +455,7 @@ end
 We can then use these helpers to display smallnail versions of our image on the `index` template:
 
 **app/views/uploads/index.html.erb**
+
 ```erb
 <h1>Uploads</h1>
 
@@ -465,6 +467,7 @@ We can then use these helpers to display smallnail versions of our image on the 
 Or large images on the `show` template:
 
 **app/views/uploads/show.html.erb**
+
 ```erb
 ...
   <%= large_image(@upload) %>
@@ -475,7 +478,7 @@ Or large images on the `show` template:
 
 Dropzone, S3 and imgix allow us to upload and host our images very easily, without the need of the paperclip gem. By uploading directly to S3, we avoid tying up our application's processes with lengthy file uploads too.
 
-If you found this post helpful, chuck a few bucks my way on PayPal: https://paypal.me/ryanbigg
+If you found this post helpful, chuck a few bucks my way on PayPal: [https://paypal.me/ryanbigg](https://paypal.me/ryanbigg).
 
 
 

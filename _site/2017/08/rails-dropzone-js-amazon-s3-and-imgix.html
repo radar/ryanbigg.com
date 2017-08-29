@@ -392,52 +392,46 @@ IMGIX_SUBDOMAIN=[your subdomain goes here]
 </code></pre></div>
 <p>Then we can use this new class in <code>UploadsHelper</code>:</p>
 
-<p><em>app/helpers/uploads_helper.rb</em>
-```
-require<em>dependency &#39;upload</em>url&#39;</p>
+<p><em>app/helpers/uploads_helper.rb</em></p>
+<div class="highlight"><pre><code class="language-" data-lang="">require_dependency 'upload_url'
 
-<p>module UploadsHelper
-  def small<em>image(upload)
-    image</em>tag(upload<em>url.small</em>url(upload.path))
-  end</p>
+module UploadsHelper
+  def small_image(upload)
+    image_tag(upload_url.small_url(upload.path))
+  end
 
-<p>def large<em>image(upload)
-    image</em>tag(upload<em>url.large</em>url(upload.path))
-  end</p>
+  def large_image(upload)
+    image_tag(upload_url.large_url(upload.path))
+  end
 
-<p>private</p>
+  private
 
-<p>def upload<em>url
-    @upload</em>url ||= UploadURL.new
+  def upload_url
+    @upload_url ||= UploadURL.new
   end
 end
-```</p>
-
+</code></pre></div>
 <p>We can then use these helpers to display smallnail versions of our image on the <code>index</code> template:</p>
 
-<p><strong>app/views/uploads/index.html.erb</strong>
-```erb
-<h1>Uploads</h1></p>
+<p><strong>app/views/uploads/index.html.erb</strong></p>
+<div class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="nt">&lt;h1&gt;</span>Uploads<span class="nt">&lt;/h1&gt;</span>
 
-<p>&lt;% @uploads.each do |upload| %&gt;
-  &lt;%= small_image(upload) %&gt;
-&lt;% end %&gt;
-```</p>
-
+<span class="cp">&lt;%</span> <span class="vi">@uploads</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">upload</span><span class="o">|</span> <span class="cp">%&gt;</span>
+  <span class="cp">&lt;%=</span> <span class="n">small_image</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span> <span class="cp">%&gt;</span>
+<span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</code></pre></div>
 <p>Or large images on the <code>show</code> template:</p>
 
-<p><strong>app/views/uploads/show.html.erb</strong>
-<code>erb
+<p><strong>app/views/uploads/show.html.erb</strong></p>
+<div class="highlight"><pre><code class="language-erb" data-lang="erb">...
+  <span class="cp">&lt;%=</span> <span class="n">large_image</span><span class="p">(</span><span class="vi">@upload</span><span class="p">)</span> <span class="cp">%&gt;</span>
 ...
-  &lt;%= large_image(@upload) %&gt;
-...
-</code></p>
-
+</code></pre></div>
 <h3>Summary</h3>
 
 <p>Dropzone, S3 and imgix allow us to upload and host our images very easily, without the need of the paperclip gem. By uploading directly to S3, we avoid tying up our application&#39;s processes with lengthy file uploads too.</p>
 
-<p>If you found this post helpful, chuck a few bucks my way on PayPal: https://paypal.me/ryanbigg</p>
+<p>If you found this post helpful, chuck a few bucks my way on PayPal: <a href="https://paypal.me/ryanbigg">https://paypal.me/ryanbigg</a>.</p>
 
 
         <div id='disqus_thread'></div>
