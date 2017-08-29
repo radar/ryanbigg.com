@@ -6,6 +6,8 @@ title: Rails, Dropzone.js, Amazon S3 and imgix
 
 In this tutorial I'll cover how you can upload files directly to S3 by using a feature called `PresignedPost`. I'll then show how you can use [imgix](https://imgix.com) to resize these images dynamically after they've been uploaded.
 
+The Rails app that I use for this tutorial is [dropzone-example](https://github.com/radar/dropzone-example), with the [finished branch](https://github.com/radar/dropzone-example/tree/finished) being the final version of the code from this tutorial.
+
 ### Background
 
 I've got a small hobby Rails app that I use to share photos with my extended family. This app had humble beginnings: it was a very light Rails application with one model that used [Paperclip](https://rubygems.org/gems/paperclip) to handle the attachments. Paperclip works very well, and I especially love that I don't have to care about _how_ my photos get resized; Paperclip just does it -- as long as you have the right things installed.
@@ -34,16 +36,20 @@ I'm going to go old-school on this: no Webpacker, no React. If you want those th
 To start with, you can download the Dropzone files from the Download link in the [project's README](https://gitlab.com/meno/dropzone/blob/master/README.md). This will download the latest release. Extract this zip, and then move `dropzone.css` into `vendor/assets/stylesheets/dropzone.css`, and `dropzone.js` into `vendor/assets/javascripts/dropzone.js`. These two files will need to be required in both `application.scss` and `application.js`:
 
 **application.scss**
+
 ```
 *= require dropzone
 ```
 
 **application.js**
+
 ```
 //= require dropzone
 ```
 
 Then wherever you want the dropzone to appear, put this code:
+
+**app/views/uploads/new.html.erb**
 
 ```erb
 <%= form_tag uploads_path, class: "dropzone", id: "uploader" do %>

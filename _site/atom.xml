@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-08-30T08:26:29+10:00</updated>
+ <updated>2017-08-30T08:32:23+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -18,6 +18,8 @@
    <updated>2017-08-28T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2017/08/rails-dropzone-js-amazon-s3-and-imgix</id>
    <content type="html"><![CDATA[<p>In this tutorial I&#39;ll cover how you can upload files directly to S3 by using a feature called <code>PresignedPost</code>. I&#39;ll then show how you can use <a href="https://imgix.com">imgix</a> to resize these images dynamically after they&#39;ve been uploaded.</p>
+
+<p>The Rails app that I use for this tutorial is <a href="https://github.com/radar/dropzone-example">dropzone-example</a>, with the <a href="https://github.com/radar/dropzone-example/tree/finished">finished branch</a> being the final version of the code from this tutorial.</p>
 
 <h3>Background</h3>
 
@@ -47,17 +49,15 @@
 
 <p>To start with, you can download the Dropzone files from the Download link in the <a href="https://gitlab.com/meno/dropzone/blob/master/README.md">project&#39;s README</a>. This will download the latest release. Extract this zip, and then move <code>dropzone.css</code> into <code>vendor/assets/stylesheets/dropzone.css</code>, and <code>dropzone.js</code> into <code>vendor/assets/javascripts/dropzone.js</code>. These two files will need to be required in both <code>application.scss</code> and <code>application.js</code>:</p>
 
-<p><strong>application.scss</strong>
-<code>
-*= require dropzone
-</code></p>
-
-<p><strong>application.js</strong>
-<code>
-//= require dropzone
-</code></p>
-
+<p><strong>application.scss</strong></p>
+<div class="highlight"><pre><code class="language-" data-lang="">*= require dropzone
+</code></pre></div>
+<p><strong>application.js</strong></p>
+<div class="highlight"><pre><code class="language-" data-lang="">//= require dropzone
+</code></pre></div>
 <p>Then wherever you want the dropzone to appear, put this code:</p>
+
+<p><strong>app/views/uploads/new.html.erb</strong></p>
 <div class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">uploads_path</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">"dropzone"</span><span class="p">,</span> <span class="ss">id: </span><span class="s2">"uploader"</span> <span class="k">do</span> <span class="cp">%&gt;</span>
 
 <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
