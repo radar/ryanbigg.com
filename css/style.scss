@@ -1,6 +1,10 @@
 ---
 ---
 
+@import "flexboxgrid";
+@import "highlight";
+@import "prism";
+
 html, body {
   height: 100%;
 }
@@ -19,22 +23,25 @@ and (max-device-width : 568px) {
   }
 }
 
+h1 {
+  font-size: 3rem;
+}
+
 a {
   color: #3CBC98;
 }
 
 .container {
-  display: flex;
   min-height: 100%;
 }
 
 
 .menu {
-  flex: 1;
+  font-size: 1rem;
+  min-width: 10rem;
   background: url('/images/menu-bg.png');
   border-right: 5px solid rgba(48,48,54, .5);
   color: #efefef;
-  min-width: 15rem;
   padding: 2.5% 0 0 0;
   text-align: center;
 
@@ -82,7 +89,7 @@ a {
 }
 
 @media only screen
-and (max-width: 750px) {
+and (max-width: 1000px) {
   .menu {
     min-width: 7.5rem;
 
@@ -101,11 +108,17 @@ h2 {
 }
 
 article {
-  flex: 5;
-  margin: 0% 0% 0% 5%;
   padding: 3rem 3rem 1rem 3rem;
   background: white;
   line-height: 165%;
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
 
   img {
     max-width: 100%;
