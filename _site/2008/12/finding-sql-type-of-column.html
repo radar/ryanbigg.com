@@ -3,19 +3,16 @@
   <head>
   <title>Finding SQL Type of Column  - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2008/12/finding-sql-type-of-column"><h2>Finding SQL Type of Column </h2></a>
-        <small>14 Dec 2008</small><br>
-        <p><a href="http://rails.loglibrary.com/chats/15238428/excerpt">exlibris</a> asked tonight in #rubyonrails how to find the type of a column in the table for a model. I didn&#39;t know this and maybe someone else out there may not know how either. The solution lies within the <a href="http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M001995"><span class="term">columns<em>hash</span></a> method from <span class="term">ActiveRecord:Base</span> which returns a hash containing all kinds of useful information about all the columns in your table such as:
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2008/12/finding-sql-type-of-column"><h2>Finding SQL Type of Column </h2></a>
+          <small>14 Dec 2008</small><br>
+          <p><a href="http://rails.loglibrary.com/chats/15238428/excerpt">exlibris</a> asked tonight in #rubyonrails how to find the type of a column in the table for a model. I didn&#39;t know this and maybe someone else out there may not know how either. The solution lies within the <a href="http://api.rubyonrails.org/classes/ActiveRecord/Base.html#M001995"><span class="term">columns<em>hash</span></a> method from <span class="term">ActiveRecord:Base</span> which returns a hash containing all kinds of useful information about all the columns in your table such as:
 <ul>
     <li>Precision (integer, notes the precision of the column if it&#39;s decimal-based)</li>
     <li>Primary (boolean, identifies if column is primary key)</li>
@@ -60,8 +58,9 @@
 That final column is the magic attribute we&#39;re looking for. To get to it we access it like <span class='term'>Model.columns<em>hash[&quot;attribute&quot;].sql</em>type</span></p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

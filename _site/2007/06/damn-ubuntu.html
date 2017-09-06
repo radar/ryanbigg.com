@@ -3,19 +3,16 @@
   <head>
   <title>Damn Ubuntu! - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2007/06/damn-ubuntu"><h2>Damn Ubuntu!</h2></a>
-        <small>13 Jun 2007</small><br>
-        <p>&quot;Yeah, it&#39;s a tomorrow problem.&quot; I said yesterday in regards to installing Ubuntu on the development server at work. Little did I know that it would cause so many hassles.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2007/06/damn-ubuntu"><h2>Damn Ubuntu!</h2></a>
+          <small>13 Jun 2007</small><br>
+          <p>&quot;Yeah, it&#39;s a tomorrow problem.&quot; I said yesterday in regards to installing Ubuntu on the development server at work. Little did I know that it would cause so many hassles.</p>
 
 <p>First of all the mirror at http://au.archive.ubuntu.org didn&#39;t have some packages, so I changed that to mirror.internode.on.net and that seemed to fix everything except for the nginx package. So I changed &quot;dapper&quot; to &quot;feisty&quot; in /etc/apt/sources.list and it found it and installed it. Then it decided to remove/alter some key features. That wasn&#39;t good. I tried compiling imagemagick, and that failed with a &quot;cannot compile executable&quot; error (which there are only ~700,000 results for on Google!). Then I tried doing apt-get install build-essential. That needed libc-dev which needed lib6c-dev, which needed gcc, which needed libc-dev. See my conundrum?</p>
 
@@ -62,8 +60,9 @@
 <p>All of the computers are plugged into the same switch, yet it&#39;s connecting to a different network. Maybe I&#39;ll have to have a play around with the route settings tomorrow.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

@@ -3,19 +3,16 @@
   <head>
   <title>A bit of refactoring love - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2008/06/a-bit-of-refactoring-love"><h2>A bit of refactoring love</h2></a>
-        <small>13 Jun 2008</small><br>
-        <h3>Find, Find, Find, Find, I don't think so...</h3>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2008/06/a-bit-of-refactoring-love"><h2>A bit of refactoring love</h2></a>
+          <small>13 Jun 2008</small><br>
+          <h3>Find, Find, Find, Find, I don't think so...</h3>
 
 <p>As explained in previous posts, Rails controllers have 7 default actions (index, new, create, show, edit, update, destroy). Four of these seven actions make the same find call, <span class='term'>Model.find(params[:id])</span> and this tutorial is to tidy that up so you&#39;re not repeating yourself over four different actions. To clean this up we&#39;ll just call a before filter:</p>
 
@@ -142,8 +140,9 @@ end
 <p>As long as there&#39;s a <span class='term'>#to<em>s</span> method in the Forum model it will insert that as the phrase shown to the user for the link. All of the above should produce the same URL, with the exception of the first which will produce <span class='term'>/forums/show/1</span>, and going down the list they&#39;re just shorter ways of writing the same thing. If you had nested routes such as <span class='term'>forum</em>topic<em>path(@forum, @topic)</span> you could do <span class='term'>&lt;%= link</em>to @topic, [@forum, @topic] %&gt;</span> as the extremely short version of it. The reason why we can&#39;t do just <span class='term'>&lt;%= link<em>to [@forum, @topic] %&gt;</span> is because this will show the to</em>s version of @forum, followed immediately by the to_s version of @topic.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

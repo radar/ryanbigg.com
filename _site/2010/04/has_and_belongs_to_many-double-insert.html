@@ -3,19 +3,16 @@
   <head>
   <title>has_and_belongs_to_many double insert - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2010/04/has_and_belongs_to_many-double-insert"><h2>has_and_belongs_to_many double insert</h2></a>
-        <small>14 Apr 2010</small><br>
-        <p>This is a story about my work with GetUp, in particular the past week. It&#39;s about a problem that I&#39;ve been putting off help one of the guys (James) solve, it didn&#39;t seem all that important to me. So last night I kind of promised that I&#39;d sit down with him this morning and help him work out what it was. Hopefully it was something silly either of us did and it would only take us an hour. </p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2010/04/has_and_belongs_to_many-double-insert"><h2>has_and_belongs_to_many double insert</h2></a>
+          <small>14 Apr 2010</small><br>
+          <p>This is a story about my work with GetUp, in particular the past week. It&#39;s about a problem that I&#39;ve been putting off help one of the guys (James) solve, it didn&#39;t seem all that important to me. So last night I kind of promised that I&#39;d sit down with him this morning and help him work out what it was. Hopefully it was something silly either of us did and it would only take us an hour. </p>
 
 <p>You know how this story is going to end up already.</p>
 
@@ -86,8 +84,9 @@ class Person &lt; ActiveRecord::Base
 <p>As I found out this (the next) morning and <a href='http://ryanbigg.com/2010/04/has_and_belongs_to_many-double-insert/#comment-36741'>Tim Riley points out in the comments</a> the ticket for this bug is <a href='https://rails.lighthouseapp.com/projects/8994/tickets/3575-multiple-join-records-when-using-nested_attributes-in-habtm'>#3575</a> and the related commit is <code>146a7505</code> by Eloy Duran also. Freezing rails to <code>v2.3.5</code> and <code>git cherry-pick</code>ing this commit into this frozen version fixes it. </p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

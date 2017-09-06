@@ -3,19 +3,16 @@
   <head>
   <title>RESTful Routes - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2007/09/restful-routes"><h2>RESTful Routes</h2></a>
-        <small>10 Sep 2007</small><br>
-        <p>Eventually I hope to integrate this into the guide, but here it is.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2007/09/restful-routes"><h2>RESTful Routes</h2></a>
+          <small>10 Sep 2007</small><br>
+          <p>Eventually I hope to integrate this into the guide, but here it is.</p>
 
 <p>RESTful routing makes it easier to link to the actions within controllers without having to repetitively type out code such as [term]:controller =&gt; &quot;blogs&quot;, :action =&gt; &quot;show&quot;, :id =&gt; blog.id[/term] every time you want to link to that specific action. RESTful routing also forces you into a CRUD convention (which may seem bad at first), but if someone reads your code they know what each action does. Restful routing, by default, employs seven actions within every controller, namely New, Create, Edit, Update, Destroy, Show and Index. These are the seven basic actions of your controller which nearly every controller uses. It also employs two more HTTP request methods, beside GET and POST, called PUT and DELETE.</p>
 
@@ -110,8 +108,9 @@ end
 after the route definition to make it something like [term]map.resources :blogs, :member =&gt; { :custom =&gt; :get }[/term] Which will let you access the custom action by calling [term]custom<em>blog</em>path(blog)[/term]. To define something where you don&#39;t need to pass in a blog argument, use [term]:collection[/term] instead of [term]:member[/term], like this: [term]:collection =&gt; { :custom =&gt; :get }[/term]. To define subsequent actions within these hashes, simply separate them with a comma [term]:collection =&gt; { :custom =&gt; :get, :other =&gt; :post }[/term] The symbol after the points to ([term]=&gt;[/term]) is the HTTP request method by which the page is requested. You can use get, post, put or delete.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

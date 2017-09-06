@@ -3,19 +3,16 @@
   <head>
   <title>Administration Namespacing - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2008/03/administration-namespacing"><h2>Administration Namespacing</h2></a>
-        <small>16 Mar 2008</small><br>
-        <p>A while after completing work at SeaLink, Tom asked me about my forum hobby project and why it wasn&#39;t working. This led to me working on it for a few days and getting it all up to scratch again, and this involved moving it over to Rails 2.0 (that&#39;s how long I hadn&#39;t worked on it for), and using the awesomeness that is namespacing.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2008/03/administration-namespacing"><h2>Administration Namespacing</h2></a>
+          <small>16 Mar 2008</small><br>
+          <p>A while after completing work at SeaLink, Tom asked me about my forum hobby project and why it wasn&#39;t working. This led to me working on it for a few days and getting it all up to scratch again, and this involved moving it over to Rails 2.0 (that&#39;s how long I hadn&#39;t worked on it for), and using the awesomeness that is namespacing.</p>
 
 <p>Namespacing is where you have some controllers in a separate area of your site. In my example, I have an admin folder in <span class="term">app/controllers</span> which contains all the controllers for the administration section of my site, and all the relevant actions. Just inside the <span class="term">app/controllers</span> directory, I have the other controllers which do all the basic stuff such as showing forums, basically anything a standard user can do.</p>
 
@@ -102,8 +100,9 @@ I&#39;ve defined a new layout here because my admin layout is different to my ma
 <p>For an action such as an update action, it would be <span class="term">admin<em>forum</em>path(forum<em>object)</span> with a <span class="term">:method =&gt; :put</span> option specified in whatever you&#39;re using. Usually you won&#39;t have to do this, because the form</em>for helper would do it for you, but in some cases you might have to.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

@@ -3,19 +3,16 @@
   <head>
   <title>When Duplication May Seem Necessary - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2007/07/when-duplication-may-seem-necessary"><h2>When Duplication May Seem Necessary</h2></a>
-        <small>11 Jul 2007</small><br>
-        <p>At work we&#39;re making a management system for Ferries, Accommodation, Rental Cars, Coach Tours and some other things. I&#39;ve been assigned to work on the bookings section, which has proven to be quite difficult.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2007/07/when-duplication-may-seem-necessary"><h2>When Duplication May Seem Necessary</h2></a>
+          <small>11 Jul 2007</small><br>
+          <p>At work we&#39;re making a management system for Ferries, Accommodation, Rental Cars, Coach Tours and some other things. I&#39;ve been assigned to work on the bookings section, which has proven to be quite difficult.</p>
 
 <p>We have a table called Services, which keeps track of bookable items for the various items. The bookings table is linked to passengers and vehicles via has_many associations, and whenever we create a new booking we need to assign brand new passengers every time, so say if I travelled to Kangaroo Island every week, they would enter my name 52 times in a year. I know, not everyone travels 52 times a year, but over time this builds up.</p>
 
@@ -68,8 +66,9 @@
 <p>Every weekend I go &quot;I have nothing planned for next weekend&quot; and usually by Wednesday it&#39;s all booked out. Eventually I&#39;ll find one.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

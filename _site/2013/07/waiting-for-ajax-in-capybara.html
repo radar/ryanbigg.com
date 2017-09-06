@@ -3,19 +3,16 @@
   <head>
   <title>Waiting for AJAX in Capybara - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2013/07/waiting-for-ajax-in-capybara"><h2>Waiting for AJAX in Capybara</h2></a>
-        <small>09 Jul 2013</small><br>
-        <p>In Spree recently, we&#39;ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree&#39;s API</a> for the Backend component. This means that we&#39;ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2013/07/waiting-for-ajax-in-capybara"><h2>Waiting for AJAX in Capybara</h2></a>
+          <small>09 Jul 2013</small><br>
+          <p>In Spree recently, we&#39;ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree&#39;s API</a> for the Backend component. This means that we&#39;ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
 
 <p>Some of these test failures are that the tests just aren&#39;t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more ... bewildering:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">F
@@ -75,8 +73,9 @@ end
 <p>Use this <code>wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

@@ -3,19 +3,16 @@
   <head>
   <title>Banning Users Using Middleware - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2009/10/banning-users-using-middleware"><h2>Banning Users Using Middleware</h2></a>
-        <small>06 Oct 2009</small><br>
-        <p><a href='http://bjeanes.com'>Bo Jeanes</a>, a coworker at Mocra, recently implemented a way to ban people on one of his side projects <a href='http://dearqut.com'>DearQUT</a> because somebody was posting nasty messages. We were talking earlier today about it and the topic of using a middleware came up since we &quot;don&#39;t want to waste resources on that asshole&quot;. So I thought I&#39;d investigate to to see how easy it is to make a middleware in Rails, turns out it&#39;s <strong>very easy!</strong>. If you don&#39;t like reading blog posts, I have <a href='http://github.com/radar/hammer'>sample Rails application</a> containing the very same source code I used for this blog post. This contains also the &quot;Special Github&quot; extras like an admin section for adding/editing/deleting banned IPs! I also &quot;cheated&quot; by stealing elements from the <a href='http://railscasts.com/episodes/151-rack-middleware'>Railscast on Rack Middleware</a>. </p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2009/10/banning-users-using-middleware"><h2>Banning Users Using Middleware</h2></a>
+          <small>06 Oct 2009</small><br>
+          <p><a href='http://bjeanes.com'>Bo Jeanes</a>, a coworker at Mocra, recently implemented a way to ban people on one of his side projects <a href='http://dearqut.com'>DearQUT</a> because somebody was posting nasty messages. We were talking earlier today about it and the topic of using a middleware came up since we &quot;don&#39;t want to waste resources on that asshole&quot;. So I thought I&#39;d investigate to to see how easy it is to make a middleware in Rails, turns out it&#39;s <strong>very easy!</strong>. If you don&#39;t like reading blog posts, I have <a href='http://github.com/radar/hammer'>sample Rails application</a> containing the very same source code I used for this blog post. This contains also the &quot;Special Github&quot; extras like an admin section for adding/editing/deleting banned IPs! I also &quot;cheated&quot; by stealing elements from the <a href='http://railscasts.com/episodes/151-rack-middleware'>Railscast on Rack Middleware</a>. </p>
 
 <h3>The Ban Hammer</h3>
 
@@ -82,8 +80,9 @@ end
 <p>Of course you could just use <a href='http://www.netfilter.org/'>iptables</a> and do something like <span class='term'>iptables -I INPUT -s 25.55.55.55 -j DROP</span>, but then they won&#39;t be told <em>why</em> they&#39;re banned.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

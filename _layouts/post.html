@@ -2,15 +2,17 @@
 <html>
   {% include head.html %}
   <body>
-    <div class="container">
+    <div class="row">
       {% include menu.html %}
-      <article>
-        <a href="{{ page.url }}"><h2>{{ page.title }}</h2></a>
-        <small>{{ page.date | date_to_string }}</small><br>
-        {{ content }}
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="{{ page.url }}"><h2>{{ page.title }}</h2></a>
+          <small>{{ page.date | date_to_string }}</small><br>
+          {{ content }}
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

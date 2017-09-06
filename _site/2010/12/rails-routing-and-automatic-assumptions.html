@@ -3,19 +3,16 @@
   <head>
   <title>Rails routing and automatic assumptions - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2010/12/rails-routing-and-automatic-assumptions"><h2>Rails routing and automatic assumptions</h2></a>
-        <small>19 Dec 2010</small><br>
-        <p>Last night while working on chapter 12 for <a href='http://manning.com/katz'>Rails 3 in Action</a> I stumbled across an interesting problem detailed in <a href="https://gist.github.com/746414">this gist</a>. The problem I was seeing is that the <code>edit_admin_user_path</code> route <em>was not</em> failing, while the <code>admin_user_permissions_path</code> path <em>was</em> failing.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2010/12/rails-routing-and-automatic-assumptions"><h2>Rails routing and automatic assumptions</h2></a>
+          <small>19 Dec 2010</small><br>
+          <p>Last night while working on chapter 12 for <a href='http://manning.com/katz'>Rails 3 in Action</a> I stumbled across an interesting problem detailed in <a href="https://gist.github.com/746414">this gist</a>. The problem I was seeing is that the <code>edit_admin_user_path</code> route <em>was not</em> failing, while the <code>admin_user_permissions_path</code> path <em>was</em> failing.</p>
 
 <p>I had my suspicions to why the first link worked and spent the remainder of last night digging through my favourite bit of Rails and Rails related source(ry): Action Dispatch and rack-mount. I didn&#39;t figure it all completely out until after a good night&#39;s sleep. It wasn&#39;t until I saw pixeltrix&#39;s comment on the Gist this morning that it all clicked. </p>
 
@@ -72,8 +70,9 @@
 <p>Oh, and I also <a href='http://twitter.com/ryanbigg/status/16104049640210432'>offered a free copy of Rails 3 in Action</a> to the person who helped me solve this issue, but it was really a team effort. alindeman, pixeltrix and pacsoe all get free, signed dead-tree copies when the book&#39;s done. Thanks lads.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

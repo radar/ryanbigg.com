@@ -3,19 +3,16 @@
   <head>
   <title>Why you should run bundle update - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2011/01/why-you-should-run-bundle-update"><h2>Why you should run bundle update</h2></a>
-        <small>04 Jan 2011</small><br>
-        <h3>Prelude</h3>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2011/01/why-you-should-run-bundle-update"><h2>Why you should run bundle update</h2></a>
+          <small>04 Jan 2011</small><br>
+          <h3>Prelude</h3>
 
 <p><code>bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code>Gemfile.lock</code> pre-existing, running <code>bundle install</code> will only install the versions specified in the <code>Gemfile.lock</code> and will complain that you have incompatible versions:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">Bundler could not find compatible versions for gem "activesupport":
@@ -94,8 +92,9 @@ the gems in your Gemfile, which may resolve the conflict.
 <p>So it&#39;s <em>almost always unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

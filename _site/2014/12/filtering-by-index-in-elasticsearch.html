@@ -3,19 +3,16 @@
   <head>
   <title>Filtering by index in Elasticsearch - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2014/12/filtering-by-index-in-elasticsearch"><h2>Filtering by index in Elasticsearch</h2></a>
-        <small>03 Dec 2014</small><br>
-        <p>Today I needed to filter by indexes in an Elasticsearch instance, and so I googled for how to do this but I couldn&#39;t find anything other than the <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-indices-filter.html">indicies filter</a> which isn&#39;t helpful without a proper context of where to use it in a query.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2014/12/filtering-by-index-in-elasticsearch"><h2>Filtering by index in Elasticsearch</h2></a>
+          <small>03 Dec 2014</small><br>
+          <p>Today I needed to filter by indexes in an Elasticsearch instance, and so I googled for how to do this but I couldn&#39;t find anything other than the <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-indices-filter.html">indicies filter</a> which isn&#39;t helpful without a proper context of where to use it in a query.</p>
 
 <p>Instead of that filter, this is what I came up with to do the filtering:</p>
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="p">.</span><span class="nf">new</span>
@@ -58,8 +56,9 @@
 <p>I hope this post can help other people who are looking for the same thing.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

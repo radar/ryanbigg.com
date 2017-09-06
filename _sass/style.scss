@@ -1,0 +1,193 @@
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font: 14pt "Oxygen";
+  background: url('/images/background.png');
+  margin: 0;
+}
+
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 568px) {
+  body {
+    font-size: 225%;
+  }
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+a {
+  color: #3CBC98;
+}
+
+.container {
+  min-height: 100%;
+}
+
+
+.menu {
+  font-size: 1rem;
+  min-width: 10rem;
+  background: url('/images/menu-bg.png');
+  border-right: 5px solid rgba(48,48,54, .5);
+  color: #efefef;
+  padding: 2.5% 0 0 0;
+  text-align: center;
+
+  img {
+    width: 175px;
+    margin-top: 2rem;
+  }
+
+  h1 {
+    margin-bottom: 0;
+  }
+
+  .desc {
+    color: darken(#efefef, 50);
+  }
+
+  ul {
+    text-align: left;
+    list-style-type: none;
+    margin: 10% 0 0 0;
+    padding: 0;
+  }
+
+  ul li {
+    padding: 3%;
+    text-align: center;
+    background: #3CBC98;
+    transition: background-color 0.5s ease;
+
+    &:hover {
+      background: #A3F7B5;
+
+      a {
+        color: #3CBC98;
+      }
+    }
+  }
+
+  a {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: #efefef;
+  }
+}
+
+@media only screen
+and (max-width: 1000px) {
+  .menu {
+    min-width: 7.5rem;
+
+    img {
+      width: 85px;
+    }
+  }
+}
+
+.content {
+  background: white;
+}
+
+h2 {
+  font-size: 2rem;
+  color: #484851;
+}
+
+article {
+  padding: 2rem;
+  background: white;
+
+  small {
+    font-size: 0.75rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    font-family: "Source Code Pro";
+  }
+}
+
+.large {
+  font-size: 1.25rem;
+}
+
+#books {
+  .book {
+    border-bottom: 2px solid #3CBC98;
+
+    img {
+      float: right;
+      max-width: 200px;
+      margin-left: 3rem;
+    }
+
+    blockquote {
+      width: 66%;
+    }
+  }
+}
+
+
+blockquote {
+  background: lighten(#3CBC98, 40);
+  font-size: 90%;
+  font-style: italic;
+  padding: 0.66rem;
+}
+
+aside {
+  background: #303036;
+  color: #dedede;
+  padding: 20px;
+
+  p {
+    margin: 0px;
+  }
+
+  p + p {
+    margin-top: 10px;
+  }
+
+  header {
+    font-size: 1.5rem;
+  }
+}
+
+#archive {
+  font-size: 75%;
+
+  ul {
+    list-style-type: none;
+  }
+
+  abbr {
+    float: right;
+  }
+}
+
+hr {
+  border: 2px solid #3CBC98;
+}
+
+.references {
+  p {
+    text-indent: -1em;
+    margin-left: 1em;
+  }
+}

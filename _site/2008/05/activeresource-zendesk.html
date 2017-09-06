@@ -3,19 +3,16 @@
   <head>
   <title>ActiveResource & ZenDesk - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2008/05/activeresource-zendesk"><h2>ActiveResource & ZenDesk</h2></a>
-        <small>14 May 2008</small><br>
-        <p>With many, many thanks to Frederick Cheung, who without this would&#39;ve been way more painful and time-consuming. My original question and our discussion can be found <a href="http://groups.google.ca/group/rubyonrails-talk/browse_thread/thread/49616be220fb8d1d">here</a>.</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2008/05/activeresource-zendesk"><h2>ActiveResource & ZenDesk</h2></a>
+          <small>14 May 2008</small><br>
+          <p>With many, many thanks to Frederick Cheung, who without this would&#39;ve been way more painful and time-consuming. My original question and our discussion can be found <a href="http://groups.google.ca/group/rubyonrails-talk/browse_thread/thread/49616be220fb8d1d">here</a>.</p>
 
 <p>At my new job we signed up with <a href="http://zendesk.com">ZenDesk</a>, which acts as our helpdesk/ticketing system for our clients who sign up to our site and buy our product. Because ZenDesk uses emails instead of plain ol&#39; usernames for authentication, Ruby chucked a fit when we tried doing stuff like:
 <pre lang="rails">class User &lt; ActiveResource::Base
@@ -95,8 +93,9 @@ end</pre>
 Which, if you did it, say, all in the same day like I did, should delete all the users within that range.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

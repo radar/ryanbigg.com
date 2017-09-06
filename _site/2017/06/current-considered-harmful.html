@@ -3,19 +3,16 @@
   <head>
   <title>Rails' CurrentAttributes considered harmful - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2017/06/current-considered-harmful"><h2>Rails' CurrentAttributes considered harmful</h2></a>
-        <small>22 Jun 2017</small><br>
-        <p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2017_08_01/43810">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2017/06/current-considered-harmful"><h2>Rails' CurrentAttributes considered harmful</h2></a>
+          <small>22 Jun 2017</small><br>
+          <p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2017_08_01/43810">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
 
 <p>I was made aware of <a href="https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56">this commit</a> recently (thanks to Rebecca Skinner) to Rails which introduces what is effectively a global state to Rails applications.</p>
 
@@ -260,8 +258,9 @@
 <p>Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it&#39;s DHH&#39;s change and it&#39;s his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">

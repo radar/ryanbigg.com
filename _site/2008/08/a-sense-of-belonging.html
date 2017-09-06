@@ -3,19 +3,16 @@
   <head>
   <title>A Sense of Belonging - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Encode+Sans" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/mobile.css'>
-  <link rel='stylesheet' href='/css/prism.css'>
-  <link rel='stylesheet' href='/css/flexboxgrid.css'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
   <body>
-    <div class="container">
-      <div class="menu col-xs-2 col-md-4">
+    <div class="row">
+      <div class="menu col-xs-4 col-md-4">
   <h1><a href='/'>Ryan Bigg</a></h1>
   <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
   <img src='/images/me.png' />
@@ -42,10 +39,11 @@
   </ul>
 </div>
 
-      <article>
-        <a href="/2008/08/a-sense-of-belonging"><h2>A Sense of Belonging</h2></a>
-        <small>29 Aug 2008</small><br>
-        <p>Numerous times I&#39;ve needed and I&#39;ve seen other people have needed the need to check whether an object belongs to the currently logged in user. I&#39;ve worked out that something like this works:
+      <div class="col-xs-8 col-md-8 col-lg-8">
+        <article>
+          <a href="/2008/08/a-sense-of-belonging"><h2>A Sense of Belonging</h2></a>
+          <small>29 Aug 2008</small><br>
+          <p>Numerous times I&#39;ve needed and I&#39;ve seen other people have needed the need to check whether an object belongs to the currently logged in user. I&#39;ve worked out that something like this works:
 <pre lang="rails">class User &lt; ActiveRecord::Base
   has<em>many :posts
   def owns?(object)
@@ -95,8 +93,9 @@ end</pre>
 Now here we&#39;ve called <span class="term">check<em>ownership</span> in the edit action which will stop the template from being rendered by calling <span class="term">redirect</em>back<em>or</em>default</span>. We can&#39;t call (as I found out thanks to Blue<em>Sea) <span class="term">check</em>ownership</span> in the same way in the update action because the code will still be executed. So we must call the methods we defined in the model, either <span class="term">current<em>user.owns?(@post)</span> or <span class="term">@post.belongs</em>to?(current_user)</span>.</p>
 
 
-        <div id='disqus_thread'></div>
-      </article>
+          <div id='disqus_thread'></div>
+        </article>
+      </div>
     </div>
 
     <script type="text/javascript">
