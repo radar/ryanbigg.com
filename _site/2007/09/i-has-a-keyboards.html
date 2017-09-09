@@ -4,6 +4,13 @@
   <title>I Has A Keyboards! - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2007/09/i-has-a-keyboards"><h2>I Has A Keyboards!</h2></a>
-          <small>12 Sep 2007</small><br>
-          <p>Last week I saw a Rollup Keyboard on eBay and after wanting to try one for a while, I decided to buy it. After hearing &quot;rave reviews&quot; about how crappy it is, I REALLY wanted to try one and was happy to pay the $16.95 to buy it and get it posted to me.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2007/09/i-has-a-keyboards"><h2>I Has A Keyboards!</h2></a>
+            <small>12 Sep 2007</small><br>
+            <p>Last week I saw a Rollup Keyboard on eBay and after wanting to try one for a while, I decided to buy it. After hearing &quot;rave reviews&quot; about how crappy it is, I REALLY wanted to try one and was happy to pay the $16.95 to buy it and get it posted to me.</p>
 
 <p>Today it arrived. I was overjoyed, but food had to be eaten and my stomach was trying to devour itself, so I ate a lovely Ravioli first. During the course of eating the Ravioli I tried multi-tasking. This involved eating and attempting to type on the keyboard. Grab forkful of Ravioli, put in mouth and chew, type something, swallow Ravioli, repeat.</p>
 
@@ -64,8 +79,9 @@ Here is me using it during a sandstorm just like the product description says</p
 <p>After initially writing this blog and using the keyboard for work I realised the total absence of both a Home and an End key. I wouldn&#39;t mind if the two blank keys performed this action, but they don&#39;t. It&#39;s surprising how much you notice you need the home and end keys when you don&#39;t have them.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

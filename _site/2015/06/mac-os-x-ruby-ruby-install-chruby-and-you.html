@@ -4,6 +4,13 @@
   <title>Mac OS X, Ruby, ruby-install, chruby and You - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you"><h2>Mac OS X, Ruby, ruby-install, chruby and You</h2></a>
-          <small>09 Jun 2015</small><br>
-          <p><strong>Last updated: July 13th, 2016</strong></p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you"><h2>Mac OS X, Ruby, ruby-install, chruby and You</h2></a>
+            <small>09 Jun 2015</small><br>
+            <p><strong>Last updated: July 13th, 2016</strong></p>
 
 <p>
   <strong>This beginner's guide will set up with Ruby 2.4.1, chruby, ruby-install and Rails 5.1.2 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
@@ -143,8 +158,9 @@ source /usr/local/opt/chruby/share/chruby/auto.sh
 <p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

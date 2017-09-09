@@ -4,6 +4,13 @@
   <title>December Meetup - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2007/12/december-meetup"><h2>December Meetup</h2></a>
-          <small>12 Dec 2007</small><br>
-          <p>There was an Adelaide Ruby Users Group meeting held last night at the usual location, the Brecnock Hotel on King William Street. This was the first meeting my friend, Tom, had decided to come to and he caught the train into town from Gawler. He eventually arrived at the other end of town at around 5:30 and phoned me up asking where I was. His voice seemed to echo too much, and the stairway in our building doesn&#39;t echo like it did. I eventually figured out that he was in the TSR building and managed to get up to Level 2 unhindered. Great security the TSR guys have.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2007/12/december-meetup"><h2>December Meetup</h2></a>
+            <small>12 Dec 2007</small><br>
+            <p>There was an Adelaide Ruby Users Group meeting held last night at the usual location, the Brecnock Hotel on King William Street. This was the first meeting my friend, Tom, had decided to come to and he caught the train into town from Gawler. He eventually arrived at the other end of town at around 5:30 and phoned me up asking where I was. His voice seemed to echo too much, and the stairway in our building doesn&#39;t echo like it did. I eventually figured out that he was in the TSR building and managed to get up to Level 2 unhindered. Great security the TSR guys have.</p>
 
 <p>I finished up at work and then Anuj, Vishal, The Other Mongrel and I headed over to the Brecnock. Adam and Ali had other things to do and Michael still had his time off from work due to an operation he had.</p>
 
@@ -58,8 +73,9 @@
 <p>So why don&#39;t you come as well?</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

@@ -4,6 +4,13 @@
   <title>Validating nested JSON data with ex_json_schema - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2016/11/validating-nested-json-data-with-ex_json_schema"><h2>Validating nested JSON data with ex_json_schema</h2></a>
-          <small>24 Nov 2016</small><br>
-          <p>I&#39;ve been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2016/11/validating-nested-json-data-with-ex_json_schema"><h2>Validating nested JSON data with ex_json_schema</h2></a>
+            <small>24 Nov 2016</small><br>
+            <p>I&#39;ve been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
 <div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Event</span> <span class="k">do</span>
   <span class="k">def</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
     <span class="p">%{</span><span class="sd">"</span><span class="s2">id"</span> <span class="o">=&gt;</span> <span class="n">id</span><span class="p">,</span> <span class="sd">"</span><span class="s2">type"</span> <span class="o">=&gt;</span> <span class="n">type</span><span class="p">,</span> <span class="sd">"</span><span class="s2">body"</span> <span class="o">=&gt;</span> <span class="n">body</span><span class="p">}</span> <span class="o">=</span> <span class="n">data</span>
@@ -174,8 +189,9 @@
 <p>It&#39;s clear from this output that the event wasn&#39;t processed because the <code>survey_id</code> is missing, and the <code>comment</code> is missing from the first answer.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

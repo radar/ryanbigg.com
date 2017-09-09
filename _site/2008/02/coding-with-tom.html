@@ -4,6 +4,13 @@
   <title>Coding With Tom - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2008/02/coding-with-tom"><h2>Coding With Tom</h2></a>
-          <small>18 Feb 2008</small><br>
-          <p>Tom asked me Sunday night if I wanted to go over to his house and code with him for the day and I said yes. I joked about being there at 7 in the morning and he said that would be fine.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2008/02/coding-with-tom"><h2>Coding With Tom</h2></a>
+            <small>18 Feb 2008</small><br>
+            <p>Tom asked me Sunday night if I wanted to go over to his house and code with him for the day and I said yes. I joked about being there at 7 in the morning and he said that would be fine.</p>
 
 <p>I woke up at 10:30 and went on IRC and ping&#39;d him only to get no reply, he was watching Burn Notice. Eventually he did reply, and re-scheduled it for 12pm, so I played TF2 for 2 hours.</p>
 
@@ -58,8 +73,9 @@
 <p>Back to work, I suppose.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

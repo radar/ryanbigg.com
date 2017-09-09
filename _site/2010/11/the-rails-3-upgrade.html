@@ -4,6 +4,13 @@
   <title>The Rails 3 Upgrade - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2010/11/the-rails-3-upgrade"><h2>The Rails 3 Upgrade</h2></a>
-          <small>07 Nov 2010</small><br>
-          <p>During the interim between GetUp and my-next-big-job I&#39;ve spent the week at a place in Brisbane called <a href='http://ennova.com.au'>Ennova</a> hanging out with such talented people as <a href='http://twitter.com/ltw_'>Lucas Willett</a> and <a href='http://twitter.com/jasoncodes'>Jason Weathered</a>. During my brief stint I was <s>roped into</s> asked to help out with a Rails 3 upgrade. Here&#39;s a semi-detailed list of what we did in order to upgrade the existing Rails 2.3.8 application to Rails 3.0.1.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2010/11/the-rails-3-upgrade"><h2>The Rails 3 Upgrade</h2></a>
+            <small>07 Nov 2010</small><br>
+            <p>During the interim between GetUp and my-next-big-job I&#39;ve spent the week at a place in Brisbane called <a href='http://ennova.com.au'>Ennova</a> hanging out with such talented people as <a href='http://twitter.com/ltw_'>Lucas Willett</a> and <a href='http://twitter.com/jasoncodes'>Jason Weathered</a>. During my brief stint I was <s>roped into</s> asked to help out with a Rails 3 upgrade. Here&#39;s a semi-detailed list of what we did in order to upgrade the existing Rails 2.3.8 application to Rails 3.0.1.</p>
 
 <h3>The Rails 3 Upgrade Handbook</h3>
 
@@ -318,8 +333,9 @@ kit = PDFKit.new(render_to_string)
 <p>I hope this helps somebody out there get up the nerve to upgrade their application to Rails 3. It&#39;s stable, it&#39;s proven to work (Gemcutter, for instance, runs Rails 3) and it&#39;s awesome. Also, with all <a href='http://edgeguides.rubyonrails.org/3_0_release_notes.html'>the new features in Rails 3</a>, how can you resist?</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

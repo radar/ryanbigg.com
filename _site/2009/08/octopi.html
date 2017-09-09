@@ -4,6 +4,13 @@
   <title>Octopi - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,19 +47,25 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2009/08/octopi"><h2>Octopi</h2></a>
-          <small>26 Aug 2009</small><br>
-          <p>There&#39;s a couple of Ruby libraries out there for interacting with Github&#39;s API but one caught my attention through recommendation through IRC channels, and that was <a href='http://github.com/fcoury/octopi'>Octopi by fcoury</a>. Octopi covers just about everything the Github API has to offer and I was going to use it for a Rails Rumble project so I did some work on it, but pulled out from the competition due to flu &amp; other commitments. In the past couple of days, I nagged fcoury about closing some of the issues on the project and he&#39;s made me a collaborator on the project so I could do it, as his time is filled with <a href='http://webbynode.com'>Webbynode</a> (they are awesome, check them out) stuff instead. </p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2009/08/octopi"><h2>Octopi</h2></a>
+            <small>26 Aug 2009</small><br>
+            <p>There&#39;s a couple of Ruby libraries out there for interacting with Github&#39;s API but one caught my attention through recommendation through IRC channels, and that was <a href='http://github.com/fcoury/octopi'>Octopi by fcoury</a>. Octopi covers just about everything the Github API has to offer and I was going to use it for a Rails Rumble project so I did some work on it, but pulled out from the competition due to flu &amp; other commitments. In the past couple of days, I nagged fcoury about closing some of the issues on the project and he&#39;s made me a collaborator on the project so I could do it, as his time is filled with <a href='http://webbynode.com'>Webbynode</a> (they are awesome, check them out) stuff instead. </p>
 
 <p>So I guess I all I have to say is: Go use the Octopi library for your Github stuff. It&#39;s awesome. </p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

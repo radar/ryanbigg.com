@@ -4,6 +4,13 @@
   <title>Caffeine and Sleep - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2012/04/caffeine-and-sleep"><h2>Caffeine and Sleep</h2></a>
-          <small>27 Apr 2012</small><br>
-          <p>I used to drink a lot of Coca Cola. I think my record was 18 375ml cans of it during a LAN party once. I didn&#39;t feel so good the morning after. I used to not
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2012/04/caffeine-and-sleep"><h2>Caffeine and Sleep</h2></a>
+            <small>27 Apr 2012</small><br>
+            <p>I used to drink a lot of Coca Cola. I think my record was 18 375ml cans of it during a LAN party once. I didn&#39;t feel so good the morning after. I used to not
 brush my teeth that often as well (compared with now, which is morning &amp; night as all good dentists recommend), and as a result I have very &quot;holey&quot; teeth and even had one extracted in February. I used to drink Coca Cola because it contained caffeine which would give me a pleasant buzz.</p>
 
 <p>Then my dentist suggested that I stop drinking drinks containing that much sugar, and so I did. I switched to Pepsi Max for a couple of years after that. Then,
@@ -72,8 +87,9 @@ wonderful. I come in to work and I&#39;ve already woken up fully and I can just 
 getting up early in the morning. If you want the &quot;Hard Mode&quot; variety, try both. It&#39;s really improved my life and I reckon it&#39;ll do the same to yours.</strong></p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

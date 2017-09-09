@@ -4,6 +4,13 @@
   <title>About me - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,11 +47,16 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <h2>Who?</h2>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <h2>Who?</h2>
 <p class="large">
   I am someone who teaches other people how to program. I do this through my mentoring and my book writing. I'm based in Melbourne, Australia.
 </p>
@@ -72,15 +87,15 @@
 
 <p>
   My best blog posts are:
-
-  <ul>
-    <li><a href='http://ryanbigg.com/2016/04/hiring-juniors'>Hiring Juniors</a></li>
-    <li><a href='http://ryanbigg.com/2010/02/congratulations'>Congratulations</a></li>
-    <li><a href='http://ryanbigg.com/2015/08/my-self-publishing-success-story'>My self-publishing success story</a></li>
-    <li><a href='http://ryanbigg.com/2013/10/violence-in-the-ruby-community'>Violence in the Ruby community</a>
-    </li>
-  </ul>
 </p>
+
+<ul>
+  <li><a href='http://ryanbigg.com/2016/04/hiring-juniors'>Hiring Juniors</a></li>
+  <li><a href='http://ryanbigg.com/2010/02/congratulations'>Congratulations</a></li>
+  <li><a href='http://ryanbigg.com/2015/08/my-self-publishing-success-story'>My self-publishing success story</a></li>
+  <li><a href='http://ryanbigg.com/2013/10/violence-in-the-ruby-community'>Violence in the Ruby community</a>
+  </li>
+</ul>
 
 <hr>
 
@@ -92,24 +107,24 @@
 
 <p>
   The proudest accomplishments of my coding career have been:
-
-  <ul>
-    <li>
-      <a href='https://cultureamp.com'>Culture Amp</a> &mdash; Built microservices in Elixir which talked to Elastic Search instances. Integrated the results from these services into our monolithic Rails application, which uses React/Redux. I have also refactored the legacy codebase to make it easier for other developers to work with, lead efforts to increase performance of slow pages within the application and mentored other developers in Ruby and Elixir.
-    </li>
-    <li>
-      <a href='https://github.com/spree/spree'>Spree</a> &mdash; I was the Community Manager for Spree for two and a half years. During this work, I grew the community substantially while managing the open source projects. Got paid to travel the world and promote Spree.
-    </li>
-
-    <li>
-      <a href='https://lifx.co'>LIFX</a> &mdash; Worked on a small team of developers to build LIFX's cloud API, using a mixture of Ruby and Go. Built a small Go project to simulate 100,000 concurrent connections to our message broker to load test it.
-    </li>
-
-    <li>
-      <a href='https://getup.org.au'>GetUp</a> &mdash; Worked with a small team of PHP developers and taught them Ruby and Rails while rebuilding the GetUp site from scratch.
-    </li>
-  </ul>
 </p>
+
+<ul>
+  <li>
+    <a href='https://cultureamp.com'>Culture Amp</a> &mdash; Built microservices in Elixir which talked to Elastic Search instances. Integrated the results from these services into our monolithic Rails application, which uses React/Redux. I have also refactored the legacy codebase to make it easier for other developers to work with, lead efforts to increase performance of slow pages within the application and mentored other developers in Ruby and Elixir.
+  </li>
+  <li>
+    <a href='https://github.com/spree/spree'>Spree</a> &mdash; I was the Community Manager for Spree for two and a half years. During this work, I grew the community substantially while managing the open source projects. Got paid to travel the world and promote Spree.
+  </li>
+
+  <li>
+    <a href='https://lifx.co'>LIFX</a> &mdash; Worked on a small team of developers to build LIFX's cloud API, using a mixture of Ruby and Go. Built a small Go project to simulate 100,000 concurrent connections to our message broker to load test it.
+  </li>
+
+  <li>
+    <a href='https://getup.org.au'>GetUp</a> &mdash; Worked with a small team of PHP developers and taught them Ruby and Rails while rebuilding the GetUp site from scratch.
+  </li>
+</ul>
 
 <hr>
 <a name="opensource"></a>
@@ -137,10 +152,8 @@
   You can see <a href='https://github.com/radar'>more examples of my work on GitHub</a>.
 </p>
 
-<p>
-
-
-        </article>
+          </article>
+        </div>
       </div>
     </div>
     <script>

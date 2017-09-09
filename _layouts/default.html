@@ -2,12 +2,20 @@
 <html>
   {% include head.html %}
   <body>
-    <div class="row">
-      {% include menu.html %}
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          {{ content }}
-        </article>
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        {% include menu.html %}
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            {{content}}
+          </article>
+        </div>
       </div>
     </div>
     <script>

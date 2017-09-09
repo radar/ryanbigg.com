@@ -4,6 +4,13 @@
   <title>Installing RDoc on Ubuntu Jaunty - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2009/07/installing-rdoc-on-ubuntu-jaunty"><h2>Installing RDoc on Ubuntu Jaunty</h2></a>
-          <small>08 Jul 2009</small><br>
-          <p>Something&#39;s changed since last time I played around with Ubuntu, some packages such as irb and rdoc live in the universal repository and, by default, this is disabled so when you go to install it it&#39;ll say it&#39;s not found:</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2009/07/installing-rdoc-on-ubuntu-jaunty"><h2>Installing RDoc on Ubuntu Jaunty</h2></a>
+            <small>08 Jul 2009</small><br>
+            <p>Something&#39;s changed since last time I played around with Ubuntu, some packages such as irb and rdoc live in the universal repository and, by default, this is disabled so when you go to install it it&#39;ll say it&#39;s not found:</p>
 
 <pre>
 sudo apt-get install rdoc
@@ -70,8 +85,9 @@ E: Package rdoc has no installation candidate
 <p>rdoc is required for installing rubygems, and that&#39;s where I got hung up for a couple of minutes before I found the <a href='http://www.ruby-lang.org/en/downloads/'>docs on ruby-lang.org</a> under Ruby on Linux.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

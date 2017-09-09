@@ -4,6 +4,13 @@
   <title>Thoughts on Go - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2014/08/thoughts-on-go"><h2>Thoughts on Go</h2></a>
-          <small>08 Aug 2014</small><br>
-          <p>I&#39;ve had an interest in Go now for about a year. I&#39;ve not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn&#39;t do much. I&#39;ve also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes&#39; go-lifx</a> project, which is Go bindings for LIFX lights. It&#39;s still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2014/08/thoughts-on-go"><h2>Thoughts on Go</h2></a>
+            <small>08 Aug 2014</small><br>
+            <p>I&#39;ve had an interest in Go now for about a year. I&#39;ve not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn&#39;t do much. I&#39;ve also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes&#39; go-lifx</a> project, which is Go bindings for LIFX lights. It&#39;s still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
 
 <p>This was the first week that not only that I wrote Go code <em>for my job</em>, but I actually got to deploy it in a live production context. And it was the first week at my new job at LIFX, too. All this little program does now is read some stats from a JSON file and report them back to our analytics service. The earlier version was written in Ruby, which meant that Ruby needed to be compiled on this box just for one little script. Having the little script in Go means that we no longer need to compile Ruby on that box; a small victory but a victory nonetheless.</p>
 
@@ -72,8 +87,9 @@
 <p>Overall, I enjoy the language and look forward to learning more about it, as well as finding other situations where we can use it at LIFX.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

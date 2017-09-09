@@ -4,6 +4,13 @@
   <title>Lan Parties - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2008/01/lan-parties"><h2>Lan Parties</h2></a>
-          <small>30 Jan 2008</small><br>
-          <p>I went to the Reloaded festival over the weekend just gone, it was awesome save for the lack of toilets (2 between 400 != good) and complete lack of decently quiet, not bright, comfortable sleeping area and the idiot who made the police come in. A bit tough on the mind, as I was still a tad zombified yesterday, but now I&#39;m back up to normal. Wookie did a wonderful job with the event even though people will always find something to complain about (and did). The main complaint was that the competitions were not ran on time, or ran way overtime (i.e. the CS:S grand final ending hours after the event was supposed to finish)</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2008/01/lan-parties"><h2>Lan Parties</h2></a>
+            <small>30 Jan 2008</small><br>
+            <p>I went to the Reloaded festival over the weekend just gone, it was awesome save for the lack of toilets (2 between 400 != good) and complete lack of decently quiet, not bright, comfortable sleeping area and the idiot who made the police come in. A bit tough on the mind, as I was still a tad zombified yesterday, but now I&#39;m back up to normal. Wookie did a wonderful job with the event even though people will always find something to complain about (and did). The main complaint was that the competitions were not ran on time, or ran way overtime (i.e. the CS:S grand final ending hours after the event was supposed to finish)</p>
 
 <p><a href="http://flickr.com/photos/radarlistener/sets/72157603816659975/"> I didn&#39;t take as many photos as last time,</a> mostly because I found other things to do, such as walking around and telling people to shut down their DC++ and FTP servers as they were lagging the network.</p>
 
@@ -72,8 +87,9 @@ So if people drop out we should still have enough for a decent one.</li>
 </ol>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

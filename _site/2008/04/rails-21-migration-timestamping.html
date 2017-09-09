@@ -4,6 +4,13 @@
   <title>Rails 2.1: Migration Timestamping - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2008/04/rails-21-migration-timestamping"><h2>Rails 2.1: Migration Timestamping</h2></a>
-          <small>03 Apr 2008</small><br>
-          <p>Rails 2.1 is right around the corner, and with it come a few new changes, and one of them is migration timestamping. Instead of adding a number before the migration, for example <em><strong>001</strong><em>create</em>forums.rb, </em>it now adds a UTC timestamp before it, for example <em><strong>20080403021817</strong><em>create</em>forums.rb</em>.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2008/04/rails-21-migration-timestamping"><h2>Rails 2.1: Migration Timestamping</h2></a>
+            <small>03 Apr 2008</small><br>
+            <p>Rails 2.1 is right around the corner, and with it come a few new changes, and one of them is migration timestamping. Instead of adding a number before the migration, for example <em><strong>001</strong><em>create</em>forums.rb, </em>it now adds a UTC timestamp before it, for example <em><strong>20080403021817</strong><em>create</em>forums.rb</em>.</p>
 
 <p>Now, you may think this is a good idea because it will stop the problem of conflicting version numbers on migrations when two developers are working on the same thing, which happens frequently and even there were a few cases at SeaLink where we had this problem and spent some time sorting it out. With the new timestamping it requires that two developers create migrations at precisely the same second, which is less common to happen than creating migrations with the same version number.</p>
 
@@ -52,8 +67,9 @@
 <p>I myself don&#39;t mind this new change, as I open migrations using Netbeans 99% of the time. There was a lot of heated debate on this in #rubyonrails recently, and there was little talk on <a href="http://dev.rubyonrails.org/ticket/11458">the actual ticket</a> which was accepted rather quickly; not that I&#39;m saying that&#39;s a bad thing. <a href="http://dev.rubyonrails.org/changeset/9122">The changeset is also available.</a></p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

@@ -4,6 +4,13 @@
   <title>Sprocket asset tags internals - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2011/06/sprocket-asset-tags-internals"><h2>Sprocket asset tags internals</h2></a>
-          <small>19 Jun 2011</small><br>
-          <p>Yesterday&#39;s post and twitter bitching caught the eye of our <a href='http://twitter.com/dhh'>fearless leader</a> who basically claimed <a href='https://twitter.com/#!/dhh/status/81987522766450688'>that I&#39;ve not made documentation patches recently</a>. I responded with a small reminder that I&#39;ve done <a href='https://twitter.com/ryanbigg/status/81988004947828736'>some documentation work</a> and went a step further and begun an <a href='http://ryanbigg.com/guides/asset_pipeline.html'>Asset Pipeline Guide</a> because I could. I could have pulled the whole &quot;Don&#39;t you know who I am?!!&quot; faux-lebrity deal, but I thought I would be humble. Append &quot;for a change&quot; to the end of the previous sentence, if you wish.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2011/06/sprocket-asset-tags-internals"><h2>Sprocket asset tags internals</h2></a>
+            <small>19 Jun 2011</small><br>
+            <p>Yesterday&#39;s post and twitter bitching caught the eye of our <a href='http://twitter.com/dhh'>fearless leader</a> who basically claimed <a href='https://twitter.com/#!/dhh/status/81987522766450688'>that I&#39;ve not made documentation patches recently</a>. I responded with a small reminder that I&#39;ve done <a href='https://twitter.com/ryanbigg/status/81988004947828736'>some documentation work</a> and went a step further and begun an <a href='http://ryanbigg.com/guides/asset_pipeline.html'>Asset Pipeline Guide</a> because I could. I could have pulled the whole &quot;Don&#39;t you know who I am?!!&quot; faux-lebrity deal, but I thought I would be humble. Append &quot;for a change&quot; to the end of the previous sentence, if you wish.</p>
 
 <p>That was incredibly fun. We should do it again some time. Have your people call my people, we&#39;ll do lunch.</p>
 
@@ -54,8 +69,9 @@
 <p>This guide now lives as the <a href='https://github.com/radar/guides/blob/master/sprockets.md'>Sprockets Internals Guide</a> on my <a href='http://github.com/radar/guides'>guides</a> repository. Check out both of them. You may learn something.</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

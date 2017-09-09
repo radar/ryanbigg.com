@@ -4,6 +4,13 @@
   <title>How Dare I! - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2009/01/how-dare-i"><h2>How Dare I!</h2></a>
-          <small>20 Jan 2009</small><br>
-          <p>I left not-so-sunny South Australia without writing anything on my blog saying when I was going! Sorry to all my loyal readers who check at <strong>least</strong> 50 times daily to see if I have updated. It has been a long time my good friends but I am finally in sunny Queensland and today was my first day back at <a href="http://mocra.com">Mocra</a> which was fantastic!</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2009/01/how-dare-i"><h2>How Dare I!</h2></a>
+            <small>20 Jan 2009</small><br>
+            <p>I left not-so-sunny South Australia without writing anything on my blog saying when I was going! Sorry to all my loyal readers who check at <strong>least</strong> 50 times daily to see if I have updated. It has been a long time my good friends but I am finally in sunny Queensland and today was my first day back at <a href="http://mocra.com">Mocra</a> which was fantastic!</p>
 
 <p>If any of you wish to come up and visit me, feel free. I do recommend however you fly up because the drive is not only costly, but very freakin&#39; long (2000km) and very freakin&#39; boring.</p>
 
@@ -65,8 +80,9 @@
 </ol>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 

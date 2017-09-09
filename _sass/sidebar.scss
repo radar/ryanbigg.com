@@ -1,0 +1,149 @@
+// Most of this was cribbed from the ex_doc source
+// https://github.com/elixir-lang/ex_doc
+
+.sidebar {
+  background: #232323;
+  color: #cecece;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  transition: all 0.25s ease-out;
+
+  text-align: center;
+
+  a {
+    text-decoration: none;
+  }
+
+  img {
+    margin-top: 20px;
+    max-width: 55%;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      background: #3CBC98;
+      transition: background 2.5s;
+      padding: 8px;
+
+      &:hover {
+        background: lighten(#3CBC98, 20);
+        transition: background 0.5s;
+      }
+
+      a {
+        color: #232323;
+      }
+    }
+  }
+}
+
+
+.sidebar-toggle {
+  position: fixed;
+  z-index: 99;
+  left: 18px;
+  top: 8px;
+  color: #ddd;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  transition: color 0.3s ease-in-out;
+  font-size: 16px;
+  will-change: transform;
+  transform: translateX(250px);
+
+  &:hover {
+    color: #ddd;
+  }
+
+  &:active,
+  &:hover,
+  &:focus {
+    outline: none;
+  }
+}
+
+body.sidebar-closed {
+  .sidebar {
+    visibility: hidden;
+    transition: visibility 0.3s ease-in-out;
+  }
+
+  .sidebar-toggle {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .content {
+    transition: padding-left 0.3s ease-in-out;
+  }
+}
+
+body.sidebar-closed {
+  .sidebar {
+    z-index: 0;
+  }
+
+  .content {
+    padding-left: 0;
+  }
+
+  .sidebar-toggle {
+    transform: none;
+    color: black;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar-toggle {
+    transform: translateX(0);
+    left: 5px;
+    top: 5px;
+  }
+
+  .sidebar-opened {
+    .content {
+      padding-left: 300px;
+      transition: padding-left 0.3s ease-in-out;
+    }
+
+    .sidebar {
+      transform: translateX(0);
+    }
+
+    .sidebar-toggle {
+      left: 18px;
+      top: 5px;
+      transform: translateX(250px)
+    }
+  }
+}
+
+
+@media screen and (max-width: 768px) {
+  body {
+    .content {
+      z-index: 0;
+      padding-left: 0;
+    }
+
+    .sidebar {
+      z-index: 3;
+      transform: translateX(-102%);
+      will-change: transform;
+      transition: transform 0.25s ease-out;
+    }
+
+    .sidebar-toggle {
+      color: black;
+    }
+  }
+}

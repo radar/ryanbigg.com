@@ -4,6 +4,13 @@
   <title>I'm Not Looking! - Ryan Bigg</title>
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+  crossorigin="anonymous"></script>
+  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +18,14 @@
 
 
   <body>
-    <div class="row">
-      <div class="menu col-xs-4 col-md-4">
+    <div class="main">
+      <button class="sidebar-toggle">
+        <span class="fa fa-bars" aria-hidden="true"></span>
+      </button>
+      <div class='sidebar'>
+        <div class="menu">
   <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Programmer / Author / Mentor</small><br>
-  <img src='/images/me.png' />
+  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
 
   <ul>
     <li>
@@ -37,13 +47,18 @@
       <a href="/contact-me">Contact me</a>
     </li>
   </ul>
+
+  <img src='/images/me.png' />
 </div>
 
-      <div class="col-xs-8 col-md-8 col-lg-8">
-        <article>
-          <a href="/2008/03/im-not-looking"><h2>I'm Not Looking!</h2></a>
-          <small>07 Mar 2008</small><br>
-          <p>After finishing my contract with SeaLink on the 25th January, I took a two week break from doing anything Ruby on Rails and then jumped straight back into it. I&#39;ve recently tied up my loose end with JustComputing and they&#39;re happy enough that I&#39;m done with their system that they gave me 4 x 500GB harddrives. I&#39;m now doing some contract work for SA Window Cleaning and I&#39;m hoping that I&#39;ll be done in about a month. After that, Dad wants me to do a job for him for his work (photocopier company) and I&#39;ve still got offers from NetFox and CarbonPlanet, as well as Lama Chandrasena.</p>
+      </div>
+
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <a href="/2008/03/im-not-looking"><h2>I'm Not Looking!</h2></a>
+            <small>07 Mar 2008</small><br>
+            <p>After finishing my contract with SeaLink on the 25th January, I took a two week break from doing anything Ruby on Rails and then jumped straight back into it. I&#39;ve recently tied up my loose end with JustComputing and they&#39;re happy enough that I&#39;m done with their system that they gave me 4 x 500GB harddrives. I&#39;m now doing some contract work for SA Window Cleaning and I&#39;m hoping that I&#39;ll be done in about a month. After that, Dad wants me to do a job for him for his work (photocopier company) and I&#39;ve still got offers from NetFox and CarbonPlanet, as well as Lama Chandrasena.</p>
 
 <p>I appreciate everyone&#39;s interest in wanting me to do work for them, but unfortunately I&#39;m tied down for the next couple of months at least, which is a good thing. I&#39;d love to work for NetFox, as that was the first thing to gain my interest when I went to the first Ruby Users group back in May last year, but I wanted a break from anything networking (after doing a couple of years of it at TAFE), so I went for SeaLink and that was a blast!</p>
 
@@ -52,8 +67,9 @@
 <p>Thanks again to the people who have asked me if I want to work for them. I hope to talk with you all at the Ruby Users Group meeting next Tuesday!</p>
 
 
-          <div id='disqus_thread'></div>
-        </article>
+            <div id='disqus_thread'></div>
+          </article>
+        </div>
       </div>
     </div>
 
