@@ -4,6 +4,8 @@ layout: post
 title: Getting started with Ruby and Rails
 ---
 
+Last updated: 1st November 2017
+
 There are a lot of people who wish to get started with Ruby and Rails, but
 don't know where to start. I hope that this post will serve as a guide for
 those people.
@@ -55,12 +57,19 @@ Your environment is now setup and now you're wondering where to go from here.
 I *always* recommend the [Ruby Koans](http://rubykoans.com/) which, as their
 site says:
 
-> The Koans walk you along the path to enlightenment in order to learn Ruby. The goal is to learn the Ruby language, syntax, structure, and some common functions and libraries. We also teach you culture. Testing is not just something we pay lip service to, but something we live. It is essential in your quest to learn and do great things in the language.
+> The Koans walk you along the path to enlightenment in order to learn Ruby.
+> The goal is to learn the Ruby language, syntax, structure, and some common
+> functions and libraries. We also teach you culture. Testing is not just
+> something we pay lip service to, but something we live. It is essential in
+> your quest to learn and do great things in the language.
 
 The Koans are a fantastic introduction to Ruby and if I had my way, it'd be
-where all newbies started to learn. You don't have to complete them all, just
-try your best. It's time I admitted: I've never actually completed the Koans
-myself. One day I might.
+where all newbies started to learn. I encourage anyone who attempts these to
+pause once in a while and think about why a certain method or syntax works the
+way it does.
+
+You don't have to complete them all, just try your best. It's time I admitted:
+I've never actually completed the Koans myself. One day I might.
 
 ### The Well-Grounded Rubyist
 
@@ -72,15 +81,13 @@ very first version of this book (Ruby for Rails) is what I learned Ruby from.
 I don't link to it here because it was out of date when I read it and that
 makes it even more out of date now.
 
-### Jumpstart Labs Tutorials
+### Learn Ruby the Hard Way
 
-**FREE**
+**Free online**
 
-I also recommend checking out the [Jumpstart Labs
-Tutorials](http://tutorials.jumpstartlab.com/), which are written by the
-people who run [Turing Academy](http://turing.io). These include tutorials
-that will introduce you to Ruby in 100 minutes, as well as some Sinatra and
-Rails tutorials so that you can wrap your head around applying Ruby to web development.
+[Learn Ruby the Hard Way](https://learncodethehardway.org/ruby/) gives a
+non-nonsense introduction to Ruby, taking you from `puts` all the way up to a
+web-based game in over 50 exercises.
 
 ### Practical Object-Oriented Design in Ruby (POODR)
 
@@ -88,16 +95,27 @@ Rails tutorials so that you can wrap your head around applying Ruby to web devel
 
 The [POODR book by Sandi Metz](http://www.poodr.com/) is one of my favourite Ruby books and gives some great examples of how to write excellent Ruby code in an easy-to-read style. Sandi Metz's conference talks are also wonderful watching.
 
-## Getting started with Rails
+### 99 Bottles
+
+**PAID**
+
+The [99 Bottles book](https://www.sandimetz.com/99bottles/) also by Sandi Metz
+and Katrina Owen gives some great advice on how to reorganise code without
+going too far.
+
+# Getting started with Rails
 
 ### Rails 4 in Action
 
-**NON-FREE**
+**PAID**
 
 It'd be remiss of me to not mention my own book, [Rails 4 in
 Action](https://manning.com/bigg2) in this section. In the book, we build a
 ticket-tracking application from the ground up using Behaviour Driven
-Development. Thousands of people have found it to be a great introduction to
+Development. We cover things like nested resources, authentication, building an
+API and deployment.
+
+Thousands of people have found it to be a great introduction to
 Rails, and some people have even gotten Rails jobs after having read it.
 
 ### Rails Tutorial
@@ -116,10 +134,11 @@ Before you go ahead and read this list, you should take some time to go through 
 
 * [Confident Ruby](http://www.confidentruby.com/)
 * [Eloquent Ruby](http://www.amazon.com/Eloquent-Ruby-Addison-Wesley-Professional-Series/dp/0321584104)
+* [Clean Ruby](http://www.clean-ruby.com/)
 
 ### Screencasts
 
 * [Ruby Tapas](http://rubytapas.com) - Bite sized screencasts about Ruby
-* [Railscasts](https://railscasts.com) - Screencasts about Ruby on Rails
+* [Daily Drip](https://www.dailydrip.com/topics/rails) - Bite sized screencasts about Rails
 
 If you think of anything that should be added to this post, please leave a comment.
