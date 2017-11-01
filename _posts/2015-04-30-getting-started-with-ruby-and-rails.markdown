@@ -49,6 +49,14 @@ brew install mysql
 
 ## Getting started with Ruby
 
+### Code School
+
+**FREE**
+
+[Code School's Ruby videos](https://www.codeschool.com/learn/ruby) are a great
+introduction to Ruby and I would certainly recommend them to anyone who wants
+to get started with learning Ruby.
+
 ### The Ruby Koans
 
 **FREE**
