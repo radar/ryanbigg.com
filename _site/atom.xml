@@ -4,13 +4,96 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-11-02T09:17:14+11:00</updated>
+ <updated>2017-11-03T14:50:18+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>How require loads a gem</title>
+   <link href="http://ryanbigg.com/2017/11/how-require-loads-a-gem"/>
+   <updated>2017-11-03T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2017/11/how-require-loads-a-gem</id>
+   <content type="html"><![CDATA[<p>In modern versions of Ruby, you can use the good old <code>require</code> method to load a gem.
+For instance, if you&#39;ve got the gem <code>activesupport</code> installed, you can require
+everything inside of activesupport (including the kitchen sink) with this line:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">require 'active_support/all'
+</code></pre></div>
+<p>You might&#39;ve just tried to open up <code>irb</code> and run that line, and it might&#39;ve
+worked for you... assuming you have activesupport actually installed. It works
+on my machine, at least.</p>
+
+<p>But how does <code>require</code> know where to find gems&#39; files in Ruby? Wouldn&#39;t those
+files need to be on the load path? Well, thanks to a cheeky hack in RubyGems
+code, no, those files don&#39;t need to be on the load path. Instead, these gems&#39;
+<code>lib</code> directories are added to the load path as they&#39;re needed. I&#39;ll show you
+how.</p>
+
+<h2>A default load path</h2>
+
+<p>When you initialize <code>irb</code> it already has some directories added to its load
+path, which you can see with this code:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">p $LOAD_PATH
+</code></pre></div>
+<p>My list looks like this:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">[
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/gems/2.4.0/gems/did_you_mean-1.1.0/lib",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/site_ruby/2.4.0",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/site_ruby/2.4.0/x86_64-darwin16",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/site_ruby",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/vendor_ruby/2.4.0",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/vendor_ruby/2.4.0/x86_64-darwin16",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/vendor_ruby",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/2.4.0",
+  "/Users/ryanbigg/.rubies/ruby-2.4.1/lib/ruby/2.4.0/x86_64-darwin16"
+]
+</code></pre></div>
+<p>These paths make it possible for me to do things like <code>require &#39;net/http&#39;</code>
+(haha just kidding I use <code>rest-client</code>) and <code>require &#39;csv&#39;</code>. At least one of
+those directories contains files called <code>net/http.rb</code> and <code>csv.rb</code> which makes
+this possible.</p>
+
+<p>But none of these directories include a file called <code>active_support/all</code>, so
+how does <code>require &#39;active_support/all</code> still work?!</p>
+
+<h2>The cheeky hack</h2>
+
+<p>The &quot;cheeky hack&quot; in the bundled RubyGems code <a href="https://github.com/ruby/ruby/blob/f7fb0867897ced531a33a014fb92998b0ed97ac0/lib/rubygems/core_ext/kernel_require.rb#L25-L138">is shown here in all its
+glory</a>.
+The comment at the top of this file gives away what happens: </p>
+
+<blockquote> 
+  <p>
+    When you call <code>require 'x'</code>, this is what happens:
+  </p>
+
+  <ul>
+  <li>If the file can be loaded from the existing Ruby loadpath, it
+  is.</li>
+  <li>Otherwise, installed gems are searched for a file that matches. If it's found in gem 'y', that gem is activated (added to the loadpath).</li>
+  </ul>
+</blockquote>
+
+<p>I won&#39;t walk through the whole thing -- consider it homework! -- but the short
+version is that RubyGems <a href="https://github.com/ruby/ruby/blob/f7fb0867897ced531a33a014fb92998b0ed97ac0/lib/rubygems/core_ext/kernel_require.rb#L57-L60">checks to see if there are any unresolved dependencies</a> and if there&#39;s not, then it will try a regular <code>require</code>. This results in  a <code>LoadError</code> being raised, which is <a href="https://github.com/ruby/ruby/blob/f7fb0867897ced531a33a014fb92998b0ed97ac0/lib/rubygems/core_ext/kernel_require.rb#L123-L138">then rescued</a> a little further down.</p>
+
+<p>This error message is checked to see if it ends with the path that we passed
+in, and if it does then it calls <code>Gem.try_activate(path)</code>. This method will
+activate any gem that matches the specified path. Inside of the <code>activesupport</code>
+gem, it <a href="https://github.com/rails/rails/blob/c3db9297c8886c404eddef806f40a6cb31c898c3/activesupport/lib/active_support/all.rb">has a file called
+&#39;active_support/all&#39;</a>, and so the activesupport gem will be activated here. </p>
+
+<p>Activating a gem adds that gem&#39;s <code>lib</code> directory to the load path, which will
+then make requiring any of that gem&#39;s files possible.</p>
+
+<p>Once the gem is activated, this <code>require</code> method <a href="https://github.com/ruby/ruby/blob/f7fb0867897ced531a33a014fb92998b0ed97ac0/lib/rubygems/core_ext/kernel_require.rb#L135">tries to require the path
+once
+more</a>. Due to the gem being activated, it is now possible to <code>require &#39;active_support/all&#39;</code>.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Rails, Dropzone.js, Amazon S3 and imgix</title>
@@ -2393,187 +2476,6 @@ In that tutorial, you build a Twitter-like application from scratch.</p>
 <span class="p">})</span>
 </code></pre></div>
 <p>I hope this post can help other people who are looking for the same thing.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Ubuntu, Ruby, ruby-install, chruby, Rails and You</title>
-   <link href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"/>
-   <updated>2014-10-05T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you</id>
-   <content type="html"><![CDATA[<p><strong>Last updated: July 13th 2017</strong></p>
-
-<p><strong>This beginner&#39;s guide will set your machine up with Ruby 2.4.1 using chruby+ruby-install and Rails 5.1.2 and is specifically written for a <em>development</em> environment on Ubuntu 17.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
-
-<div class="warning">
-  Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
-</div>
-
-<p>This guide will cover installing a couple of things:</p>
-
-<ul>
-<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
-<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.4.1</strong>: at the time of writing the newest current stable release of Ruby.</li>
-<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
-<li><strong>Rails 5.1.2</strong>: at the time of writing the newest current stable release of Rails.</li>
-</ul>
-
-<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
-
-<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
-
-<p>If you&#39;re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
-
-<h3>Housekeeping</h3>
-
-<p>First of all, we&#39;re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don&#39;t run into any package-related issues, such as not being able to install some packages.</p>
-
-<p>Next, we&#39;ll run another command which will install the essential building tools that will be used to install Ruby:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">sudo apt-get install build-essential
-</code></pre></div>
-<p>And now we&#39;re ready to install ruby-install.</p>
-
-<h3>ruby-install</h3>
-
-<p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I&#39;ll repeat them here so you don&#39;t have to go over there:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">wget -O ruby-install-0.6.1.tar.gz \
-  https://github.com/postmodern/ruby-install/archive/v0.6.1.tar.gz
-tar -xzvf ruby-install-0.6.1.tar.gz
-cd ruby-install-0.6.1/
-sudo make install
-</code></pre></div>
-<p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ ruby-install -V
-</code></pre></div>
-<p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install: 0.6.1
-</code></pre></div>
-<h3>Ruby</h3>
-
-<p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install ruby 2.4.1
-</code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.4.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">wget -O chruby-0.3.9.tar.gz \
-  https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
-tar -xzvf chruby-0.3.9.tar.gz
-cd chruby-0.3.9/
-sudo make install
-</code></pre></div>
-<p>After this has been installed, we&#39;ll need to load chruby automatically, which we can do by adding these lines to your shells configuration file using the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">cat &gt;&gt; ~/.$(basename $SHELL)rc &lt;&lt;EOF
-source /usr/local/share/chruby/chruby.sh
-source /usr/local/share/chruby/auto.sh
-EOF
-</code></pre></div>
-<p>In order for this to take effect, we&#39;ll reload the shell</p>
-<div class="highlight"><pre><code class="language-" data-lang="">exec $SHELL
-</code></pre></div>
-<p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
-
-<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.1
-</code></pre></div>
-<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.1
-</code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.4.1</code> for example -- assuming that we have Ruby 2.4.0 installed first!</p>
-
-<p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-linux]
-</code></pre></div>
-<h3>Rails</h3>
-
-<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem install rails -v 5.1.2 --no-rdoc --no-ri
-</code></pre></div>
-<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
-
-<h3>MySQL</h3>
-
-<p>If you&#39;re planning on using the <code>mysql2</code> gem for your application then you&#39;ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you&#39;ll get an error when the gem tries to compile its native extensions:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Building native extensions.  This could take a while...
-ERROR:  Error installing mysql2:
-    ERROR: Failed to build gem native extension.
-
-    /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
-checking for ruby/thread.h... yes
-checking for rb_thread_call_without_gvl() in ruby/thread.h... yes
-checking for rb_thread_blocking_region()... yes
-checking for rb_wait_for_single_fd()... yes
-checking for rb_hash_dup()... yes
-checking for rb_intern3()... yes
-checking for mysql_query() in -lmysqlclient... no
-checking for main() in -lm... yes
-checking for mysql_query() in -lmysqlclient... no
-checking for main() in -lz... yes
-checking for mysql_query() in -lmysqlclient... no
-checking for main() in -lsocket... no
-checking for mysql_query() in -lmysqlclient... no
-checking for main() in -lnsl... yes
-checking for mysql_query() in -lmysqlclient... no
-checking for main() in -lmygcc... no
-checking for mysql_query() in -lmysqlclient... no
-*** extconf.rb failed ***
-Could not create Makefile due to some reason, probably lack of necessary
-libraries and/or headers.  Check the mkmf.log file for more details.  You may
-need configuration options.
-</code></pre></div>
-<p>Install this package using <code>sudo apt-get install libmysqlclient-dev</code> and then the <code>mysql2</code> gem will install fine.</p>
-
-<h3>PostgreSQL</h3>
-
-<p>Similar to the <code>mysql2</code> gem&#39;s error above, you&#39;ll also get an error with the <code>pg</code> gem if you don&#39;t have the <code>libpq-dev</code> package installed you&#39;ll get this error:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Building native extensions.  This could take a while...
-ERROR:  Error installing pg:
-    ERROR: Failed to build gem native extension.
-
-    /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
-checking for pg_config... no
-No pg_config... trying anyway. If building fails, please try again with
- --with-pg-config=/path/to/pg_config
-checking for libpq-fe.h... no
-Can't find the 'libpq-fe.h header
-*** extconf.rb failed ***
-Could not create Makefile due to some reason, probably lack of necessary
-libraries and/or headers.  Check the mkmf.log file for more details.  You may
-need configuration options.
-</code></pre></div>
-<p>Install this package using <code>sudo apt-get install libpq-dev</code>.</p>
-
-<h3>SQLite3</h3>
-
-<p>Just like MySQL and PostgreSQL before it, attempting to install the <code>sqlite3</code> gem will result in this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
-
-    /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
-checking for sqlite3.h... no
-sqlite3.h is missing. Try 'port install sqlite3 +universal',
-'yum install sqlite-devel' or 'apt-get install libsqlite3-dev'
-and check your shared library search path (the
-location where your sqlite3 shared library is located).
-*** extconf.rb failed ***
-Could not create Makefile due to some reason, probably lack of necessary
-libraries and/or headers.  Check the mkmf.log file for more details.  You may
-need configuration options.
-</code></pre></div>
-<p>Fix this issue by running <code>sudo apt-get install libsqlite3-dev</code>.</p>
-
-<h3>JavaScript Runtime</h3>
-
-<p>Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run <code>rake assets:precompile</code> without one of these, you&#39;ll see this message:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See
-https://github.com/sstephenson/execjs for a list of available runtimes.
-</code></pre></div>
-<p>To fix this error install <code>nodejs</code>, which comes with a JavaScript runtime:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">sudo apt-get install nodejs
-</code></pre></div>
-<h3>Fin</h3>
-
-<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>.</p>
-
-<p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 ]]></content>
  </entry>
  
