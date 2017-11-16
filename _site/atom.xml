@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2017-11-06T12:40:32+11:00</updated>
+ <updated>2017-11-16T15:07:12+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -2205,10 +2205,10 @@ rails_app=&gt;
    <link href="http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you"/>
    <updated>2015-06-09T00:00:00+10:00</updated>
    <id>http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you</id>
-   <content type="html"><![CDATA[<p><strong>Last updated: July 13th, 2016</strong></p>
+   <content type="html"><![CDATA[<p><strong>Last updated: November 15th, 2017</strong></p>
 
 <p>
-  <strong>This beginner's guide will set up with Ruby 2.4.1, chruby, ruby-install and Rails 5.1.2 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
+  <strong>This beginner's guide will set up with Ruby 2.4.2, chruby, ruby-install and Rails 5.1.4 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
 
 <p>This guide is <em>almost</em> a copy of my <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but this one has instructions for Macs.</p>
@@ -2218,9 +2218,9 @@ rails_app=&gt;
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
 <li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.4.1</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Ruby 2.4.2</strong>: at the time of writing the newest current stable release of Ruby.</li>
 <li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
-<li><strong>Rails 5.1.2</strong>: at the time of writing the newest current stable release of Rails.</li>
+<li><strong>Rails 5.1.4</strong>: at the time of writing the newest current stable release of Rails.</li>
 </ul>
 
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
@@ -2231,7 +2231,11 @@ rails_app=&gt;
 
 <h3>Housekeeping</h3>
 
-<p>The first thing we&#39;re going to need to install is XCode which you can get from the Mac App Store. We&#39;ll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
+<p>The first thing we&#39;re going to need to install is XCode which you can get from the Mac App Store.</p>
+
+<p>After you have that installed, we&#39;re going to need to open Terminal to execute a few commands. Use Spotlight (CMD + Space) to open it by typing in &quot;Terminal&quot; and pressing Enter. You should see a white window open. This is where we&#39;ll be putting the following commands via copy and paste.</p>
+
+<p>We&#39;ll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
 <div class="highlight"><pre><code class="language-" data-lang="">xcode-select --install
 </code></pre></div>
 <p>First of all, we&#39;re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href="https://brew.sh">homebrew</a>. We can install this by using this command:</p>
@@ -2253,7 +2257,7 @@ rails_app=&gt;
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">ruby-install --latest ruby
 </code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.4.1 installed.</p>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.4.2 installed.</p>
 
 <p>Now we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bash_profile</code> (or <code>~/.zshrc</code> if you&#39;re using ZSH):</p>
 <div class="highlight"><pre><code class="language-" data-lang="">source /usr/local/opt/chruby/share/chruby/chruby.sh
@@ -2267,20 +2271,20 @@ source /usr/local/opt/chruby/share/chruby/auto.sh
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.1
+<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.2
 </code></pre></div>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.1
+<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.2
 </code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.4.1</code> for example -- assuming that we have Ruby 2.4.1 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.4.2</code> for example -- assuming that we have Ruby 2.4.2 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-darwin16]
+<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
 </code></pre></div>
 <h3>Rails</h3>
 
 <p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem install rails -v 5.1.2 --no-document
+<div class="highlight"><pre><code class="language-" data-lang="">gem install rails -v 5.1.4 --no-document
 </code></pre></div>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
