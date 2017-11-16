@@ -2,11 +2,11 @@
 wordpress_id: RB-363
 layout: post
 title: Mac OS X, Ruby, ruby-install, chruby and You
-ruby_version: 2.4.1
-rails_version: 5.1.2
+ruby_version: 2.4.2
+rails_version: 5.1.4
 ---
 
-**Last updated: July 13th, 2016**
+**Last updated: November 15th, 2017**
 
 <p>
   <strong>This beginner's guide will set up with Ruby {{page.ruby_version}}, chruby, ruby-install and Rails {{page.rails_version}} and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
@@ -100,7 +100,7 @@ This file tells `chruby` which Ruby we want to use by default. To change the rub
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-darwin16]
+ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
 ```
 
 ### Rails
