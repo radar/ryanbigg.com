@@ -30,7 +30,11 @@ If you're looking for a good Rails book, I wrote one called [Rails 4 in Action](
 
 ### Housekeeping
 
-The first thing we're going to need to install is XCode which you can get from the Mac App Store. We'll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.
+The first thing we're going to need to install is XCode which you can get from the Mac App Store.
+
+After you have that installed, we're going to need to open Terminal to execute a few commands. Use Spotlight (CMD + Space) to open it by typing in "Terminal" and pressing Enter. You should see a white window open. This is where we'll be putting the following commands via copy and paste.
+
+We'll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.
 
     xcode-select --install
 
