@@ -5,231 +5,55 @@ title: Exploding your Rails app with dry-rb and rom
 published: false
 ---
 
-The Rails Way™ for building applications is that code belongs in one of four
-distinct locations:
+When Rails came out, it was revolutionary. There was an order to everything.
 
-* Controllers
-* Models
-* Views
-* Helpers
+Code for your business logic or code that talks to the database _obviously_
+belongs in the model.
+
+Code that presents data in either HTML or JSON formats _obviously_ belongs in
+the view.
+
+Any special view logic goes into helpers.
+
+The thing that ties all of this together is _obviously_ the controller.
+
+It was (and still is) neat and orderly. Getting started with a Rails
+application is incredibly easy thanks to this ordering.
 
 The Rails Way™ enforces these conventions as a suggestive way that this is the
 One True Way™ to organise a Rails application. This Rails Way™ suggests that,
 despite there being over a decade since Rails was crafted, that there still is
-no better way to organise an application than the MVC pattern. While I agree
-that this way is extremely simple, I do not agree that this is the best way to
-organise a Rails application in 2018.
+no better way to organise an application than the MVC pattern.
 
-In a traditional Rails app, code that talks to the database _obviously_ belongs
-in the model. Code that presents data in either HTML or JSON formats
-_obviously_ belongs in the view.  Any special view logic goes into helpers
-(_obviously_) and the thing that ties them all together is _obviously_ the
-controller.
+While I agree that this way is extremely simple and great for getting started
+within a Rails applicati, I do not agree that this is the best way to organise
+a Rails application in 2018 with long-term maintenance in mind.
 
-Of course, there are more directories in `app` these days, like `mailers` and
-`jobs`, but typically the 4 listed above is where the parts of your application
-go.
+In this guide, I want to show an _alternative_ viewpoint on how a Rails
+application should be organised. It is not to say that this is The Rails Way™
+2.0 and everyone would be silly to stick with The Original Rails Way™. It's merely
+an _alternative_ viewpoint that I think will lead to applications that are
+easier to work with over the longer-term. Think of it as a suggestion more than
+a rule.
 
-### Service objects
+The Original Rails Way™ falls down in at least two major areas in my opinion:
+models and controllers.
 
-If you have code that doesn't really fit any of these places, it's
-community-tradition to move them out to _service objects_ to make
-it easier to test those parts. However, most of the time this happens it is
-simply cutting the code from the controller and pasting it into another class.
-This code ends up in a new directory called `app/services`, and the guidelines
-for organising this directory differ wildly from application to application.
-Here's a completely contrived example of a service object, which is not too far
-from the truth of a normal service object. This one lives at
-`app/services/create_project.rb`:
+Due to the lack of choice in a Rails application, most of a Rails application's
+code ends up in the model. The model muddies validation and persistence logic
+with business logic. The end result after even just a few months can be
+unsightly. All this logic is muddled up as the model is the only One True Place
+to put this sort of code.
 
-```ruby
-class CreateProject
-  def self.call(params)
-    project = Project.new(params)
-    if project.save
-      send_emails(project)
-      [true, project]
-    else
-      [false, project.errors]
-    end
-  end
-
-  private_class_method
-
-  def self.send_emails(project)
-    # code to send some emails goes here
-  end
-end
-```
-
-This class would then be used in a controller like this:
-
-```ruby
-def create
-  [result, project] = CreateProject.call(project_params)
-  if result
-    flash[:notice] = "Project has been created successfully"
-    redirect_to project
-  else
-    flash[:alert] = "Project could not be created"
-    render :new
-  end
-end
-```
-
-The benefit of moving this code out to a service object is that you can now
-test the logic for creating a project without involving a request. You can pass
-it `params` and assert what the output is, all without involving the controller
-at all. This may seem like a good pattern to follow, but I believe it adds a
-layer of misdirection to the controller. You might think you would find the
-logic of the `create` action in the `create` action, so you visit that
-action... only to find your logic is in this mysterious `CreateProject` class
-instead.
-
-The code for `CreateProject` is messy: it intertwines responsibilities of
-validating an object and sending emails and returning a result all within the
-same method. Testing the individual parts will be difficult due to the design
-of this method. If this service object is to grow, it will only get
-messier and messier.
-
-This service object has relocated the logic for the action to a separate class
-with the great intention of disconnecting it from a HTTP request, but the code
-inside `CreateProject` still isn't very neat or orderly.  The responsibilities
-are too intertwined.
-
-What would be better is something that would allow is to explode the call
-method into a chain of connected methods. The methods should follow this order:
-
-1. Validate the parameters for a new project
-2. Persist the record to the database
-3. Send emails
-
-However, if step #1 failed then we would not expect step #2 and step #3 to run.
-Similarly, if step #2 failed then we would not expect step #3 to run. We could
-try writing this logic ourselves using convoluted `if` statements, but there is
-a better way: the `dry-transaction` gem. Here's an example of the above service
-object, written in a `dry-transaction` way:
-
-```ruby
-require "dry/transaction"
-
-class CreateProject
-  include Dry::Transaction
-
-  step :validate
-  step :persist
-  step :send_emails
-
-  def validate(input)
-    project = Project.new(input)
-    if project.valid?
-      Success(project)
-    else
-      Failure(validation.errors)
-    end
-  end
-
-  def persist(project)
-    project.save
-
-    Success(project)
-  end
-
-  def send_emails(project)
-    # code to send emails
-
-    Success(project)
-  end
-end
-```
-
-This class represents a _transaction_ a user undertakes with your application,
-hence the name `dry-transaction`. It's still a service object, but it's a
-_cleaner_ service object. This class separates out each step into this own
-clearly defined method. The `Success` or `Failure` constants used here come
-from another `dry-rb` gem called `dry-monads`, and they indicate if the method
-is successful or not. If the `validate` step returns a `Failure` then the
-`persist` step will not be called.
-
-Unlike our service object from before, if we added another step in here it
-would simply mean another line in the `step` definitions, and another method in
-the class. It is then very clear the order the methods run in and the new
-method would likely be simple too.
-
-If you wanted to test what `validate` did when it
-received certain parameters, you can now do that. If you wanted to test the
-`persist` step, you can now do that too. Previously, it was impossible to test
-each step of our `CreateProject` service. To acheive this same goal of
-testability and separate-ness in our old `CreateProject` class without the use
-of the `dry-transaction` or `dry-monads` gem, we would need to write our code
-like this:
-
-```ruby
-class CreateProject
-  def call(params)
-    [success, result] = validate(params)
-    return result unless success
-
-    [success, result] = persist(result)
-    return result unless success
-
-    send_emails(project)
-  end
-
-  def validate(params)
-    project = Project.new(params)
-    if project.valid?
-      [true, project]
-    else
-      [false, project.errors]
-    end
-  end
-
-  def persist(project)
-    project.save
-    [true, project]
-  end
-
-  def send_emails(project)
-    # code to send emails
-  end
-end
-```
-
-This code is gross and really hard to mentally parse. It doesn't even come
-close to the `dry-transaction` code. It's for this reason I think that
-`dry-transaction` should be used as a pattern for service objects in Rails
-applications. The cleanliness of the class is definitely worth it. The
-testability of each steps inside the transaction is dead-simple too.
-
-In this guide, we'll be using `dry-transaction` to build more service objects
-like these. We'll end up with code like this in our controllers:
-
-
-```ruby
-def create
-  action = Projects::Create.new
-  result = action.(project_params)
-  if result.success?
-    flash[:notice] = "Project has been created successfully"
-    redirect_to result.project
-  else
-    flash[:alert] = "Project could not be created"
-    render :new
-  end
-end
-```
-
-This code is not too far off from the service object code from before, but
-under the hood it will use `dry-transaction` to abstract the logic out of the
-controller, away from the request / response cycle and make our application
-code that much cleaner.
+The controllers aren't any better. In the controller you have code that talks
+to the models, asking them to create, read, update or delete records in a
+database. And then this controller code might do more: send emails, enqueue
+background jobs, make requests to external services. Testing all these
+intertwining parts individually is hard work.
 
 ### The problem with Active Record Models
 
-The major issue with The Rails Way™ is that it ties together quite a number of
-things in one of these places: the model. The model is responsible for _at
-least_ the following things:
+An Active Record model is responsible for _at least_ the following things:
 
 * Mapping database rows to Ruby objects
 * Containing validation rules for those objects
@@ -257,8 +81,13 @@ to the `tickets` association for the `Project` instance, and then for each of
 these `Ticket` objects it's going to call its `user` method, which will load a
 `User` record from the database.
 
-Someone unfamiliar with Rails -- like, say, a junior Ruby developer -- might think
-this is bog-standard Ruby code because that's _exactly_ what it looks like.
+Someone unfamiliar with Rails -- like, say, a junior Ruby developer with very
+little prior Rails exposure -- might think this is bog-standard Ruby code
+because that's _exactly_ what it looks like. There's something called
+`tickets`, and you're calling a `map` method on it, so they might guess that
+`tickets` is an array. Then `uniq` further indicates that. But `tickets` is an
+association method, and so a database query is made to load all the associated
+tickets.
 
 This kind of code is very, very easy to write in a Rails application because
 Rails applications are intentionally designed to be easy. "Look at all the
@@ -266,21 +95,28 @@ things I'm _not_ doing" and all that.
 
 However, this code executes one query to load all the `tickets`, and then one
 query _per ticket_ to fetch its users. This is a classic N+1 query, which Rails
-does not stop you from doing. It's a classic footgun, or facerake.
+does not stop you from doing. It's a classic Active Record footgun. Active
+Record makes it _much_ too easy to call out to the database from within the
+model.
 
 This code combines business logic intent with database querying and it's _the_
-major problem with Active Record's design. And mongoid's too, since it follows
+major problem with Active Record's design. And
+[mongoid](https://rubygems.org/gems/mongoid)'s too, since it follows
 the Active Record pattern.
 
 Database queries are cheap to make because Active Record makes it so darn easy.
 When looking at the performance of a large, in-production Rails application,
 the number one thing I come across is slow database queries caused by methods
-just like this.
+just like this. Active Record makes it way too easy to make calls to the
+database. Once these database calls are ingrained in the model like this and
+things start depending on those calls being made, it becomes hard to refactor
+this code to reduce those queries.
 
-The intention here is very innocent: get all the users who have contributed to
-the project by iterating through all the tickets and finding their users. The
-ramifications on performance on a large project ([with thousands of
-tickets](https://github.com/rails/rails)) are large enough to warrant concern.
+The intention here with the `contributors` method is very innocent: get all the
+users who have contributed to the project by iterating through all the tickets
+and finding their users. The ramifications on performance on a large `Project`
+instance ([with thousands of tickets](https://github.com/rails/rails)) are
+large enough to warrant concern.
 
 Of course, there is a way to make this all into two queries through Rails:
 
@@ -298,6 +134,18 @@ _power of eager loading_. (Which you can [read more about in the Active Record
 Querying
 guide](http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations).)
 
+You can of course not load all the tickets at the start either, you could load
+only the 100 most recent tickets:
+
+```ruby
+class Project < ApplicationRecord
+  def contributors
+    tickets.recent.includes(:user).map(&:user).uniq
+  end
+end
+```
+
+
 But I think this is still too much of a mish-mash of database querying and
 business logic and leads to messier-than-necessary code. This is because Active
 Record _allows_ us to do this sort of messy querying very easily; intertwining
@@ -313,9 +161,11 @@ database, as we can see with the contributors method example at the start of
 this guide.
 
 It should be possible to work with the business logic of your application
-without these calls being made; and without the database at all. The model
-should only define a representation for the data — not knowing also about that
-data’s validations, callbacks or persistence. If a model knows about those
+without these calls being made; and without the database at all. Being able to
+reach into the database from your business logic _should_ be hard work. Your
+business logic should have everything it needs to work by that stage. The model
+should only contain this business logic — not knowing also about that
+data’s validations, callbacks or persistence too. If a model knows about those
 things, it has too many responsibilities.
 
 The Single Responsibility Principle says that a class or a module should only
@@ -340,14 +190,19 @@ talk to the database. Clear lines between the responsibilities here makes it so
 much easier to work with this code.
 
 It becomes easier then to say: this class works with only validations and this
-other class talks to the database.
+other class talks to the database. There's no muddying of the waters between
+the responsibilties of the classes.
 
-ROM draws these crystal clear lines in a simple manner. There’s code to talk to the database in one file. Code to validate that data in another. And so on. The design patterns that ROM encourages are leaps and bounds better than Active Record. This guide will serve as an example of that.
+ROM draws these crystal clear lines in a simple manner. There’s code to talk to
+the database in one file. Code to validate that data in another. And so on. The
+design patterns that ROM encourages are leaps and bounds better than Active
+Record. This guide will serve as an example of that.
 
-
-So we should try to avoid this from the outset when building new Rails
-applications. The way we can accomplish that is with a few new gems:
-rom-rb and the dry-rb suite of gems.
+We're going to use the rom-rb suite of gems -- and some from the dry-rb suite
+too -- to interact with our database and to write better code for working with
+objects from a database. We'll keep our validation and persistence logic
+completely separate to our business logic. You will be amazed at the
+cleanliness once we're done.
 
 ### Installing ROM
 
@@ -1077,6 +932,196 @@ Ok, it looks like our `ProjectRepository#all` method is now working and
 fetching records from the database successfully.
 
 
+### Service objects
+
+If you have code that doesn't really fit any of these places, it's
+community-tradition to move them out to _service objects_ to make
+it easier to test those parts. However, most of the time this happens it is
+simply cutting the code from the controller and pasting it into another class.
+This code ends up in a new directory called `app/services`, and the guidelines
+for organising this directory differ wildly from application to application.
+Here's a completely contrived example of a service object, which is not too far
+from the truth of a normal service object. This one lives at
+`app/services/create_project.rb`:
+
+```ruby
+class CreateProject
+  def self.call(params)
+    project = Project.new(params)
+    if project.save
+      send_emails(project)
+      [true, project]
+    else
+      [false, project.errors]
+    end
+  end
+
+  private_class_method
+
+  def self.send_emails(project)
+    # code to send some emails goes here
+  end
+end
+```
+
+This class would then be used in a controller like this:
+
+```ruby
+def create
+  [result, project] = CreateProject.call(project_params)
+  if result
+    flash[:notice] = "Project has been created successfully"
+    redirect_to project
+  else
+    flash[:alert] = "Project could not be created"
+    render :new
+  end
+end
+```
+
+The benefit of moving this code out to a service object is that you can now
+test the logic for creating a project without involving a request. You can pass
+it `params` and assert what the output is, all without involving the controller
+at all. This is a good separation of concerns.
+
+But the code for `CreateProject` is messy: it intertwines responsibilities of
+validating an object and sending emails and returning a result all within the
+same method. Testing the individual parts will be difficult due to the design
+of this method. If this service object is to grow, it will only get
+messier and messier.
+
+This service object has relocated the logic for the action to a separate class
+with the great intention of disconnecting it from a HTTP request, but the code
+inside `CreateProject` still isn't very neat or orderly.  The responsibilities
+are too intertwined.
+
+What would be better is something that would allow is to explode the call
+method into a chain of connected methods. The methods should follow this order:
+
+1. Validate the parameters for a new project
+2. Persist the record to the database
+3. Send emails
+
+However, if step #1 failed then we would not expect step #2 and step #3 to run.
+Similarly, if step #2 failed then we would not expect step #3 to run. We could
+try writing this logic ourselves using convoluted `if` statements, but there is
+a better way: the `dry-transaction` gem. Here's an example of the above service
+object, written in a `dry-transaction` way:
+
+```ruby
+require "dry/transaction"
+
+class CreateProject
+  include Dry::Transaction
+
+  step :validate
+  step :persist
+  step :send_emails
+
+  def validate(input)
+    project = Project.new(input)
+    if project.valid?
+      Success(project)
+    else
+      Failure(validation.errors)
+    end
+  end
+
+  def persist(project)
+    project.save
+
+    Success(project)
+  end
+
+  def send_emails(project)
+    # code to send emails
+
+    Success(project)
+  end
+end
+```
+
+This class represents a _transaction_ a user undertakes with your application,
+hence the name `dry-transaction`. It's still a service object, but it's a
+_cleaner_ service object. This class separates out each step into this own
+clearly defined method. The `Success` or `Failure` constants used here come
+from another `dry-rb` gem called `dry-monads`, and they indicate if the method
+is successful or not. If the `validate` step returns a `Failure` then the
+`persist` step will not be called.
+
+Unlike our service object from before, if we added another step in here it
+would simply mean another line in the `step` definitions, and another method in
+the class. It is then very clear the order the methods run in and the new
+method would likely be simple too.
+
+If you wanted to test what `validate` did when it
+received certain parameters, you can now do that. If you wanted to test the
+`persist` step, you can now do that too. Previously, it was impossible to test
+each step of our `CreateProject` service. To acheive this same goal of
+testability and separate-ness in our old `CreateProject` class without the use
+of the `dry-transaction` or `dry-monads` gem, we would need to write our code
+like this:
+
+```ruby
+class CreateProject
+  def call(params)
+    [success, result] = validate(params)
+    return result unless success
+
+    [success, result] = persist(result)
+    return result unless success
+
+    send_emails(project)
+  end
+
+  def validate(params)
+    project = Project.new(params)
+    if project.valid?
+      [true, project]
+    else
+      [false, project.errors]
+    end
+  end
+
+  def persist(project)
+    project.save
+    [true, project]
+  end
+
+  def send_emails(project)
+    # code to send emails
+  end
+end
+```
+
+This code is gross and really hard to mentally parse. It doesn't even come
+close to the `dry-transaction` code. It's for this reason I think that
+`dry-transaction` should be used as a pattern for service objects in Rails
+applications. The cleanliness of the class is definitely worth it. The
+testability of each steps inside the transaction is dead-simple too.
+
+In this guide, we'll be using `dry-transaction` to build more service objects
+like these. We'll end up with code like this in our controllers:
+
+
+```ruby
+def create
+  action = Projects::Create.new
+  result = action.(project_params)
+  if result.success?
+    flash[:notice] = "Project has been created successfully"
+    redirect_to result.project
+  else
+    flash[:alert] = "Project could not be created"
+    render :new
+  end
+end
+```
+
+This code is not too far off from the service object code from before, but
+under the hood it will use `dry-transaction` to abstract the logic out of the
+controller, away from the request / response cycle and make our application
+code that much cleaner.
 
 
 
