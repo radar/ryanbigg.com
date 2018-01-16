@@ -1999,24 +1999,128 @@ write this test now:
 ```ruby
 context "persist" do
   let(:repo) { double(:repo) }
+  before { allow(subject).to receive(:repo) { repo } }
 
   it "step is successful" do
     project = double(:project)
     expect(repo).to receive(:create).with(name: "Test Project") { project }
+    subject.persist({name: "Test Project"})
   end
 end
 ```
 
+In this test, we're using a double for the repo because we don't want to make
+this test depend on a real database. It's enough to stub out that particular
+dependency. The test only cares that there's _something_ called `repo` and that
+the `repo` receives a `create` method with the attributes when `persist` is
+called.
 
+Let's write the code to make this test pass in
+`app/transactions/create_project.rb`, putting these new methods directly
+underneath `validate`:
 
+```ruby
+def persist(input)
+  project = repo.create(input)
 
+  Success(project)
+end
 
-* Write tests for persist step
-* Implement CreateProject#persist
-* Hook it all up the controller
+private
 
+def repo
+  ProjectRepository.new(ROM.env)
+end
+```
 
+We've defined the `repo` method here also because our class needs the
+repository in order to create the project.
 
+To make our `CreateProject` use this step, we'll need to specify a `step` for
+it near the top of the class. This `persist` should run after the `validate`
+step, so we'll put the two steps in this order:
+
+```ruby
+step :validate
+step :persist
+```
+
+Running the test again with `bundle exec rspec
+spec/transactions/create_project_spec.rb` will show all three examples passing:
+
+```
+3 examples, 0 failures
+```
+
+This `CreateProject` class encapsulates all the steps for creating a project
+within our application. It's like a traditional service object, but with the
+clear separation between the individual methods in this class it makes it much
+easier to read and understand. This `CreateProject` class knows nothing about
+how it is used; it could be used as a part of a gem's CLI tool, or as a part of
+a Rails request. It doesn't care one way or the other.
+
+The `CreateProject` class is now fully formed and we can now use this in the
+`create` action for `ProjectsController`. Let's turn that `create` action into
+this:
+
+```ruby
+def create
+  transaction = CreateProject.new
+  transaction.(project_params) do |result|
+    result.success do |project|
+      flash[:notice] = "Project has been created."
+      redirect_to project
+    end
+
+    result.failure :validate do |errors|
+      @project = Project.new(project_params)
+      @errors = errors
+      flash[:alert] = "Project could not be created."
+      render :new
+    end
+  end
+end
+```
+
+This controller action now calls out to the transaction and the transaction
+handles all the responsibility of validating and persisting the project. The
+controller doesn't know how that validation or persistence happens. What the
+controller knows now is that the transaction can be successful or it can fail
+at the `validate` step.
+
+If the transaction is successful, then the user will see the "Project has been
+created." message and be redirected to the `show` action for that new project.
+
+If the transaction fails, but only if it fails during the validate step, then
+the user will see the form once again and be shown the errors from the
+validation step.
+
+Writing the action in this way means that we are given the opportunity to
+handle different failure cases individually. For instance, if we had another
+step where this could fail, we could present the user with a more specific
+error message for that error or perhaps notify our bug tracking app about that
+particular path.
+
+With this change to our controller's action we've simplified the controller
+code massively. But do the tests still work? Let's run them with `bundle exec
+rspec` to find out:
+
+```
+8 examples, 0 failures
+```
+
+All of our application still works, and that includes the two feature tests in
+`spec/features/creating_projects_spec.rb` which test how the user interacts
+with our application. These tests act as integration tests, ensuring that all
+our different parts from the controller down to the relation work together in
+harmony.
+
+If at any point we detect a bug in what we've done, we _could_ write a
+regression test as a feature test to cover that edgecase. But we could also
+write a regression test as a unit test to cover that too, since the bug is very
+likely to be in one of the small classes or methods we've defined. By exploding
+the responsibilities of our Rails application into these smaller classes, we've
+made it so much easier to reason about what individual part is doing.
 
 
 ### Adding tickets
