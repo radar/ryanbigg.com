@@ -13,7 +13,7 @@ belongs in the model.
 Code that presents data in either HTML or JSON formats _obviously_ belongs in
 the view.
 
-Any special view logic goes into helpers.
+Any special (or complex) view logic goes into helpers.
 
 The thing that ties all of this together is _obviously_ the controller.
 
@@ -30,13 +30,15 @@ While I agree that this way is still extremely simple and great for getting
 started within a Rails application, I do not agree that this is the best way to
 organise a Rails application in 2018 with long-term maintenance in mind. A
 decade of Ruby development has produced some great alternatives to Rails' MVC
-directory structure.
+directory structure that are definitely worthwhile to consider.
 
 In this guide, I want to show an _alternative_ viewpoint on how a Rails
-application should be organised. It is not to say that this is The Rails Way™
-2.0 and everyone would be silly to stick with The Original Rails Way™. It's merely
-an _alternative_ viewpoint that I think will lead to applications that are
-easier to work with over the longer-term. Think of it as a suggestion.
+application should be organised. It is not to say that my suggestion is The
+Rails Way™ 2.0 and everyone would be silly to stick with The Original Rails
+Way™ and Rails 6 should ultimately adopt this directory structure or face a
+certain doom. It's merely an _alternative_ viewpoint that I think will lead to
+applications that are easier to work with over the longer-term. Think of it as
+a suggestion more than doomsaying, please.
 
 The Original Rails Way™ falls down in at least two major areas in my opinion:
 models and controllers.
@@ -55,36 +57,44 @@ to the models, asking them to create, read, update or delete records in a
 database. And then this controller code might do more: send emails, enqueue
 background jobs, make requests to external services. There is no
 pre-determined, widely agreed-upon location for this logic; the controller is
-the place.
+the place. A controller action can often have request logic, business logic,
+external API calls and response logic all tied up in the one method.
 
 Testing all these intertwining parts individually is hard work. To make sure
 that it all works together, you often have to write many feature and/or request
-tests to test the different ways that the controller is called and utilized.
+tests to test the different ways that the controller action is called and utilized.
 The logic of the controller's actions get intimiately accquainted with the
 request for that action. The lines between the incoming request, the business
 logic and the outgoing response become blurred. The controller's
-responsibilities are complex.
+responsibilities are complex because there is no other sensible place for this
+code to go.
 
-If the controller action is even mildly complex, then the solution is to just
-add more private methods to the controller. But then you have a jumble of
-private methods at the bottom of the controller, with no clear indications of
-what methods are used in what actions. It can be quite a mess. Or you'll just
-go ahead and chuck a method into `ApplicationController` because
-greater-than-one controllers use that method.
+If the controller action is even mildly complex, then one solution is to just
+add more private methods to the controller, abstracting out the complexities to
+these methods. But then you have a jumble of private methods at the bottom of
+the controller, with no clear indications of what methods are used in what
+actions. It can be quite a mess. Or you'll just go ahead and chuck a method
+into `ApplicationController` because greater-than-one controllers use that
+method.
 
 In this guide, I want to show an alternative viewpoint on how you can structure
 code that talks to a database, as well as an alternative viewpoint on code that
 would _usually_ belong in a controller. This code leads to a clearer separation
 of concerns between the many different responsibilities of a Rails application.
 Code doesn't just have to go into controllers, models, views and helpers. We
-can explode it apart better than that.
+can explode it apart better than that. Code doesn't have to live in a very
+small handful of locations.
 
 The Rails Way™ doesn't have to be the _only_ way. In recent years, there's been
 a groundswell of support behind gems like [rom-rb](http://rom-rb.org/), and the
-[dry-rb](http://dry-rb.org/) suite of gems. These gems can make your
-application's code leaner, cleaner and simpler to understand. In this guide,
-I'll demonstrate how you can use them to clean up some code that you might
-write in a Rails application.
+[dry-rb](http://dry-rb.org/) suite of gems. These gems are the alternative I
+was speaking of earlier.
+
+These gems can make your application's code leaner, cleaner and simpler to
+understand. In this guide, I'll demonstrate how you can use them to clean up
+some code that you might write in a Rails application. Your models will be lean
+and clean. Your controllers will be lean and clean. And the things we use to
+replace this complexity will also be lean and clean.
 
 But first, I want to go more into depth about the problems with Active Record
 models.
@@ -154,6 +164,11 @@ this code to reduce those queries. Even tracking down where queries are being
 made can be difficult due to the natural implicitness that _some_ method calls
 produce database queries.
 
+Thankfully, there are tools like [Skylight](https://skylight.io) and [New
+Relic](https://newrelic.com) that point directly at the "smoking guns" of
+performance hits in a Rails application. Tools like these are invaluable. It
+would be nice to not need them so much in the first place, however.
+
 The intention here with the `contributors` method is very innocent: get all the
 users who have contributed to the project by iterating through all the tickets
 and finding their users. If we had a `Project` instance ([with thousands of
@@ -185,6 +200,10 @@ class Project < ApplicationRecord
     tickets.recent.includes(:user).map(&:user).uniq
   end
 end
+
+class Ticket < ApplicationRecord
+  scope :recent, -> { limit(100) }
+end
 ```
 
 
@@ -194,19 +213,11 @@ logic in this method? It's hard to tell. This is because Active
 Record _allows_ us to do this sort of super-easy querying; intertwining
 Active Record's tentacles with our business logic.
 
-Active Record’s simplicity makes it incredibly easy to get going, but in the
-long-haul of a Rails project Active Record makes a model’s code hard to work
-with. It’s not so straightforward to just work with an instance of a model and
-not have the database be involved. Methods can intentionally or unintentionally
-make database calls. Active Record makes it far too easy to call out to the
-database, as we can see with the contributors method example at the start of
-this guide.
-
 It should be possible to work with the business logic of your application
-without these calls being made; and without the database at all. Being able to
-reach into the database from your business logic _should_ be hard work. Your
-business logic should have everything it needs to work by that stage. The model
-should only contain this business logic — not knowing also about that
+without these database calls being made; and without the database at all. Being
+able to reach into the database from your business logic _should_ be hard work.
+Your business logic should have everything it needs to work by that stage. The
+model should only contain this business logic — not knowing also about that
 data’s validations, callbacks or persistence too. If a model knows about those
 things, it has too many responsibilities.
 
@@ -218,11 +229,11 @@ association to be added. How about a scope, a class method or a plain old
 regular method, like the contributors one? All more reasons why changes could
 happen to the class.
 
-Active Record flies in the face of the Single Responsibility Principle. I would
-go as far as to say this: Active Record leads you to writing code that is hard
-to maintain from the very first time you set foot in a Rails application. Just
-look at any sizeable Rails application. The models are usually the messiest
-part and I really believe Active Record is the cause.
+An Active Record model flies in the face of the Single Responsibility
+Principle. I would go as far as to say this: Active Record leads you to writing
+code that is hard to maintain from the very first time you set foot in a Rails
+application. Just look at any sizeable Rails application. The models are
+usually the messiest part and I really believe Active Record is the cause.
 
 Having a well-defined boundary between different pieces of code makes it easier
 to work with each piece. Validations and persistence should be their own
@@ -233,10 +244,12 @@ much easier to work with this code.
 
 It becomes easier then to say: this class works with only validations and this
 other class talks to the database. There's no muddying of the waters between
-the responsibilties of the classes.
+the responsibilties of the classes. Each class has perhaps not _one_ reason to
+change, but at least _fewer_ reasons to change than Active Record classes.
 
-ROM draws these crystal clear lines in a simple manner. There’s code to talk to
-the database in one file. Code to validate that data in another. And so on. The
+In contrast with Active Record, the ROM (Ruby Object Mapper) library draws
+these crystal clear lines in a simple manner. There’s code to talk to the
+database in one file. Code to validate that data in another. And so on. The
 design patterns that ROM encourages are leaps and bounds better than Active
 Record. This guide will serve as an example of that.
 
@@ -259,12 +272,12 @@ in my opinion that leads to better code design.
 Rather than having a single class that encapsulates all of the logic of working
 with databases, ROM chooses to split this logic over several separate classes:
 
-* Mapping database rows to Ruby objects (Mappers)
-* Containing validation rules for those objects (Validation schemas, with the
-  [dry-validation](https://github.com/dry-rb/dry-validation) gem.
 * Managing the CRUD operations of those objects in the database (Repositories)
 * A place to put complicated database queries (Relations)
-* Containing business logic for your application (Plain Ol' Ruby Classes)
+* Containing business logic for your application (Plain Ol' Ruby Classes that
+  inherit from `ROM::Struct`)
+* Containing validation rules for those objects (Validation schemas, with the
+  [dry-validation](https://github.com/dry-rb/dry-validation) gem).
 
 This makes it easier to test each part individually. The business logic in your
 Plain Ol' Ruby Class isn't interspersed with Active Record methods. It's not
@@ -276,32 +289,36 @@ The easiest way to show you how this approach is better than the Active Record
 one is to demonstrate it within a brand new Rails application, free from Active
 Record.
 
-Here's a Rails 5.1.4 application I've prepared earlier: https://github.com/radar/exploding-rails-rom-dry-example-app
+Here's a Rails 5.1.4 application I've prepared earlier:
+https://github.com/radar/exploding-rails-rom-dry-example-app
 
 It has [a few
 modifications](https://github.com/radar/exploding-rails-rom-dry-example-app/commit/2c4d6a7b8b9a5548b4aeaaec43e47dea7a61df72)
-to the regular app:
+from a Vanilla Rails application:
 
 * `config/application.rb` has been re-configured to not require `rails/all`,
   but to instead pick-and-choose the components of Rails we want. The list
   explicitly does _not_ include `active_record/railtie`, which would load
-  Active Record.
+  Active Record. We're actively avoiding using Active Record.
 * `config/environments/development.rb` had this line removed:
   `config.active_record.migration_error = :page_load`. There's no point
   configuring Active Record if it is removed.
 * The `Gemfile` includes the `pg`, `rom-rb` and `rom-sql` gems, which we'll be
-  using to interact with a database.
+  using to interact with a PostgreSQL database.
 * There's a new initializer at `config/initializers/rom.rb`, which configures a
   default database connection for ROM to use. This was taken from the [ROM
   documentation, "Rails
   Setup"](http://www.rom-rb.org/4.0/learn/getting-started/rails-setup/). This
   initializer loads the `DATABASE_URL` environment variable, which is
-  configured in `.env`.  This `.env` file is loaded by the `dotenv-rails` gem
-  in the `Gemfile`, but only in the `development` environment.
+  configured in another file called `.env`.  This `.env` file is loaded by the
+  `dotenv-rails` gem in the `Gemfile`, but only in the `development`
+  environment.
 * The `Rakefile` has this line in it: `require 'rom/sql/rake_task'`. This
   requires the Rake tasks for generating / running migrations from the
   `rom-sql` gem. We'll need these because Active Record's aren't going to be
   available.
+* The `app/views/layouts/application.html.erb` contains a few lines loading in
+  Bootstrap 4.0, just to make the application look better than the default.
 
 These modifications are necessary to remove Active Record completely and to set
 up ROM in our application.
@@ -328,9 +345,17 @@ Great! Now let's start generating the pieces for our application.
 
 ### Generating our first ROM-powered relation, repository, mapper, model and migration
 
+ROM splits the logic for working with your database and the records returned by
+queries over a few separate files: relations, repositories, mappers and models.
+We'll need to create each of these files to make it possible to work with
+records in our `projects` table.
+
+#### Generating the relation
+
 The first thing we'll look at with ROM is relations. Relations are where the
-queries to your tables belong. We'll gradually work up to the ROM-equivalent of
-our `Project#contributors` method. To start off, we'll generate a `Project`
+queries to your tables belong.
+
+To start off, we'll generate a `Project`
 relation by running the generator provided by the `rom-rails` gem:
 
 ```
@@ -353,6 +378,10 @@ class ProjectRelation < ROM::Relation[:sql]
 end
 ```
 
+Relations in ROM are where you define code that talks directly to your
+database. This uses some Ruby code to build queries, as you can see in the
+commented out `all` example.
+
 This relation is configured to use the gateway specified in
 `config/initializers/rom.rb`. Then, the schema of the `projects` table of the
 database is inferred automatically with the `schema` method's call. We could
@@ -365,11 +394,21 @@ shows that you _could_ define an `all` method that fetched the `id` and `name`
 fields for the records in the table, and ordered those records by their `id`
 fields. For now, we'll leave this code commented out.
 
-Relations in ROM don't work alone; they need a repository. Repositories in ROM
-are classes that your application calls to perform queries on the database.
-These repository classes call out to the `Relation` classes to perform the
-queries on your database. Before we can make any queries to our database, we'll
-need a repository. Let's generate one now:
+We can use relations directly in the console (once we've setup the table):
+
+```ruby
+ROM.env.relations[:projects].by_pk(1).one
+```
+
+This method chain will use the relation to try to find a record with the ID=1
+(`by_pk(1)`). Queries in relations by default will return all the records that
+match the query in an array. But with this particular query, we only want one
+result, and so we tell ROM this with the `one` method.
+
+But you don't call relations directly in ROM codebases. Instead, you call them
+via another class, called a Repository. Repository classes act as an
+intermediary between your application and database code. Let's generate a
+repository now:
 
 ```
 rails g rom:repository project
@@ -415,7 +454,6 @@ This generates the following code at `app/mappers/project_mapper.rb`:
 ```ruby
 class ProjectMapper < ROM::Mapper
   relation :projects
-
   register_as :project
 
   # specify model and attributes ie
@@ -427,18 +465,21 @@ class ProjectMapper < ROM::Mapper
 end
 ```
 
-The `relation` line tells the mapper what relation this mapper links to. The
-`register_as` registers this mapper as a mapper for `:project` resources. This
-name _must_ match up with the name used in our `ProjectRepository`'s `command`
-line.
+The `relation` line tells ROM that we want this mapper to be used for mapping
+any results returned from the `projects` relation.
 
-The commented out lines here define the behaviour of the mapper. Let's
-uncomment these and transform them into this:
+The `register_as` registers this mapper to be accessible as `:project`, which
+is how we're accessing it currently in the repository. This name _must_ match
+up with the name used in our `ProjectRepository`'s `command` line.
+
+The commented out lines here define the behaviour of the mapper, specifying
+which model and attributes we want to use for our mapping. Let's uncomment the
+model and the first attribute (`:name`), but remove the `:email` attribute,
+leaving our mapper's code to be this:
 
 ```ruby
 class ProjectMapper < ROM::Mapper
   relation :projects
-
   register_as :project
 
   model Project
@@ -465,40 +506,30 @@ is easy.
 
 We might be tempted here to reach for `ActiveModel::Model` here, as its
 supposed to turn regular classes into ones that will be compatible with your
-Rails app's forms, and calls like `Project.new(name: "New Project")`. While
-this is true, it also adds in some class-level validation methods, and this
-means that if we use `ActiveModel::Model` inside our class, it will still fall
-prey to combining validation and business logic in the one class. This is the
-sort of thing that we're trying to avoid by not using Active Record in the
+Rails app's forms, and allow for calls like `Project.new(name: "New Project")`.
+While this is true, it also adds in some class-level validation methods, and
+this means that if we use `ActiveModel::Model` inside our class, it will still
+fall prey to combining validation and business logic in the one class. This is
+the sort of thing that we're trying to avoid by not using Active Record in the
 first place. We're very intentionally here trying to keep our business logic
 and validation separate to make our code very easy to understand.
 
-It's for this reason that we're going to use one of dry-rb's gems:
-[dry-struct](https://dry-rb.org/gems/dry-struct). This gem provides an
-interface similar to another one of Piotr Solnica's gems:
-[virtus](https://rubygems.org/gems/virtus). The main difference here is that
-there is no attribute writers for the instances once they're initialized. For
-instance, in a Rails or Virtus "model" you are able to do this:
+It's for this reason that we're going to use `ROM::Struct` objects. These
+objects are designed to be very light immutable objects. The immutability means
+that you cannot re-set an attribute once it has been set during the
+initialization. For instance, in a Rails model you are able to do
+this:
 
 ```ruby
 project = Project.new(name: "A name")
 project.name = "A new name"
 ```
 
-But in `dry-struct` instances, there are no attribute writers and so you can't
+But in `ROM::Struct` instances, there are no attribute writers and so you can't
 do this in your code at all. Instead, you would need to create a new instance
 with the same attributes.
 
-Then first thing that we need to do to use this gem is to add it to our
-`Gemfile`:
-
-```ruby
-gem "dry-struct", "~> 0.4.0"
-```
-
-And then to run `bundle install`.
-
-The second thing we need to do to use `dry-struct` is to define a `Types` module
+The first thing we need to do to use `ROM::Struct` is to define a `Types` module
 within our application. This `Types` module provides some attribute types for
 things like strings and integers that we can use to enforce that attributes are
 of a given type on our model classes. You may also define custom types in this
@@ -523,7 +554,7 @@ model at `app/models/application_model.rb`:
 ```ruby
 require 'types'
 
-class ApplicationModel < Dry::Struct
+class ApplicationModel < ROM::Struct
   def self.inherited(klass)
     super
 
@@ -542,10 +573,10 @@ end
 ```
 
 This class does quite a few things. The first thing is that it inherits from
-`Dry::Struct`. By inheriting from `Dry::Struct`, this model acts in a similar
+`ROM::Struct`. By inheriting from `ROM::Struct`, this model acts in a similar
 fashion to the Active Record models we know and... well, the ones we know.
 
-`Dry::Struct` allows us to create new instances of this model, just like we would with a
+`ROM::Struct` allows us to create new instances of this model, just like we would with a
 traditional model. For example, we will still be able to run this code in `rails console`
 to get a new `Project` instance with a `name` attribute set to the specified
 value:
@@ -556,7 +587,7 @@ Project.new(name: "Test Project")
 
 This class defines an `inherited` method, which is automatically called
 whenever another class inherits from this one. This method initially calls
-`super`, which will call `Dry::Struct`'s own `inherited` method.
+`super`, which will call `ROM::Struct`'s own `inherited` method.
 
 Immediately after the `super`, we extend the class with
 the `ActiveModel::Naming` module. This adds methods to the
@@ -598,12 +629,12 @@ We _could_ avoid doing this, but the code might seem a little too alien from
 the Rails that we're used to, so I am suggesting this little bit of "evil" to
 save some time.
 
-The next two lines are from `Dry::Struct`. They are setting the constructor
+The next two lines are from `ROM::Struct`. They are setting the constructor
 type and an `id` attribute on classes that inherit from `ApplicationModel`.
-The `constructor_type` method tells the `dry-struct` gem that if we initialize
+The `constructor_type` method tells ROM that if we initialize
 this object with missing keys -- like in the above example how we're missing
 the `id` attribute -- that the default for that attribute (or `nil`) should be
-used instead. If we didn't specify this `constructor_type`, `Dry::Struct` would
+used instead. If we didn't specify this `constructor_type`, `ROM::Struct` would
 make it so that we needed to specify all the attributes:
 
 ```ruby
@@ -613,8 +644,8 @@ Project.new(id: 1, name: "Test Project")
 But in our application, we will want to use these model instances to represent
 objects that haven't yet been persisted back to the database; objects that
 _don't_ have an `id` parameter. For instance, in our `new` action for a
-`ProjectsController` -- yet to be
-written, but stay with me -- we would expect this code to work just fine:
+`ProjectsController` -- yet to be written, but stay with me -- we would expect
+this code to work just fine:
 
 ```ruby
 def new
@@ -625,12 +656,12 @@ end
 We don't know what the `id` or `name` of the object at this point, and so we
 can't specify either of them. The model must be OK with us leaving these out,
 and so this is why we use the `constructor_type :schema` line: it relaxes
-`Dry::Struct` a touch.
+`ROM::Struct` a touch.
 
 Underneath `constructor_type`, we outline that the models should have an `id`
-attribute that is optional.By using `Types::Strict` for this attribute, if we
+attribute that is optional. By using `Types::Strict` for this attribute, if we
 pass in something other than `id` as an integer the type checking built into
-`Dry::Struct` will complain:
+`ROM::Struct` will complain:
 
 ```ruby
 Project.new(id: "not-an-integer-id")
@@ -638,11 +669,16 @@ Dry::Struct::Error ([Project.new] "not-an-integer-id" (String) has invalid type
 for :id violates constraints (type?(Integer, "not-an-integer-id") failed))
 ```
 
-This error emssage tells us that `Project.new` expects `id` to be an integer,
-but it's not. This is a good idea because it enforces at the class-level that
-all attributes of the model must be of a particular type. How many times have
-you tried to add a number to an attribute, only to realise the attribute is a
-string, not an integer? By using `Dry::Struct` we prevent these sort of issues.
+This error message tells us that `Project.new` expects `id` to be an integer,
+but it's not. The error message says `Dry::Struct::Error`, as `Dry::Struct` is
+the superclass of `ROM::Struct`. `dry-struct` is the gem that provides the
+`Dry::Struct` class.
+
+This type of type checking is a good idea because it enforces at the
+class-level that all attributes of the model must be of a particular type. How
+many times have you tried to add a number to an attribute, only to realise the
+attribute is a string, not an integer? By using `ROM::Struct` we prevent these
+sort of issues.
 
 The only special bit of logic required here that we have to hand-roll in the
 `ApplicationModel` class is the `persisted?` method, which is used by Rails
@@ -691,7 +727,7 @@ class.
 
 Notice how the `Project` class here contains _no_ information at all about how
 this entity is validated or even persisted to the database. It's a
-plain-ol'-ruby class that is accentuated with `Dry::Struct`.
+plain-ol'-ruby class that is accentuated with `ROM::Struct`.
 
 We've now created a relation, a repository, a mapper and a model. We've
 _exploded_ our traditional Rails model into 4 distinct files with 4 distinct
@@ -702,7 +738,8 @@ responsibilities:
 * Mapper: Converts Hash results from Repository commands (create, update,
   delete) to instances of the `Project` class
 * Model: A bare-bones representation of `Project` records within our
-  application, accentuated with some hand-picked pieces of `ActiveModel`.
+  application, which uses `ROM::Struct`, accentuated with some hand-picked
+  pieces of `ActiveModel`.
 
 There's a clear _single responsibility_ for each of these classes that is
 sorely lacking in a traditional Rails model. Exploding our Rails model into
@@ -742,10 +779,9 @@ end
 
 If you've used the [`sequel` gem](https://rubygems.org/gems/sequel) before, you
 might recognise the syntax. This is because this syntax _is_ from the Sequel
-gem! The `rom-sql` gem uses it under the hood to speak to the database. If you
-want to learn more about migrations, read the [Sequel
-migrations](https://github.com/jeremyevans/sequel/blob/master/doc/migration.rdoc)
-documentation.
+gem! The `rom-sql` gem uses the Sequel gem under the hood to speak to the
+database. If you want to learn more about migrations and their synta, read the [Sequel
+migrations documentation](https://github.com/jeremyevans/sequel/blob/master/doc/migration.rdoc).
 
 This migration will now create a table called `projects`. That table will have
 a primary key called `id`, and it will have a `name` column that's a `String`,
@@ -780,18 +816,27 @@ project = repo.create(name: "Test Project")
 
 We must initialize the repository with `ROM.env` here, as that object contains
 configuration data about how to connect to our database. Go ahead and peak at
-what `ROM.env` is in the console:
+what `ROM.env` is in the console if you would like:
 
 ```
 ROM.env
 => #<ROM::Container gateways...
 ```
 
-Once we've initialized the repository, we can then perform commands against it.
+Once we've initialized the repository, we can then call methods from that class.
 We call the `create` command on the `repo`, passing it attributes just like we
-would with `Model.create` within a regular Rails app.
+would with `Model.create` within a regular Rails app. This `create` method is
+defined by the `commands` line at the top of the repository class:
 
-The return value here is a `Project` instance:
+```
+class ProjectRepository < ROM::Repository::Root
+  root :projects
+
+  commands :create, update: :by_pk, delete: :by_pk, mapper: :project
+  ...
+```
+
+The return value from `create` is a `Project` instance:
 
 ```
 => #<Project id=1 name="Test Project">
@@ -819,10 +864,12 @@ end
 ```
 
 This `ProjectMapper` class defines its `model` as `Project`, and that's how our
-repository knows what class to use for objects returned by `create`.
+repository knows what class to use for objects returned by `create`. The
+repository asks the mapper to do the mapping, and the mapper uses the model to
+map the results to instance of that model.
 
-This instance `Project` is a very lightweight one. It can respond to `id`, `name` and
-`persisted?`:
+This `Project` instance is a very lightweight one. It can respond to `id`,
+`name` and `persisted?`:
 
 ```ruby
 >> project.id
@@ -844,21 +891,26 @@ Well, let's take a look at that now.
 
 ### Connecting a Rails controller with ROM
 
-In this guide, I'm not suggesting to get rid of everything that Rails contains.
-So far, just Active Record. Some zealots would have you ditch everything Rails
-entirely, but I think Rails has some good parts too, namely things like its
-router and views. Controllers in Rails can be great too, just as long as the
-logic in those controllers is kept to a minimum of handling incoming requests
-and outgoing responses.
+So far, we've built a good replacement for what would normally be a `Project`
+model within Rails. But this is off in its own part of the application now,
+disconnected from everything else. It's time that we connected these pieces to
+our application and made them do something useful.
 
-In this section, we're going to use those traditional parts of Rails in
-conjunction with the ROM code that we've just written. We're going to write a
-skinny controller to interact with our skinny ROM code.
+Some zealots would have you ditch everything Rails entirely and to build an
+application using _all_ of the new shiny tools, but I think Rails has some good
+parts too, namely things like its router and views. Controllers in Rails can be
+great too, just as long as the logic in those controllers is kept to a minimum
+of handling incoming requests and outgoing responses.
+
+In this section, we're going to use those traditional parts of Rails -- the
+router, the controllers and the views -- in conjunction with the ROM code that
+we've just written. We're going to write a skinny controller to interact with
+our skinny ROM code. It's going to be sweet.
 
 We're going to start by create a form that lets users of this application create
 projects. It's going to be a traditional Rails form:
 
-<IMAGE GOES HERE>
+![New Project](/images/exploding/new_project.png)
 
 The only thing special about this form is that it's going to submit data to a
 controller action, and that action is going to insert data into a database
@@ -925,10 +977,10 @@ end
 ```
 
 Important to note here is the `repo` method right at the end which instantiates
-a new `ProjectRepository` instance, just as we've done in the controller. The
-`create` action in this controller looks almost _exactly_ like a normal
-`create` action, but rather than calling `create` on the model class (i.e.
-`Project.create`) it calls it on the repo instead: `repo.create`.
+a new `ProjectRepository` instance, just as we've done in the console in the
+past. The `create` action in this controller looks almost _exactly_ like a
+normal `create` action, but rather than calling `create` on the model class
+(i.e.  `Project.create`) it calls it on the repo instead: `repo.create`.
 
 Also important to note that there's a `.to_h` and `symbolize_keys` call on the
 end of the code inside `project_params`. This is because the `create` method
@@ -944,7 +996,7 @@ now:
 ```erb
 <h2>Projects</h2>
 
-<%= link_to "New Project", new_project_path %>
+<%= link_to "New Project", new_project_path, class: "btn btn-primary" %>
 ```
 
 Next, we'll need the form for the new action, which belongs at
@@ -977,7 +1029,9 @@ comes up:
 ```erb
 <%= flash[:notice] %>
 <body>
-  <%= yield %>
+  <div class="container">
+    <%= yield %>
+  </div>
 </body>
 ```
 
@@ -998,10 +1052,8 @@ But this doesn't really demonstrate the power of rom-rb or dry-rb too much. The
 intention with this section was more to just demonstrate that it's _possible_
 to use ROM and Rails together very easily.
 
-If you want to see what the code
-
-Let's look at using our repository now for reading this project back out of the
-database.
+Let's look at how we can use our repository now for reading this project back
+out of the database.
 
 ### Showing a particular project
 
@@ -1013,10 +1065,11 @@ those actions by using the ROM classes we've built up so far.
 Let's start out with the `index` action. This action should present a list of
 projects to a user and allow them to view more information about them:
 
-<IMAGE GOES HERE>
+![Projects list](/images/exploding/project_list.png)
 
 When a user clicks the project's name, they should be taken to that project's
-page.
+page. Pretty straight forward action to take within a Rails application. It
+shouldn't be too hard to make this work.
 
 Let's write another feature to test both actions. We'll put this one at
 `spec/features/viewing_projects_spec.rb`:
@@ -1062,8 +1115,10 @@ the `all` method should fetch all the records (and all the fields) from a
 table. But perhaps in an app that uses ROM, you don't want to do this. Perhaps
 you want to only fetch _some_ of the records. Perhaps you only want to fetch
 the `id` and `name` columns. So ROM leaves it up to us to choose how we would
-fetch a collection of records from our table. In this case, we'll just do the
-same thing as Active Record: fetch all the records.
+fetch a collection of records from our table, leaving it to us to determine how
+many records and which fields we wnat to fetch. In this case, we'll just do the
+same thing as Active Record: fetch all the records, but only select the `id`
+and `name` fields.
 
 In our `app/repositories/project_repository.rb` file, we'll add an `all`
 method:
@@ -1080,11 +1135,15 @@ class ProjectRepository < ROM::Repository::Root
 end
 ```
 
-The `projects` method used here refers to the relation used by this repository.
-It calls the `all` method on that relation and then `map_with` to use the
-`ProjectMapper` class to turn results returned by `projects.all` into `Project`
-instances. But the `ProjectRelation` class doesn't have this `all` method
-defined. If we try to call `repo.all` now, it will fail:
+The `projects` method used here refers to the relation used by this repository
+and is made available to the instance methods of this class by the `root` call
+at the top of this class.
+
+The `all` method inside this repository class calls the `all` method on the
+`projects` relation and then `map_with` to use the `ProjectMapper` class to
+turn results returned by `projects.all` into `Project` instances. But the
+`ProjectRelation` class doesn't have this `all` method defined. If we try to
+call `repo.all` now, it will fail:
 
 ```ruby
 repo = ProjectRepository.new(ROM.env)
@@ -1174,10 +1233,14 @@ Project.where(account: account)
 ```
 
 In both the case of the `ProjectRelation` and `ActiveRecord::Relation` objects,
- a query is not executed until that result is iterated through (using `each`)
- or `to_a` is called on it. In the case of the `ProjectRelation`, it helpfully
- shows us the SQL that would be used to fetch the data. This can be helpful to
- determine if you're fetching unnecessary columns in a query.
+a query is not executed until that result is iterated through (using `each`) or
+`to_a` is called on it. Until that point, we can continue adding extra query
+calls on it to scope, limit or order the result set.
+
+In the case of the `ProjectRelation`, it helpfully shows us the SQL that would
+be used to fetch the data. This can be helpful to determine if you're fetching
+unnecessary columns in a query, or to see what how a particular Ruby query
+method alters the SQL code.
 
 Calling `to_a` on this object will return all the projects in the database:
 
@@ -1187,16 +1250,18 @@ repo.all.to_a
 ```
 
 Ok, it looks like our `ProjectRepository#all` method is now working and
-fetching records from the database successfully. It's time to use this in the
-controller. Let's go into `app/controllers/projects_controller.rb` and define
-an `index` action:
+fetching records from the database successfully. Due to the `map_with` call on
+the end of our query, our relation will map the returned results into `Project`
+objects.
+
+It's time to use the repository's `all` method in the controller. Let's go into
+`app/controllers/projects_controller.rb` and define an `index` action:
 
 ```ruby
 def index
   @projects = repo.all
 end
 ```
-
 This is calling the `repo` method defined at the bottom of this controller:
 
 ```ruby
@@ -1205,14 +1270,25 @@ def repo
 end
 ```
 
+This code isn't all that different from what would regularly go in an `index`
+action:
 
-Then in the template for this action -- `app/views/projects/index.html.erb` -- we
-can list these projects:
+```ruby
+def index
+  @projects = Project.all
+end
+```
+
+The only difference is that we're using the repository and not the model to
+make this call.
+
+Next up, in the template for this action -- `app/views/projects/index.html.erb`
+-- we can list these projects:
 
 ```erb
 <h2>Projects</h2>
 
-<%= link_to "New Project", new_project_path %>
+<%= link_to "New Project", new_project_path, class: "btn btn-primary" %>
 
 <ul>
   <% @projects.each do |project| %>
@@ -1277,13 +1353,15 @@ pass:
 2 examples, 0 failures
 ```
 
-Users can now create and view projects within our application.
+Users can now create and view projects within our application, and our
+controller code isn't radically different from what we would normally have in a
+Rails application.
 
-In this code, we've clearly separated out the responsibilities of our
-application. Code that talks to the database lives in the `ProjectRelation`
-class. The application talks to this code by way of the `ProjectRepository`
-class. The logic we have defined isn't overly complex, but it is very clearly
-separated.
+The difference with this code is that we've clearly separated out the
+responsibilities of our application. Code that talks to the database lives in
+the `ProjectRelation` class. The application talks to this code by way of the
+`ProjectRepository` class. The logic we have defined isn't overly complex, but
+it is very clearly separated.
 
 There is still no code in our model that knows about database queries. The
 controller is merely a conduit to the repository and the repository merely a
@@ -1331,12 +1409,13 @@ context "contributors" do
 end
 ```
 
-This unit test for the `Project` model knows quite a lot. It knows how to
-create projects and it knows how to create tickets and it knows how to create
-users.  If any of these models had validations that were added that required
-other attributes to be present, then the `create` calls here will need to be
-updated with those fields. Adding something to the `Project`, `Ticket` or
-`User` model would require this spec to change.
+This unit test for the `Project` model knows quite a lot.It knows how to create
+projects and it knows how to create tickets and it knows how to create users.
+It's more of an integration test than a unit test! If any of these models had
+validations that were added that required other attributes to be present, then
+the `create` calls here will need to be updated with those fields. Adding
+something to the `Project`, `Ticket` or `User` model would require this spec to
+change. This spec has more than one reason to change.
 
 Of course, we could write the spec better and stub out these other classes:
 
@@ -1345,7 +1424,7 @@ context "contributors" do
   let(:project) { Project.create(name: "Test Project") }
 
   context "when the project has tickets" do
-    let(:ryan) { double(User)) }
+    let(:ryan) { double(User) }
     let(:tickets) { [double(user: ryan)] }
 
     before do
@@ -1378,10 +1457,11 @@ def contributors
 end
 ```
 
-But then this breaks the mock in our test. We would need to stub out the
-`includes` method. This seems like a step too difficult because our test knows
-too much about the implementation of the `contributors` method, and so we go back to
-our original test implementation: creating items in the database:
+But then this breaks the mock in our test: we would need to stub out the
+`includes` method as well. This seems like a step too difficult because our
+test knows too much about the implementation of the `contributors` method, and
+so we go back to our original test implementation: creating items in the
+database:
 
 ```ruby
 context "contributors" do
@@ -1403,9 +1483,9 @@ end
 
 But then again we run into the issue that if we add validations for these
 models then we'll need to update the `create` calls here to specify the new
-fields. We just can't win! Active Record has trapped us into writing poor code
-for our tests, just so that those tests are compatible with Active Record's way
-of doing things.
+fields. We're back to where we started. We just can't win! Active Record has
+trapped us into writing poor code for our tests, just so that those tests are
+compatible with Active Record's way of doing things.
 
 We could switch our test to not using instances that are in the database,
 instead relying only on initialized instances:
@@ -1430,16 +1510,22 @@ end
 
 But then the `includes` statement means that Active Record will try to execute
 a database call anyway, and so this attempt won't work. We _must_ use objects
-that have been persisted to the database.
+that have been persisted to the database in this particular test.
 
-If the validations were not available in the model, then they wouldn't
-interfere in the tests.
+This is one small example of how Active Record encourages bad application
+decisions. It should absolutely be possible to test a small bit of business
+logic such as this `contributors` method _without_ having database calls mixed
+up in it.
 
 In the ROM world, validation is kept separate from the model and model classes
 know nothing about how their data is validated. Model classes only know what
-attributes to expect. Validating data is someone else's responsibility.
+attributes to expect. Validating data is someone else's responsibility. We can
+have performant queries to get the contributors for our projects _and_ we can
+write nice unit tests for them _and_ those unit tests don't have to speak to a
+database.
 
-This makes it easy to test the validation logic in isolation from the business
+Separating out the validation logic into its own class not only makes sense,
+but it makes it easy to test the validation logic in isolation from the business
 logic of the model and vice versa. Our `contributors` method would then be back
 to its simplest version:
 
@@ -1532,7 +1618,7 @@ together. We want it to be the case that if someone does not enter a project
 name that it re-renders the `new` form and shows the error messages to the
 user:
 
-<IMAGE GOES HERE>
+![Project failed to save](/images/exploding/project_failed_to_save.png)
 
 We can assert that this behaviour happens by writing another test for this in
 `spec/features/creating_projects_spec.rb`:
@@ -1562,7 +1648,8 @@ form without filling in the name field, that they're sent back to that form and
 told that the name is missing.
 
 This test will fail at the moment when we run it because we're _always_
-creating projects in the `create` action:
+creating projects in the `create` action, regardless of whether or not the
+project's parameters are valid or not:
 
 ```ruby
 def create
@@ -1578,13 +1665,14 @@ schema. We'll change our `create` action to this:
 
 ```ruby
 def create
-  @validation = ProjectSchema.(project_params)
-  if @validation.success?
+  validation = ProjectSchema.(project_params)
+  if validation.success?
     repo.create(project_params)
     flash[:notice] = "Project has been created."
     redirect_to projects_path
   else
     @project = Project.new(project_params)
+    @errors = @validation.errors
     flash.now[:alert] = "Project could not be created."
     render :new
   end
@@ -1593,15 +1681,21 @@ end
 
 We're using our `ProjectSchema` to validate if the project parameters are valid
 in this case. If they are, then we go down the path of creating the project and
-redirecting the user back to `projects_path`. If they aren't, then we
+redirecting the user back to `projects_path`. This is the same flow that we
+previously had in this controller action.
+
+A new part of this flow is that if the parameters aren't valid, then we
 initialize a new `Project` instance using whatever parameters were passed in
 from the form -- so the form is repopulated with its correct values, if any
 were specified. We also show the "Project could not be created." message, and
-render the `new` template once more.
+render the `new` template once more. The new template will then display these
+error messages from the `@validation` object.
 
 We'll need to make two more changes to our application before our test will
-pass. We'll need to add the `flash[:alert]` to display in the application
-layout, which we can do with this small addition to
+pass.
+
+We'll need to add the `flash[:alert]` to display in the application layout
+because our test checks for this. We can add this with this small addition to
 `app/views/layouts/application.html.erb`:
 
 ```erb
@@ -1612,21 +1706,22 @@ layout, which we can do with this small addition to
 </body>
 ```
 
-And we'll also need to display the errors in the
-`app/views/projects/new.html.erb` view, which we can do by changing the view to
+And we'll also need to display the errors from the `@validation` result in the
+`app/views/projects/new.html.erb` view, which is something that our test also
+checks for. We can do this by changing the view to
 this:
 
 ```erb
 <h2>New Project</h2>
 
 <%= form_with(model: @project, local: true) do |form| %>
-  <% if @validation && @validation.failure? %>
+  <% if @errors.present? %>
     <p>
       There were errors that prevented this form from being saved:
     </p>
 
     <ul>
-      <% @validation.errors.map do |key, errors| %>
+      <% @errors.map do |key, errors| %>
         <% errors.each do |error| %>
           <li><%= key.to_s.capitalize %> <%= error %></li>
         <% end %>
@@ -1642,12 +1737,47 @@ this:
 <% end %>
 ```
 
-This view now detects if there is a `@validation` instance variable present and
-if that validation has failed it will go through the error messages from that
-validation and present them.
+This view now detects if there are any `@errors` and if there are it will go
+through the error messages from that validation and present them. This code for
+checking for errors is generic enough that we can consider moving it out to a
+partial just to tidy up our form. We may wish to use it in other forms later:
 
-All this code seems in line with what our test is expecting, so let's run this
-test with `bundle exec rspec spec/features/creating_projects_spec.rb` and see if it passes:
+```erb
+<% if errors.present? %>
+  <p>
+    There were errors that prevented this form from being saved:
+  </p>
+
+  <ul>
+    <% errors.map do |key, messages| %>
+      <% messages.each do |error| %>
+        <li><%= key.to_s.capitalize %> <%= error %></li>
+      <% end %>
+    <% end %>
+  </ul>
+<% end %>
+```
+
+Then we can use this partial in the form like this:
+
+```erb
+<h2>New Project</h2>
+
+<%= form_with(model: @project, local: true) do |form| %>
+  <%= render "shared/error_messages", errors: @errors %>
+
+  <p>
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :project_name %>
+  </p>
+
+  <%= form.submit %>
+<% end %>
+```
+
+It _feels_ like all of the parts are configured correctly, so let's run this
+test and see if that is true. We'll run `bundle exec rspec
+spec/features/creating_projects_spec.rb` and see if it passes:
 
 ```
 2 examples, 0 failures
@@ -1661,16 +1791,20 @@ add anything extra to our `Project` model. It's still devoid of validation or
 persistence logic.
 
 However, our controller is getting a little messy. It's intertwining the
-validation and persistence logic with the response logic. We can do better than
-this by separating out these two distinct responsibilities even further.
+validation and persistence logic with the response logic. It's starting to feel
+very Rails-y, and I mean that in a bad way.
+
+We can do better than this by separating out these three distinct
+responsibilities even further.
 
 ### Service objects
 
-Normally when moving code out of a controller to separate the business logic
-from the response logic, you would move it out to a service object. It's
-"community tradition" to move them out to _service objects_ to make
-it easier to test those parts in a way that's completely isolated from the
-Rails request / response cycle.
+Normally when moving code out of a controller to separate the different logic
+parts, you would move some parts out to a service object. It's "community
+tradition" to move these parts out to _service objects_ to make it easier to test
+those parts in a way that's completely isolated from the Rails request /
+response cycle. It's an attempt to let the controller handle the request /
+response cycle only. Single responsibility and all that.
 
 However, most of the time this happens it is simply cutting the code from the
 controller and pasting it into another class. This code ends up in a new
@@ -1694,6 +1828,12 @@ class CreateProject
 end
 ```
 
+This isn't definitely following the Rails "convention over configuration"
+mantra. In fact, it reminds me a little of the custom code that I might've
+written in a PHP application circa-2006. A good service object should follow
+some sort of convention or design pattern, but this feels like it is just
+following the direction the wind is blowing in.
+
 If we had to add another responsibility to this service such as one that made
 the success path send emails, we'd just cram it on in there:
 
@@ -1715,6 +1855,9 @@ class CreateProject
   end
 end
 ```
+
+The complexity increases. Adding another responsibility to this class only made
+it _worse_. Nevertheless, let's persist with this for a moment.
 
 This class would then be used in a controller like this:
 
@@ -1750,7 +1893,9 @@ method into a chain of connected methods. The methods should follow this order:
 
 However, if step #1 failed then we would not expect step #2 and step #3 to run.
 Similarly, if step #2 failed then we would not expect step #3 to run, and so
-on. We could try writing this logic ourselves using convoluted `if` statements,
+on. 
+
+We could try writing this logic ourselves using convoluted `if` statements,
 but there is a better way: the `dry-transaction` gem. Here's an example of the
 above service object, written in a `dry-transaction` way:
 
@@ -1789,12 +1934,23 @@ end
 
 This class represents a _transaction_ a user undertakes with your application,
 hence the name `dry-transaction`. It's still a service object, but it's a
-_cleaner_ service object. This class separates out each step into this own
-clearly defined method. The `Success` or `Failure` constants used here come
-from another `dry-rb` gem called `dry-monads`, and they indicate if the method
-is successful or not. If the `validate` step returns a `Failure` then the
-`persist` step will not be called. The `Success` result gets passed to the next
-step, but `Failure` stops the code in its tracks.
+_cleaner_ service object. In fact, let's stop calling them "service objects"
+and start referring to them as "transactions". After all, these classes
+represent the logic your application runs through when someone interacts (or
+transacts) with your application. "Service object" is a term too-diluted by the
+various uses in a Rails application. "Transaction" fits so much better.
+
+This example transaction class separates out each step into this own clearly
+defined method. The `Success` or `Failure` constants used here come from
+another `dry-rb` gem called `dry-monads` (don't let the name scare you), and
+they indicate if the method is successful or not. If the `validate` step
+returns a `Failure` then the `persist` step will not be called;
+`dry-transaction` handles that for us automatically.
+
+The `Success` result gets passed to the next step, but `Failure` stops the code
+in its tracks.
+
+<IMAGE GOES HERE>
 
 Unlike our service object from before, if we added another step in here it
 would simply mean another line in the `step` definitions, and another method in
@@ -1841,11 +1997,14 @@ class CreateProject
 end
 ```
 
-This code is gross and really hard to mentally parse. It doesn't even come
-close to the `dry-transaction` code. It's for this reason I think that
-`dry-transaction` should be used as a pattern for service objects in Rails
-applications. The cleanliness of the class is definitely worth it. The
-testability of each steps inside the transaction is dead-simple too.
+This code is gross and really hard to mentally parse. It doesn't follow any
+convention or any common design pattern. It doesn't even come
+close to the cleanliness of the `dry-transaction` code.
+
+It's for this reason I think that `dry-transaction` should be used as a pattern
+for <s>service objects</s>, sorry I mean _transactions_ in Rails applications.
+The cleanliness of the class is definitely worth it. The testability of each
+steps inside the transaction is dead-simple too.
 
 In this guide, we'll be using `dry-transaction` to build more service objects
 like these. We'll end up with some really slick looking code in our controllers:
