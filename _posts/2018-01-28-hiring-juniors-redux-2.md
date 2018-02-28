@@ -1,7 +1,7 @@
 I have seen the future.
 
 Five years from now, someone will get on a stage like this one (or perhaps
-even this one) and _blow your freaking minds_. This person will _astound_ you
+midseven this one) and _blow your freaking minds_. This person will _astound_ you
 with a radical talk on a subject we, in the present, can only guess at. That
 person is not going to be Avdi, Sandi or any of the other speakers here. It's
 not even going to be me -- as much as I (and my ego) would like that.
@@ -43,14 +43,14 @@ start the programming career of someone astonishingly brilliant and it's going
 to be all because of what I'm about to tell you, so pay close attention.
 
 If there was one take away from this talk that I want to stick in your minds it
-would be this: hire a junior. Because that junior you hire today could turn out
-to be the person blowing our minds in 5 years time. Hire and train this junior
+would be this: hire juniors. Because those juniors you hire today will turn out
+to be the people blowing our minds in 5 years time. Hire and train these juniors
 to be mind-blowingly awesome.
 
 ## Hiring seniors
 
-"But Ryan, we only hire mids and seniors!" -- ahh the classic ActiveMantra in
-the Rails community: "Hiring senior Ruby developers. Hiring senior Ruby
+"But Ryan, we only hire senior Ruby developers!" -- ahh the classic ActiveMantra
+in the Rails community: "Hiring senior Ruby developers. Hiring senior Ruby
 developers. Hiring senior Ruby developers.". Maybe if we repeat it enough our
 dreams might come true.
 
@@ -62,39 +62,40 @@ We have drained the talent pool dry. And yet our obsession and our Active Mantra
 continues. We only hire mids and seniors. But why do we have this obsession?
 Well, let's take a look at the main reason.
 
-The main reason why we want to hire mids and seniors is because our workload
-has gotten to the point where it's exceeding our capacity. Tons of companies are
-hiring at the moment for this very reason. The _demand_ for work is outstripping
-the _supply_ of developers.
+The main reason why we want to hire seniors is because our workload has gotten
+to the point where it's exceeding our capacity. Tons of companies are hiring at
+the moment for this very reason. The _demand_ for work is outstripping the
+_supply_ of developers.
 
 To address this problem, we hire a new developer or rather... we try to hire a
-new developer. We want a mid-to-senior developer because they have the skills to
-instantly dive straight into our application with little-to-no guidance and they
-can start shipping code. That old expression: "they can hit the ground running".
-This is because our code is so brilliantly well-structured and organized
-according to the Rails best practices. Nobody will have to upskill on any single
-part of the codebase at all because we follow the Laws of Sandi and Commandments
-of Avdi to the letter. There is no legacy code with their legacy decisions that
-meta-programs the constants from Java, written in a hurry because we needed to
-ship that thing _fast_. HA.
+new developer. We want a senior developer -- but we might be happy to take a mid
+too -- because they have the skills to instantly dive straight into our
+application with little-to-no guidance and they can start shipping code. That
+old expression: "they can hit the ground running".  This is because our code is
+so brilliantly well-structured and organized according to the Rails best
+practices. Nobody will have to upskill on any single part of the codebase at all
+because we follow the Laws of Sandi and Commandments of Avdi to the letter.
+There is no legacy code with their legacy decisions that meta-programs the
+constants from Java, written in a hurry because we needed to ship that thing
+_fast_. HA.
 
-You may think that you need to hire only these best-of-the-best badasses because
-your application is a large unmaintable behemoth monolith and only the badasses
-can understand it. That you need seniors to navigate the spaghetti that is your
-legacy code. Maybe you use technologies that only _true_ geniuses can
-understand, like Node or Go. Or the Rails Asset Pipeline.
+You may think that you need to hire only these best-of-the-best badasses
+because your application is a large unmaintable collection of microservices
+written in obscure languages surrounding a ginormous monolith and only the
+badasses can understand it. That you need seniors to navigate the spaghetti
+that is your legacy code. Maybe you use technologies that only _true_ geniuses
+can understand, like Node or Go. Or the Rails Asset Pipeline.
 
 That may indeed be the case. After all, if our code was simple, elegant and only
 written in a single Ruby monolith, would as many of us still be employed?
 
-Companies spend thousands of dollars on recruiters and lots of time posting to
-job boards, for often very little good return. Companies spend this money to
-hunt the elusive 10x Developer Rockstar Unicorns (note: term used ironically),
-but the Unicorns are no longer out grazing in the sunny meadows, readily
-available for capture.  They're already working somewhere else and the
-conditions of where they work are extremely competitive. To keep with the
-analogy: the meadows are filled with the greenest of grasses and the brightest
-of rainbows. You will have a hard time luring these unicorns away.
+Companies spend thousands of dollars hunting the elusive 10x Developer
+Rockstar Unicorns (note: term used ironically), but the Unicorns are no longer
+out grazing in the sunny meadows, readily available for capture.  They're
+already working somewhere else and the conditions of where they work are
+extremely competitive. To keep with the analogy: the meadows are filled with
+the greenest of grasses and the brightest of rainbows. You will have a hard
+time luring these unicorns away.
 
 We're out of freely available Rockstar Unicorns because they're already employed
 elsewhere. Attempting to hire them is an exercise in futility. And so it's time
@@ -107,16 +108,19 @@ best-of-the-best _now_, but instead we should be investing more in people's
 future potential.
 
 Your next Rockstar Unicorn isn't within today's current top 5-10% of all
-developers: they're hanging with the rest of their peers in the other part of
-this totally scientific graph that I didn't make up on the spot. These people
-need some mentoring in order to grow into the next generation of brilliant
-people.
+developers. The top 5-10% already works elsewhere. Your Next Rockstar Unicorn
+is hanging out with the rest of their peers in the other part of this totally
+scientific graph that I made up. These people need some mentoring in order to
+grow into the next generation of brilliant people.
 
-There isn't an endless supply of brilliant people that we can just keep
-harvesting today. This talent pool of amazingly talented and gifted
-developers, as we're painfully finding out, is not limitless. We must lower
-the bar for our hiring, and hire juniors. We must then train these juniors up
-to be our next generation of brilliant minds.
+There isn't an endless supply of brilliant people -- sorry, I mean Developer
+Rockstar Unicorns -- that we can just keep harvesting today. This talent pool
+of amazingly talented and gifted developers, as we're painfully finding out,
+is not limitless.
+
+We must lower the bar for our hiring, and hire outside of the top 5-10%. We
+must hire juniors. We must then train these juniors up to be our next
+generation of brilliant minds.
 
 It is very, very difficult to hire a senior developer today in Rubyland. And so
 we must grow our own senior developers. This is a process that will take time.
@@ -127,144 +131,51 @@ and grow. This is necessary work  to ensure that we have well-trained developers
 working at our companies. We will know they're well-trained because we did the
 training ourselves.
 
-After all, senior devs don't grow on trees. We must give juniors a chance.
-Don't take just my word for this either. Here's a tweet from 4 years ago too
-from someone else _saying exactly the same thing_.
-
-https://mobile.twitter.com/buritica/status/492807632659689472
-
-Who's this guy saying it? He's only a VP of Engineering at Splice. I think this position gives his opinion some weight.
-
 ## Juniors make teams better
 
 We should not lower our hiring bar and hire juniors just because we can't find
-seniors though. We should do it to ensure the long-term survivability of our
-companies and our community.
+seniors though. I have a much better reason for why you should hire a junior
+developer and that reason is because they unequivocally make your teams better.
 
-"But Ryan, we have to ship things fast!!"
+I'd just like to start this section by addressing a concern that people bring up
+whenever the hiring juniors topic is raised. The concern is this: "if we hire a
+junior developer, our productivity will decrease dramatically". While this is
+absolutely true for the short term, over the long-term with adequate training
+the junior becomes a productivity boost to your team in as little as 4-6 months.
+But the same goes for hiring _anyone_ on your team: productivity will take a hit
+because that person needs to be trained up... but then over the long-haul that
+person will provide a productivity gain to the team.
 
-Ah yes, that old sacred cow of software development: shipping things _fast_. We
-have to ship things _fast_ and hiring and mentoring juniors means that we take
-time away from actually shipping things. Anything that hurts "shipping things
-fast" is taboo.
-
-### Gotta go fast!!
-
-It's pretty strange that we, the people who get the computers to do the hard
-thinking, can't find time to mentor a junior. We're too busy shipping things.
-"We'll hire a junior when we're not as busy". Oh the lies we tell ourselves.
-
-Why are we too busy? What's the rush? If we don't deliver these five features
-and fix these three bugs by Friday, is our company going to go down in flames?
-Not usually. There are plenty of companies here who have been here for the
-long-term now, and who will probably be here for just as long again. The busy-
-ness will not change. We all know that work is neither a liquid or a solid. It
-is a gas: it fills any and all available time.
-
-The work is always present, but the people who do the work are not going to be.
-People leave: they change jobs, professions, countries and lifestyles. Or
-sometimes they just plain ol' die. Turnover: it's a thing.
-
-People leaving affects our rate of shipping. We have to hire new talent to
-replace them. We have to train that new talent up anyway. So why not hire a
-junior and train them up to do the job?
-
-Other professions, like lawyers, mechanics, teachers and plenty of others
-recognise that the people who are doing the work today aren't going to be doing
-the work forever. Their work too is always ongoing and they have to do whatever
-their equivalent of "shipping things fast" is.
-
-The major difference is that these professions have active apprenticeship
-efforts, where these apprentices then usually go on to become the next
-generation of lawyers, mechanics, teachers or whatever else.
-
-But why aren't many companies in our industry doing this? Why are we too
-busy, but lawyers aren't? Have you _seen_ what kind of hours lawyers or teachers
-put in?
-
-I think that other professions are not junior-adverse because those professions
-have had turnover in their companies enough to learn the lesson about training
-for the future. They have reached the point that we're at now where there just
-isn't enough "senior" lawyers, mechanics or teachers to go around, work amasses
-and growing the company gets _harder_ and so they reach the inevitable
-conclusion to start hiring _and training_ brand-new talent because it's the
-sensible thing to do.
-
-The principal running the school your kid goes to realises that the teachers
-they have aren't going to be around forever. This is because teachers are not
-yet solar-powered automatons. They hire these young upstarts from universities,
-like my wife, to be the teachers of the future.
-
-The grizzled mechanic that fixes your car for the last decade (or more) has
-saved his pennies and is retiring off the coast of Australia on his catamaran.
-Davy, the best young mechanic he has, is the one who will run the shop once ol'
-grizzle-face is gone. Grizzle-face reckons she'll do, and I quote: "a bang up
-job. She'll be right mate."
-
-This Ruby community is still a young community where most people have been
-doing this Ruby thing for less than 15 years. That's less than a generation.
-If Rails was a person, that person would not even be old enough to have
-graduated high-school, let alone make adult decisions. This is reflected
-somewhat in the design choices of the framework, but that's a conversation for
-another day.
-
-We must make our succession plans to ensure the long-term viability of this
-community. The people who are doing the work now will not be doing the work
-forever. Other professions have succession plans because they've lived long
-enough to realise that having them is the sensible thing to do. I strongly feel
-like we are at that point now, or at least the cusp of it. We're feeling the
-pain of trying to hire more senior developers. It is time we changed our tactics
-and instead trained up juniors.
-
-This emphasis on shipping things faster and "delivering value" is short-term
-enough to be frustrating. The companies we're building and the code we're
-writing will last longer than a month or two... usually. For instance, Culture
-Amp -- the company I work for -- has existed for 6 years. Who's to say it
-won't exist for another 6?  So we need to think more long-term than shipping
-fast. We're stunting our growth with our short-term thinking. We must account
-for this turnover in our day-to-day thinking.
-
-What we really need to think about is: who will look after the code that powers
-our companies a year, or five years from now?  How do we ensure the long-term
-survivability of our companies, and our community as a whole? What is our
-succession plan?
-
-I think that our succession plan should be to hire and mentor the talent of
-tomorrow, starting today.
-
-So there's now two reasons why you should hire a junior:
-
-* It's really hard to hire a senior developer at the moment
-* It helps bolster your company and the community in the long-term, ensuring
-  the stability of both
-
-I have a third reason for why you should hire a junior developer too: because
-they make your team better.
-
-## Juniors make teams better
+Juniors do provide a larger initial productivity hit, but there are several
+reasons why they are valuable to have on a team, and I want to cover a few
+reasons why they can increase a team's productivity from their very first
+day, and how they will overall benefit whatever team they're on.
 
 Juniors making teams better is a big claim, but I have some evidence to back it
-up. You might think that hiring a junior makes your productivity tank. While
-that's true for the _short term_ it actually leads to _long term_ benefits for
-the team the junior is in.
+up.
 
 We know from a lot of experience that gender-diverse teams perform better than
 either a team of all-men or a team of all-women. The same is true for teams that
 are skill-diverse as well; teams that have a mix of people with differing
-skill-levels out-perform their all-senior counterparts.
+skill-levels and experiences out-perform their all-senior counterparts. The most
+productive teams that I've worked on have been teams that have had a mix of
+skill-levels and experiences.
 
-Hiring a junior means that things will need to be explained in simpler terms
-than they were before. This makes things easier to understand for all members of
-the team. Concepts are no longer talked about at a high-level all the time;
-instead: people understand things in an easier way.
+Juniors make your teams better because that means things will need to be
+explained in simpler terms than they were before. This makes things easier to
+understand for all members of the team. Concepts are no longer talked about in a
+jargon-y or high-level way all the time; instead: people understand things in an
+easier way.
 
-Teams that have a junior tend to document things more. For instance, a team I
-was a part of recently documented the flow of an event through our main monolith
-and some microservices. This documentation was done for the junior developer's
-benefit and it consisted of a flowchart made up in Omnigraffle. The best part
-about this piece of documentation was that we had something we could
-_physically_ point to when talking about things we would only normally keep in
-our head.
+Juniors make your teams better because teams that have a junior tend to document
+things more. Or at all.
+
+For instance, a team I was a part of recently documented the flow of an event
+out of our main monolithic Rails application and into some microservices. This
+documentation was done for the junior developer's benefit and it consisted of a
+flowchart made up in Omnigraffle. The best part about this piece of
+documentation was that we had something we could _physically_ point to when
+talking about things we would only normally keep in our head.
 
 The funniest thing about that piece of documentation was that the _senior_
 developers ended up referring to it more than the junior! We stuck it on a wall
@@ -273,30 +184,43 @@ different pieces in the diagram. It really helped cement the structure into our
 heads and helped us know where to make improvements in the system.
 
 If it wasn't for our junior developer, we wouldn't have drawn up this diagram in
-the first place.
+the first place. We would still be talking about this system at a high-level,
+with only code to point to. The diagram really helped our team become more
+productive.
 
 This links into my next point:
 
 Communication, especially when it comes to knowledge-sharing, becomes _explicit_
 out of necessity, rather than the _implicit_ style of communication usually
-found in all-senior developer teams. More questions get asked by the junior than
-the senior because the junior wants to learn. The answers to these questions not
-only help cement the junior's knowledge, but they give the senior developer
-practice in explaining concepts that they might not have otherwise.
+found in all-senior developer teams. When that team I was on was only senior
+developers, we communicated implicitly about the structure of the two
+applications. We all just assumed everyone knew what we were talking about. As
+soon as we got a junior, that communication changed to favouring explicitness
+over implicitness.
+
+Also on the topic of communication: more questions get asked by the junior than
+the seniors on the team, usually because the junior wants to learn. The answers
+to these questions not only help cement the junior's knowledge, but they give
+the senior developer practice in understanding and explaining concepts that they
+might not have explained otherwise.
 
 Sometimes a question from a junior can even spark a thought about how to
 structure something better in the code, or how to document a part of the system
-in further detail so that everyone on the team can better understand it.
+in further detail so that everyone on the team can better understand it. Those
+"why is this done this way?" questions from juniors are my absolute favourite
+because they often lead to system improvements.
 
-One more thing: all of the juniors at Culture Amp have mentored our senior
-developers on the most important programmer skill: patience. This is the thing
-that juniors provide to your team that no senior can do. The seniors must
-explain things to a junior, and that takes time. They might even have to
-explain things more than once. Patiently explaining something to someone helps
-seniors understand their own systems better and, in my extremely scientific
-opinion, makes the seniors much better developers than if they only had to
-explain things to other seniors. They need to slow down and methodically
-explain things, which helps solidify the senior's knowledge.
+One more thing: all of the juniors I have ever worked with have mentored senior
+developers on the most important developer skill of all: patience. This is the
+thing that juniors provide to your team that no senior can do. The seniors must
+explain things to a junior, and that takes time. They might even have to explain
+things more than once.
+
+Patiently explaining something to someone, as I've said before, helps seniors
+understand their own systems better and, in my experience, makes the seniors
+much better developers than if they only had to explain things to other seniors.
+They need to slow down and methodically explain things, which helps solidify the
+senior's knowledge.
 
 Patience is a virtue that more developers should learn. The ironic thing about
 me saying this is that I'm a naturally impatient person (just ask anyone who's
@@ -310,67 +234,20 @@ better for it.
 
 Better teams ship better software and better software means happier users.
 
-So that's my third point: you should hire a junior developer because it makes
-your team better.
+## Hiring Juniors at Culture Amp
 
-### The Talent Code
+I know that juniors make teams better because we're making it happen at Culture
+Amp. I live and breath this stuff as Culture Amp's Junior Engineering Program
+Lead. My entire job is to train juniors up so that they can be productive
+members of their teams.
 
-If all of that wasn't convincing enough, then I would encourage you to read a
-book called "The Talent Code". As the subtitle says "Greatness isn't born. It's
-grown." It's about 300 pages long.
+Last year, Culture Amp hired seven new junior developers. We now have ten junior
+developers across the company. This is a ratio of about one-in-five developers
+at Culture Amp being a junior developer.
 
-The book covers how skills of all varieties are grown in sports, music and
-plenty of other areas. All the industries that are covered in the book have
-active mentorship and apprenticeship programs. Yet, this is not deeply cared
-about in the programming community for reasons mentioned earlier: we're still
-quite a young community. We aren't mature enough to think long- and-hard about
-mentorship and the sustainability of talent in this community within our
-companies.
-
-I'll let you in on the secret that's in the Talent Code: for anyone to get
-better at anything, they need to practice the hell out of it, have a passion
-for it _and_ they need to have a good mentor who is encouraging and can
-provide sound advice.
-
-You should definitely read this book. It really helped me understand why
-it's important to mentor newbies in any community, and taught me a bit about
-_how_ people learn. It's definitely worthwhile to read.
-
-One thing that it really highlighted for me was that the best of the best, the
-Beyonces, the Kanyes, and the Ricks, didn't just one day appear out of thin air.
-They were trained over _years_ and that's how they got where they were.
-
-How do we expect to have more of our own great talent to hire if we're not
-hiring those non- senior people and letting them improve their skills by
-practicing on real world applications? Remember: these people need to practice the hell out of programming, have a passion for it and they need to have a good mentor.
-
-These people do not simply pop into existence. This isn't the Matrix: we can't
-just plug in, and a few seconds later we just _know_ Rails like Keanu and Kung
-fu. These juniors have to be taught.
-
-We have to grow talent if we want talent. The Talent Code helped me understand
-this point very clearly.
-
-## Hiring juniors at Culture Amp
-
-Now I am not saying that every company utterly refuses to hire and train
-juniors. That is certainly not the case. There are already companies out there
-who are hiring juniors, which is great to see. For instance, we have Culture
-Amp, Zendesk, Envato and Hooroo all running active mentorship programs in
-Melbourne, and that's just the companies that I know off the top of my head.
-
-I mentioned Zendesk, Envato and Hooroo's apprenticeship programs just before. But the
-best one is Culture Amp's and I make this claim earnestly and from the bottom of
-my extremely large ego. I'm the Junior Engineering Program Lead at Culture Amp.
-
-I know for a fact that with even a few months worth of training, these junior
-developers can be productive, because we're making it happen at Culture Amp. We
-just hired seven new junior developers last year, and that makes ten juniors
-total at Culture Amp. This is a ratio of about one-in-five developers at Culture
-Amp being a junior developer.
-
-Each of these juniors comes from a diverse background: They're not all 20-35,
-white, and male and yet our company is still in business. Amazing, I know.
+Here are the ten juniors that we currently have at Culture Amp. Each of these
+juniors comes from a diverse background: They're not all 20-35, white, and male
+and yet our company is still in business. Amazing, I know.
 
 These juniors are a lot more fresh-faced than I was when I was a junior
 developer. Here's a photo of junior-me. Definitely not fresh-faced.
@@ -381,48 +258,83 @@ designed to provide an accelerated learning environment for the juniors that
 we have at Culture Amp.
 
 During the program, we provide structured training to these 10 juniors over the
-course of 6 months. For the first half of the program, the juniors are working
-two days a week (Monday and Tuesday) doing "Program work" and the other
-three days they're with their teams. For the second half of the program, we're
-changing it to a 3-week cycle, where the juniors are working one full week on
-the program, and then two full weeks with their teams.
+course of 6 months. When the 6 months are up at the end of May, they'll be
+fully-fledged developers, capable of shipping things mostly on their own. At
+that point, they'll then be working on their teams full-time.
 
-This will allow them to have less context-switching between the program work
-and their team work, giving them more time to focus on both the program and
-team work. We're hoping this will ease the transition into full-time team work
-too.
-
-When the 6 months are up, they'll be fully-fledged developers, capable of
-shipping things mostly on their own. At that point, they'll then be working on
-their teams full-time.
-
-During the JEP days we:
-
-* Work on little toy projects
-* Practice debugging real bugs in our real codebases
-* Learn about database fundamentals like the differences between relational and
-  document databases (we use both at Culture Amp)
-* Learn about best practice software development with Ruby, JavaScript and
-  Elixir
-* Go off and research new programming concepts
-
-Then on the team days -- that's Wednesday, Thursday and Friday -- the juniors
-apply this knowledge from the JEP days to solve problems, fix bugs and ship
-features. They might not be shipping the features _fast_ now, but they're
-shipping them.  The fast comes with practice. They do this by practicing their
-craft by pairing up with senior developers. This is one way that Culture Amp is
-ensuring that our company and this community keeps growing.
-
-My point here is that we've hired people who aren't all white, male, 25-34,
+My point here is that we've hired people who aren't all white, male, 20-35,
 utterly amazing senior Rails developers and yet... everything is still OK. In
-fact, it's better than OK: it's awesome. And it's awesome because they're part
-of our teams.
+fact, it's better than OK: it's awesome.
 
 We've hired a mixed bunch of people with different skill levels and we train
 them up and get them to work together on our applications. There's not a
 single fire or brimstone as far as the eye can see.
 
-We're growing the next batch of brilliant engineers today.
+We're growing the next batch of brilliant engineers today. And I can definitely
+say that all of Culture Amp's teams have been made better by the addition of the
+juniors.
+
+### The Talent Code
+
+If all of my points so far weren't convincing enough, then I would encourage you
+to read a book called "The Talent Code". As the subtitle says "Greatness isn't
+born. It's grown." It's about 300 pages long.
+
+The book covers how skills of all varieties are grown in sports, music and
+plenty of other industries.
+
+All of the industries that are covered in the book have active mentorship and
+apprenticeship programs. Yet, this is not deeply cared about in the programming
+community, and I think that's because we're still quite a young community. We
+aren't mature enough to think long- and-hard about mentorship and the
+sustainability of talent in this community within our companies. We haven't had
+to think about potential "succession plans" for our codebases: Who will
+maintain our code after we are gone? Our industry is not quite yet old enough to
+have needed this.
+
+More established industries that have been around longer have learned this
+lesson. They realise that the people who are doing the work _today_ are not
+going to be doing the work forever. And so they have these active mentorship and
+apprenticeship programs to ensure a fresh supply of talent to their industries.
+We're not quite at that level yet, but I think we're on the cusp of it.
+
+Put another way: If Rails was a person, that person would not even be old enough
+to have graduated high-school, let alone make adult decisions. This is reflected
+in the design choices of the framework, but that's a conversation for another
+day.
+
+Back to the book: I'll let you in on the secret that's in the Talent Code: for
+anyone to get better at anything, they need to have three core components:
+
+1. They must practice the hell out of it
+2. They must have a passion (or a drive) for whatever they're learning
+3. They must have a good mentor who is encouraging and can
+provide sound advice.
+
+You should definitely read this book. It really helped me understand why
+it's important to mentor newbies in any community, and taught me a bit about
+_how_ people learn. It's definitely worthwhile to read.
+
+One thing that it really highlighted for me was that the best of the best, the
+Beyonces, the Kanyes, and the Ricks, didn't just one day appear out of thin air.
+These people practiced the hell out of their craft, they have a passion for what
+they do and they had great mentors who helped guide them. These people were
+trained over _years_ and that's how they got where they are today. We should do
+the same for our industry to build our talent pool.
+
+How do we expect to have more of our own great talent to hire if we're not
+hiring juniors and letting them improve their skills by
+practicing on real world applications? Remember: these people need to practice
+the hell out of programming, have a passion for it and they need to have a good
+mentor.
+
+These people do not simply pop into existence. This isn't the Matrix: we can't
+just plug in, and a few seconds later we just _know_ Rails like Keanu and Kung
+fu. These juniors cannot just sleep on a copy of Rails 4 in Action and wake up
+_knowing_ Rails. These juniors have to be taught.
+
+We have to grow talent if we want talent. The Talent Code helped me understand
+this point very clearly.
 
 ## You should hire a junior
 
