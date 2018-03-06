@@ -3,7 +3,7 @@ I have seen the future.
 Five years from now, someone will get on a stage like this one (or perhaps
 midseven this one) and _blow your freaking minds_. This person will _astound_ you
 with a radical talk on a subject we, in the present, can only guess at. That
-person is not going to be Avdi, Sandi or any of the other speakers here. It's
+person is not going to be Sandi,  or any of the other speakers here. It's
 not even going to be me -- as much as I (and my ego) would like that.
 
 In fact, the person who will _blow your minds_ knows a model today as someone
@@ -42,42 +42,39 @@ developer and that will be their very first programming job. You will kick-
 start the programming career of someone astonishingly brilliant and it's going
 to be all because of what I'm about to tell you, so pay close attention.
 
-If there was one take away from this talk that I want to stick in your minds it
-would be this: hire juniors. Because those juniors you hire today will turn out
-to be the people blowing our minds in 5 years time. Hire and train these juniors
-to be mind-blowingly awesome.
+---
+
+
+If there was one thing that I want to stick in your minds it would be this:
+hire juniors. Because those juniors you hire today will turn out to be the
+people blowing our minds in 5 years time. Hire and train these juniors to be
+mind-blowingly awesome.
 
 ## Hiring seniors
 
-"But Ryan, we only hire senior Ruby developers!" -- ahh the classic ActiveMantra
-in the Rails community: "Hiring senior Ruby developers. Hiring senior Ruby
-developers. Hiring senior Ruby developers.". Maybe if we repeat it enough our
-dreams might come true.
+"But Ryan, we only hire senior Ruby developers!" -- ahh the classic
+ActiveMantra in the Rails community: "Hiring senior Ruby developers. Hiring
+senior Ruby developers. Hiring senior Ruby developers.". Maybe if we say it
+enough and click our heels together our dreams might come true.
 
 Yeah but how's that working out for you at the moment? Probably not so great.
 It's well known that there are only three hard problems in computer science:
 cache invalidation, naming things and hiring more senior Ruby developers.
 
-We have drained the talent pool dry. And yet our obsession and our Active Mantra
-continues. We only hire mids and seniors. But why do we have this obsession?
-Well, let's take a look at the main reason.
+We have drained the talent pool dry. And yet our obsession and our Active
+Mantra continues. We only hire seniors. But why do we have this obsession?
 
-The main reason why we want to hire seniors is because our workload has gotten
-to the point where it's exceeding our capacity. Tons of companies are hiring at
-the moment for this very reason. The _demand_ for work is outstripping the
-_supply_ of developers.
-
-To address this problem, we hire a new developer or rather... we try to hire a
-new developer. We want a senior developer -- but we might be happy to take a mid
+Well, we want a senior developer -- but we might be happy to take a mid
 too -- because they have the skills to instantly dive straight into our
 application with little-to-no guidance and they can start shipping code. That
-old expression: "they can hit the ground running".  This is because our code is
-so brilliantly well-structured and organized according to the Rails best
-practices. Nobody will have to upskill on any single part of the codebase at all
-because we follow the Laws of Sandi and Commandments of Avdi to the letter.
-There is no legacy code with their legacy decisions that meta-programs the
-constants from Java, written in a hurry because we needed to ship that thing
-_fast_. HA.
+old expression: "they can hit the ground running".
+
+This is because our code is so brilliantly well-structured and organized
+according to the Rails best practices. Nobody will have to upskill on any
+single part of the codebase at all because we follow the Laws of Sandi and
+Commandments of Avdi to the letter. There is no legacy code with their legacy
+decisions that meta-programs the constants from Java, written in a hurry
+because we needed to ship that thing _fast_. HA.
 
 You may think that you need to hire only these best-of-the-best badasses
 because your application is a large unmaintable collection of microservices
@@ -101,6 +98,8 @@ We're out of freely available Rockstar Unicorns because they're already employed
 elsewhere. Attempting to hire them is an exercise in futility. And so it's time
 that we started to grow our own. It's time that we started to hire and train our
 own 10x Developer Rockstar Unicorns.
+
+-----
 
 But where do we find these developers? Well, to start with need to lower our
 bar for engineering talent and not be so caught up on hiring the
@@ -136,20 +135,6 @@ training ourselves.
 We should not lower our hiring bar and hire juniors just because we can't find
 seniors though. I have a much better reason for why you should hire a junior
 developer and that reason is because they unequivocally make your teams better.
-
-I'd just like to start this section by addressing a concern that people bring up
-whenever the hiring juniors topic is raised. The concern is this: "if we hire a
-junior developer, our productivity will decrease dramatically". While this is
-absolutely true for the short term, over the long-term with adequate training
-the junior becomes a productivity boost to your team in as little as 4-6 months.
-But the same goes for hiring _anyone_ on your team: productivity will take a hit
-because that person needs to be trained up... but then over the long-haul that
-person will provide a productivity gain to the team.
-
-Juniors do provide a larger initial productivity hit, but there are several
-reasons why they are valuable to have on a team, and I want to cover a few
-reasons why they can increase a team's productivity from their very first
-day, and how they will overall benefit whatever team they're on.
 
 Juniors making teams better is a big claim, but I have some evidence to back it
 up.
@@ -198,11 +183,13 @@ applications. We all just assumed everyone knew what we were talking about. As
 soon as we got a junior, that communication changed to favouring explicitness
 over implicitness.
 
-Also on the topic of communication: more questions get asked by the junior than
-the seniors on the team, usually because the junior wants to learn. The answers
-to these questions not only help cement the junior's knowledge, but they give
-the senior developer practice in understanding and explaining concepts that they
-might not have explained otherwise.
+Also on the topic of communication: more questions get asked by the junior
+than the seniors on the team, usually because the junior wants to learn. It's
+not the questions themselves that are the most helpful, but the answers. The
+answers to these questions not only help cement the junior's knowledge, but
+they give the senior developer practice in understanding and explaining
+concepts that they might not have explained otherwise. I've also learned _a
+lot_ from over-hearing someone else answering a question.
 
 Sometimes a question from a junior can even spark a thought about how to
 structure something better in the code, or how to document a part of the system
@@ -252,19 +239,21 @@ and yet our company is still in business. Amazing, I know.
 These juniors are a lot more fresh-faced than I was when I was a junior
 developer. Here's a photo of junior-me. Definitely not fresh-faced.
 
-At the end of last year, we started up a structured training program for these
-juniors called the Culture Amp Junior Engineering Program. This program is
-designed to provide an accelerated learning environment for the juniors that
-we have at Culture Amp.
+At the end of November last year, we started up a structured training program
+for these juniors called the Culture Amp Junior Engineering Program. This
+program is designed to provide an accelerated learning environment for the
+juniors that we have at Culture Amp.
 
-During the program, we provide structured training to these 10 juniors over the
-course of 6 months. When the 6 months are up at the end of May, they'll be
+During the program, we provide structured training to these 10 juniors over
+the course of 6 months. When the 6 months are up at the end of May, they'll be
 fully-fledged developers, capable of shipping things mostly on their own. At
-that point, they'll then be working on their teams full-time.
+that point, they'll then be working on their teams full-time. The progress
+that these juniors have made so far has been nothing short of amazing. They're
+well on their way to being confident and capable developers.
 
-My point here is that we've hired people who aren't all white, male, 20-35,
-utterly amazing senior Rails developers and yet... everything is still OK. In
-fact, it's better than OK: it's awesome.
+I'd like to highlight the fact that we've hired people who aren't all white,
+male, 20-35, utterly amazing, top 5-10% senior Rails developers and yet...
+everything is still OK. In fact, it's better than OK: it's awesome.
 
 We've hired a mixed bunch of people with different skill levels and we train
 them up and get them to work together on our applications. There's not a
@@ -294,14 +283,19 @@ have needed this.
 
 More established industries that have been around longer have learned this
 lesson. They realise that the people who are doing the work _today_ are not
-going to be doing the work forever. And so they have these active mentorship and
-apprenticeship programs to ensure a fresh supply of talent to their industries.
-We're not quite at that level yet, but I think we're on the cusp of it.
+going to be doing the work forever. And so they have these active mentorship
+and apprenticeship programs to ensure a fresh supply of talent to their
+industries. I think we're on the cusp of realising this today.
 
 Put another way: If Rails was a person, that person would not even be old enough
 to have graduated high-school, let alone make adult decisions. This is reflected
 in the design choices of the framework, but that's a conversation for another
 day.
+
+Back to my point: I think it might take us a touch longer to realise that
+training for the future is the right thing to do. It ensures that we have a
+stable talent pool that we can hire from, and overall leads to better
+performance for teams.
 
 Back to the book: I'll let you in on the secret that's in the Talent Code: for
 anyone to get better at anything, they need to have three core components:
@@ -323,10 +317,9 @@ trained over _years_ and that's how they got where they are today. We should do
 the same for our industry to build our talent pool.
 
 How do we expect to have more of our own great talent to hire if we're not
-hiring juniors and letting them improve their skills by
-practicing on real world applications? Remember: these people need to practice
-the hell out of programming, have a passion for it and they need to have a good
-mentor.
+hiring juniors and letting them improve their skills by practicing on real
+world applications? Remember: these people need to practice the hell out of
+programming, have a passion for it and they need to have a good mentor.
 
 These people do not simply pop into existence. This isn't the Matrix: we can't
 just plug in, and a few seconds later we just _know_ Rails like Keanu and Kung
@@ -345,31 +338,33 @@ I'm not suggesting that you should hire a batch of them all at once like Culture
 Amp did. I think you should just start at hiring a single junior. Interview a
 couple and pick one from that batch. If your company is at least 4 developers
 and at least one of them wants to mentor, you can hire and support a junior. I
-believe in you.
+believe in you. You can do it!
 
-I'm also not suggesting that you should run a structured training program like
-Culture Amp does. I'm just suggesting that you should start by hiring one and
-working with them to grow their skills and your team.
+Rather than running a structured mentorship program like Culture Amp does, you
+can start by hiring a single junior and pairing with them to grow their skills
+and your team. This will lay the groundwork for hiring more juniors later on.
 
 Your next question might be: "what do _we_ (as a company) get out of hiring a
 junior?" Were you not paying attention at the beginning of this talk? They make
-your teams better! That's what you get out of it: better and bigger teams. We as
+your teams better! That's what you get out of it: better _and bigger_ teams. We as
 a community also get some new members, and that's a big positive in my eyes too.
 
-Now that I've convinced you to hire a junior, you might be thinking: where do
-you find these juniors? What do I do with them once I have them? Well, I have
-some tips!
+---
 
 ## Finding Juniors
 
-Regarding finding the juniors: let's start with Code Academies and universities.
+Now that I've hopefully convinced you to hire a junior, you might be thinking:
+where do you find these juniors? What do I do with them once I have them?
+Well, I have some tips!
 
-Code academies and universities produce great talent, but that talent often has
-a hard time finding a job afterwards because, as I mentioned earlier, the bar
-for hiring at a lot of companies is too high. It feels to me like there's a big
-chasm between someone just joining the community and getting a job at a Ruby
-development shop. I hear this from a lot of junior developers that I talk to as
-well.
+Regarding finding the juniors: let's start with two places where you can find
+a lot of them: Code Academies and universities.
+
+Code academies and universities produce great talent, but that talent often
+has a hard time finding a job afterwards because, as I mentioned earlier, the
+bar for hiring at a lot of companies is too high. It feels to me like there's
+a big chasm between someone graduating and getting a job at a Ruby development
+shop. I hear this from a lot of junior developers that I talk to as well.
 
 In fact, I even drew you a picture using my amazing powers of illustration.
 The junior, shown here on the left in amazing detail, tries to make the jump
@@ -393,15 +388,13 @@ But then there are definitely juniors who have that same kind of
 eagerness-to-learn and motivation who have never been to a code academy or a
 university.
 
-Out of the Culture Amp juniors I mentioned before, two fit this bill: Namibia
-and Julie.  While they haven't gone through intensive coding schools or
-universities, they still bring to Culture Amp a great set of skills that they've
-built up themselves. Their ability to learn on their own far exceeds those who
-have been classically taught, because they haven't had that support net.
-
-We interviewed a bunch of other people who fit this bill and while we didn't
-place them at Culture Amp this round, they would make great juniors to hire in
-the future, or for other Ruby companies.
+Out of the Culture Amp juniors I mentioned before, three fit this bill: Rayma,
+Namibia and Julie.  While they haven't gone through intensive coding schools
+or universities, they still bring to Culture Amp a great set of skills that
+they've built up themselves. Their ability to learn on their own far exceeds
+those who have been classically taught, because they haven't had that support
+net. Their tenacity for problem-solving and battling through things they don't
+know is inspiring.
 
 The people who come from coding academies, universities and who are self-
 taught are the future brilliant developers of this community and we all must
@@ -421,60 +414,37 @@ want them to feel comfortable and welcome, not like you're their enemy.
 And then after the interview, I want you to do something different: give them
 some feedback on how it went. Even if you're going to reject them.
 
-During the interview process for the Junior Engineering Program at Culture Amp,
-we gave out a lot of feedback. In fact, we gave out feedback to every single
-person who submitted our coding test.
-
-We built this junior-friendly coding test from scratch and sent it out to all the
-applicants who passed the initial interview stage. We then reviewed that coding
-test, giving _on average_ seven pages of feedback per candidate. It ended up
-being over 400 pages of feedback written by about 7 people at Culture Amp. It
-took a week and a half to review all these submissions, but I think it was time
-well-spent.
-
-Culture Amp is a feedback company and one of our values is to "learn faster
-through feedback" and we try to exemplify that value. But that wasn't the only
-reason. The more important reason was this: we wanted to give juniors this
-extremely detailed level of feedback because we felt that getting back a flat
-"no" on a coding test that you spent tens of hours on would be really
-demotivating for juniors. Remember that Wall of Rejection and the Pit of
-Depression? We didn't want them to slam into the wall or fall into the pit.
-
-We wanted to give the juniors that spent time on our coding test some
-personalised feedback. We had three simple rules. The feedback had to be all of:
+There are three simple rules for this feedback. It must be all of:
 
 * Actionable
 * Specific
 * Kind
 
-If it was Actionable and Specific but not Kind, then it would seem like a
-criticism. If it was Actionable and Kind but not Specific, then the junior might
+If the feedback is Actionable and Specific but not Kind, then it might seem like a
+criticism. If it is Actionable and Kind but not Specific, then the junior might
 not know what they could do to do better next time. And so on.
 
-It had to be these things because we wanted to motivate the juniors towards
-self-improvement, even if they didn't "pass" the coding test. A flat "no" would
-be incredibly de-motivating to receive as a junior. We didn't want that. We
-wanted to encourage them even if we rejected them.
+We did this with Culture Amp's Junior Engineering Program, giving _on average_
+7 pages of written feedback per candidate, for a total somewhere in the range
+of 400 pages. We're a feedback company, and so we have a reputation to uphold.
+But this wasn't the only reason why we compiled this feedback. The more
+important reason is that we dind't want people to apply, only to slam into
+that Wall of Rejection and fall into the Pit of Depression.
 
-And so when we sent out this feedback it was detailed, personalized and designed
-to give helpful advice to each junior. It took us quite a few hours to compile
-this feedback, but we think it was worth it. And you should do it too.
+We used the "Actionable, Specific and Kind" rules because we felt that
+feedback that is Actionable, Specific and Kind would motivate juniors towards
+self-improvement, even if they didn't "pass" our interview phase. A flat "no"
+would be incredibly de-motivating to receive as a junior. We didn't want that.
+We wanted to encourage them even if we rejected them.
 
-The juniors who got this feedback thought so too. Here's some of the feedback
-on the feedback that we got back from them:
+When interviewing juniors, you should give them some feedback too. It doesn't
+have to be seven pages worth of feedback per candidate. Even just a single page
+of feedback can be incredibly valuable for a junior.
 
-* The feedback provided was valuable information which will help me improve for
-  future interviews.
-* I wanted to say thank you for the detailed feedback that was supplied for the
-  coding challenge.
-* Thank you for your feedback, I feel like I've already learned a lot from it.
-
-We're going to do this again the next time we hire a batch of juniors -- with a
-different coding test! -- and I would suggest if you're hiring a junior you
-should keep this in mind too. Juniors _thrive_ given this sort of feedback. It's
-vital for their future growth. Putting in a little bit of extra effort for
-juniors will help them grow. Proivde them some Actionable, Specific and Kind
-feedback after you interview them.
+Juniors _thrive_ given this sort of feedback. It's vital for their future
+growth. Putting in a little bit of extra effort for juniors will help them grow.
+Proivde them some Actionable, Specific and Kind feedback after you interview
+them.
 
 ## Mentorship
 
@@ -491,27 +461,27 @@ are going to Cacti.
 
 Junior developers don't grow into senior developers with just sunshine and
 water. And they don't do it just by practicing development by themselves,
-either. They need mentorship and thrive on direction! As I said before when
-talking about the Talent code: Juniors need to practice the hell out of
-developing things and need good mentorship to really thrive.
+either. They need mentorship and thrive on direction!
+
+As I said before when talking about the Talent Code: Juniors need to practice
+the hell out of developing things and need good mentorship to really thrive. We
+must provide them these opportunities to practice, and we must provide them with
+mentoring.
 
 ### It's OK to ask questions
 
-I used to help run the Melbourne Ruby Hack Night and it's a judgement-free
-environment where anyone and everyone can bring along a Ruby project and work
-on it. Some people are even there for the first time learning about Ruby
-itself, which is so great to see. These Hack Nights work because these new
-developers feel safe and welcome and that no question is too "dumb" to ask.
+There's an event called the Melbourne Ruby Hack Night. This event is a
+judgement-free environment where anyone and everyone can bring along a Ruby
+project and work on it. Some people are even there for the first time learning
+about Ruby itself, which is so great to see. These Hack Nights work because
+these new developers feel safe and welcome and that no question is too "dumb"
+to ask.
 
-You can also start mentoring at your company by fostering that Hack Night- esque
-environment. It should be OK for anyone to ask a question about _anything_. If
-the questioner is getting eyerolls, sighs, or other passive aggressive signals
-from someone else, then that's not the kind of environment where a junior is
-going to learn and thrive.
+Just like at the Hack Night, it should be OK for anyone to ask a question
+about _anything_ when they work with you at your company. In fact, print this
+slide up on some A1 paper and stick it to your wall.
 
-That doesn't happen much in the Ruby community because we're so good at
-building fostering environments, and that whole MINASWAN ethos helps us do it.
-But very clearly outlining to juniors that it's OK to ask _any_ question about
+Very clearly outlining to juniors that it's OK to ask _any_ question about
 _anything_ is a great place to start. And repeat that as much as possible,
 too.
 
@@ -536,8 +506,10 @@ something to someone clearly, then you do not understand it well enough
 yourself. Pairing is helpful to the junior because they get knowledge out of
 it, but it's also helpful to the senior: they learn how to share what's in
 their brain with other people in a clearer fashion. As I said before, it also
-teaches the most valuable skill of all: patience. I have  benefited more than
-I can count by pairing as the more "senior" of the pair.
+teaches the most valuable skill of all: patience. I have benefited more than
+I can count by pairing as the more "senior" of the pair. Not just because I get
+to practice patience, but also because I have learned many new things myself
+when pairing.
 
 ### What do you pair on with juniors?
 
@@ -545,9 +517,11 @@ Suggesting pairing is all well and good in theory, but in reality: what should
 you pair with your junior on? Well, Lydia Guarino has some good tweets about
 that.
 
-<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">5) For junior devs, a good guideline for scope is something that can be completed in 2-3 days. You want to keep your feedback loop short.</p>&mdash; Lydia Guarino (@lydiaguarino) <a href="https://twitter.com/lydiaguarino/status/720090654575996928">April 13, 2016</a></blockquote>
+1) For junior devs, a good guideline for scope is something that can be
+completed in 2-3 days. You want to keep your feedback loop short.
 
-<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">5) Tasks with scope of more than 3 days are tasks that are not defined well enough. Break them down further.</p>&mdash; Lydia Guarino (@lydiaguarino) <a href="https://twitter.com/lydiaguarino/status/720090891231166464">April 13, 2016</a></blockquote>
+2) Tasks with scope of more than 3 days are tasks that are not defined well
+enough. Break them down further.
 
 I agree with both of these. Juniors thrive best when they're given quick wins.
 You want that nice tight feedback loop to keep their confidence growing. Every
@@ -562,8 +536,8 @@ Once they've built up a bit of confidence, you can let them go solo on a task.
 There isn't a set timeframe for when this happens; it's all about how
 confident the junior is with their own abilities. Let them loose on something
 small and make it clear that they can ask any questions about what they're
-doing and that there is no wrong way of doing it. And I'll say it again: they
-won't ship fast to begin with. The fast comes with practice. Let them practice.
+doing and that there is no wrong way of doing it. They won't ship fast to
+begin with. The fast comes with practice. Let them practice.
 
 Once they're done, get them to submit their work in a pull request and then --
 this part's important -- sit together and review it.
@@ -577,10 +551,8 @@ Focussing on in-person communication helps establish a rapport between the
 developers much better than text-based communication ever will.
 
 If a junior has made a mistake in the pull request then you can discuss it
-with them and talk about possible ways to correct the mistake. This way, that
-mistake will never make it to a live production environment and the junior is
-protected against potentially ego-crushing embarrasing moments. Pull request
-reviews are good for that.
+with them and talk about possible ways to correct the mistake. Pull request
+reviews are great for this reason.
 
 Code review also allows the senior to assess how well the junior has been
 doing on the tasks they've been given. If they're doing well on a 2-day task,
@@ -604,26 +576,28 @@ things:
 
 ![Google's 5 key dynamics for effective teams](https://lh3.googleusercontent.com/eQ_WsRq5-q-m_41eEI6GLEObqpxBYJd1pm96gIa-eRSn-QXlPjwO5K6O-DHU8sxny3ChnIQE0mjpnXaaW7QAhQ=s0)
 
-The #1 item on this list isn't "Feeling welcome", but "Psychological safety". The text underneath says: "Team members feel safe to
-take risks and be vulnerable in front of each other." I think "Psychological safety" fits better than "feeling welcome".
+The #1 item on this list isn't "Feeling welcome", but "Psychological safety".
+The text underneath says: "Team members feel safe to take risks and be
+vulnerable in front of each other."
 
- You probably recognise that some of these things sound a lot like the
+You probably recognise that some of these things sound a lot like the
 "Love/belonging", "Esteem" and "Self-actualisation" parts of [Maslow's
 hierarchy of
 needs](https://en.wikipedia.org/wiki/Maslow%27s_hierarchy_of_needs). This
-indicates that Mr. Maslow was probably onto something.
+indicates that Professor Maslow was probably onto something.
 
 Juniors should ultimately feel safe to take risks and to be vulnerable in our
 teams. Juniors will make mistakes. We've all made mistakes. Ask me about that
-time I dropped the production database for a client of a consultancy... and we
-had no backups. Hopefully you have processes to prevent this sort of thing
-happening with your juniors when you hire them.
+time I dropped the production database for a multi-thousand user client of a
+consultancy... and we had no backups. Hopefully you have processes to prevent
+this sort of thing happening with your juniors when you hire them.
 
 The remainder of this list is not to be discounted. Dependability, Structure &
 Clarity, Meaning and Impact are all vital to junior developers progressions. A
 junior must be able to depend on the people around them for support. They must
 have clarity on what their direction is. They must feel like they're
-contributing back to a greater whole to keep them motivated; it's that drive that I talked about earlier.
+contributing back to a greater whole to keep them motivated; it's that drive
+that I talked about earlier.
 
 When you hire a junior developer, keep these things in mind and ask yourself
 regularly if you're following along with them. These things should underpin
@@ -633,16 +607,12 @@ With a concerted effort to make the junior feel pyschologically safe, and some
 semi-structured mentoring in place, they can grow into the future's most
 brilliant developers.
 
-Hire and mentor a junior developer, if not today (because you're at a
-conference) then do it next week. Grow your company and this community and
-make your teams better. I hope that our Active Mantra can change into "Hiring
-and mentoring junior developers".
+---
 
-If you're already doing this at your companies or you want to do it, come find
-me after this talk and we can definitely talk more about it.
+We must start hiring and mentoring junior developers. If not today (because
+you're at a conference) then do it next week. Grow your company and this
+community and make your teams better. Hiring juniors is the way to grow our
+teams and this wonderful community.
 
-One last thing: I'm really looking forward to hearing that talk in five years
-time and having my mind blown. I hope you are too.
-
-
-
+I hope that with a concerted effort to hire juniors, our Active Mantra can
+change into "Hiring and mentoring junior developers". That would be wonderful.
