@@ -6,7 +6,7 @@ title: My thoughts on Hanami
 
 (<a href='https://www.reddit.com/r/rails/comments/81z9oe/what_are_your_opinions_about_hanami_framework/dvale8q/?st=jegb17z5&sh=e9d18fa1'>This was originally posted as a comment on Reddit</a>)
 
-I’ve been toying around with Hanami for a few weeks now and imo it _feels_ better than Rails.  If you want to see some code rather than text, [here's my little example app I've been building with Hanami](http://github.com/radar/hanami-example).
+I've been toying around with Hanami for a few weeks now and imo it _feels_ better than Rails.  If you want to see some code rather than text, [here's my little example app I've been building with Hanami](http://github.com/radar/hanami-example).
 
 Here are the top three things that I like about Hanami, in long form:
 
