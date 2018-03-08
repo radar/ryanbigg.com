@@ -1,3 +1,9 @@
+---
+wordpress_id: RB-1520380041
+layout: post
+title: Hiring Juniors (RubyConf AU Talk)
+---
+
 I have seen the future.
 
 Five years from now, someone will get on a stage like this one (or perhaps
