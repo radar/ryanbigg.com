@@ -55,7 +55,7 @@ end
 ```
 
 ## 5:55 - `Recording::Mentions` concern
-*DRINK* -- there's a concern here. <bad joke about it being "concerning">
+*DRINK* -- there's a concern here. [bad joke about it being "concerning"]
 
 ### Callbacks
 
