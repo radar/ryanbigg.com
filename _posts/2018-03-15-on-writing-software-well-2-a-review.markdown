@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1521081004
 layout: post
-title: On Writing Software Well #2: A Review
+title: "On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review"
 ---
 
 A few people have asked for my opinions on DHH's recent video series. And others have bemoaned the lack of a critical take on the videos. So here's a critical take involving my opinions on [DHH's 2nd video](https://www.youtube.com/watch?v=m1jOWu7woKM)) in the series.
