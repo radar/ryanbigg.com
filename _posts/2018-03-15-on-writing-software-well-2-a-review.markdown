@@ -64,7 +64,7 @@ end
 ### Current Attributes
 The other thing is `Current` -- used in `eavesdrop_for_mentions` down the bottom of the code view here.
 
-I already [wrote about CurrentAttributes at length](https://ryanbigg.com/2017/06/current-consider-harmful). Global variables magically being available _everywhere_ in the application. Where is `Current.user` set? How can I be sure it's set to a value here?
+I already [wrote about CurrentAttributes at length](https://ryanbigg.com/2017/06/current-considered-harmful). Global variables magically being available _everywhere_ in the application. Where is `Current.user` set? How can I be sure it's set to a value here?
 
 ### Abstracting out the logic for triggering the job
 
