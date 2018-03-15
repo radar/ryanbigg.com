@@ -6,12 +6,6 @@
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen|Encode+Sans+Condensed" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
-  crossorigin="anonymous"></script>
-  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,45 +14,22 @@
 
   <body>
     <div class="main">
-      <button class="sidebar-toggle">
-        <span class="fa fa-bars" aria-hidden="true"></span>
-      </button>
-      <div class='sidebar'>
-        <div class="menu">
-  <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
+      <header class="topbar">
+        <img src='/images/me.png' />
 
-  <ul>
-    <li>
-      <a href="/">Who?</a>
-    </li>
-    <li>
-      <a href="/books">Books</a>
-    </li>
-    <li>
-      <a href="/blog">Blog</a>
-    </li>
-    <li>
-      <a href="/history">History</a>
-    </li>
-    <li>
-      <a href="/now">Now</a>
-    </li>
-    <li>
-      <a href="/contact-me">Contact me</a>
-    </li>
-  </ul>
+<h1><a href='/'>Ryan Bigg</a></h1>
 
-  <img src='/images/me.png' />
-</div>
+<a href="/">Who?</a> &middot; <a href="/books">Books</a> &middot; <a href="/blog">Blog</a><br>
 
-      </div>
+<a href="/history">History</a> &middot; <a href="/now">Now</a><br>
+
+<a href="/contact-me">Contact me</a>
+
+      </header>
 
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="/2018/03/on-writing-software-well-2-a-review"><h2>On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review</h2></a>
-            <small>15 Mar 2018</small><br>
             <p>A few people have asked for my opinions on DHH&#39;s recent video series. And others have bemoaned the lack of a critical take on the videos. So here&#39;s a critical take involving my opinions on <a href="https://www.youtube.com/watch?v=m1jOWu7woKM">DHH&#39;s 2nd video</a>) in the series.</p>
 
 <p>Why not start with <a href="https://www.youtube.com/watch?v=H5i1gdwe1Ls">Video #1 in the series</a>? Because it was great! Code comments that explain why things are the way they are... those are incredibly useful to people new / unfamiliar with parts of a codebase. His points were well made and I find nothing worth commenting on. (Pun intended)</p>
@@ -273,8 +244,6 @@
 
 <p>This is my preferred approach. Callbacks and their implicitness have caused so much harm in previous codebases that I would never reach for them again. Transaction objects with explicit orders of operations are what I will be doing instead.</p>
 
-
-            <div id='disqus_thread'></div>
           </article>
         </div>
       </div>

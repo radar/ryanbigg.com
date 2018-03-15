@@ -6,12 +6,6 @@
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen|Encode+Sans+Condensed" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
-  crossorigin="anonymous"></script>
-  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,45 +14,22 @@
 
   <body>
     <div class="main">
-      <button class="sidebar-toggle">
-        <span class="fa fa-bars" aria-hidden="true"></span>
-      </button>
-      <div class='sidebar'>
-        <div class="menu">
-  <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
+      <header class="topbar">
+        <img src='/images/me.png' />
 
-  <ul>
-    <li>
-      <a href="/">Who?</a>
-    </li>
-    <li>
-      <a href="/books">Books</a>
-    </li>
-    <li>
-      <a href="/blog">Blog</a>
-    </li>
-    <li>
-      <a href="/history">History</a>
-    </li>
-    <li>
-      <a href="/now">Now</a>
-    </li>
-    <li>
-      <a href="/contact-me">Contact me</a>
-    </li>
-  </ul>
+<h1><a href='/'>Ryan Bigg</a></h1>
 
-  <img src='/images/me.png' />
-</div>
+<a href="/">Who?</a> &middot; <a href="/books">Books</a> &middot; <a href="/blog">Blog</a><br>
 
-      </div>
+<a href="/history">History</a> &middot; <a href="/now">Now</a><br>
+
+<a href="/contact-me">Contact me</a>
+
+      </header>
 
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="/2014/06/spree-factories-and-callbacks"><h2>Spree, Factories and Callbacks</h2></a>
-            <small>17 Jun 2014</small><br>
             <p>During last week, I was trying to wrap my head around Spree&#39;s code again. I continued my efforts yesterday and tweeted this:</p>
 
 <blockquote class="twitter-tweet" lang="en"><p>Realtalk: I think we’ve dug ourselves a nice hole in Spree by relying too much on callbacks + Factory Girl factories.</p>&mdash; The Bigg Man Himself (@ryanbigg) <a href="https://twitter.com/ryanbigg/statuses/478316786576674816">June 15, 2014</a></blockquote>
@@ -112,8 +83,6 @@
 
 <p>If I was going to re-architect Spree -- or any large Rails app for that matter -- something like <a href="https://github.com/radar/spree_poro">spree_poro</a> is where I would start. I wouldn&#39;t start with a Rails app, or even a Rails engine. I would start here: in a small repo of code that has tests written before any code, then the code implements the business rules and the tests pass. Refactoring happens then, because otherwise <a href="https://codeclimate.com/github/radar/spree_poro">CodeClimate</a> would say nasty things about the code. The Rails engine can call out to it later.</p>
 
-
-            <div id='disqus_thread'></div>
           </article>
         </div>
       </div>

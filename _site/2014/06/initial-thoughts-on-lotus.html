@@ -6,12 +6,6 @@
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen|Encode+Sans+Condensed" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
-  crossorigin="anonymous"></script>
-  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,45 +14,22 @@
 
   <body>
     <div class="main">
-      <button class="sidebar-toggle">
-        <span class="fa fa-bars" aria-hidden="true"></span>
-      </button>
-      <div class='sidebar'>
-        <div class="menu">
-  <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
+      <header class="topbar">
+        <img src='/images/me.png' />
 
-  <ul>
-    <li>
-      <a href="/">Who?</a>
-    </li>
-    <li>
-      <a href="/books">Books</a>
-    </li>
-    <li>
-      <a href="/blog">Blog</a>
-    </li>
-    <li>
-      <a href="/history">History</a>
-    </li>
-    <li>
-      <a href="/now">Now</a>
-    </li>
-    <li>
-      <a href="/contact-me">Contact me</a>
-    </li>
-  </ul>
+<h1><a href='/'>Ryan Bigg</a></h1>
 
-  <img src='/images/me.png' />
-</div>
+<a href="/">Who?</a> &middot; <a href="/books">Books</a> &middot; <a href="/blog">Blog</a><br>
 
-      </div>
+<a href="/history">History</a> &middot; <a href="/now">Now</a><br>
+
+<a href="/contact-me">Contact me</a>
+
+      </header>
 
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="/2014/06/initial-thoughts-on-lotus"><h2>Initial thoughts on Lotus</h2></a>
-            <small>19 Jun 2014</small><br>
             <p>Following on from my <a href="http://ryanbigg.com/2014/06/spree-factories-and-callbacks/">last post</a>, I&#39;ve been experimenting some more with my <a href="https://github.com/radar/spree_poro">spree_poro</a>, and I&#39;ve been looking at how to work with some kind of data store persistence more sophisticated than the <code>Spree::Data</code> constant that I had used previously. I wanted something more sophisticated than running <code>select</code>s over arrays.</p>
 
 <p><a href="http://lotusrb.org">Lotus</a> bills itself as a &quot;complete web framework for Ruby&quot; and also uses the words &quot;simple&quot;, &quot;fast&quot;, and &quot;lightweight&quot;. In my limited experience of only using the <code>Lotus::Model</code> part of the framework, I can say it&#39;s all of those things. <code>Lotus::Model</code> itself is less than 600 lines and my tests (now 50 of them) still run in &lt;0.05 seconds.</p>
@@ -71,8 +42,6 @@
 
 <p>I am very interested to see how this whole Lotus thing pans out. It&#39;s very easy to understand at this point in time, other than that I can&#39;t work out how to properly do polymorphic associations (as is necessary for promotions within Spree, sadly). Perhaps that would be a feature that comes eventually to Lotus, or we re-architect the way Spree is designed to work more with Lotus.</p>
 
-
-            <div id='disqus_thread'></div>
           </article>
         </div>
       </div>

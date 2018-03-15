@@ -6,12 +6,6 @@
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen|Encode+Sans+Condensed" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
-  crossorigin="anonymous"></script>
-  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,45 +14,22 @@
 
   <body>
     <div class="main">
-      <button class="sidebar-toggle">
-        <span class="fa fa-bars" aria-hidden="true"></span>
-      </button>
-      <div class='sidebar'>
-        <div class="menu">
-  <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
+      <header class="topbar">
+        <img src='/images/me.png' />
 
-  <ul>
-    <li>
-      <a href="/">Who?</a>
-    </li>
-    <li>
-      <a href="/books">Books</a>
-    </li>
-    <li>
-      <a href="/blog">Blog</a>
-    </li>
-    <li>
-      <a href="/history">History</a>
-    </li>
-    <li>
-      <a href="/now">Now</a>
-    </li>
-    <li>
-      <a href="/contact-me">Contact me</a>
-    </li>
-  </ul>
+<h1><a href='/'>Ryan Bigg</a></h1>
 
-  <img src='/images/me.png' />
-</div>
+<a href="/">Who?</a> &middot; <a href="/books">Books</a> &middot; <a href="/blog">Blog</a><br>
 
-      </div>
+<a href="/history">History</a> &middot; <a href="/now">Now</a><br>
+
+<a href="/contact-me">Contact me</a>
+
+      </header>
 
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="/2008/06/a-bit-of-refactoring-love"><h2>A bit of refactoring love</h2></a>
-            <small>13 Jun 2008</small><br>
             <h3>Find, Find, Find, Find, I don't think so...</h3>
 
 <p>As explained in previous posts, Rails controllers have 7 default actions (index, new, create, show, edit, update, destroy). Four of these seven actions make the same find call, <span class='term'>Model.find(params[:id])</span> and this tutorial is to tidy that up so you&#39;re not repeating yourself over four different actions. To clean this up we&#39;ll just call a before filter:</p>
@@ -155,8 +126,6 @@ end
 
 <p>As long as there&#39;s a <span class='term'>#to<em>s</span> method in the Forum model it will insert that as the phrase shown to the user for the link. All of the above should produce the same URL, with the exception of the first which will produce <span class='term'>/forums/show/1</span>, and going down the list they&#39;re just shorter ways of writing the same thing. If you had nested routes such as <span class='term'>forum</em>topic<em>path(@forum, @topic)</span> you could do <span class='term'>&lt;%= link</em>to @topic, [@forum, @topic] %&gt;</span> as the extremely short version of it. The reason why we can&#39;t do just <span class='term'>&lt;%= link<em>to [@forum, @topic] %&gt;</span> is because this will show the to</em>s version of @forum, followed immediately by the to_s version of @topic.</p>
 
-
-            <div id='disqus_thread'></div>
           </article>
         </div>
       </div>

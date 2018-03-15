@@ -11,10 +11,10 @@ title: Blog
 {{ first_post.content }}
 
 <div id='archive'>
-  <h2>25 back</h2>
+  <h2>In case you missed it...</h2>
   <ul>
-    {% for post in site.posts limit:25 offset: 1 %}
-      <li><a href="{{ post.url }}">{{ post.title }}</a><abbr>{{ post.date | date_to_string }}</abbr></li>
+    {% for post in site.posts limit:10 offset: 1 %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a><br><div>{{ post.date | date_to_string }}</div></li>
   {% endfor %}
   </ul>
   <center><a href='/blogography.html'>The Last 100 Posts</a></center>

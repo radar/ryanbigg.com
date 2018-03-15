@@ -6,12 +6,6 @@
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Oxygen|Encode+Sans+Condensed" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script>
-  <script
-  src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
-  crossorigin="anonymous"></script>
-  <script src='/js/sidebar.js'></script>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,45 +14,22 @@
 
   <body>
     <div class="main">
-      <button class="sidebar-toggle">
-        <span class="fa fa-bars" aria-hidden="true"></span>
-      </button>
-      <div class='sidebar'>
-        <div class="menu">
-  <h1><a href='/'>Ryan Bigg</a></h1>
-  <small class='desc'><small>Award-winning</small><br> Mentor / Author / Programmer</small><br>
+      <header class="topbar">
+        <img src='/images/me.png' />
 
-  <ul>
-    <li>
-      <a href="/">Who?</a>
-    </li>
-    <li>
-      <a href="/books">Books</a>
-    </li>
-    <li>
-      <a href="/blog">Blog</a>
-    </li>
-    <li>
-      <a href="/history">History</a>
-    </li>
-    <li>
-      <a href="/now">Now</a>
-    </li>
-    <li>
-      <a href="/contact-me">Contact me</a>
-    </li>
-  </ul>
+<h1><a href='/'>Ryan Bigg</a></h1>
 
-  <img src='/images/me.png' />
-</div>
+<a href="/">Who?</a> &middot; <a href="/books">Books</a> &middot; <a href="/blog">Blog</a><br>
 
-      </div>
+<a href="/history">History</a> &middot; <a href="/now">Now</a><br>
+
+<a href="/contact-me">Contact me</a>
+
+      </header>
 
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="/2008/04/epic-fail-from-epic"><h2>Epic fail from Epic</h2></a>
-            <small>07 Apr 2008</small><br>
             <pre lang="ruby">"The quick brown fox jumped over the lazy dog".split("").each do |a|
 string &lt;&lt; "0" if a[0] &lt; 100
 string += a[0].to_s &lt;&lt; "000"
@@ -97,8 +68,6 @@ Line breaks added again for non-breakage.</p>
 
 <p>Oh, by the way if you want to the generator, <strong><a title="UT3 Config Generator" href="http://frozenplague.net/files/ut3-config-generator.rb">CLICK ME</a>. </strong>You&#39;ll need Ruby to run it, type <span class='term'>ruby ut3-config-generator.rb</span> to run it.</p>
 
-
-            <div id='disqus_thread'></div>
           </article>
         </div>
       </div>

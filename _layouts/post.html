@@ -3,21 +3,14 @@
   {% include head.html %}
   <body>
     <div class="main">
-      <button class="sidebar-toggle">
-        <span class="fa fa-bars" aria-hidden="true"></span>
-      </button>
-      <div class='sidebar'>
-        {% include menu.html %}
-      </div>
+      <header class="topbar">
+        {% include topbar.html %}
+      </header>
 
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="{{ page.url }}"><h2>{{ page.title }}</h2></a>
-            <small>{{ page.date | date_to_string }}</small><br>
-            {{ content }}
-
-            <div id='disqus_thread'></div>
+            {{content}}
           </article>
         </div>
       </div>

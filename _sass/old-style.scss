@@ -1,0 +1,143 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  font: 13pt "Oxygen";
+  margin: 0;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Encode Sans Condensed";
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+a {
+  color: #3CBC98;
+}
+
+.main {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.content {
+  width: 100%;
+  padding-left: 300px;
+  overflow-y: auto;
+  height: 100%;
+  position: relative;
+  z-index: 3;
+  background: white;
+
+  .content-inner {
+    max-width: 949px;
+    margin: 0 auto;
+    padding: 10px 60px;
+
+    @media screen and (max-width: 768px) {
+      padding: 10px 30px;
+    }
+  }
+}
+
+h2 {
+  font-size: 2rem;
+  color: #484851;
+}
+
+article {
+  background: white;
+
+  p, ul {
+    line-height: 150%;
+  }
+
+  small {
+    font-size: 0.75rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    font-family: "Source Code Pro";
+  }
+}
+
+.large {
+  font-size: 1.25rem;
+}
+
+#books {
+  .book {
+    border-bottom: 2px solid #3CBC98;
+
+    img {
+      float: right;
+      max-width: 200px;
+      margin-left: 3rem;
+    }
+
+    blockquote {
+      width: 66%;
+    }
+  }
+}
+
+
+blockquote {
+  background: lighten(#3CBC98, 40);
+  font-size: 90%;
+  font-style: italic;
+  padding: 0.66rem;
+}
+
+aside {
+  background: #303036;
+  color: #dedede;
+  padding: 20px;
+
+  p {
+    margin: 0px;
+  }
+
+  p + p {
+    margin-top: 10px;
+  }
+
+  header {
+    font-size: 1.5rem;
+  }
+}
+
+#archive {
+  font-size: 75%;
+
+  ul {
+    list-style-type: none;
+  }
+
+  abbr {
+    float: right;
+  }
+}
+
+hr {
+  border: 2px solid #3CBC98;
+}
+
+.references {
+  p {
+    text-indent: -1em;
+    margin-left: 1em;
+  }
+}
