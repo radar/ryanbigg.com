@@ -585,7 +585,9 @@ teams](https://rework.withgoogle.com/blog/five-keys-to-a-successful-google-
 team/). They interviewed hundreds of their own employees and they came up with 5
 things:
 
-![Google's 5 key dynamics for effective teams](https://lh3.googleusercontent.com/eQ_WsRq5-q-m_41eEI6GLEObqpxBYJd1pm96gIa-eRSn-QXlPjwO5K6O-DHU8sxny3ChnIQE0mjpnXaaW7QAhQ=s0)
+<div class='center'>
+  <img src='https://lh3.googleusercontent.com/eQ_WsRq5-q-m_41eEI6GLEObqpxBYJd1pm96gIa-eRSn-QXlPjwO5K6O-DHU8sxny3ChnIQE0mjpnXaaW7QAhQ=s0'>
+</div>
 
 The #1 item on this list isn't "Feeling welcome", but "Psychological safety".
 The text underneath says: "Team members feel safe to take risks and be
