@@ -30,6 +30,8 @@
       <div class='content'>
         <div class='content-inner'>
           <article>
+            <a href="/2008/09/and-now-for-something-completely-useless"><h2>And Now For Something Completely Useless</h2></a>
+            <small>23 Sep 2008</small><br>
             <pre lang='rails'>class Model < ActiveRecord::Base
   has_many (Dir.entries("#{RAILS_ROOT}/app/models")-['.','..',"#{self.to_s.downcase}.rb"]).delete_if{|a|
 File.directory?("#{RAILS_ROOT/app/models/#{a}")}.rand.gsub(".rb","").pluralize.to_sym
