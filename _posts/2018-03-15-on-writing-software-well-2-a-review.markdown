@@ -187,7 +187,7 @@ As I've said previously: this code feels like "clever code". "Look at me using a
 
 But then in several months time of this thing chugging along working perfectly, you'll encounter a bug, look at the code and wonder how the hell it all fit together. There is far too much magic here.
 
-But I guess that's The Rails Way™.
+But I guess that's The Rails Way&trade;.
 
 ---
 
