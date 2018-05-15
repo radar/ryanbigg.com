@@ -4,6 +4,8 @@ layout: post
 title: "On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review"
 ---
 
+This blog post has been [translated into Japanese](https://techracho.bpsinc.jp/hachi8833/2018_05_10/56193), thanks to [@hachi8833](https://twitter.com/hachi8833)!
+
 A few people have asked for my opinions on DHH's recent video series. And others have bemoaned the lack of a critical take on the videos. So here's a critical take involving my opinions on [DHH's 2nd video](https://www.youtube.com/watch?v=m1jOWu7woKM)) in the series.
 
 Why not start with [Video #1 in the series](https://www.youtube.com/watch?v=H5i1gdwe1Ls)? Because it was great! Code comments that explain why things are the way they are... those are incredibly useful to people new / unfamiliar with parts of a codebase. His points were well made and I find nothing worth commenting on. (Pun intended)
