@@ -4,13 +4,140 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2018-05-16T08:33:55+10:00</updated>
+ <updated>2018-06-15T09:04:54+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Making Tests Go Faster</title>
+   <link href="http://ryanbigg.com/2018/06/making-tests-go-faster"/>
+   <updated>2018-06-15T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2018/06/making-tests-go-faster</id>
+   <content type="html"><![CDATA[<p>At Culture Amp, we have a large Rails app that we’ve been building since 2011. This app has about 150k LOC and an extensive test suite that uses Rubocop, RSpec, Capybara, Cucumber and FactoryBot.</p>
+
+<p>We run these tests for the application on Buildkite and currently they take about 16 minutes to run end-to-end. This is 16 minutes that developers are waiting to get feedback on whether their build passed or failed. While this is not unacceptably high, we could do better. Developers could ship things faster, or respond quicker to build failures, with faster builds.</p>
+
+<p>A large chunk of that build time is spent running these tests. In fact, we currently have 8 machines running tests concurrently for each build to speed it up.</p>
+
+<p>We have a bunch of tests in this application that, like in many Rails applications, were written to get something shipped fast with no real focus on making the tests or code particularly fast. As a result, we have tests that create more records in the database than is necessary. While one test taking 1-2 seconds longer than it should isn’t a bad thing, hundreds of these tests taking seconds to run each impacts the build time.</p>
+
+<p>One particularly major offender in our app is a factory for the Survey model. This factory creates an extensive set of records in the database and takes over a second and a half to run. Any test using this factory incurs this delay. And there’s a lot of those tests.</p>
+
+<p>We could refactor this factory to not do such nasty things, but because this factory is for our God Class, it is used everywhere in the application. Refactoring would be a months long effort.</p>
+
+<p>So instead, the better approach is to find tests that are slow and have a dependency on this factory and to remove that dependency where possible.</p>
+
+<h2>Finding slow tests</h2>
+
+<p>We configured RSpec to print out the slowest examples in a test run at the end of every test.</p>
+
+<p>This comes from this line in our <code>spec_helper.rb</code> file:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># Print the 10 slowest examples and example groups at the</span>
+<span class="c1"># end of the spec run, to help surface which specs are running</span>
+<span class="c1"># particularly slow.</span>
+<span class="n">config</span><span class="p">.</span><span class="nf">profile_examples</span> <span class="o">=</span> <span class="mi">10</span>
+</code></pre></div>
+<p>When our tests run, we can view this output and see trouble spots:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">Top 10 slowest examples (13.85 seconds, 61.6% of total time):
+    [TEST DESCRIPTION GOES HERE}
+    2.08 seconds ./spec/models/report_spec.rb:134
+</code></pre></div>
+<p>One particular trouble spot that I saw was this <code>spec/models/report_spec.rb</code>. This whole file took about 1m20s to run locally, and only for 116 examples. This test used the survey factory extensively, which made the test slow.</p>
+
+<p>This seemed to me like an easy target: a model test that was slow when it should be fast. So I set about fixing it.</p>
+
+<p>That was October 2016. I have since attempted to fix it on at least five separate occasions but gave up. Then this week, I finally managed to do it. Here’s some tips I can share.</p>
+
+<h2>Don’t create the world</h2>
+
+<p>The first tip is a simple one: create the least amount of database objects as possible. By invoking the survey factory, 398 database queries run to create all the things that the factory (and its associated factories) builds. Most tests in our application do not require this, but some do.</p>
+
+<p>I went through the test and replaced each survey factory invocation with a basic_survey factory:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">factory</span> <span class="ss">:basic_survey</span><span class="p">,</span> <span class="ss">class: </span><span class="no">Survey</span> <span class="k">do</span>
+  <span class="n">sequence</span> <span class="ss">:name</span> <span class="k">do</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span>
+    <span class="s2">"Basic Survey </span><span class="si">#{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+
+  <span class="c1"># some traits go here</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>This creates the bare minimum survey in the database, and leads to ONE database query.</p>
+
+<p>I methodically went through every example in <code>spec/models/report_spec.rb</code> and attempted to replace this call:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">FactoryBot.create(:survey)
+</code></pre></div>
+<p>With this one:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">FactoryBot.build(:basic_survey)
+</code></pre></div>
+<p>Some methods within the <code>Report</code> class do not depend on a <em>persisted</em> <code>Survey</code> object, but just one configured in a particular way. So we can use <code>FactoryBot.build</code> to initialize a new <code>Survey</code> instance with the details from the factory, meaning no database calls are made for this factory invocation.</p>
+
+<p>For the ones that I could use <code>build</code> for, I investigated the reasons why the tests needed a persisted survey and when I was satisfied with the answer, I switched to using <code>FactoryBot.create(:basic_survey)</code>.</p>
+
+<p>This worked for the most part, but there were some tricky parts.</p>
+
+<h2>Tracking down extra queries</h2>
+
+<p>The 2nd tip is that you should inspect database queries and know where they&#39;re coming from.</p>
+
+<p>Sometimes, the tests in <code>spec/models/report_spec.rb</code> relied on the survey being setup in the very particular way that the survey factory did it. In most cases, I wasn&#39;t able to jump through the code to see where certain records were being created or updated, as our factories are pretty large and complex.</p>
+
+<p>The first thing I did to track this down was to confirm that a database query was updating a record in a particular way. Turning on the Mongoid query logging with this line at the top of the spec file:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Mongoid</span><span class="p">.</span><span class="nf">logger</span><span class="p">.</span><span class="nf">level</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div>
+<p>Meant that I could see <em>all</em> database queries that were being executed in this test.</p>
+
+<p>From here, I could see the database query that I thought was responsible:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">D, [&lt;timestamp&gt; &lt;pid&gt;] DEBUG -- : MONGODB | localhost:27017 | murmur_test.update | STARTED | {"update"=&gt;"surveys", ...
+</code></pre></div>
+<p>But this output only tells me that the query is happening, not <em>where</em> it is happening. Fortunately, I&#39;ve got a little piece of code that I wheel out for situations like this:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">LoggingSubscriber</span>
+  <span class="k">def</span> <span class="nf">started</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="nf">command</span><span class="p">[</span><span class="s2">"update"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"surveys"</span>
+      <span class="nb">puts</span> <span class="nb">caller</span><span class="p">.</span><span class="nf">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span> <span class="o">=~</span> <span class="sr">/murmur/</span> <span class="p">}.</span><span class="nf">join</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+      <span class="nb">puts</span> <span class="s2">"*"</span> <span class="o">*</span> <span class="mi">50</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">succeeded</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+    <span class="c1"># p event</span>
+    <span class="c1"># p event.duration</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">failed</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">subscriber</span> <span class="o">=</span> <span class="no">LoggingSubscriber</span><span class="p">.</span><span class="nf">new</span>
+<span class="no">Mongo</span><span class="o">::</span><span class="no">Monitoring</span><span class="o">::</span><span class="no">Global</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="no">Mongo</span><span class="o">::</span><span class="no">Monitoring</span><span class="o">::</span><span class="no">COMMAND</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">)</span>
+</code></pre></div>
+<p>I can put this code at the top of the test file. This code subscribes to <em>any</em>  Mongo database queries through the <code>Mongo::Monitoring</code> feature built into the <code>mongo</code> gem.</p>
+
+<p>When a query happens, the <code>started</code> method in this subscriber is called and passed the event. I can then inspect this event and make it show information about certain queries. In this example, I&#39;m getting it to output stack trace information for queries that update the <code>surveys</code> collection. The &quot;murmur&quot; here is the name of our application; I&#39;m using it here to only show stack trace lines from our application.</p>
+
+<p>With this code in my app, I can now see both the query <em>and</em> where it is coming from:</p>
+<div class="highlight"><pre><code class="language-" data-lang="">...murmur/spec/factories/common.rb:397:in `block (3 levels) in &lt;top (required)&gt;'
+...murmur/spec/models/report_spec.rb:907:in `create_new_survey'
+...murmur/spec/models/report_spec.rb:551:in `create_new_survey'
+...murmur/spec/models/report_spec.rb:4:in `block (2 levels) in &lt;top (required)&gt;'
+...murmur/spec/models/report_spec.rb:5:in `block (2 levels) in &lt;top (required)&gt;'
+...murmur/spec/models/report_spec.rb:113:in `block (4 levels) in &lt;top (required)&gt;'
+...murmur/spec/models/report_spec.rb:118:in `block (4 levels) in &lt;top (required)&gt;'
+**************************************************
+D, [2018-06-15T08:44:49.977091 #11587] DEBUG -- : MONGODB | localhost:27017 | murmur_test.update | STARTED | {"update"=&gt;"surveys",
+</code></pre></div>
+<p>The stack trace shows me that this query is happening in a factory. With the stack trace lighting the way, I was able to see what the query was doing and then remove the need for it in the test.</p>
+
+<p>I then went through the remainder of this file and reduced the runtime from 1 minute and 15 seconds to 18 seconds.</p>
+
+<h2>There&#39;s more to do</h2>
+
+<p>Taking almost a full minute off our build time doesn&#39;t sound like much, but it&#39;s a 16th of the build time saved. There&#39;s plenty more cases like this in our application that we could fix and reduce the build time further. This would let developers get faster feedback on their builds, making the whole development cycle more efficient.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review</title>
@@ -2801,116 +2928,6 @@ rails_app=&gt;
 <p>The entire <a href="https://www.phusionpassenger.com/documentation/Users%20guide%20Apache.html">Passenger Users Guide</a> is a good read for other bits of tweaking too.</p>
 
 <p>You may wish to setup exception tracking for your application now that it has been deployed to production, and for that I recommend <a href="https://rollbar.com">Rollbar</a>. It&#39;s very easy to setup for any Rails application and they have instructions on how to do that on their site.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Mac OS X, Ruby, ruby-install, chruby and You</title>
-   <link href="http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you"/>
-   <updated>2015-06-09T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you</id>
-   <content type="html"><![CDATA[<p><strong>Last updated: November 15th, 2017</strong></p>
-
-<p>
-  <strong>This beginner's guide will set up with Ruby 2.4.2, chruby, ruby-install and Rails 5.1.4 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
-</p>
-
-<p>This guide is <em>almost</em> a copy of my <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but this one has instructions for Macs.</p>
-
-<p>This guide will cover installing a couple of things:</p>
-
-<ul>
-<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
-<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.4.2</strong>: at the time of writing the newest current stable release of Ruby.</li>
-<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
-<li><strong>Rails 5.1.4</strong>: at the time of writing the newest current stable release of Rails.</li>
-</ul>
-
-<p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
-
-<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
-
-<p>If you&#39;re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
-
-<h3>Housekeeping</h3>
-
-<p>The first thing we&#39;re going to need to install is XCode which you can get from the Mac App Store.</p>
-
-<p>After you have that installed, we&#39;re going to need to open Terminal to execute a few commands. Use Spotlight (CMD + Space) to open it by typing in &quot;Terminal&quot; and pressing Enter. You should see a white window open. This is where we&#39;ll be putting the following commands via copy and paste.</p>
-
-<p>We&#39;ll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">xcode-select --install
-</code></pre></div>
-<p>First of all, we&#39;re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href="https://brew.sh">homebrew</a>. We can install this by using this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-</code></pre></div>
-<p>Next, we&#39;ll install <code>chruby</code> and <code>ruby-install</code>.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">brew install chruby ruby-install
-</code></pre></div>
-<h3>ruby-install</h3>
-
-<p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install -V
-</code></pre></div>
-<p>If you see this, then you&#39;ve successfully installed ruby-install:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install: 0.6.1
-</code></pre></div>
-<h3>Ruby</h3>
-
-<p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install --latest ruby
-</code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.4.2 installed.</p>
-
-<p>Now we&#39;ll need to load chruby automatically, which we can do by adding these lines to <code>~/.bash_profile</code> (or <code>~/.zshrc</code> if you&#39;re using ZSH):</p>
-<div class="highlight"><pre><code class="language-" data-lang="">source /usr/local/opt/chruby/share/chruby/chruby.sh
-source /usr/local/opt/chruby/share/chruby/auto.sh
-</code></pre></div>
-<p>In order for this to take effect, we&#39;ll need to source that file:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">. ~/.bash_profile
-# or (if you're using ZSH)
-. ~/.zshrc
-</code></pre></div>
-<p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
-
-<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it&#39;s working:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.2
-</code></pre></div>
-<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-2.4.2
-</code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.4.2</code> for example -- assuming that we have Ruby 2.4.2 installed first!</p>
-
-<p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
-</code></pre></div>
-<h3>Rails</h3>
-
-<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don&#39;t need to use that nasty <code>sudo</code> to install things; we&#39;ve got write-access! To install the Rails gem we&#39;ll run this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem install rails -v 5.1.4 --no-document
-</code></pre></div>
-<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
-
-<h3>MySQL</h3>
-
-<p>Before you can use MySQL, you&#39;ll need to install it with Homebrew:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">brew install mysql
-</code></pre></div>
-<p>After this, <code>gem install mysql</code> should succeed.</p>
-
-<h3>PostgreSQL</h3>
-
-<p>Before you can use PostgreSQL, you&#39;ll need to install it with Homebrew:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">brew install postgresql
-</code></pre></div>
-<p>After this, <code>gem install pg</code> should succeed.</p>
-
-<h3>Fin</h3>
-
-<p>And that&#39;s it! Now you&#39;ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>.</p>
-
-<p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 ]]></content>
  </entry>
  
