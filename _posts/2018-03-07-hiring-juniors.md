@@ -4,7 +4,9 @@ layout: post
 title: Hiring Juniors (RubyConf AU Talk)
 ---
 
-_This is the transcript for a talk that I gave at RubyConf AU in March 2018. Video will be uploaded soon-ish_.
+_This is the transcript for a talk that I gave at RubyConf AU in March 2018._
+
+The video is up! You can [watch it here](https://www.youtube.com/watch?v=aD6dci9rLXM).
 
 [Slides are on Speakerdeck](https://speakerdeck.com/radar/hiring-juniors-1)
 
