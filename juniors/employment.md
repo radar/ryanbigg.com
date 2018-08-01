@@ -5,7 +5,7 @@ title: Employement - Juniors
 
 ## How do I get a job in this industry?
 
-<small>Last updated: 11th April 2017</small>
+<small>Last updated: 2nd August 2018</small>
 
 <p class='large'>
   This post is <a href='/juniors.html'>part of a series of my replies to junior developer questions</a>.
@@ -25,6 +25,6 @@ It's a little sad because without "new blood" we're running the talent pool dry.
 
 With no new talent, it makes it ridiculously hard to hire new people and that means companies are investing more and more time to try and hire these mids and seniors. Well, I shouldn't say hire. It's more of a poach these days. Companies would much rather poach talent than go the home-grown route.
 
-Fortunately, there's some companies out there which have noticed that there's a lot of great junior talent out there just ripe for the picking and they've undertaken efforts to have internship programs. Three big companies in Melbourne have done that: [Envato](https://envato.com.au), [Real Estate](https://realestate.com.au) and [Zendesk](https://zendesk.com). They all have internship programs and I'd encourage you to apply for those if you're interested in interning for any of them.
+Fortunately, there's some companies out there which have noticed that there's a lot of great junior talent out there just ripe for the picking and they've undertaken efforts to have internship programs. One of these companies is the one I work for, [Culture Amp](https://cultureamp.com). We're currently running a Junior Engineering Program there. I'd encourage you to apply.
 
-[Culture Amp](https://cultureamp.com) doesn't have anything like that at the moment, but I'm working on something like this. First, I want to hire a junior onto my team and train them up over 6 months. Then once that's proven, hire some more and start a sort of "internship program" of our own. It might just work.
+There are at least two other big companies in Melbourne that have done that also: [Envato](https://envato.com.au), [Qantas Hotels](https://qantas.com).
