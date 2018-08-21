@@ -55,12 +55,12 @@ My aim for this book is to be something that someone with little to no programmi
 
 There's currently 3 parts of the book, but there's also going to be a 4th part which involves a medium-sized project. During this part, I want to start the readers on building a new project with "mix new" and here I want to introduce concepts like:
 
-• Modules
-• Structs
-• Functions with guard clauses
-• Commenting + documentation
-• Doctests
-• Using external dependencies
+* Modules
+* Structs
+* Functions with guard clauses
+* Commenting + documentation
+* Doctests
+* Using external dependencies
 
 The project is going to be one that can read a CSV file full of people's data (name, age + gender) and transform its data into a list of maps [RB: now that I think more about it, probably structs instead of maps] and then do some data crunching on that. Can we find what the average age is in this dataset? What's the gender split as a percentage? Things like that.
 
