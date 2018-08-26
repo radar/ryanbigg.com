@@ -7,7 +7,7 @@
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono|Oxygen|Encode+Sans+Condensed" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <link rel='stylesheet' href='/css/style.css?v=2' media='screen'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
   <script src='/js/prism.js'></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -31,8 +31,10 @@
       <div class='content'>
         <div class='content-inner'>
           <article>
-            <a href="/2010/12/rails-routing-and-automatic-assumptions"><h2>Rails routing and automatic assumptions</h2></a>
-            <small>19 Dec 2010</small><br>
+            <div class='center'>
+              <a href="/2010/12/rails-routing-and-automatic-assumptions"><h2>Rails routing and automatic assumptions</h2></a>
+              <small>19 Dec 2010</small>
+            </div>
             <p>Last night while working on chapter 12 for <a href='http://manning.com/katz'>Rails 3 in Action</a> I stumbled across an interesting problem detailed in <a href="https://gist.github.com/746414">this gist</a>. The problem I was seeing is that the <code>edit_admin_user_path</code> route <em>was not</em> failing, while the <code>admin_user_permissions_path</code> path <em>was</em> failing.</p>
 
 <p>I had my suspicions to why the first link worked and spent the remainder of last night digging through my favourite bit of Rails and Rails related source(ry): Action Dispatch and rack-mount. I didn&#39;t figure it all completely out until after a good night&#39;s sleep. It wasn&#39;t until I saw pixeltrix&#39;s comment on the Gist this morning that it all clicked. </p>

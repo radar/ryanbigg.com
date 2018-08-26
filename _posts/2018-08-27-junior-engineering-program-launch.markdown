@@ -27,7 +27,7 @@ We didn't exactly have a pool of junior developers who we could call up and ask 
 
 We created a small landing page for this purpose:
 
-[image:4A778C9D-7B59-42FA-BBD4-413E31DF4B92-482-000018CF2A352014/3974D99A-9425-4A53-B50A-95C43796445B.png]
+![JEP Launch Page](/images/jep/launch.png)
 
 We advertised this page through out social networks, and by word of mouth. Within the first week we received 50 applications. By the cut-off date of August 25th, 3 weeks later, we had received 129 applications. Quite a few of those were on the very last day!
 
