@@ -4,10 +4,11 @@ title: Blog
 ---
 {% assign first_post = site.posts.first %}
 
-<!-- Layout inspired by Nick Quaranto's "Litany Against Fear" blog
-     http://litanyagainstfear.com -->
-<a href="{{ first_post.url }}"><h2>{{ first_post.title }}</h2></a>
-<small>{{ first_post.date | date_to_string }}</small><br>
+<div class='center title'>
+  <a href="{{ first_post.url }}"><h2>{{ first_post.title }}</h2></a>
+  <small>{{ first_post.date | date_to_string }}</small><br>
+</div>
+
 {{ first_post.content }}
 
 <div id='archive'>
