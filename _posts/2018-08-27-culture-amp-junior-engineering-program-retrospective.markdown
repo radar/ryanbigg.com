@@ -66,6 +66,8 @@ To finish up, I want to show you the feedback that we received from the last bat
 
 > These lessons were invaluable to me as it gave me a chance to step back from my day to day work and take the time to understand the basics of several technologies which I was unfamiliar with.
 
+<hr>
+
 > The Junior Engineering Program was a great way to kickstart my career in tech. It provided me with a unique opportunity to advance my skills as a developer, while contributing to exciting real world projects.
 
 > The Culture Amp Junior Engineering Program is a great opportunity to get started on the engineering career and get a chance to learn the current standards and best practices from some of the best people in their areas of expertise. On top of that you also get the benefits of working for a culture first company that truly cares about your wellbeing.
@@ -74,6 +76,6 @@ We loved working with our first cohort of junior developers we would love the op
 
 So if you're a junior developer who's keen to learn, go and apply for Culture Amp's second Junior Engineering Program:
 
-[Apply here for the Culture Amp Junior Engineering Program's second cohort](https://boards.greenhouse.io/cultureamp/jobs/1295735)
+**[Apply here for the Culture Amp Junior Engineering Program's second cohort](https://boards.greenhouse.io/cultureamp/jobs/1295735)**
 
 
