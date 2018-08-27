@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Employement - Juniors
+title: Employment - Juniors
 ---
 
 ## How do I get a job in this industry?
