@@ -6,6 +6,10 @@ title: "Culture Amp Junior Engineering Program: Retrospective"
 
 This post is a short summary of the [Culture Amp](https://cultureamp.com) Junior Engineering Program (JEP) that I ran from November last year until June this year.
 
+If you're keen to apply for the 2nd cohort then you can do that here:
+
+**[Apply here for the Culture Amp Junior Engineering Program's second cohort](https://boards.greenhouse.io/cultureamp/jobs/1295735)**
+
 This post is the first in a series of four blog posts which will go into detail about how the last JEP operated, with the aim of giving potential future cohort applicants and the general public a taste of what a Culture Amp JEP looks like.
 
 ## Our first Junior Engineering Program
