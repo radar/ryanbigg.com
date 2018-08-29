@@ -19,8 +19,6 @@ This would seem to imply a logical progression from Ruby to PostgreSQL to Mongo 
 
 At the start of most JEP weeks, we had a retrospective session where we discussed the previous week's work, and what we would like to do in the coming weeks. This really influenced what was taught throughout the program and provided a better structure than one I could've come up with myself. Often, the JEP cohort would be the one deciding what we would learn next time, not me.
 
-I've "open sourced" the repo with the JEP resources in it if you'd like to look through it: https://github.com/cultureamp/jep/tree/iteration-1
-
 ## Part 1: Git, GitHub + Ruby (Weeks 1-5)
 
 In this first part, we covered Git + GitHub and Ruby.
