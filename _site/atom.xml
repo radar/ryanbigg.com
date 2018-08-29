@@ -4,13 +4,274 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2018-08-27T11:32:15+10:00</updated>
+ <updated>2018-08-29T12:58:14+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Junior Engineering Program: Resources</title>
+   <link href="http://ryanbigg.com/2018/08/junior-engineering-program-resources"/>
+   <updated>2018-08-29T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2018/08/junior-engineering-program-resources</id>
+   <content type="html"><![CDATA[<p>This post is part of a series of posts about the first cohort of the Culture Amp Junior Engineering Program (JEP). You can read the first two posts here:</p>
+
+<ul>
+<li><a href="/2018-08-27-junior-engineering-program-launch">Junior Engineering Program: Launch</a></li>
+<li><a href="/2018-08-27-junior-engineering-program-onboarding">Junior Engineering Program: Onboarding</a></li>
+</ul>
+
+<p>In the last post I covered the process of what we did in the weeks immediately following the juniors starting, but didn&#39;t talk too much about what we taught them during those or subsequent weeks. That is what this post is going to talk about: what we taught our juniors over the 26 weeks of the Junior Engineering Program.</p>
+
+<p>In the first post, I briefly rattled off some tech that we used:</p>
+
+<blockquote>
+<p>The juniors learned how to work effectively in teams and amongst themselves, as well as learning about /Ruby, PostgreSQL, Mongo, Rails, JavaScript, Flow, React, JSON APIs and GraphQL/, all within 6 months time.</p>
+</blockquote>
+
+<p>This would seem to imply a logical progression from Ruby to PostgreSQL to Mongo and so on. Things were not quite done that way. At the start of the program, I had pre-planned the first 7 weeks of work. In hindsight, this planning was excessive.</p>
+
+<p>At the start of most JEP weeks, we had a retrospective session where we discussed the previous week&#39;s work, and what we would like to do in the coming weeks. This really influenced what was taught throughout the program and provided a better structure than one I could&#39;ve come up with myself. Often, the JEP cohort would be the one deciding what we would learn next time, not me.</p>
+
+<p>I&#39;ve &quot;open sourced&quot; the repo with the JEP resources in it if you&#39;d like to look through it: https://github.com/cultureamp/jep/tree/iteration-1</p>
+
+<h2>Part 1: Git, GitHub + Ruby (Weeks 1-5)</h2>
+
+<p>In this first part, we covered Git + GitHub and Ruby.</p>
+
+<p>For the Git + GitHub sessions, the juniors wrote some &quot;user manuals&quot;, telling us about themselves. They then had to commit these manuals to a git branch and submit a pull request to merge that into the master branch. Other juniors would then review that PR. This was designed to get them familiar with git branching, merging and the GitHub pull request / review cycle.</p>
+
+<p>For the remainder of this part, we focussed on Ruby skills. We covered some Exercism and Advent of Code Exercises. I think these exercises are a great tool to practice Ruby with. When working on these exercises, we introduced the concept of &quot;mob programming&quot;, where one junior would write code for 5 minutes while the other juniors told them what to type. Once the 5 minutes was up, another junior would take over. This was good practice working well together in a group.</p>
+
+<p>We also worked on modelling a small Ruby application that had a similar data model as our big Rails application. Alongside this small application, I taught them about <a href="https://github.com/radar/guides/blob/master/code-organisation.md">code organisation within a Ruby application</a> and how to write RSpec tests from scratch.</p>
+
+<p>During the writing of this application, I showed examples of two of my favourite design principles: the Single Responsibility Principle and the Law of Demeter. Code was written to intentionally violate these design principles, and then the code was refactored to use them. I think this demonstration went well.</p>
+
+<h2>Part 2, v1: Rails (Weeks 6-8)</h2>
+
+<p>And then I tried teaching them Rails. The goal here was for the juniors to build a link shortener application, which is more complicated than it sounds.</p>
+
+<p>I&#39;ll cover more about this in the &quot;Lessons Learned&quot; section at the end, but one does not simply teach Rails to juniors straight after teaching them Ruby. I realised this after some of my juniors asked &quot;What does this <code>SELECT * FROM</code> thing mean in the output?&quot;. It became pretty clear to me that I had completely ignored that the juniors didn&#39;t know about databases yet.</p>
+
+<p>We started working on this Rails application, using RSpec &amp; Capybara to test it. We got as far as building out the initial CRUD implementation of this app, but really the juniors needed to know more about databases before they could work effectively in a Rails application.</p>
+
+<h2>Part 2: v2: Databases (Weeks 9-13)</h2>
+
+<p>And so I spent a few weeks teaching them about databases. Because our link shortener Rails application was using a relational database to start with, we started learning about PostgreSQL (Week 9).</p>
+
+<p>In these weeks, we covered how to insert, select, update and delete records from a table, how to join multiple tables together and about <a href="https://en.wikipedia.org/wiki/Database_normalization">database normalization</a>.</p>
+
+<p>At Culture Amp we also use MongoDB, and so we spent two weeks covering the same sorts of actions as above, but with that database instead.  We also covered some more esoteric knowledge, like the <a href="https://docs.mongodb.com/manual/core/aggregation-pipeline/">MongoDB Aggregation Pipeline</a>.</p>
+
+<h2>Part 3: Rails (Week 14)</h2>
+
+<p>Once we had worked on databases for a few weeks, we came back to the link shortener Rails application. The juniors finished off their CRUD implementations, and began work on adding user authentication and a JSON API to this application.</p>
+
+<h2>Part 4: The Rails Exam (Week 15)</h2>
+
+<p>Once the juniors had built out this application, we then gave them an exam to test their knowledge of Rails applications. <a href="https://github.com/cultureamp/jep/tree/master/week15">This exam</a> involved building a small CRUD application from scratch, using all the skills that they had learned in the proceeding weeks. The juniors had an entire week to complete this exam. There was to be no &quot;pass&quot; or &quot;fail&quot; in this exam; it was just to provide some insight into where the juniors were at when it came to Rails.</p>
+
+<p>The following week I spent marking these exams, again using a rubric that I had devised. I spent a lot of this week talking to the juniors about their results. I covered things like what they might&#39;ve missed, ways to write cleaner code and more. To say more would be to give away a few of the &quot;answers&quot;.</p>
+
+<h2>Part 5: JavaScript / React / APIs (Weeks 16-18)</h2>
+
+<p>We rounded off the program by teaching the juniors about JavaScript, React, and APIs.</p>
+
+<p>This part was kicked off by one of our Senior JavaScript Engineers, Sam Margalit. He ran two days of JEP, teaching the foundations of JavaScript, Flow and React in that time.</p>
+
+<p>The juniors then learned how to integrate their React applications with the Rails app that they had built. This was done first by building and using a JSON API that they built within the Rails application, and then later on by an equivalent GraphQL API.</p>
+
+<h2>Lessons Learned</h2>
+
+<p>Planning the JEP course was remarkably hard and I have newfound respect for teachers who do this sort of curriculum planning thing year-round.</p>
+
+<h3>Better explanations / walkthroughs</h3>
+
+<p>What I found with a lot of the material for juniors, especially when it was <em>brand new</em> to them, was that in order to learn they needed more than just the code itself. While it&#39;s intuitive <em>to me</em> to read code top-to-bottom and (usually) understand it first-pass, it is not the case for juniors. Writing code is  the same.</p>
+
+<p>For this, I would involve more pseudocode and step-by-step walkthroughs of what the code should be doing in order to accomplish a particular goal. A few weeks in it was brought up by a junior that the simple task of me writing the steps of a short program on the whiteboard really helped them understand the order of what the program was doing. I think a good term for this sort of thing is &quot;chunking&quot; -- breaking problems down into their smallest pieces. We&#39;ll focus a lot on this next JEP.</p>
+
+<p>Along the same lines, I would like to do more practice of walking through code to track how something is defined and then used throughout a Rails codebase. As an example: how would a junior know how to find how a field is displayed on a particular page, if they only knew the route and the value of the field? How would they even <em>begin</em> to debug that sort of thing? More practice is required here also.</p>
+
+<h3>More focus on fundamentals</h3>
+
+<p>What might&#39;ve helped here also is more practice around the fundamentals. Just how does it all work when you type in <code>http://localhost:3000</code> into your browser and hit enter? What is a HTTP request? What&#39;s HTTP? What&#39;s a port? What&#39;s DNS? What&#39;s TCP?</p>
+
+<p>I don&#39;t mean to say that there needs to be a whole <em>week</em> dedicated to each of these things, but at least covering them in a light amount of detail would be a good start. We definitely missed doing this at the start of the JEP and the next time around I will do this as these are the real fundamental concepts of every web application.</p>
+
+<h3>Databases <em>before</em> Rails</h3>
+
+<p>And now for the big regret: I hinted at this earlier on, but teaching Rails <em>immediately</em> after Ruby was... well, it was one of those &quot;what was I thinking?&quot; moments. The &quot;M(odel)&quot; of Rails applications is thing that underpins it all; if there is no data (no models) within a Rails application, what&#39;s the point? Teaching databases <em>first</em> is vital.</p>
+
+<p>Juniors must have at least an understanding of how to query databases, and perhaps also an understanding of how to model them in the first place in order to work effectively within applications that are backed by a database.</p>
+
+<p>I would like to spend more time earlier on in the course teaching them about MVC <em>after</em> Ruby but before even talking about Rails. I want to spend time teaching them about models and what they provide, and then about views and what they do and wrap it up with how controllers bring the two together. No Rails course or book out there that I know of introduces MVC <em>slowly</em> like this, but I think it is certainly required.</p>
+
+<h3>Flip it and reverse it</h3>
+
+<p>Last time, we taught in roughly this (simplified) order:</p>
+
+<ol>
+<li>Ruby</li>
+<li>Databases</li>
+<li>Rails</li>
+<li>APIs</li>
+<li>JavaScript</li>
+<li>React</li>
+</ol>
+
+<p>After our experiences with the JEP last time and talking about the structure of the next JEP with other people, I&#39;m now convinced that this order was backwards.</p>
+
+<p>We should be starting at the browser and then working back from there. The whole reason why we&#39;d use Ruby to run Rails to serve an API that React reads from is so that we would see something in the browser! So I think rendering stuff in the browser <em>first</em> is a better approach.</p>
+
+<p>This means that I would teach roughly in this order next time:</p>
+
+<ol>
+<li>HTML / CSS / JavaScript</li>
+<li>React</li>
+<li>APIs</li>
+<li>Ruby / Sinatra</li>
+<li>Databases</li>
+<li>...</li>
+</ol>
+
+<p>The browser is the entry point for most requests. To understand why you need Ruby to build a web <em>thing</em>, you first need to realise what a web <em>thing</em> looks like. We could start with building a static site and then slowly make it more dynamic by bringing in things like React, external APIs, etc.</p>
+
+<p>To work with browser tech there&#39;s sites like <a href="codepen.io">Codepen</a> and <a href="stackblitz.com">StackBlitz</a> that have zero-setup required. This means that we&#39;ll have a smoother time jumping into things too.</p>
+
+<p>I&#39;m glad that I get to experiment with the JEP structure like this and I really look forward to seeing what comes out of this browsers-first experiment.</p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>Junior Engineering Program: Onboarding</title>
+   <link href="http://ryanbigg.com/2018/08/junior-engineering-program-onboarding"/>
+   <updated>2018-08-28T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2018/08/junior-engineering-program-onboarding</id>
+   <content type="html"><![CDATA[<p>This post is part of a series of posts about the first iteration of the Culture Amp Junior Engineering Program (JEP). You can read <a href="/2018-08-27-junior-engineering-program-launch">the first post here</a>.</p>
+
+<p>In the last post, I covered how we launched the Junior Engineering Program at Culture Amp, all the way up to formally hiring the juniors.</p>
+
+<p>In this post, I&#39;m going to cover what we did to make sure the juniors were successful when they arrived. First of all, we needed to be prepared!</p>
+
+<h2>Preparing for the juniors</h2>
+
+<p>First impressions matter.</p>
+
+<p>At Culture Amp, our onboarding process is thoughtfully designed to slowly ease new people into their time with us. You can choose custom equipment if you like, and you&#39;ll get a wonderful welcome package on your first day, some of which is pictured here:</p>
+
+<p><img src="/images/jep/onboarding.jpg" alt="Welcome package"></p>
+
+<p>Alongside these things, they also get some Culture Amp swag, as any good tech [ex-]startup would give their employees on their first day.</p>
+
+<p>We also spent this time getting the teams ready to bring on a junior by talking with them about what would be required and answering any questions they had about the process.</p>
+
+<h2>The first day</h2>
+
+<p>As I said before: first impressions really matter. This is <em>especially</em> the case for juniors who may not have worked in a development job before. The last thing we want to do is to scare them away from the tech industry completely.</p>
+
+<p>On the first day, juniors had a lovely late start at 10am instead of the regular 9am. I greeted them at the door and led them to their first induction session where they setup their computers, all new MacBook Pros.</p>
+
+<p>This process was led by our People and Experience crew, Ginny Fry, Thang Ngo and one of our IT admins, James Smith. Even though this session was two-hours long, there was still more to setup.</p>
+
+<p>But before that happened, we all went out for a big JEP lunch at Tahini Diner! Here&#39;s our juniors enjoying that lunch:</p>
+
+<p><img src="/images/jep/team-lunch.jpg" alt="Team Lunch"></p>
+
+<p><em>Left-to-right: Lauren Hennessy, Angel Peña Ruiz, Rebecca Vo, Julie Huang, Namibia Lebron-Torres, Ramya Ravindranath, Jasmine Ellis, Jaime Terreu.</em></p>
+
+<p>[aside] You may notice here that there are <em>eight</em> people around the table instead of <em>five</em>. Lauren, Angel and Ramya were all working at Culture Amp as juniors before the JEP started, but they chose to be a part of the program too to boost their skills. We call these people our &quot;super juniors&quot; because they had a head-start on the rest.</p>
+
+<p>This was a great moment for all the juniors to spend some more time to get to know each other.</p>
+
+<h2>The first week</h2>
+
+<p>We ran our first couple of JEP sessions that week on Tuesday and Wednesday. The first session focussed on Command Line Tips &amp; Tricks. Things like:</p>
+
+<ul>
+<li>A few common command-line utils. Some examples: <code>ls</code>, <code>mkdir</code> and <code>touch</code>.</li>
+<li>Using the <code>git</code> command to stage, commit and push files to a repository</li>
+<li>Using <a href="https://github.com/rupa/z">z</a> to quickly navigate to a directory</li>
+<li>Using <a href="https://github.com/junegunn/fzf">fzf</a> to recall commands or to find files in the current directory</li>
+</ul>
+
+<p>We chose to focus on the command-line first as its the thing that developers use the most. Learning how to be productive in the command-line is important.</p>
+
+<p>Our second session covered Git in more detail, GitHub and Pull Requests.</p>
+
+<p>For the Git exercise, we had the juniors write up &quot;User Manuals&quot; for themselves, which involved them filling out answers to some questions and sharing them with the group. These questions ranged from &quot;What does your perfect working day look like?&quot; to &quot;How do you take your coffee / tea / other hot beverage?&quot;. The juniors would then submit these answers as a pull request to a &quot;user manual&quot; repository, where they would then have to get a &quot;review&quot; from one of the other juniors. This was to be the first taste of the GitHub pull request review experience.</p>
+
+<p>The idea behind this exercise was that it wasn&#39;t a pull request modifying an existing bit of code or document. It was something that was entirely unique to the junior that they could attend to and improve upon. We&#39;ll definitely do this again next time.</p>
+
+<p>On the Thursday and Friday of that week, the juniors spent time finishing their user manuals as well as spending <em>a lot</em> of time configuring their editor and terminal setups exactly how they wanted them to be.</p>
+
+<p>This was also to be their first introduction to the people on their teams, with all but two of the juniors going to separate teams. The teams held <em>another</em> team lunch for each of the juniors within this first week, which was a good way for the team to get to know who they&#39;d just hired.</p>
+
+<p>On the Friday we had <em>yet another</em> welcome lunch, this time in the office to welcome all new five starters. Everyone from the Melbourne office came along. This was a good way for our juniors to meet everyone who they could work with in the office and was another way for us to make them feel welcome.</p>
+
+<p>The goal of this entire week was to leave the juniors with an <em>excellent</em> first impression of what it is like working at Culture Amp and I think we did a great job of that.</p>
+
+<h2>The first few weeks&#39; structure</h2>
+
+<p>During the first weeks of the JEP, we split the week between the JEP and &quot;team time&quot;, with the juniors spending Monday and Tuesday working on the JEP, and Wednesday, Thursday and Friday working with their teams. This was designed to give the juniors two days worth of time 100% dedicated to learning, but still give them that valuable work experience that they wouldn&#39;t get if they were studying at university, or in a code academy.</p>
+
+<p>We would start our Mondays with a retro that talked about how the previous week went: what we loved, what didn&#39;t go so well, what we wanted to learn and anything that puzzled us. This was a great way to start the week and often the juniors made some suggestions about what they wanted to learn next. We then adapted the program to suit where they wanted to go.</p>
+
+<p>For the remainder of Monday, we&#39;d cover a particular facet of development, and then assign the juniors &quot;homework&quot; to do for the remainder of the day. They would then have <em>all</em> of Tuesday to work on that homework, and then whatever time they found throughout the rest of the week to do it.</p>
+
+<p>On Wednesday, Thursday and Friday, they worked closely with their teams to learn the ropes about how work gets done at Culture Amp. The juniors learned about our very large Rails application. To introduce the juniors to the code, we gave them some small Trello cards to do. These tasks involved things as small as changing the text on some buttons, up to fixing a bug involving several different parts of the application. We wanted to get them some quick wins on the board so that they would feel like productive members of the team.</p>
+
+<p>The juniors would pair with more senior developers to learn how to accomplish these tasks, with the hard-and-fast rule that the junior must be the one driving the computer as much as possible. We spent this a lot of this initial time explaining the &quot;whys&quot; of the work to help the junior understand why the work was meaningful. Rather than simply telling the junior what to type all the time, we would often ask them questions like &quot;why do you think this bug is happening?&quot; to help them practice their critical reasoning skills with the codebase.</p>
+
+<h2>Switching to a 3-week cadence</h2>
+
+<p>At about the 10 week mark of the program, we realised that splitting the week up in 2 days for JEP and 3 days for the team was the wrong decision to make. Splitting it up this way meant that juniors would have a &quot;split-brain&quot; between the JEP and their team work, and also that teams would not be able to prioritise meaningful work for their juniors.</p>
+
+<p>After some discussions with our leadership at Culture Amp, it was decided that we would switch to a 3-week cadence: 1 week with the JEP, and 2 weeks with the team. This worked so much better! Juniors were able to devote more of their attention to the work they were doing in JEP, and teams were able to give the juniors meaningful work.</p>
+
+<p>This worked so well that we&#39;ll be doing this for the next program from the first day too.</p>
+
+<h2>Supporting the Juniors</h2>
+
+<p>Supporting juniors is absolutely critical. Having them do homework or teamwork is never supposed to be the &quot;be-all and end-all&quot; of any junior&#39;s life. What they need is someone there that can provide them with long-term career / life support because being a junior is <em>hard</em>, especially when you&#39;re &quot;surrounded&quot; by people who you can see are better than you.</p>
+
+<p>When anyone starts at Culture Amp, they&#39;re assigned to a Mentor. This person is typically <em>not</em> their direct boss, but someone from a different team that can provide the new hire with some career, tech or life advice when it&#39;s asked for.</p>
+
+<p>Our juniors were no different. They were paired up with one of our Mentors from the very first week. They were told that they could go to these people and ask them for help whenever they wished. It was the Mentor&#39;s job to ensure that the junior felt encouraged and supported at Culture Amp.</p>
+
+<p>I should also mention about the &quot;CAmp buddy&quot; program too. Everyone who starts is <em>also</em> assigned a &quot;CAmp buddy&quot; who helps answer questions like where to find things around the office, where the best lunch options are, and who&#39;s who within the office. Our juniors were all paired up with one of these too.</p>
+
+<p>This also meant that the juniors had four points of contact for potential support at Culture Amp:</p>
+
+<ul>
+<li>Their mentor</li>
+<li>Their CAmp buddy</li>
+<li>Their direct team lead</li>
+<li>Me as the Junior Engineering Program Lead</li>
+</ul>
+
+<p>This support net is designed to ensure that every person who joins Culture Amp is tremendously well supported. Having this support for our juniors meant that we provided a fostering and welcoming environment.</p>
+
+<p>We wanted not just their first week, but their &quot;life&quot; at Culture Amp to be one where they were supported and encouraged to grow in their capabilities. We felt like this is the way to set juniors off on the right foot in terms of their career progression.</p>
+
+<h2>Lessons learned</h2>
+
+<p>Culture Amp&#39;s onboarding process has been consistently worked on, as we improve it each time we onboard someone. Giving our juniors their &quot;equipment&quot; on the first day and all the introductions were a great thing to do. Equipment, introduction and support-wise I think we&#39;re doing a great job.</p>
+
+<p>One area that we could work on improving here is making it clearer what their responsibilities are as a junior. At Culture Amp, these juniors all joined teams that were senior-heavy. On those teams, the seniors have a high output of quality work and as a junior it can be super intimidating -- when a senior completes four cards in the time it takes you to get through half of one (or less).</p>
+
+<p>During the first few weeks, I heard from <em>almost all of my juniors</em> about this particular feeling of inadequacy quite a lot.  While I think this is a natural part of being a junior at any company, I would love to spend more time with the next batch of juniors talking about this. I would really reenforce that their job is to <em>learn</em> and if that&#39;s all they&#39;re doing then that&#39;s <em>perfectly okay</em>. They don&#39;t have to fix bugs from Day 1 or even Week 1. More communication around this is essential next time. I did outline this once at the start, but a constant communication of this idea is required.</p>
+
+<p>Along these same lines, I would hope to speak with the juniors&#39; team leads more next time to ensure that there&#39;s no or very little pressure coming from them to get work done. I think I didn&#39;t communicate quite enough with them about that part either. Having the juniors hear from the team leads about this attitude of &quot;your job is to <em>learn</em>&quot; would probably help the next batch too. The way to fix this would be to have a big chat with the junior&#39;s team -- including the junior too -- and to very clearly outline expectations there.</p>
+
+<hr>
+
+<p>In the next post, I&#39;ll cover the resources that we used to teach the juniors now that they were working at Culture Amp.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Junior Engineering Program: Launch</title>
@@ -2664,86 +2925,6 @@ time ranges in Active Record and it has saved me a lot of frustration. The above
 <h2>Conclusion</h2>
 
 <p><a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Truncating indexes in Elasticsearch 2</title>
-   <link href="http://ryanbigg.com/2016/02/truncating-indexes-in-elasticsearch-2"/>
-   <updated>2016-02-22T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2016/02/truncating-indexes-in-elasticsearch-2</id>
-   <content type="html"><![CDATA[<p>In pre-2.0 versions of elasticsearch, you may have been truncating indexes using <code>delete_by_query</code>. This has been moved in Elasticsearch 2.0 out to a plugin, which can be installed with:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">bin/plugin install delete-by-query
-</code></pre></div>
-<p>Where <code>bin/plugin</code> is located wherever you installed Elasticsearch. On my Mac,
-that path is <code>/usr/local/Cellar/elasticsearch/2.2.0_1/libexec</code> because I
-installed Elasticsearch with Homebrew. If you&#39;re on Ubuntu and you installed
-it from Elasticsearch&#39;s own package repo, it will be at
-<code>/usr/share/elasticsearch</code>.</p>
-
-<p>I&#39;m using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I&#39;m using to truncate the indexes:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Index</span>
-  <span class="k">class</span> <span class="nc">Indexers</span>
-    <span class="k">def</span> <span class="nf">truncate_indexes</span>
-      <span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">::</span><span class="no">Client</span><span class="p">.</span><span class="nf">new</span>
-      <span class="n">client</span><span class="p">.</span><span class="nf">delete_by_query</span><span class="p">(</span><span class="ss">index: </span><span class="n">index_names</span><span class="p">,</span> <span class="ss">body: </span><span class="p">{</span> <span class="ss">query: </span><span class="p">{</span> <span class="ss">match_all: </span><span class="p">{}</span> <span class="p">}</span> <span class="p">})</span>
-      <span class="n">client</span><span class="p">.</span><span class="nf">indices</span><span class="p">.</span><span class="nf">flush</span><span class="p">(</span><span class="ss">index: </span><span class="n">index_names</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div>
-<p>This method is called after each spec has finished running. The <code>index_names</code>
-is just a list of indexes that the <code>Index::Indexers</code> class knows about. The
-<code>delete_by_query</code> functionality is available here from the <code>delete-by-query</code>
-plugin that was installed. The <code>indices.flush</code> call is necessary because the
-next query may return data that the <code>delete_by_query</code> request was supposed to
-delete. The <code>flush</code> call clears the transaction log and memory and writes data
-to disk, ensuring that the next query won&#39;t return data that was deleted.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Programming Phoenix Review</title>
-   <link href="http://ryanbigg.com/2015/12/programming-phoenix"/>
-   <updated>2015-12-24T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2015/12/programming-phoenix</id>
-   <content type="html"><![CDATA[<p>During this Christmas break I&#39;ve been taking some time off from writing Multitenancy with Rails -- which I&#39;ll get back to <em>after</em> Christmas is over -- and instead of writing books I&#39;m reading them.</p>
-
-<p><a href="https://pragprog.com/titles/phoenix/">Programming Phoenix</a> is the only book that I&#39;ve been reading so far. I&#39;ve now read through the whole thing. Despite that I&#39;ve filed over 40 errata on the book (hey, it is a beta book) I <em>mostly</em> enjoyed the book.</p>
-
-<hr>
-
-<p>Programming Phoenix takes you through building a complete Phoenix application, introducing familiar concepts like controllers, models and templates. Those parts are familiar because they&#39;re much the same in Phoenix as they are in Rails; with some differences. Models have changesets. Templates relate to Views. Unlike Rails&#39; &quot;magical&quot; callbacks (in both models and controllers), these are just simply defined and used functions in Phoenix.</p>
-
-<p>The latter chapters cover a range of things, like adding in live &quot;annotations&quot; to a video as its being watched. Think of that kind of like a live chatroom, except as the video plays, the annotations from previous watches also appear. This is done using Websockets, which are supported in Rails now with ActionCable, but it just <em>feels</em> a lot less hacky with Phoenix than it does with Rails. Elixir handles it better, <a href="http://www.phoenixframework.org/blog/the-road-to-2-million-websocket-connections">reaching two million connections recently</a> to a single (albeit quite beefy) server. I can&#39;t myself think of something to use Websockets for, but it is still exciting nevertheless.</p>
-
-<p>The final two chapters, &quot;OTP&quot; (Open Telecom Platform) and &quot;Observer and Umbrellas&quot; cover some of the real strengths of Elixir and its underlying foundation of Erlang. These two chapters get you to build a system which connects to Wolfram Alpha&#39;s API, and then demonstrate how to keep this new system separate from the original application, while still being able to connect these two systems together and communicate between them. In the Ruby world, typically this would be done with HTTP calls, but in the Elixir world it is just a matter of communicating across Elixir processes. This inter-process communication is quite quick in comparison to HTTP because it doesn&#39;t have that overhead.</p>
-
-<p>What I loved from these final chapters was seeing Elixir&#39;s supervision capabilities in action. In one of those latter chapters, you create a small application (<code>Rumbl.Counter</code>) which dies after a couple of seconds. A Supervisor for the main application (<code>Rumbl</code>) restarts this smaller application automatically when it dies. Ruby doesn&#39;t have that kind of capability; instead you need to rely on tools like upstart. It&#39;s quite nice having it built into the language because then you don&#39;t have to learn something completely different to ensure your servers don&#39;t fall over.</p>
-
-<hr>
-
-<p>The book is written by Jos&eacute; &quot;The Elixir Guy&quot; Valim, Chris &quot;The Phoenix Guy&quot; McCord and Bruce &quot;The <a href="https://pragprog.com/book/btlang/seven-languages-in-seven-weeks">Seven Languages</a> Guy&quot; Tate. It&#39;s great to see that it&#39;s the core developers who are invested in writing documentation for the community. Unlike a certain other community who has a main core developer who tells contributors to go fuck themselves when they ask for documentation regarding new features. Further to that point, both Jos&eacute; and Chris are extremely active on the #elixir-lang channel on Freenode, which is also great to see.</p>
-
-<p>I am not sure if it is because the book has three authors, but there are some parts where I&#39;m reading it and enjoying it. Then there are sections like &quot;Anatomy of a Plug&quot; which goes <em>way too deep</em> into what a Plug is and how it works, and &quot;Exploring Ecto in the Console&quot; which, again, goes rather deep but doesn&#39;t tie that content <em>solidly</em> back to what we&#39;re doing in the book at that present moment. It&#39;d be like a fiction book <em>intricately</em> explaining what&#39;s in the house of the neighbour of the protagonist, but then the neighbour is not mentioned any more past that. </p>
-
-<p>Like, why does it even matter that Ecto supports &quot;search functions like <code>ilike</code> and <code>like</code>&quot; or that Plug has <code>path_info</code> and <code>scheme</code> fields? Neither of those are relevant to the content at-hand at that point of time, and it feels disconnected. Those things should be mentioned in their respective guides, not in this book. Perhaps those sections will mysteriously disappear once this book reaches the production editing phase. </p>
-
-<p>It feels like it would be better off showing what a Plug is within the context of the application... and they do that later on. Then after that go into the detail. But I could do without the pages and pages of extra seemingly &quot;useless&quot; info <em>before</em> I get hooked on what you&#39;re trying to sell.</p>
-
-<p>In addition to that, there are some places where the content feels like it&#39;s saying &quot;we&#39;re going to do this now because I said we&#39;re going to do it&quot;; particularly in Chapter 5, the Authentication chapter. The chapter jumps to creating a registration changeset with no reason why it needs to be created, then later on explains why it has to be created. The explanation needs work there.</p>
-
-<p>This is where the TDD/BDD of Rails 4 in Action holds up. In that book, it&#39;s more like &quot;we&#39;re going to do this because the test says we need to do it&quot;. Programming Phoenix saves that kind of testing for Chapter 8, with the given reason being that having testing throughout every chapter can be distracting and repetitive. While I can see the point there -- there was vigorous nodding over here reading Chapter 8&#39;s intro -- that very same testing can be helpful for demonstrating industry best-practices to newbies. Otherwise what you&#39;ll get is a bunch of newbies who read the first 7 chapters and think that writing code without tests is How It Is Done(tm). </p>
-
-<p>Having tests also helps show off the usefulness of regression testing too. A thing broke and now we&#39;re going to write a test for a fix, watch the test go red, fix the thing, and watch the test go green. I think that kind of thing is helpful to newbies to have, as they&#39;re the most likely to make mistakes within their application.</p>
-
-<p>Despite these complaints, the book has been worthwhile reading. I am mainly nitpicking, because I&#39;m an author of another programming book and I have moments where I think that I could write parts better. That has yet to be proven.</p>
-
-<p>The parallels between Rails and Phoenix are helping with the learning of the new framework, and the differences between them are not too mind-bending to be beyond comprehension. The first 8 chapters cover topics that should be familiar to any Rails developer: starting a new project, adding in models and controllers. Adding validations to the model with changesets -- which are a <em>very</em> cool feature that I wouldn&#39;t be surprised if Active Record 6.0 picked up. </p>
-
-<p>The remaining 4 chapters of the book venture off into territory that is probably unexplored by most Rails developers. I know that I personally have never spent time using Websockets or having to do anything like inter-process communication in Ruby. These last four chapters were a breath of fresh air for my skills. I feel like I really learned something valuable in those chapters.</p>
-
-<p>Overall, Programming Phoenix is a fantastic book that will become even better once the authors spend more time on it and the editors do their bit. I really recommend reading this book, but with a small caveat: read <a href="https://pragprog.com/book/elixir/programming-elixir">Programming Elixir</a> first to get familiar with the underlying language of the Phoenix framework. Then it&#39;ll be smooth sailing for you.</p>
 ]]></content>
  </entry>
  

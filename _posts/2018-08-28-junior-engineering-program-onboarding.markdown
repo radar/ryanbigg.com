@@ -16,7 +16,7 @@ First impressions matter.
 
 At Culture Amp, our onboarding process is thoughtfully designed to slowly ease new people into their time with us. You can choose custom equipment if you like, and you'll get a wonderful welcome package on your first day, some of which is pictured here:
 
-[image:78BDE8D0-F024-4605-A804-C3B579045AA0-49054-00004A6050C13311/IMG_0724 2.JPG]
+![Welcome package](/images/jep/onboarding.jpg)
 
 Alongside these things, they also get some Culture Amp swag, as any good tech [ex-]startup would give their employees on their first day.
 
@@ -33,9 +33,9 @@ This process was led by our People and Experience crew, Ginny Fry, Thang Ngo and
 
 But before that happened, we all went out for a big JEP lunch at Tahini Diner! Here's our juniors enjoying that lunch:
 
-[image:477EB6A1-792F-44A1-A949-9923C32A6CB4-49054-000050081C06BC50/IMG_0751.jpg]
+![Team Lunch](/images/jep/team-lunch.jpg)
 
-/Left-to-right: Lauren Hennessy, Angel Peña Ruiz, Rebecca Vo, Julie Huang, Namibia Lebron-Torres, Ramya Ravindranath, Jasmine Ellis, Jaime Terreu./
+_Left-to-right: Lauren Hennessy, Angel Peña Ruiz, Rebecca Vo, Julie Huang, Namibia Lebron-Torres, Ramya Ravindranath, Jasmine Ellis, Jaime Terreu._
 
 [aside] You may notice here that there are _eight_ people around the table instead of _five_. Lauren, Angel and Ramya were all working at Culture Amp as juniors before the JEP started, but they chose to be a part of the program too to boost their skills. We call these people our "super juniors" because they had a head-start on the rest.
 
