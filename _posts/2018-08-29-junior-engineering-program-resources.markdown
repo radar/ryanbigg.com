@@ -6,8 +6,8 @@ title: "Junior Engineering Program: Resources"
 
 This post is part of a series of posts about the first cohort of the Culture Amp Junior Engineering Program (JEP). You can read the first two posts here:
 
-* [Junior Engineering Program: Launch](/2018-08-27-junior-engineering-program-launch)
-* [Junior Engineering Program: Onboarding](/2018-08-27-junior-engineering-program-onboarding)
+* [Junior Engineering Program: Launch](https://ryanbigg.com/2018/08/junior-engineering-program-launch)
+* [Junior Engineering Program: Onboarding](https://ryanbigg.com/2018/08/junior-engineering-program-onboarding)
 
 In the last post I covered the process of what we did in the weeks immediately following the juniors starting, but didn't talk too much about what we taught them during those or subsequent weeks. That is what this post is going to talk about: what we taught our juniors over the 26 weeks of the Junior Engineering Program.
 
