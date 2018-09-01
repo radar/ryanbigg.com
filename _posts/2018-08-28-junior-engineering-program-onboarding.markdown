@@ -4,7 +4,7 @@ layout: post
 title: "Junior Engineering Program: Onboarding"
 ---
 
-This post is part of a series of posts about the first iteration of the Culture Amp Junior Engineering Program (JEP). You can read [the first post here](/2018-08-27-junior-engineering-program-launch).
+This post is part of a series of posts about the first iteration of the Culture Amp Junior Engineering Program (JEP). You can read [the first post here](https://ryanbigg.com/2018/08/junior-engineering-program-launch).
 
 In the last post, I covered how we launched the Junior Engineering Program at Culture Amp, all the way up to formally hiring the juniors.
 
