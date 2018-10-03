@@ -48,8 +48,11 @@ These are things that you would probably find out within the first 8-10 chapters
 
 <a name='salary' href='#salary'><h3>How much is the JEP salary?</h3></a>
 
+I think this is one question that I'm not able to answer directly in such a public space like this site. However what I can say is that we pay competitively within the industry. We're not going to pay you peanuts because you're a junior developer. We will pay you a respectable wage.
 
 <a name='past-juniors' href='#past-juniors'><h3>For the last JEP juniors, what did they like the most and the least about their time?</h3></a>
+
+You'll have to ask them about that one :)
 
 <a name='during' href='#during'><h2>During the Program</h2></a>
 
@@ -57,14 +60,72 @@ These are things that you would probably find out within the first 8-10 chapters
 
 I cover this one in pretty good detail over [on this other page called "Expectations"](https://ryanbigg.com/juniors/expectations.html). I think I wrote it best over there. You should go and read that page!
 
-
 <a name='challenging' href='#challenging'>
   <h3>What is the most challenging thing about working at CA?</h3>
 </a>
 
-<a name='tech' href='#tech'><h3>What technologies do you use the most in the program? / What topics were covered in the raining days during the last program?</h3></a>
+I think for me personally, the most challenging aspect comes from having worked in much smaller companies before working at Culture Amp. At my last place, I worked within a team of 10 people. I could follow most of what they were all doing and keep up.
+
+At Culture Amp, we now have about 50 developers and my attitude when I joined Culture Amp was still one of "I'll try to keep up with everything that's going on". That was not a clever idea. It was _exhausting_! So I think that is definitely the hardest part: it's simply not possible anymore at CA to keep up with everything that's going on. Pick certain things to follow and follow them, and try to stay focussed.
+
+---
+
+I have another answer to this question which has more of a junior-slant on it. It's about code.
+
+Culture Amp's main monolithic codebase is a Rails application. This Rails app has been around for about 7 years and as such has accumulated all the cool fashions in those interleaving years. There are some parts of this code which were once considered "best-practice", but now are simply not.
+
+It is hard as a junior developer to read this code and understand what's good and what's bad. It's tempting to think that because it is in the codebase it is the One True Right Way Of Doing It™ but sometimes it's just there because it's legacy code.
+
+As a junior working in this codebase you can spend a lot of time second-guessing things and doing them the "old good" way instead of the "new good" way. This is why when you come to work at Culture Amp we'll pair you up with people who can guide you in the ways of writing good code within an old crufty legacy monolith.
+
+I will also say that because the monolith has been around for such a long time it's a great training ground for juniors because it's an _excellent_ history lesson in styles / trends.
+
+<a name='tech' href='#tech'><h3>What technologies do you use the most in the program? / What topics were covered in the training days during the last program?</h3></a>
+
+So I'm a Rubyist at heart. I've been doing Ruby now for 12 years. It's the one programming language I know best. So I thought when I went to start the JEP that that's where I should start teaching from. So that's what we did: we started with Ruby and very quickly from there moved into Rails.
+
+It was then that I realised that some of our juniors from JEP #1 didn't know what `SELECT * FROM...` meant in the Rails console output. Whoops. So we moved from there onto learning about databases and then came back to Rails a few weeks later once we had gained some mastery over databases and SQL.
+
+So those are three things that we covered: Ruby, Rails and databases. But we also covered JavaScript, React, Redux, Flow, GraphQL, JSON APIs, and a few more things around the edges. In fact, if you want to know what the weeks were like you can actually view [the layout for iteration-1](https://github.com/cultureamp/jep/tree/iteration-1) which is on GitHub.
+
+---
+
+Now for JEP #2, I'm going to work differently. I have realised the errors in my ways of starting from Ruby. Ruby is not a good starting point, because the whole idea behind using Ruby at Culture Amp is to use it to serve Rails application requests that put HTML on a page. Learning Ruby first is putting the cart before the horse.
+
+So I think we JEP #2, we'll start with HTML, CSS and JavaScript. We'll build basic web pages to start off with and that'll be easy because those things are relatively easy and self-contained within a browser. There's even things like [Codepen](https://codepen.io) that mean that you don't even need to have an editor installed or any locally running software other than a browser to build a webpage.
+
+From there, we'll add in some React sprinkles and talk lots about `props` and `state`. Then we'll move onto making that React app talk to an API. Then we'll learn how to build an API and _this_ is where Ruby will come in. From here, we can branch out into Sinatra, Rails, and other areas like JSON APIs and (my favourite) GraphQL. What we'll end up with is two main applications: a front-end application and a back-end application.
+
+After that, I want us to spend some time looking into how we might deploy these applications to AWS together. We'll look at a range of AWS tooling and probably spend a few weeks towards the back end of the program learning how to do all that.
 
 <a name='developing' href='#developing'><h3>How will the program help us develop professional programming skills? e.g. will there be assignments / feedback / paired work? / How are juniors trained at Culture Amp?</h3></a>
+
+I will get around to answering this question, but first some context around time management is required.
+
+JEP #1 was 6 months long and we split the weeks up initially into 2 days JEP, 3 days on the team. This caused our students and the teams they were working with some stress, because it's hard to "disconnect" from the JEP when you've been given homework, and at the same time 3 days on a team is not enough time to accomplish much at all as a junior.
+
+At about the 9 or 10 week mark, we all sat down and talked about how it was going and decided the 2-3 split was not so good. So we devised a different kind of split: one whole week with JEP and then two weeks with the team.
+
+This split was _awesome_.
+
+Suddenly, people in the JEP were able to concentrate better. They did more homework. They contributed more effectively to their teams and the teams could prioritise bigger pieces of work for them to do. It was such a relief!
+
+So this is what we're going to be doing next time too. For the first 6 weeks, you'll spend time with me brushing up on the things I talked about in [the question before this one](#tech), and then we'll go straight into two weeks on a team and one week with me cadence.
+
+---
+
+During the JEP weeks, we have structured lessons on Monday mornings where I cover a new topic and then throughout the week you're given homework and things to go and do and we all chat about it. The next time we catch up, we have a retro about how we went with the homework and how the JEP is going as a whole. Then we repeat the whole thing again.
+
+---
+
+This is probably a good time to mention a few more things too. When you start at Culture Amp you'll be assigned a mentor who is someone who can provide you with some strategic career guidance. Whatever that looks like is up to you two to decide what it is. If there's a direction you see yourself going in, your mentor can help get you there.
+
+You'll also have an hour-long weekly 1-on-1 with me where I can provide more "tactical" advice, mostly around coding and how to go about learning everything you need to know to be an effective developer in this wide world. You come to me with questions and I give you answers. We might even go for a walk and get hot chocolates or cheese tarts or other delicious things.
+
+I've taught my juniors about design patterns in languages, how public / private key cryptography works, and we've talked about how to battle burnout when it rears its ugly head.
+
+These mentoring sessions are central to our "Amplify Others" value and are a totally invaluable way that we upskill everyone across the Culture Amp organisation.
+
 
 <a name='additional-incentives' href='#additional-incentives'><h3>Do you offer additional educational incentives? e.g. conferences, courses, etc?</h3></a>
 
