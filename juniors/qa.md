@@ -16,11 +16,13 @@ _These questions came out of a Culture Amp JEP Breakfast event that CA hosted on
 
 <a name='applicants' href='#applicants'><h3>How many people have applied? What are the chances of getting in the JEP? / How many people are you taking?</h3></a>
 
-For our first program, we received 130 applicants and were aiming to take on 3 people, but ended up taking on 5.
+For our first program, we received 130 applicants, and about 70 got through to the coding test stage. We were aiming to take on 3 people, but ended up taking on 5.
 
-For our 2nd program, we received 108 applicants and are aiming to hire 6 people, as that's what we have space for in our organisation at this point in time. That's the bad news, because it's a very competitive process and this job is in pretty high demand.
+For our 2nd program, I'm not ready to discuss exact numbers yet, but we're hiring 6 people as that's what we have space for in our organisation at this point in time. That's the bad news, because it's a very competitive process and this job is in pretty high demand. I'd love to hire more as I can clearly see there's a lot of juniors trying to break into the coding world.
 
-The good news is that if we reject you at an step of our interview process we will give you personalised feedback on what you could've done better so that when you apply next time you'll have a better chance of meeting our expectations then. Culture Amp does this because we're a feedback-oriented company, and we strongly believe a flat "no thanks" from us is not great feedback for anyone, juniors included.
+The good news is that if we reject you at any step of our interview process we will give you personalised feedback on what you could've done better. This is so that when you apply next time you'll have a better chance of meeting our expectations then.
+
+Culture Amp does this because we're a feedback-oriented company, and we strongly believe a flat "no thanks" from us is not great feedback for anyone, juniors included. I've received enough "no thanks" in my time to know how utterly crushing that could be, so I don't want to inflict that kind of thing on anyone else.
 
 <a name='qualities' href='#qualities'>
   <h3>What are the main 2-3 qualities you are looking for in the JEP (apart from technical)?</h3>
@@ -28,7 +30,9 @@ The good news is that if we reject you at an step of our interview process we wi
 
 We're looking for socially outgoing, technically minded people who care about improving company culture all over the world. This is a pretty tricky question to answer without using any buzzwords. It's really one of those "we know it when we see it" things.
 
-The people who did really well during the first JEP rpcoess were all of the above, demonstrating some really good social skills / abilities, and that typically came from them having worked in other industries before applying for the JEP. All of our first-round JEP people were career-changers. So maybe there's something in that to consider.
+The people who did really well during the first JEP process were all of the above, demonstrating some really good social skills / abilities, and that typically came from them having worked in other industries before applying for the JEP.
+
+All of our first-round JEP people were career-changers. So maybe there's something in that to consider.
 
 <a name='ruby-skill' href='#ruby-skill'><h3>How good at Ruby do you actually need to be to move to the tech interview after the coding test? / I don't know a lot of Ruby. Is that going to be a problem?</h3></a>
 
