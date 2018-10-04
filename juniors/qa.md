@@ -130,24 +130,69 @@ I've taught my juniors about design patterns in languages, how public / private 
 
 These mentoring sessions are central to our "Amplify Others" value and are a totally invaluable way that we upskill everyone across the Culture Amp organisation.
 
-
 <a name='additional-incentives' href='#additional-incentives'><h3>Do you offer additional educational incentives? e.g. conferences, courses, etc?</h3></a>
 
-<a name='trusting-people' href='#trusting-people'>
-  <h3>Culture Amp professes trusting people to take responsibility. How would that manifest as a junior in the Junior Engineering Program and after?</h3>
-</a>
+Yes, we do offer more incentives. We have a program at Culture Amp called "Learn Yourself Up". There's a budget in this program up to $1k USD for each CAmper to use to invest in their own learning. The way it works is two-fold: if you've got a thing you want to learn that's relevant to your job, we'll pay for 90% of it. If you're wanting to learn something outside of that (kitesurfing, how to play the piano, etc.), we'll cover 50% of that cost.
+
+So if you want to attend a conference that's $600, through Learn Yourself Up the cost of that conference ticket comes to $60 for you. In some special circumstances, like if Culture Amp is sponsoring that conference, we'll pay for the whole ticket, fly you to the location and put you up too.
+
+This extends to other things like screencasts too. Your $200/year subscription then becomes $20 for the entire year. It also extends to books -- that $50 book you want to buy is now $5. It's a really great program and removes what is often a large financial barrier in the way of people wanting to develop their skill set.
+
+Alongside this program, we'll also give you time on the job to go to those conferences, watch those screencasts or read those books. The best bit is that we won't make you feel bad for doing that instead of your regular job because, to us, learning yourself up _is a part of your job_.
 
 <a name='remote-work' href='#remote-work'>
   <h3>What remote work options do you offer?</h3>
 </a>
 
+Culture Amp has been adopting more of a "remote-first" culture over the past year, which is really pleasing to me. I used to be the only remote worker at a company and _it sucked_.
+
+At Culture Amp, we're doing a much better jbo. This means adopting things like having meetings where if one person is dialing in remotely then _everyone_ dials in individually (from different parts of the office) and they all have to experience what it's like being remote. We do this for our Tech Leads standup every morning, for instance. This "one remote, all remote" policy is designed so that those who are "local" can have some empathy for those who are remote. It's also good practice for practicing remote call etiquette; waiting for lag and that sort of thing.
+
+As a junior developer, we're going to expect you to work out of the Culture Amp office in Melbourne for most of the initial 9 months you're with us. As a part of the JEP, it's best that you're around in the office so that you can come along to the lectures in person, as well as being able to come over to us and ask us questions. Being remote means that there's an extra barrier which may prevent you asking for help.
+
+As you go through the program, it'll be up to you and your team to decide how you want to handle remote working. Some people have a set day that they work from home. Some people work from home in the morning and then come in later in the day. It's just up to you and your team to decide how to play that. But ultimately, Culture Amp will support you on whatever days you choose to work remotely.
+
 <a name='teams' href='#teams'>
   <h3>What kind of teams do JEP juniors work on?</h3>
 </a>
 
+Culture Amp's a pretty large company with a number of teams working on different parts of the same application at the moment. We've got teams that are more backend (Ruby / Elixir / Python / Java) focussed, and then we've got teams that are more frontend focussed (JavaScript / React / Elm).
+
+What team the junior gets placed on depends on their particular skillset and the need of the team and really comes down to a discussion between us all here at Culture Amp once we get through the majority of the interview proess. We'll talk about what strengths you have and compare them to what the teams need and try to put you in the team that is best suited to your skillset.
+
 <a name='part-time' href='#part-time'><h3>Is it possible to do the program part time for a couple of weeks as we transition out of our current job?</h3></a>
 
+Not at this point in time, I'm afraid. The JEP is a full-time position and we're going to require 40 hour weeks out of you and there may be some homework that you'll want to do. Splitting your attention across two jobs is probably not feasible.
+
+We'll try to give people enough notice so that they can quit their jobs and come onto the JEP full-time.
+
 <a name='study' href='#study'><h3>Would Culture Amp be flexible if we want to pursue part-time study options like 1 day of study a week?</h3></a>
+
+With the JEP being a structured mentoring program, we would prefer it if you put your attention in the JEP 100%. If you have other things that you want to study then I would recommend that you defer those. I make this suggestion because I think if you split your attention between the JEP and a different thing, you won't get the most out of either.
+
+It's better to stay focussed, in this case. And it's only 9 months! We will have plenty of things for you to do.
+
+<a name='trusting-people' href='#trusting-people'>
+  <h3>Culture Amp professes trusting people to take responsibility. How would that manifest as a junior in the Junior Engineering Program and after?</h3>
+</a>
+
+This is one of those big questions. We do trust people to make decisions a lot of the time in our organisation, and that is actually one of our values: "Trust people to make decisions". Note that the word "right" before "decisions" there is absent. What we do is we find someone to make a decision and then we entrust them to make a decision and we go with it. We don't mind if it's the right or wrong one, because we can just make another decision later on once we know more. It eases the decision making process.
+
+Now when it comes to trusting juniors to take responsibility during the JEP, there's one major thing that I would think this means. I think it means that we're going to trust you to stay committed to learning throughout the program. And I think it also means that you'll live up to another one of our values: "Have the courage to be vulnerable".
+
+The program is 9 months long and during those 9 months you're going to experience a lot of feelings like "I don't know what I'm doing, but everyone else around me knows what they're doing". And you're going to get stuck a lot. When you get to that feeling, recognising that it's a natural part of the learning process is something that I trust my juniors to do. Yeah, you're going to feel crap for a while about not knowing things. But then, soon after that, you'll know that thing and you'll feel a heap better.
+
+I also trust my juniors to have the courage to ask questions whenever they have them. Lots of the time, questions come from not knowing something and by asking the question you're admitting that you've failed at knowing something, or figuring it out -- but that's okay. Asking questions means that you want to learn! I trust my juniors to know that they can ask me questions whenever they want.
+
+---
+
+That's only one side of the coin though. I talked a lot about the JEP but for about 2/3rds of the time you're going to be working within a development team. The same rules apply here: we trust you to stay committed to learning and we trust you to have the courage to be vulnerable.
+
+You're probably not going to be able to contribute to the team from Day 1 or even Day 2 at Culture Amp. There's a lot going on and **your job's #1 priority is to learn as much as you can** about what's happening within that team. Learn how the development process works within the team. Learn which parts of the application do what. Then dive deeper into the code and figure things out, piece by piece. Work with people in your team to do that and you'll go really well.
+
+We trust that when you're given work within your team that you'll want to pair with someone else, try out some things and have them go wrong. That's having the courage to be vulnerable right there. You'll work with people on the team to expand your knowledge and they'll work with you to train you up to be an effective developer on that team by the time 9 months is up.
+
+Once that time's up, we'll trust that you can pick up work and know your way around most of the code, but may sometimes need some assistance on the trickier parts. That's a part of being a junior and totally okay with us.
 
 <a name='after' href='#after'><h2>After the Program</h2></a>
 
