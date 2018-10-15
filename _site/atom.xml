@@ -4,13 +4,54 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2018-10-04T17:18:47+10:00</updated>
+ <updated>2018-10-16T09:01:04+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Working Towards Integration Testing Duolithic Applications</title>
+   <link href="http://ryanbigg.com/2018/10/integration-testing-duolithic-applications"/>
+   <updated>2018-10-16T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2018/10/integration-testing-duolithic-applications</id>
+   <content type="html"><![CDATA[<p>I&#39;ve been revisiting <a href="https://github.com/radar/twist-v2">Twist v2</a> recently. It&#39;s my book review tool that I&#39;ve rebuilt multiple times over the past 8 years. Its latest incarnation is what I&#39;m calling a &quot;duolith&quot;: a very light Hanami backend application with a GraphQL API, and a frontend built with React and Apollo.</p>
+
+<p>The backend and the frontend codebases are kept in separate directories in the same codebase. This allows for separation between the Ruby and JavaScript code, but also the ability to commit changes to both at the same time. The frontend knows how to communicate with the backend, but the backend is frontend-agnostic. Tomorrow I could replace it with Vue and the backend wouldn&#39;t care at all.</p>
+
+<p>I&#39;ve got pretty extensive testing for the backend, but sparse tests for the frontend. But nothing testing the connection between the two. So I&#39;ve been thinking about how to write some integration tests to cover everything. In the apps I&#39;m used to (Rails ones), I&#39;d just drop some tests into <code>spec/features</code> and it would Just Work™ because that&#39;s what Rails is good at.</p>
+
+<p>But this time I&#39;ve made my life (intentionally) harder by separating the codebases, with the intention over the long-term being that these two codebases are easy to navigate due to their clean separations. The time between re-visiting this app can be months, so it&#39;s important that it&#39;s easy to grok again once I come back to it.</p>
+
+<hr>
+
+<p>Integration testing though is an interesting problem. I know I need some sort of test harness that boots a database, the backend app and the frontend app and then runs some tests over it? But how would I do that?</p>
+
+<p>But then there&#39;s an added complication: for each test I need to setup specific data to test it. And that data should be included in the test itself, so it&#39;s easy to find what&#39;s relevant to this particular test.</p>
+
+<p>To start with, I tried creating a completely separate thing called <code>integration</code> at the top-level of this repository, but ran into issues with how to setup the data cleanly. I wanted classes from the <code>backend</code> application, but in <code>integration</code> they weren&#39;t there.</p>
+
+<p>So I tried another tack: putting the integration tests in the <code>backend</code> application. This instantly meant that I could access classes to create data for my tests. I could then also rely on the RSpec suite of tests that were already there, extending it a little further.</p>
+
+<p>I&#39;ve been [looking into Docker Compose] for just this and it seems to be working. I can start up:</p>
+
+<ul>
+<li>A database</li>
+<li>Migrations (to create the tables)</li>
+<li>Frontend application</li>
+<li>Backend application</li>
+<li>Feature tests</li>
+</ul>
+
+<p>And then it (should) run those tests in an integration test environment. I&#39;m running into some issues at the moment with Chrome, but I think I should have it working soonish.</p>
+
+<p>I&#39;ve got a work-in-progress branch that I wanted to share here: <a href="https://github.com/radar/twist-v2/tree/integration-tests">twist-v2 @ integration-tests</a>. You can start following along at <code>docker-compose.yml</code> to see how things are piecing together. Take a look at <code>backend/Dockerfile</code> and <code>frontend/Dockerfile</code> too.</p>
+
+<p>I really hope I can get this working because it means that developing duolithic applications would be so much easier.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Junior Engineering Program: Resources</title>
@@ -2881,48 +2922,6 @@ book and make sure there&#39;s as few bugs and typos as possible. Once I&#39;m d
 with that, then I will consider the book to be complete.</p>
 
 <p>Thanks everyone for buying this book, reading it and providing feedback along the way.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Working with date ranges in Active Record</title>
-   <link href="http://ryanbigg.com/2016/03/working-with-date-ranges-in-active-record"/>
-   <updated>2016-03-09T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2016/03/working-with-date-ranges-in-active-record</id>
-   <content type="html"><![CDATA[<p><strong>TL;DR: <a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</strong></p>
-
-<p>When you&#39;re trying to get records for a particular date range in Active Record, for example from the beginning of the month to the end of the month, you may be tempted to write code like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">beginning_of_month</span>
-<span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="p">.</span><span class="nf">end_of_month</span>
-<span class="no">Post</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">created_at: </span><span class="n">beginning_of_month</span><span class="p">.</span><span class="nf">.</span><span class="n">end_of_month</span><span class="p">)</span>
-</code></pre></div>
-<p>Let&#39;s say that the month is March 2016 (and it is, at the time of writing). This query will get you all posts between the 1st of March and the 31st of March, but not in the way you expect it. It will get you all posts between 00:00:00 of the 1st of March and 00:00:00 of 31st of March, which is probably not what you want, as it misses the last days posts completely. </p>
-
-<p>What you&#39;ll want is all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March.</p>
-
-<p>To do this, you <em>could</em> use <code>Time.current</code> instead:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Time</span><span class="p">.</span><span class="nf">current</span><span class="p">.</span><span class="nf">beginning_of_month</span>
-<span class="n">end_of_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="p">.</span><span class="nf">end_of_month</span>
-<span class="no">Post</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">created_at: </span><span class="n">beginning_of_month</span><span class="p">.</span><span class="nf">.</span><span class="n">end_of_month</span><span class="p">)</span>
-</code></pre></div>
-<p>This will give you the right set of posts, because <code>Time.current.end_of_month</code> is something like <code>Thu, 31 Mar 2016 23:59:59 UTC +00:00</code> (or it might even be in your local time zone, like `Thu, 31 Mar 2016 23:59:59 AEDT +11:00).</p>
-
-<p>Or you could even do this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">beginning_of_month</span> <span class="o">=</span> <span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">.</span><span class="nf">beginning_of_month</span>
-<span class="n">beginning_of_next_month</span> <span class="o">=</span> <span class="n">beginning_of_month</span><span class="p">.</span><span class="nf">next_month</span>
-<span class="no">Post</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">created_at: </span><span class="n">beginning_of_month</span><span class="p">.</span><span class="nf">.</span><span class="n">beginning_of_next_month</span><span class="p">)</span>
-</code></pre></div>
-<p>This will also give you the right set of posts, because <code>beginning_of_month.next_month</code> is something like <code>Fri, 1 Apr 2016 00:00:00 UTC +00:00</code> (or it might even be in your local time zone, like `Thu, 31 Mar 2016 23:59:59 AEDT +11:00).</p>
-
-<p>Or you could use <a href="https://github.com/radar/by_star">the <code>by_star</code> gem</a>. I wrote this gem to easily query date /
-time ranges in Active Record and it has saved me a lot of frustration. The above code examples would then become:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Post</span><span class="p">.</span><span class="nf">by_month</span><span class="p">(</span><span class="no">Date</span><span class="p">.</span><span class="nf">today</span><span class="p">)</span>
-</code></pre></div>
-<p>This will retrieve all posts by the current month, and that means all the posts between 00:00:00 of the 1st of March and 23:59:59.99999 of the 31st of March will be returned if I ran this query today.</p>
-
-<h2>Conclusion</h2>
-
-<p><a href="https://github.com/radar/by_star">Use the by_star gem and save yourself a lot of hassle</a>.</p>
 ]]></content>
  </entry>
  
