@@ -22,7 +22,7 @@ To start with, I tried creating a completely separate thing called `integration`
 
 So I tried another tack: putting the integration tests in the `backend` application. This instantly meant that I could access classes to create data for my tests. I could then also rely on the RSpec suite of tests that were already there, extending it a little further.
 
-I've been [looking into Docker Compose] for just this and it seems to be working. I can start up:
+I've been [looking into Docker Compose](https://github.com/radar/twist-v2/blob/integration-tests/docker-compose.yml) for just this and it seems to be working. I can start up:
 
 * A database
 * Migrations (to create the tables)
