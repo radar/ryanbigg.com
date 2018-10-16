@@ -30,8 +30,8 @@ I've been [looking into Docker Compose](https://github.com/radar/twist-v2/blob/i
 * Backend application
 * Feature tests
 
-And then it (should) run those tests in an integration test environment. I'm running into some issues at the moment with Chrome, but I think I should have it working soonish.
+And then it run those tests in an "integration test environment".
 
 I've got a work-in-progress branch that I wanted to share here: [twist-v2 @ integration-tests](https://github.com/radar/twist-v2/tree/integration-tests). You can start following along at `docker-compose.yml` to see how things are piecing together. Take a look at `backend/Dockerfile` and `frontend/Dockerfile` too.
 
-I really hope I can get this working because it means that developing duolithic applications would be so much easier.
+Now that I have something working, I can be more confident that this application is working as I intend it to.
