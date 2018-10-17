@@ -28,7 +28,7 @@ Culture Amp does this because we're a feedback-oriented company, and we strongly
   <h3>What are the main 2-3 qualities you are looking for in the JEP (apart from technical)?</h3>
 </a>
 
-We're looking for socially outgoing, technically minded people who care about improving company culture all over the world. This is a pretty tricky question to answer without using any buzzwords. It's really one of those "we know it when we see it" things.
+We're looking for people who love working with other people to improve culture all over the world. Bonus points for being technically minded. This is a pretty tricky question to answer without using any buzzwords. It's really one of those "we know it when we see it" things.
 
 The people who did really well during the first JEP process were all of the above, demonstrating some really good social skills / abilities, and that typically came from them having worked in other industries before applying for the JEP.
 
@@ -80,9 +80,9 @@ Culture Amp's main monolithic codebase is a Rails application. This Rails app ha
 
 It is hard as a junior developer to read this code and understand what's good and what's bad. It's tempting to think that because it is in the codebase it is the One True Right Way Of Doing It™ but sometimes it's just there because it's legacy code.
 
-As a junior working in this codebase you can spend a lot of time second-guessing things and doing them the "old good" way instead of the "new good" way. This is why when you come to work at Culture Amp we'll pair you up with people who can guide you in the ways of writing good code within an old crufty legacy monolith.
+As a junior working in this codebase you can spend a lot of time second-guessing things and doing them the "old good" way instead of the "new good" way. This is why when you come to work at Culture Amp we'll pair you up with people who can guide you in the ways of writing good code within an older monolithic code base.
 
-I will also say that because the monolith has been around for such a long time it's a great training ground for juniors because it's an _excellent_ history lesson in styles / trends.
+I will also say that because the monolith has been around for such a long time it's a great training ground for juniors because it's an _excellent_ history lesson in styles / trends. There's some old JavaScript code in there that, yes, still uses [jQuery](https://jquery.com). There are some Rubyisms that are considered "old school". But at the same rate, there's a lot of newer stuff being written in React as well as more modern Ruby methodologies being applied.
 
 <a name='tech' href='#tech'><h3>What technologies do you use the most in the program? / What topics were covered in the training days during the last program?</h3></a>
 
@@ -120,6 +120,8 @@ So this is what we're going to be doing next time too. For the first 6 weeks, yo
 
 During the JEP weeks, we have structured lessons on Monday mornings where I cover a new topic and then throughout the week you're given homework and things to go and do and we all chat about it. The next time we catch up, we have a retro about how we went with the homework and how the JEP is going as a whole. Then we repeat the whole thing again.
 
+The homework isn't necessarily work to be done at home by the way -- we give our juniors ample time to complete homework during their work weeks.
+
 ---
 
 This is probably a good time to mention a few more things too. When you start at Culture Amp you'll be assigned a mentor who is someone who can provide you with some strategic career guidance. Whatever that looks like is up to you two to decide what it is. If there's a direction you see yourself going in, your mentor can help get you there.
@@ -146,7 +148,7 @@ Alongside this program, we'll also give you time on the job to go to those confe
 
 Culture Amp has been adopting more of a "remote-first" culture over the past year, which is really pleasing to me. I used to be the only remote worker at a company and _it sucked_.
 
-At Culture Amp, we're doing a much better jbo. This means adopting things like having meetings where if one person is dialing in remotely then _everyone_ dials in individually (from different parts of the office) and they all have to experience what it's like being remote. We do this for our Tech Leads standup every morning, for instance. This "one remote, all remote" policy is designed so that those who are "local" can have some empathy for those who are remote. It's also good practice for practicing remote call etiquette; waiting for lag and that sort of thing.
+At Culture Amp, we're doing a much better job. This means adopting things like having meetings where if one person is dialing in remotely then _everyone_ dials in individually (from different parts of the office) and they all have to experience what it's like being remote. We do this for our Tech Leads standup every morning, for instance. This "one remote, all remote" policy is designed so that those who are "local" can have some empathy for those who are remote. It's also good practice for practicing remote call etiquette; waiting for lag and that sort of thing.
 
 As a junior developer, we're going to expect you to work out of the Culture Amp office in Melbourne for most of the initial 9 months you're with us. As a part of the JEP, it's best that you're around in the office so that you can come along to the lectures in person, as well as being able to come over to us and ask us questions. Being remote means that there's an extra barrier which may prevent you asking for help.
 
@@ -162,9 +164,9 @@ What team the junior gets placed on depends on their particular skillset and the
 
 <a name='part-time' href='#part-time'><h3>Is it possible to do the program part time for a couple of weeks as we transition out of our current job?</h3></a>
 
-Not at this point in time, I'm afraid. The JEP is a full-time position and we're going to require 40 hour weeks out of you and there may be some homework that you'll want to do. Splitting your attention across two jobs is probably not feasible.
+Not at this point in time, I'm afraid. The JEP is a full-time position and we're going to require 38 hour weeks out of you. You'll be learning a lot and that can be tiring. Splitting your attention across two jobs is probably not feasible.
 
-We'll try to give people enough notice so that they can quit their jobs and come onto the JEP full-time.
+We'll give people enough notice so that they can quit their jobs and come onto the JEP full-time. Our JEP cohorts have everyone start at the same time.
 
 <a name='study' href='#study'><h3>Would Culture Amp be flexible if we want to pursue part-time study options like 1 day of study a week?</h3></a>
 
@@ -200,3 +202,24 @@ Once that time's up, we'll trust that you can pick up work and know your way aro
   <h3>What is the career progression like post-JEP? / Tell us something about the career path after JEP / What happens at the end of the program?</h3>
 </a>
 
+At Culture Amp, we have developed a growth framework for our product teams. For engineers in the Junior Engineering Program, this has two relevant tracks: our "Common" track and our "Engineering" track.
+
+The Common track focusses on skills like:
+
+* How do you grow yourself and others around you?
+* How well do you work with others?
+* Do you take care to produce high quality work?
+* How well do you approach and solve new problems?
+
+Each of these skills within the Common track is ranked from "Junior" to "Lead", and at each stage in the framework there are examples of what those levels might look like.
+
+Similarly, the Engineering track focusses on skills like:
+
+* Can you work well within one, or several languages?
+* Can you architect clean solutions to a problem using those languages?
+* Can you communicate well about technical topics with other members?
+* Do you use your engineering skills to directly impact the business and customers?
+
+These are also ranked from "Junior" to "Lead".
+
+When you work at Culture Amp, you and your mentor periodically assess your skills against this framework. It's a good way to discover what areas you're strong at and where you might need to improve. With this framework as a guide, we can provide clear pathways to improving your skills while you work at Culture Amp.
