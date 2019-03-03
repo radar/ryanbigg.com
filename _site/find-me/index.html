@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    canvas {
+      background: url('map.png');
+      border: 3px solid black;
+      width: 1400px;
+      height: 836px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id='map' width='1400px' height='836px'></canvas>
+  <script>
+    let canvas = document.getElementById('map');
+    let boundRect = canvas.getBoundingClientRect();
+    let canvasx = boundRect.x;
+    let canvasy = boundRect.y;
+    let ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    let last_mousex;
+    let last_mousey;
+
+    document.addEventListener("DOMContentLoaded", function(event) {
+      let parts = window.location.hash.substring(1).split(",");
+      console.log(parts);
+      if (parts.length == 4) {
+        drawRect(parts[0], parts[1], parts[2], parts[3]);
+      }
+    });
+
+    function drawRect(x, y, width, height) {
+      ctx.rect(x, y, width, height);
+      ctx.strokeStyle = '#F04C5D';
+      ctx.lineWidth = 10;
+      ctx.stroke();
+    }
+
+    canvas.onmousedown = function(e) {
+      last_mousex = parseInt(e.clientX-canvasx);
+	    last_mousey = parseInt(e.clientY-canvasy);
+      drawing = true;
+    }
+
+    canvas.onmouseup = function(e) {
+      drawing = false;
+    }
+
+    canvas.onmousemove = function(e) {
+      let mousex = parseInt(e.clientX-canvasx);
+      let mousey = parseInt(e.clientY-canvasy);
+      if(drawing) {
+        ctx.clearRect(0,0,canvas.width,canvas.height); //clear canvas
+        ctx.beginPath();
+        var width = mousex-last_mousex;
+        var height = mousey-last_mousey;
+        drawRect(last_mousex, last_mousey, width, height);
+
+        window.location.hash = `${last_mousex},${last_mousey},${width},${height}`
+      }
+    }
+
+  </script>
+</body>
+</html>
