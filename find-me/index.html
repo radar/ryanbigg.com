@@ -45,9 +45,13 @@
       window.location.hash = `${x},${y},${width},${height}`
     }
 
-    canvas.ondblclick = function(e) {
+    function drawAtPoint(e) {
+      console.log("DRAWING AT THIS POINT")
       drawRect(e.clientX-20, e.clientY-20, 10, 10)
     }
+
+    canvas.ontouchstart = drawAtPoint;
+    canvas.ondblclick = drawAtPoint;
 
     canvas.onmousedown = function(e) {
       last_mousex = parseInt(e.clientX-canvasx);
