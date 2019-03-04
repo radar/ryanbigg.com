@@ -29,7 +29,6 @@
 
     document.addEventListener("DOMContentLoaded", function(event) {
       let parts = window.location.hash.substring(1).split(",");
-      console.log(parts);
       if (parts.length == 4) {
         drawRect(parts[0], parts[1], parts[2], parts[3]);
       }
@@ -46,12 +45,13 @@
     }
 
     function drawAtPoint(e) {
-      console.log(e)
-      console.log("DRAWING AT THIS POINT")
       drawRect(e.clientX-20, e.clientY-20, 10, 10)
     }
 
-    canvas.ontouchstart = drawAtPoint;
+    canvas.ontouchstart = function(e) {
+      drawAtPoint(e.touches[0])
+    }
+
     canvas.ondblclick = drawAtPoint;
 
     canvas.onmousedown = function(e) {
