@@ -116,6 +116,38 @@ My main job here is to turn the juniors into confident and capable developers, a
 
 It wouldn't be a JEP post if I didn't include some reflections at the end. So here they are!
 
+### Curriculum was great
+
+I strongly believe that the approach I took to curriculum this time around worked incredibly well. The rough order was this:
+
+* Expectation setting
+* HTML, CSS and JavaScript
+* React
+* TypeScript
+* Networking fundamentals + servers
+* Ruby
+* Coding exercises, TDD & BDD
+* Sinatra
+* Mongo & Mongoid
+* Rails
+* Capybara
+
+All of this was covered in roughly 6 weeks of "hands-on" time. It helped a lot that the juniors had a grip on some of these things already.
+
+Next time I would like to separate out the React & TypeScript week into two consecutive weeks -- cramming them into one week felt quite intense for me and esepcially for the juniors. During the React week I could add some more content around testing with Jest.
+
+By moving TypeScript out to its own week it would "disconnect" it from React. I would show that it can be used independently and how it compiles down into JavaScript. Then I can show how to use it in conjunction with React.
+
+---
+
+The week spent on Rails + Capybara also felt a bit short I would split this week into two as well, so that we could cover more.
+
+I would've loved to cover Rails + React integration using the [Webpacker](https://github.com/rails/webpacker) gem, but we ran out of time during the last week. This gem would've allowed us to move our frontend code into our Rails application and would've gotten us a close model of how Culture Amp's major Rails application works.
+
+This is the last major piece of the puzzle of how our major Rails application works and I worry that the juniors who have now begun working on their teams won't understand this concept well enough when they see it within the application. But maybe I am being a worry wart.
+
+So overall, we covered this material in 6 weeks but I think 8 weeks of time would be more suitable.
+
 ### Make dev machine setup smoother
 
 Lots of time was spent setting up their developer machines. I _strongly feel_ like I should be able to automate this but I worry if I try I would be running into [this classic XKCD](https://xkcd.com/1205/).
@@ -132,9 +164,6 @@ Providing more details about the "story arc" of the week / program-as-a-whole wo
 
 ### Webpacker, React & Rails
 
-I would've loved to cover Rails + React integration using the [Webpacker](https://github.com/rails/webpacker) gem, but we ran out of time during the last week. This gem would've allowed us to move our frontend code into our Rails application and would've gotten us a close model of how Culture Amp's major Rails application works.
-
-This is the last major piece of the puzzle of how our major Rails application works and I worry that the juniors who have now begun working on their teams won't understand this concept well enough when they see it within the application. But maybe I am being a worry wart.
 
 ### None-on-Ones
 
