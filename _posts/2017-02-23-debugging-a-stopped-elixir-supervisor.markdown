@@ -281,7 +281,7 @@ During our investigation of this issue we found out about the [`ecto-2` branch o
 
 I used this new version of the `mongodb` package on `copy_lion` (which you can see on [my `mongo-0.2.0` branch](https://github.com/radar/copy_lion/tree/mongo-0.2.0)) and I saw that when the query timed out an exception was actually raised:
 
-````
+```
 16:41:58.235 [error] Mongo.Protocol (#PID<0.630.0>) disconnected: ** (DBConnection.ConnectionError) client #PID<0.619.0> timed out because it checked out the connection for longer than 5000ms
 
 16:41:58.237 [error] Process #PID<0.619.0> raised an exception
