@@ -260,26 +260,3 @@ through a traditional publisher and you get to have complete control of it.
 
 So if you're considering writing a book, check out
 [Leanpub](https://leanpub.com)'s offering and see if it suits you.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
