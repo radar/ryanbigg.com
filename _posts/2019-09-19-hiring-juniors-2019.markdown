@@ -4,7 +4,7 @@ layout: post
 title: "RubyConf Indonesia Keynote - Transcript"
 ---
 
-_This post (and talk) is an updated version of my 2018 "Hiring Juniors" talk at RubyConf AU. This version of the talk was given at RubyConf Indonesia 2019 as the closing keynote. You can view [the slides for this talk on Speakerdeck](https://speakerdeck.com/radar/hiring-juniors-rubyconf-indonesia-2019-closing-keynote)_
+_This post (and talk) is an updated version of my [2018 "Hiring Juniors" talk at RubyConf AU](/2018/03/hiring-juniors). This version of the talk was given at RubyConf Indonesia 2019 as the closing keynote. You can view [the slides for this talk on Speakerdeck](https://speakerdeck.com/radar/hiring-juniors-rubyconf-indonesia-2019-closing-keynote)_
 
 ## Intro
 
