@@ -1,8 +1,10 @@
 ---
 wordpress_id: RB-1568854292
 layout: post
-title: Hiring Juniors: 2019
+title: "RubyConf Indonesia Keynote - Transcript"
 ---
+
+_This post (and talk) is an updated version of my 2018 "Hiring Juniors" talk at RubyConf AU. This version of the talk was given at RubyConf Indonesia 2019 as the closing keynote. You can view [the slides for this talk on Speakerdeck](https://speakerdeck.com/radar/hiring-juniors-rubyconf-indonesia-2019-closing-keynote)_
 
 ## Intro
 
@@ -31,75 +33,47 @@ You can do it too and I'll tell you how.
 "But Ryan, we only hire senior Ruby developers!" -- ahh the classic
 ActiveMantra in the Rails community: "Hiring seniors. Hiring seniors. Hiring seniors.". Maybe if we say it enough and click our heels together three times our dreams might come true.
 
-But how's that working out for you at the moment? Probably not so great.
-It's well known that there are only three hard problems in computer science:
-cache invalidation, naming things and hiring more seniors.
+But how's that working out for you at the moment? Probably not so great. It's well known that there are only three hard problems in computer science: cache invalidation, naming things and hiring more seniors.
 
-We have drained the talent pool dry. And yet our obsession and our Active
-Mantra continues. We only want to hire seniors. But why do we have this obsession?
+We have drained the talent pool dry. And yet our obsession and our Active Mantra continues. We only want to hire seniors. But why do we have this obsession?
 
-Well, we want a senior developer -- but we might be happy to take a mid
-too -- because they have the skills to instantly dive straight into our
-application with little-to-no guidance and they can start shipping code. That
-old expression: "they can hit the ground running".
+Well, we want a senior developer -- but we might be happy to take a mid too -- because they have the skills to instantly dive straight into our application with little-to-no guidance and they can start shipping code. That old expression: "they can hit the ground running".
 
-This is because our code is so brilliantly well-structured and organized
-according to the Rails best practices. Nobody will have to upskill on any
-single parts of the codebase at all because we follow the Laws of Sandi and
-Commandments of Avdi to the letter.
+This is because our code is so brilliantly well-structured and organized according to the Rails best practices. Nobody will have to upskill on any single parts of the codebase at all because we follow the Laws of Sandi and Commandments of Avdi to the letter.
 
-There is no legacy code with their legacy decisions that meta-programs the constants from Java, written in a hurry because we needed to ship that thing _fast_. HA.
+There is no legacy code with their legacy decisions that meta-programs the constants from Java, written in a hurry because we needed to ship that thing _fast_.
 
-You may think that you need to hire only these best-of-the-best badasses
-because your application is a large unmaintable collection of event-sourced microservices written in obscure languages surrounding a ginormous monolith and only the badasses can understand it. That you need seniors to navigate the spaghetti that is your legacy code. Maybe you use technologies that only _true_ geniuses can understand, like Node or Go. Or Webpack.
+You may think that you need to hire only these best-of-the-best badasses because your application is a large unmaintable collection of event-sourced microservices written in obscure languages surrounding a ginormous monolith and only the badasses can understand it. That you need seniors to navigate the spaghetti that is your legacy code. Maybe you use technologies that only _true_ geniuses can understand, like Node or Go. Or Webpack.
 
-That may indeed be the case. After all, if our code was simple, elegant and only
-written in a single Ruby monolith, would as many of us still be employed?
+That may indeed be the case. After all, if our code was simple, elegant and only written in a single Ruby monolith, would as many of us still be employed?
 
-Companies spend thousands of dollars hunting the elusive 10x Developer
-Rockstar Unicorns (note: term used ironically), but the Unicorns are no longer
-out grazing in the sunny meadows, readily available for capture.  They're
-already working somewhere else and the conditions of where they work are
-extremely competitive. The stables in which these Unicorns are now kept are filled with energy drinks, ping pong tables, lucrative salary bonuses and other extremely good perks. You will have a hard time luring these Unicorns away.
+Companies spend thousands of dollars hunting the elusive 10x Developer Rockstar Unicorns (note: term used ironically), but the Unicorns are no longer out grazing in the sunny meadows, readily available for capture.  They're already working somewhere else and the conditions of where they work are extremely competitive. The stables in which these Unicorns are now kept are filled with energy drinks, ping pong tables, lucrative salary bonuses and other extremely good perks. You will have a hard time luring these Unicorns away.
 
-We're out of freely available Rockstar Unicorns because they're already employed
-elsewhere. Attempting to hire them is an exercise in futility. And so it's time
-that we started to grow our own. It's time that we started to hire and train our
-own 10x Developer Rockstar Unicorns.
+We're out of freely available Rockstar Unicorns because they're already employed elsewhere. Attempting to hire them is an exercise in futility. And so it's time that we started to grow our own. It's time that we started to hire and train our own 10x Developer Rockstar Unicorns.
 
 -----
 
-But where do we find these developers? Well, to start with need to lower our
-bar for engineering talent and not be so caught up on hiring the
-best-of-the-best _now_, but instead we should be investing more in people's
-future potential. We should be hiring junior developers and training them up.
+But where do we find these developers? Well, to start with need to lower our bar for engineering talent and not be so caught up on hiring the best-of-the-best _now_, but instead we should be investing more in people's future potential. We should be hiring junior developers and training them up.
 
 A very smart person once said this: <confucious tweet>
 
 Your next Rockstar Unicorn isn't within today's top 5-10% of all
-developers. The top 5-10% already works elsewhere. Your Next Rockstar Unicorn
-is hanging out with the rest of their peers in the other part of this totally
-scientific graph that I made up. These people need some mentoring in order to
-grow into the next generation of brilliant people.
+developers. The top 5-10% already works elsewhere. Your Next Rockstar Unicorn is hanging out with the rest of their peers in the other part of this totally scientific picture that I made up. These people need some mentoring in order to grow into the next generation of brilliant people.
 
 They're not brilliant _today_, but if you give them time and care, they will become brilliant.
 
 It's imperative that we do this because there isn't an endless supply of brilliant people -- sorry, I mean Developer Rockstar Unicorns -- that we can just keep harvesting today. This talent pool of amazingly gifted developers, as we're painfully finding out, is not limitless.
 
-We must lower the bar for our hiring, and hire outside of the top 5-10%. We
-must hire juniors. We must then train these juniors up to be our next
-generation of brilliant minds.
+The best time to train a senior developer was 10 years ago, but the second best time is now.
 
-It is very, very difficult to hire a senior developer today in Rubyland. And so
-we must grow our own senior developers. This is a process that will take time.
-There's no packet mix where you "just add water" and blammo you've got a senior
-developer.
+We must lower the bar for our hiring, and hire outside of the top 5-10%. We must hire juniors. We must then train these juniors up to be our next generation of brilliant minds.
+
+It is very, very difficult to hire a senior developer today in Rubyland. And so we must grow our own senior developers. This is a process that will take time.
+
+There's no packet mix where you "just add water" and blammo you've got a senior developer.
 
 I'm talking about _years_ of hard work. But these are _vital_ years
-of hard work to ensure that our companies and this community continues to thrive
-and grow. This is necessary work to ensure that we have well-trained developers
-working at our companies. We will know they're well-trained because we did the
-training ourselves.
+of hard work to ensure that our companies and this community continues to thrive and grow. This is necessary work to ensure that we have well-trained developers working at our companies. We will know they're well-trained because we did the training ourselves.
 
 We need to be _developers developing developers_.
 
@@ -111,7 +85,7 @@ I want to spend the next 20 minutes giving you some reasons why you would want t
 
 ## Why?
 
-So let's start off with the why. Why would you want to hire juniors? I told you already: we can hire juniors to boost the number of developers at our companies. But we're going to need a better reason I think.
+So let's start off with the why. Why would you want to hire juniors? I told you already: we can hire juniors to boost the number of developers at our companies. But we're going to need a better reason.
 
 I have one major killer reason: juniors make your teams _better_. You want your teams to be better, right?
 
@@ -155,6 +129,26 @@ To find juniors, reach out to universities and coding schools and ask them when 
 
 Now that you know where to find them, you'll want to know how to find the _best_ ones. For that purpose, I want to talk about how you should interview your junior developers.
 
+## Interviewing
+
+I think a good interview process takes the shape of two stages: a take home coding test, and a second stage comprising of two interviews: a social interview and a tech interview.
+
+Here's how we've done it at Culture Amp. We sent anyone who applied a coding challenge written in Ruby, involving some basic Ruby tests for things like Arrays and Hashes. It also contained a test suite they had to extend and pass. They had two weeks to complete it.
+
+When we received the coding test back from them, we scored it according to a bunch of yes or questions like "did they use an `attr_reader` here?". The people with the highest grade then got through to the next stage, our social and tech interview stage.
+
+In this second stage, juniors bring their coding tests in, and we interview them about their knowledge of tech during the tech interview. At the half-way point of the interview, we switch to a pairing mode where the juniors expand on their coding test. All of this is done with with two Culture Amp employees in the room -- usually a mixed gender pair. We interview in pairs to eliminate bias that may arise during a 1-on-1 interview.
+
+The junior drives the development of the code and can ask us any questions they wish -- even down to what Ruby method they could use to solve a problem. We give them some direction and observe them go through this exercise.
+
+This tech interview is designed to assess how well the juniors can work with other people -- not to gauge how well they can code. This is because a junior developer will spend most of their time working with other people, listening to them and collaborating, rather than doing development themselves. It also helps us gauge how open they are to asking questions, or knowing when they're stuck. These are important things to check because they'll be doing a lot of that kind of thing when they come to work with us.
+
+The social interview is the 2nd interview stage, and in this one we assess their social abilities by asking them a bunch of open ended questions like "What kind of projects have you worked on with other people?". We value this interview slightly higher than the coding test.
+
+What we look for in this interview is how friendly or outgoing the junior developer is, as well as any particular red flags. If someone champions their own efforts while diminishing the work of others, that's a huge red flag. If they prefer to work alone instead of in a group, that's another.
+
+That's a quick run-through of how we've ran our interview process, and from the almost 250 interviews we've done, I can give you three big tips for when you're interviewing juniors.
+
 ### Tip #1: Treat them gently
 
 The first is to treat them gently. For some people you interview, this will be one of their very first interviews. If you're both lucky, it'll be their very first. You might be working with this person in the near future, so treat the interview like a _collaboration_ rather than an _interrogation_. Treat them gently.
@@ -163,31 +157,19 @@ Here's a quick image showing the regular job application process for junior deve
 
 We do not need to interview these juniors harshly or impersonally. We _can_ treat them gently.
 
-When you interview your juniors, I suggest splitting it up into two interview stages: a tech interview and a social interview.
-
-Here's how we've done it at Culture Amp. Before we interview them, we send the juniors a coding challenge. It was built in Ruby, and when we get it back we grade it according to a score sheet. The people with the highest grade get through to the tech interview stage.
-
-In the tech interview stage, juniors bring their coding tests in, and they expand on it during the interview for up to 25 minutes in a pairing session format with two Culture Amp employees in the room -- usually a mixed gender pair. We interview in pairs to eliminate bias that may arise during a 1-on-1 interview.
-
-The junior drives the development of the code and can ask us any questions they wish -- even down to what Ruby method they could use to solve a problem. We give them some direction and observe them go through this exercise.
-
-This tech interview is designed to assess how well the juniors can work with other people -- not to gauge how well they can code. This is because a junior developer will spend most of their time working with other people, listening to them and collaborating, rather than doing development themselves. It also helps us gauge how open they are to asking questions, or knowing when they're stuck. These are important things to check because they'll be doing a lot of that kind of thing when they come to work with us.
-
 ### Tip #2: Social over Technical
 
-The social interview is the 2nd interview stage, and in this one we assess their social abilities by asking them a bunch of open ended questions like "What kind of projects have you worked on with other people?". We value this interview slightly higher than the coding test.
-
-What we look for in this interview is how friendly or outgoing the junior developer is, as well as any particular red flags. If someone champions their own efforts while diminishing the work of others, that's a huge red flag. If they prefer to work alone instead of in a group, that's another.
+My second tip is to value the _social_ interview over the technical interview.
 
 I would explain why in my own words, but Brian Hogan has done it on Twitter much better than I could:
 
 https://twitter.com/bphogan/status/1173301278040035335?s=20
 
-It's true. I can teach an easy-going, well-humoured person programming easily. They're fun to work with! But if you're a grumpy, self-centered narccisist, we're going to have a bad time.
+It's true. I can teach an easy-going, well-humoured person programming easily. They're fun to work with! But if you're a grumpy, self-centered narcissist, we're going to have a bad time.
 
 All of the juniors that we have hired have scored good-to-excellent on the tech interview, but they've all scored _excellent_ on the social interview and we've seen it work out really well as a result.
 
-So my tip here is to value social skills over tech skills. You can teach tech. You can't teach nice.
+So my tip here is to value social skills over tech skills. You can teach tech easily. You can't teach nice as easily.
 
 ### Tip #3: Give them feedback
 
@@ -237,9 +219,11 @@ My third ground rule is one that can sometimes be the hardest one to follow. Smi
 
 And this also applies to text as well, where emotional meaning goes missing. A simple phrase like "why are you doing this?" can be interpreted majorly differently depending on the mood the recipient is in. "Smile more" with your juniors over text too.
 
+If you feel like they're still having a rough time, go around to your juniors and speak to them in person -- or over a quick video call if they're remote. I call this "escalating in fidelity" and it's a technique I employ when I think I'm being misinterpreted.
+
 ### Project Aristotle
 
-I'd like to back up all this belonging chatter with one final thing. A company you might've heard of, one called Google, ran this study called Project Aristotle. They wanted to know what made teams the most productive. They tried a bunch of things. Small teams. Big teams. Senior teams. Junior teams. Teams in the same room, or teams working remotely. None of it made as big an impact on team productivity as these five things.
+I'd like to back up all this belonging chatter with one final thing. A company you might've heard of, one not far from here, called Google... ran this study called Project Aristotle. They wanted to know what made teams the most productive. They tried a bunch of things. Small teams. Big teams. Senior teams. Junior teams. Teams in the same room, or teams working remotely. None of it made as big an impact on team productivity as these five things.
 
 These five things are the pillars of making teams at Google the most productive. And this does not just apply at Google. It's universal. And I can think of nowhere else they apply more than helping juniors feel like they belong in our teams. The first one is the biggest: team members feel safe to take risks and be vulnerable in front of each other.
 
