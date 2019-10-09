@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'activesupport'
-gem 'jekyll', '3.3.1'
-gem 'redcarpet'
-gem 'json', '2.0.2'
+gem 'jekyll'
+gem 'json'
 gem 'jekyll-prism-plugin'
 gem "sass"
+gem "github-pages", group: :jekyll_plugins
