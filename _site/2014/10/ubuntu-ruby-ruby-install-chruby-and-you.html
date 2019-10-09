@@ -85,7 +85,7 @@ sudo make install
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">ruby-install ruby 2.6.5
 </code></pre></div>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.4.0 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it&#39;s done, we&#39;ll have Ruby 2.6.5 installed. In order to use this Ruby version, we&#39;ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby&#39;s README</a> too, but I will reproduce them here:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
@@ -109,7 +109,7 @@ EOF
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">ruby-2.6.5
 </code></pre></div>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.6.5</code> for example -- assuming that we have Ruby 2.4.0 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we&#39;re using, we can run <code>chruby ruby-2.6.5</code> for example -- assuming that we have Ruby 2.6.5 installed first!</p>
 
 <p>Did this work? Let&#39;s find out by running <code>ruby -v</code>:</p>
 <div class="highlight"><pre><code class="language-" data-lang="">ruby 2.6.5p114 (2019-10-01 revision 67812) [x86_64-linux]

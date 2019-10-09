@@ -73,7 +73,7 @@ Our next step is to install Ruby itself, which we can do with this command:
 ruby-install ruby {{page.ruby_version}}
 ```
 
-This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.4.0 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
+This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby {{page.ruby_version}} installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions [can be found in chruby's README](https://github.com/postmodern/chruby#install) too, but I will reproduce them here:
 
 ```
 wget -O chruby-{{page.chruby_version}}.tar.gz \
@@ -112,7 +112,7 @@ Now we need to make that Ruby the default Ruby for our system, which we can do b
 ruby-{{page.ruby_version}}
 ```
 
-This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-{{page.ruby_version}}` for example -- assuming that we have Ruby 2.4.0 installed first!
+This file tells `chruby` which Ruby we want to use by default. To change the ruby version that we're using, we can run `chruby ruby-{{page.ruby_version}}` for example -- assuming that we have Ruby {{page.ruby_version}} installed first!
 
 Did this work? Let's find out by running `ruby -v`:
 
