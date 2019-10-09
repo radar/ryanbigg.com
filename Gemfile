@@ -1,8 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'activesupport'
-gem 'jekyll'
+gem 'jekyll', "~> 3"
 gem 'json'
 gem 'jekyll-prism-plugin'
 gem "sass"
-gem "github-pages", group: :jekyll_plugins
+gem "github-pages", "201", group: :jekyll_plugins
