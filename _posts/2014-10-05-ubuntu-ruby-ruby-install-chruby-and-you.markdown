@@ -2,16 +2,16 @@
 wordpress_id: RB-358
 layout: post
 title: Ubuntu, Ruby, ruby-install, chruby, Rails and You
-ruby_version: 2.4.1
-rails_version: 5.1.2
-ruby_install_version: 0.6.1
+ruby_version: 2.6.5
+rails_version: 6.0.0
+ruby_install_version: 0.7.0
 chruby_version: 0.3.9
 ---
 
-**Last updated: July 13th 2017**
+**Last updated: October 9th 2019**
 
 
-**This beginner's guide will set your machine up with Ruby {{page.ruby_version}} using chruby+ruby-install and Rails {{page.rails_version}} and is specifically written for a _development_ environment on Ubuntu 17.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
+**This beginner's guide will set your machine up with Ruby {{page.ruby_version}} using chruby+ruby-install and Rails {{page.rails_version}} and is specifically written for a _development_ environment on Ubuntu 19.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
 
 <div class="warning">
   Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
@@ -28,8 +28,6 @@ This guide will cover installing a couple of things:
 By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.
 
 We assume you have `sudo` access to your machine, and that you have an understanding of the basic concepts of Ruby, such as "What is RubyGems?" and more importantly "How do I turn this computer-thing on?". This knowledge can be garnered by reading the first chapter of [any Ruby book](https://manning.com/black2).
-
-If you're looking for a good Rails book, I wrote one called [Rails 4 in Action](http://manning.com/bigg2).
 
 ### Housekeeping
 
@@ -119,7 +117,7 @@ This file tells `chruby` which Ruby we want to use by default. To change the rub
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.4.1p111 (2017-03-22 revision 58053) [x86_64-linux]
+ruby 2.6.5p114 (2019-10-01 revision 67812) [x86_64-linux]
 ```
 
 ### Rails
@@ -130,7 +128,36 @@ Now that we have a version of Ruby installed, we can install Rails. Because our 
 
 This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 
-### MySQL
+### Rails pre-requisites
+
+Before we can start a new Rails app, there are a few more things that we need to install.
+
+
+#### JavaScript Runtime
+
+Rails requires a JavaScript runtime to run Webpacker for its assets.
+
+To fix this error install `nodejs`, which comes with a JavaScript runtime:
+
+```
+sudo apt-get install nodejs
+```
+
+On top of this, modern Rails uses `yarn`, a JavaScript package manager. We will need to install that too. The [instructions are on the Yarn site](https://yarnpkg.com/lang/en/docs/install/#debian-stable) but here they are too:
+
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install yarn
+```
+
+#### SQLite3
+
+First of all, we need to install `libsqlite3-dev`, which is the package for the development headers for SQLite3. We need this so that when `bundle install` runs as a part of `rails new`, it will be able to install the `sqlite3` gem that is a default dependency of Rails applications.
+
+(If you're using MySQL or PostgreSQL instead, see the sections below.)
+
+#### MySQL
 
 If you're planning on using the `mysql2` gem for your application then you'll want to install the `libmysqlclient-dev` package before you do that. Without it, you'll get an error when the gem tries to compile its native extensions:
 
@@ -163,7 +190,7 @@ If you're planning on using the `mysql2` gem for your application then you'll wa
 
 Install this package using `sudo apt-get install libmysqlclient-dev` and then the `mysql2` gem will install fine.
 
-### PostgreSQL
+#### PostgreSQL
 
 Similar to the `mysql2` gem's error above, you'll also get an error with the `pg` gem if you don't have the `libpq-dev` package installed you'll get this error:
 
@@ -183,38 +210,6 @@ Similar to the `mysql2` gem's error above, you'll also get an error with the `pg
     need configuration options.
 
 Install this package using `sudo apt-get install libpq-dev`.
-
-### SQLite3
-
-Just like MySQL and PostgreSQL before it, attempting to install the `sqlite3` gem will result in this:
-
-    Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
-
-        /home/ryan/.rubies/ruby-2.3.0/bin/ruby extconf.rb
-    checking for sqlite3.h... no
-    sqlite3.h is missing. Try 'port install sqlite3 +universal',
-    'yum install sqlite-devel' or 'apt-get install libsqlite3-dev'
-    and check your shared library search path (the
-    location where your sqlite3 shared library is located).
-    *** extconf.rb failed ***
-    Could not create Makefile due to some reason, probably lack of necessary
-    libraries and/or headers.  Check the mkmf.log file for more details.  You may
-    need configuration options.
-
-Fix this issue by running `sudo apt-get install libsqlite3-dev`.
-
-### JavaScript Runtime
-
-Rails requires a JavaScript runtime to run its precompile step for the asset pipeline. If you attempt to run `rake assets:precompile` without one of these, you'll see this message:
-
-    ExecJS::RuntimeUnavailable: Could not find a JavaScript runtime. See
-    https://github.com/sstephenson/execjs for a list of available runtimes.
-
-To fix this error install `nodejs`, which comes with a JavaScript runtime:
-
-```
-sudo apt-get install nodejs
-```
 
 ### Fin
 
