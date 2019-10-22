@@ -36,7 +36,7 @@
             </div>
             <p>Last week I gave a talk at Melbourne Ruby involving some card tricks and Ruby trickery.</p>
 <p>The talk is up on Youtube:</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/lSiD3LZanPI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/lSiD3LZanPI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <p>I do some card tricks for about 10 minutes, and then some Ruby tricks. I won't reveal how I did the card tricks in this blog post, but I will reveal how I did the Ruby tricks.</p>
 <p>The Ruby trickery starts at about the 9m30s mark in that video. You can see the code for most of these tricks at <a href="https://github.com/radar/trickery">radar/trickery on GitHub</a>.</p>
 <p>In this post, I'll cover all the tricks I had planned for the talk, not just the ones I showed off.</p>
@@ -108,7 +108,7 @@
 <p>Should maintain the same order of the numbers, increasing left-to-right. Instead, the output is this:</p>
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 </code></pre></div></div>
-<p>This &quot;weird behaviour&quot; happens because JavaScript sorts objects based on their string versions. The string &quot;-1&quot; comes before &quot;-2&quot;, but &quot;-2&quot; comes before &quot;0&quot;, and so on. This  <a href="https://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.11">is specified in the EcmaScript specification (5.1), Section 15.4.4.11</a>, but you need a PhD or higher qualificatio (read: galaxy brain) to understand exactly what it is saying.</p>
+<p>This &quot;weird behaviour&quot; happens because JavaScript sorts objects based on their string versions. The string &quot;-1&quot; comes before &quot;-2&quot;, but &quot;-2&quot; comes before &quot;0&quot;, and so on. This  <a href="https://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.11">is specified in the EcmaScript specification (5.1), Section 15.4.4.11</a>, but you need a PhD or higher qualification (read: galaxy brain) to understand exactly what it is saying.</p>
 <p>How does this relate to Ruby? Well, first of all Ruby does the sorting order correctly:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">].</span><span class="nf">sort</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>

@@ -126,7 +126,7 @@ Should maintain the same order of the numbers, increasing left-to-right. Instead
 [-1, -2, 0, 1, 2]
 ```
 
-This "weird behaviour" happens because JavaScript sorts objects based on their string versions. The string "-1" comes before "-2", but "-2" comes before "0", and so on. This  [is specified in the EcmaScript specification (5.1), Section 15.4.4.11](https://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.11), but you need a PhD or higher qualificatio (read: galaxy brain) to understand exactly what it is saying.
+This "weird behaviour" happens because JavaScript sorts objects based on their string versions. The string "-1" comes before "-2", but "-2" comes before "0", and so on. This  [is specified in the EcmaScript specification (5.1), Section 15.4.4.11](https://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.11), but you need a PhD or higher qualification (read: galaxy brain) to understand exactly what it is saying.
 
 How does this relate to Ruby? Well, first of all Ruby does the sorting order correctly:
 
