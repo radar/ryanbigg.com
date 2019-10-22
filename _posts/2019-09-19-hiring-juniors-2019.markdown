@@ -53,7 +53,7 @@ We're out of freely available Rockstar Unicorns because they're already employed
 
 -----
 
-But where do we find these developers? Well, to start with need to lower our bar for engineering talent and not be so caught up on hiring the best-of-the-best _now_, but instead we should be investing more in people's future potential. We should be hiring junior developers and training them up.
+But where do we find these developers? Well, to start with we need to lower our bar for engineering talent and not be so caught up on hiring the best-of-the-best _now_, but instead we should be investing more in people's future potential. We should be hiring junior developers and training them up.
 
 A very smart person once said this: <confucious tweet>
 

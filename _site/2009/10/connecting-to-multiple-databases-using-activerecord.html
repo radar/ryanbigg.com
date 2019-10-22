@@ -35,16 +35,16 @@
               <small>17 Oct 2009</small>
             </div>
             <p>You can call <code>establish_connection</code> with the key that points to another database config in your <code>config/database.yml</code></p>
-<div class="highlight"><pre><code class="language-" data-lang="">class Person &lt; ActiveRecord::Base
+<pre><code>class Person &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
 class Ticket &lt; ActiveRecord::Base
   establish_connection(:bug_tracker)
 end
-</code></pre></div>
+</code></pre>
 <p>If you have a whole bunch of models that need to connect to another database:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">class HR &lt; ActiveRecord::Base
+<pre><code>class HR &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
@@ -55,7 +55,7 @@ end
 class Resource &lt; HR
   # ...
 end
-</code></pre></div>
+</code></pre>
           </article>
         </div>
       </div>

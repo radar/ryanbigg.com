@@ -35,14 +35,13 @@
               <small>28 May 2016</small>
             </div>
             <p>I recently found out about the <a href="http://elixir-lang.org/docs/stable/elixir/Kernel.html#match?/2">match?/2</a> function in Elixir through the #elixir-lang IRC channel on Freenode.</p>
-
 <p>What this function allows you to do is to determine if a given pattern matches a given expression. For instance, if you wanted to know if a list of maps contained a particular key + value combination, you could do this:</p>
-<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="n">people</span> <span class="o">=</span> <span class="p">[%{</span><span class="ss">name:</span> <span class="sd">"</span><span class="s2">John"</span><span class="p">},</span> <span class="p">%{</span><span class="ss">name:</span> <span class="sd">"</span><span class="s2">Jane"</span><span class="p">}]</span>
-<span class="no">Enum</span><span class="o">.</span><span class="n">any?</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="k">fn</span> <span class="p">(</span><span class="n">person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">match?</span><span class="p">(%{</span><span class="ss">name:</span> <span class="sd">"</span><span class="s2">John"</span><span class="p">},</span> <span class="n">person</span><span class="p">)</span> <span class="k">end</span><span class="p">)</span>
-</code></pre></div>
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">people</span> <span class="o">=</span> <span class="p">[%{</span><span class="ss">name:</span> <span class="s2">"John"</span><span class="p">},</span> <span class="p">%{</span><span class="ss">name:</span> <span class="s2">"Jane"</span><span class="p">}]</span>
+<span class="no">Enum</span><span class="o">.</span><span class="n">any?</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="k">fn</span> <span class="p">(</span><span class="n">person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">match?</span><span class="p">(%{</span><span class="ss">name:</span> <span class="s2">"John"</span><span class="p">},</span> <span class="n">person</span><span class="p">)</span> <span class="k">end</span><span class="p">)</span>
+</code></pre></div></div>
 <p>This code will get Elixir to tell you if any of the people have the name &quot;John&quot;. In this case, the result would be <code>true</code>. You could even get fancy and use a shorter function:</p>
-<div class="highlight"><pre><code class="language-elixir" data-lang="elixir"><span class="no">Enum</span><span class="o">.</span><span class="n">any?</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">match?</span><span class="p">(%{</span><span class="ss">name:</span> <span class="sd">"</span><span class="s2">John"</span><span class="p">},</span> <span class="nv">&amp;1</span><span class="p">)))</span>
-</code></pre></div>
+<div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Enum</span><span class="o">.</span><span class="n">any?</span><span class="p">(</span><span class="n">people</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">match?</span><span class="p">(%{</span><span class="ss">name:</span> <span class="s2">"John"</span><span class="p">},</span> <span class="nv">&amp;1</span><span class="p">)))</span>
+</code></pre></div></div>
 <p>This shorter function defines the same function in the first example, but instead of having a named argument to the function, <code>&amp;1</code> is used instead.</p>
 
           </article>

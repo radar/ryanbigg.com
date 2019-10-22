@@ -34,16 +34,15 @@
               <a href="/2013/06/finding-sql-queries-in-rails"><h2>Finding SQL queries in Rails</h2></a>
               <small>26 Jun 2013</small>
             </div>
-            <p>In my work on Spree, sometimes I&#39;ve been wanting to know <em>where</em> queries are coming from. Just like any large codebase, the &quot;magic&quot; that goes on inside it to make the cogs spin the right way can be a bit complex.</p>
-
-<p>Active Support&#39;s Notifications feature is really handy for this. All I need to do is subscribe to the <code>sql.active_record</code> event and get it to output the stacktrace of where the query is generated, like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Notifications</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="s2">"sql.active_record"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">details</span><span class="o">|</span>
+            <p>In my work on Spree, sometimes I've been wanting to know <em>where</em> queries are coming from. Just like any large codebase, the &quot;magic&quot; that goes on inside it to make the cogs spin the right way can be a bit complex.</p>
+<p>Active Support's Notifications feature is really handy for this. All I need to do is subscribe to the <code>sql.active_record</code> event and get it to output the stacktrace of where the query is generated, like this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Notifications</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="s2">"sql.active_record"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">details</span><span class="o">|</span>
   <span class="k">if</span> <span class="n">details</span><span class="p">[</span><span class="ss">:sql</span><span class="p">]</span> <span class="o">=~</span> <span class="sr">/INSERT INTO "spree_inventory_units"/</span>
     <span class="nb">puts</span> <span class="nb">caller</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
     <span class="nb">puts</span> <span class="s2">"*"</span> <span class="o">*</span> <span class="mi">50</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>Whenever a query that inserts a new record into the <code>spree_inventory_units</code> table is issued through Active Record, this code will give me a complete stacktrace of where that came from.</p>
 
           </article>

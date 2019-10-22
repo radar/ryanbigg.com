@@ -34,241 +34,187 @@
               <a href="/2015/07/deploying-a-rails-application-on-ubuntu-passenger-edition"><h2>Deploying a Rails application on Ubuntu: Passenger Edition</h2></a>
               <small>08 Jul 2015</small>
             </div>
-            <p>In this guide, I&#39;ll cover the basics of deploying a Rails application to Ubuntu 14.04 on a Digital Ocean box. This guide will work on non-Digital-Ocean boxes too, and it might work on different Ubuntu versions. Try it out and find out :)</p>
-
+            <p>In this guide, I'll cover the basics of deploying a Rails application to Ubuntu 14.04 on a Digital Ocean box. This guide will work on non-Digital-Ocean boxes too, and it might work on different Ubuntu versions. Try it out and find out :)</p>
 <p>If you find any mistakes in this guide, please let me know in the comments below.</p>
-
-<p>In the guide, we&#39;ll be using:</p>
-
+<p>In the guide, we'll be using:</p>
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: To install a Ruby version system-wide.</li>
 <li><strong>nginx</strong>: A webserver to serve our Rails application with.</li>
 <li><a href="https://www.phusionpassenger.com/"><strong>Passenger</strong></a>: The proxy between nginx and Rails which automatically starts + stops Rails application &quot;worker processes&quot;.</li>
 <li><strong>Capistrano</strong>: A very helpful tool that automates your deployment workflow.</li>
 </ul>
-
 <p>While you <em>could</em> serve traffic from your production site using <code>rails s</code>, there are many issues with that:</p>
-
 <ol>
 <li>It runs on port 3000, whereas most websites run on port 80.</li>
 <li>If it dies, you will need to restart it manually.</li>
 <li>It will crash under heavy load because the web server it uses (WEBrick) has not been designed for production use.</li>
 </ol>
-
-<p>So instead, we&#39;ll be using nginx and Passenger.</p>
-
-<p>Before we can run our Ruby on Rails application on the server, we&#39;ll need to install Ruby.</p>
-
-<h2>Installing a Ruby version</h2>
-
-<p>In order to install Ruby, we&#39;ll need to install the <code>build-essential</code> package. This package gives us the build tools that we&#39;ll need to compile Ruby.</p>
-
-<p>We first need to make sure that our <code>apt</code> sources are up-to-date. If they&#39;re not, installing the <code>build-essential</code> pcakage might fail. We will do this by logging into the machine as root, and then running this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get update
-</code></pre></div>
-<p>Next, we&#39;ll need to install the <code>build-essential</code> package itself:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get install build-essential
-</code></pre></div>
+<p>So instead, we'll be using nginx and Passenger.</p>
+<p>Before we can run our Ruby on Rails application on the server, we'll need to install Ruby.</p>
+<h2 id="installing-a-ruby-version">Installing a Ruby version</h2>
+<p>In order to install Ruby, we'll need to install the <code>build-essential</code> package. This package gives us the build tools that we'll need to compile Ruby.</p>
+<p>We first need to make sure that our <code>apt</code> sources are up-to-date. If they're not, installing the <code>build-essential</code> pcakage might fail. We will do this by logging into the machine as root, and then running this command:</p>
+<pre><code>apt-get update
+</code></pre>
+<p>Next, we'll need to install the <code>build-essential</code> package itself:</p>
+<pre><code>apt-get install build-essential
+</code></pre>
 <p>With those tools installed, we will now install a Ruby version with the <code>ruby-install</code> tool. Follow the <a href="https://github.com/postmodern/ruby-install#install">install steps for ruby-install</a> (reproduced here for your convienience):</p>
-<div class="highlight"><pre><code class="language-" data-lang="">wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+<pre><code>wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
 tar -xzvf ruby-install-0.5.0.tar.gz
 cd ruby-install-0.5.0/
 make install
-</code></pre></div>
+</code></pre>
 <p>We will now install Ruby 2.2.2 system-wide by running this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby-install --system ruby 2.2.2 -- --disable-install-rdoc
-</code></pre></div>
-<p>We&#39;re installing it system-wide so that it&#39;s available for all users on this machine.  The <code>--disable-install-rdoc</code> tells Ruby to skip the part about installing RDoc documentation for Ruby on this machine. This is a production machine and we don&#39;t need RDoc.</p>
-
+<pre><code>ruby-install --system ruby 2.2.2 -- --disable-install-rdoc
+</code></pre>
+<p>We're installing it system-wide so that it's available for all users on this machine.  The <code>--disable-install-rdoc</code> tells Ruby to skip the part about installing RDoc documentation for Ruby on this machine. This is a production machine and we don't need RDoc.</p>
 <blockquote>
-<p>Eventually, we&#39;ll be having each application have its own user on this machine. While we <em>could</em> use <code>ruby-install</code> on a per-user basis, it makes much more sense (and is easier!) to have it on a system-wide level.</p>
+<p>Eventually, we'll be having each application have its own user on this machine. While we <em>could</em> use <code>ruby-install</code> on a per-user basis, it makes much more sense (and is easier!) to have it on a system-wide level.</p>
 </blockquote>
-
-<p>Once that command finishes running, let&#39;s remove the <code>ruby-install</code> package + directory:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">rm -r ~/ruby-install-*
-</code></pre></div>
-<p>It might make sense at this point to install Rails, but we should definitely let Bundler take care of that during the application deployment process. Let&#39;s just install Bundler for now:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem install bundler
-</code></pre></div>
-<h2>Deploying the application</h2>
-
-<p>To deploy the application, we&#39;re going to use a gem called Capistrano. Capistrano has been a mainstay of the Ruby community for some time now due to its flexibility and reliability.</p>
-
-<p>With Capistrano, we&#39;ll be able to (git) clone the Rails application to the server and run any necessary configuration steps that are required to get our application running, such as <code>bundle install</code>, <code>rake assets:precompile</code>, and configuring a database.</p>
-
-<h3>Creating a new user</h3>
-
-<p>The first thing to do is to create a new user on the machine where we&#39;re deploying to for the application. This user will be sandboxed into its own directory, which means the application will only have access to that user&#39;s home directory. </p>
-
+<p>Once that command finishes running, let's remove the <code>ruby-install</code> package + directory:</p>
+<pre><code>rm -r ~/ruby-install-*
+</code></pre>
+<p>It might make sense at this point to install Rails, but we should definitely let Bundler take care of that during the application deployment process. Let's just install Bundler for now:</p>
+<pre><code>gem install bundler
+</code></pre>
+<h2 id="deploying-the-application">Deploying the application</h2>
+<p>To deploy the application, we're going to use a gem called Capistrano. Capistrano has been a mainstay of the Ruby community for some time now due to its flexibility and reliability.</p>
+<p>With Capistrano, we'll be able to (git) clone the Rails application to the server and run any necessary configuration steps that are required to get our application running, such as <code>bundle install</code>, <code>rake assets:precompile</code>, and configuring a database.</p>
+<h3 id="creating-a-new-user">Creating a new user</h3>
+<p>The first thing to do is to create a new user on the machine where we're deploying to for the application. This user will be sandboxed into its own directory, which means the application will only have access to that user's home directory.</p>
 <blockquote>
 <p>If we installed the application as root and Rails had a Remote Code Execution vulnerability, the box could get taken over by some malicious hackers.</p>
 </blockquote>
-
-<p>Let&#39;s create this new application user now:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">useradd -d /home/rails_app -m -s /bin/bash rails_app
-</code></pre></div>
-<p><strong>I&#39;ve used <code>rails_app</code> here just as an example. You should use your application&#39;s name.</strong></p>
-
-<p>The <code>-d</code> option specifies the home directory of the user and the <code>-m</code> option tells <code>useradd</code> to create that directory if it doesn&#39;t already exist. The <code>-s</code> option tells it that we want to use the <code>/bin/bash</code> shell.</p>
-
-<p>Next, we&#39;ll want to make it so that we can connect to the server as this user. This is so that when we deploy the application, we do so as the user that we just created. If you&#39;ve setup GitHub already, you probably already have setup an SSH key. If not, follow <a href="https://help.github.com/articles/generating-ssh-keys/">this excellent guide from GitHub</a>.</p>
-
-<p>To allow you to connect to the application server as the new user, we&#39;ll need to copy over the public key (<code>~/.ssh/id_rsa.pub</code>) to the server. The easiest way to do this is to copy it over to root first. On your own personal computer, run this command:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">scp ~/.ssh/id_rsa.pub root@yourmachine.example.com:~/key
-</code></pre></div>
-<p>Then on the server, move the key over to the new user&#39;s home directory:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">mkdir -p /home/rails_app/.ssh
+<p>Let's create this new application user now:</p>
+<pre><code>useradd -d /home/rails_app -m -s /bin/bash rails_app
+</code></pre>
+<p><strong>I've used <code>rails_app</code> here just as an example. You should use your application's name.</strong></p>
+<p>The <code>-d</code> option specifies the home directory of the user and the <code>-m</code> option tells <code>useradd</code> to create that directory if it doesn't already exist. The <code>-s</code> option tells it that we want to use the <code>/bin/bash</code> shell.</p>
+<p>Next, we'll want to make it so that we can connect to the server as this user. This is so that when we deploy the application, we do so as the user that we just created. If you've setup GitHub already, you probably already have setup an SSH key. If not, follow <a href="https://help.github.com/articles/generating-ssh-keys/">this excellent guide from GitHub</a>.</p>
+<p>To allow you to connect to the application server as the new user, we'll need to copy over the public key (<code>~/.ssh/id_rsa.pub</code>) to the server. The easiest way to do this is to copy it over to root first. On your own personal computer, run this command:</p>
+<pre><code>scp ~/.ssh/id_rsa.pub root@yourmachine.example.com:~/key
+</code></pre>
+<p>Then on the server, move the key over to the new user's home directory:</p>
+<pre><code>mkdir -p /home/rails_app/.ssh
 mv key /home/rails_app/.ssh/authorized_keys
 chown -R rails_app /home/rails_app/.ssh
 chmod 600 /home/rails_app/.ssh/authorized_keys
-</code></pre></div>
-<p>Once you&#39;ve run those commands, you should be able to SSH into the machine as that user without requiring a password.</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ssh rails_app@yourmachine.example.com
-</code></pre></div>
+</code></pre>
+<p>Once you've run those commands, you should be able to SSH into the machine as that user without requiring a password.</p>
+<pre><code>ssh rails_app@yourmachine.example.com
+</code></pre>
 <p>If you run <code>ruby -v</code> after connecting, you should see this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-linux]
-</code></pre></div>
+<pre><code>ruby 2.2.2p95 (2015-04-13 revision 50295) [x86_64-linux]
+</code></pre>
 <p>This indicates that Ruby can be found for your user, and that we can proceed to deploying the application.</p>
-
-<p>Before we move onto the next section, we&#39;ll need to generate a &quot;deploy key&quot; for this user. This will be used by GitHub to grant this user access to the repository on GitHub.</p>
-
-<p>We will generate that key by running this command on the server as our application&#39;s user:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">ssh-keygen -t rsa
-</code></pre></div>
+<p>Before we move onto the next section, we'll need to generate a &quot;deploy key&quot; for this user. This will be used by GitHub to grant this user access to the repository on GitHub.</p>
+<p>We will generate that key by running this command on the server as our application's user:</p>
+<pre><code>ssh-keygen -t rsa
+</code></pre>
 <p>On our repository on GitHub, we can go to &quot;Settings&quot;, then &quot;Deploy Keys&quot; and add a new deploy key:</p>
-
-<p><img src="/images/ubuntu-deploy-guide/add_deploy_key.png" alt="Add deploy key"></p>
-
-<p>In the &quot;Title&quot; we can put whatever we feel like, but in the &quot;Key&quot; field we&#39;ll need to put the contents of the <code>~/.ssh/id_rsa.pub</code> file that the <code>ssh-keygen</code> command generated. Create the new deploy key now.</p>
-
-<p>We&#39;ll need to set Git up on this machine so that we can clone the repo to test it out, and later to actually deploy the application. Let&#39;s install it now with this command <strong>ran as root</strong>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get install git-core
-</code></pre></div>
+<p><img src="/images/ubuntu-deploy-guide/add_deploy_key.png" alt="Add deploy key" /></p>
+<p>In the &quot;Title&quot; we can put whatever we feel like, but in the &quot;Key&quot; field we'll need to put the contents of the <code>~/.ssh/id_rsa.pub</code> file that the <code>ssh-keygen</code> command generated. Create the new deploy key now.</p>
+<p>We'll need to set Git up on this machine so that we can clone the repo to test it out, and later to actually deploy the application. Let's install it now with this command <strong>ran as root</strong>:</p>
+<pre><code>apt-get install git-core
+</code></pre>
 <p>Switch back to the <code>rails_app</code> user. We can test if this key is working by running <code>git clone git@github.com:you/example_app.git</code> (or whatever your repo is). If the key is setup correctly, then the clone will work.</p>
-
-<h2>Deploying with Capistrano</h2>
-
-<p>Next, we&#39;ll automate the deployment of our code to the server with Capistrano. We can install Capistrano as a gem dependency of the application by adding these two lines to the <code>Gemfile</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'capistrano-rails'</span>
+<h2 id="deploying-with-capistrano">Deploying with Capistrano</h2>
+<p>Next, we'll automate the deployment of our code to the server with Capistrano. We can install Capistrano as a gem dependency of the application by adding these two lines to the <code>Gemfile</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'capistrano-rails'</span>
 <span class="n">gem</span> <span class="s1">'capistrano-passenger'</span>
-</code></pre></div>
-<p>We can then run <code>bundle install</code> to install <code>capistrano-rails</code> and <code>capistrano-passenger</code> and their dependencies. To install Capistrano into our application, we&#39;ll need to run <code>bundle exec cap install</code>. This will install a couple of files in our application that will be used to configure how Capistrano deploys the application to our servers.</p>
-
+</code></pre></div></div>
+<p>We can then run <code>bundle install</code> to install <code>capistrano-rails</code> and <code>capistrano-passenger</code> and their dependencies. To install Capistrano into our application, we'll need to run <code>bundle exec cap install</code>. This will install a couple of files in our application that will be used to configure how Capistrano deploys the application to our servers.</p>
 <p>The first of these files is <code>config/deploy.rb</code>. Near the top of this file are these two lines:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">set</span> <span class="ss">:application</span><span class="p">,</span> <span class="s1">'my_app_name'</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set</span> <span class="ss">:application</span><span class="p">,</span> <span class="s1">'my_app_name'</span>
 <span class="n">set</span> <span class="ss">:repo_url</span><span class="p">,</span> <span class="s1">'git@example.com:me/my_repo.git'</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>We will need to change the <code>application</code> to match the name of our application (<code>rails_app</code> is mine, but your application name is different!), and change the <code>repo_url</code> to be the <code>git@github.com</code> URL for our application. We should also change the path of the application so that it deploys to the home directory of the user:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s1">'/home/rails_app/app'</span>
-</code></pre></div>
-<p>Next, we&#39;ll need to tell Capistrano where to deploy the application to. We can do this by adding this as the first line in <code>config/deploy/production.rb</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">server</span> <span class="s1">'app.example.com'</span><span class="p">,</span> <span class="ss">user: </span><span class="s1">'rails_app'</span><span class="p">,</span> <span class="ss">roles: </span><span class="sx">%w{app db web}</span>
-</code></pre></div>
-<p>Finally, we&#39;ll need to tell Capistrano to run <code>bundle install</code> when the application is deployed, as well as to run the migrations and compile the assets. We can do this by uncommenting these lines in <code>Capfile</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">'capistrano/bundler'</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set</span> <span class="ss">:deploy_to</span><span class="p">,</span> <span class="s1">'/home/rails_app/app'</span>
+</code></pre></div></div>
+<p>Next, we'll need to tell Capistrano where to deploy the application to. We can do this by adding this as the first line in <code>config/deploy/production.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">server</span> <span class="s1">'app.example.com'</span><span class="p">,</span> <span class="ss">user: </span><span class="s1">'rails_app'</span><span class="p">,</span> <span class="ss">roles: </span><span class="sx">%w{app db web}</span>
+</code></pre></div></div>
+<p>Finally, we'll need to tell Capistrano to run <code>bundle install</code> when the application is deployed, as well as to run the migrations and compile the assets. We can do this by uncommenting these lines in <code>Capfile</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'capistrano/bundler'</span>
 <span class="nb">require</span> <span class="s1">'capistrano/rails/assets'</span>
 <span class="nb">require</span> <span class="s1">'capistrano/rails/migrations'</span>
 <span class="nb">require</span> <span class="s1">'capistrano/passenger'</span>
-</code></pre></div>
-<p>Here&#39;s what each of those do:</p>
-
+</code></pre></div></div>
+<p>Here's what each of those do:</p>
 <ul>
-<li><code>capistrano/bundler</code> is responsible for running <code>bundle install</code> (with some fancy deployment options as you&#39;ll see later) during an application deployment. This ensures that the gems on the server are up to date with whatever&#39;s specified in the <code>Gemfile.lock</code>.</li>
+<li><code>capistrano/bundler</code> is responsible for running <code>bundle install</code> (with some fancy deployment options as you'll see later) during an application deployment. This ensures that the gems on the server are up to date with whatever's specified in the <code>Gemfile.lock</code>.</li>
 <li><code>capistrano/rails/assets</code> is responsible for precompiling the assets upon deploy.</li>
 <li><code>capistrano/rails/migrations</code> is responsible for running the migrations for a new release (if any) during a new deploy.</li>
 <li><code>capistrano/passenger</code> will restart the application on every single deploy, ensuring that only the latest code is running.</li>
 </ul>
-
-<p>This sets up most of the Capistrano configuration. There&#39;s a couple more pieces that we will address as they come up. </p>
-
-<p>There&#39;s two more thing to do before we can deploy the application to the server: we&#39;ll need to install the development headers for whatever database system we&#39;re using and we&#39;ll need to install a JavaScript runtime. </p>
-
-<h2>Database setup</h2>
-
+<p>This sets up most of the Capistrano configuration. There's a couple more pieces that we will address as they come up.</p>
+<p>There's two more thing to do before we can deploy the application to the server: we'll need to install the development headers for whatever database system we're using and we'll need to install a JavaScript runtime.</p>
+<h2 id="database-setup">Database setup</h2>
 <p>Install one of the following packages as the <code>root</code> user on that machine:</p>
-
 <ul>
-<li>By default, a Rails application uses SQLite3. To install SQLite3&#39;s development headers, run this command:</li>
+<li>By default, a Rails application uses SQLite3. To install SQLite3's development headers, run this command:</li>
 </ul>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get install libsqlite3-dev
-</code></pre></div>
+<pre><code>apt-get install libsqlite3-dev
+</code></pre>
 <ul>
-<li>If you&#39;re using MySQL, run:</li>
+<li>If you're using MySQL, run:</li>
 </ul>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get install libmysqlclient-dev
-</code></pre></div>
+<pre><code>apt-get install libmysqlclient-dev
+</code></pre>
 <ul>
-<li>If you&#39;re using PostgreSQL, run:</li>
+<li>If you're using PostgreSQL, run:</li>
 </ul>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get install libpq-dev
-</code></pre></div>
-<p>If you&#39;re using MySQL or PostgreSQL, you&#39;ll need to install their servers.</p>
-
+<pre><code>apt-get install libpq-dev
+</code></pre>
+<p>If you're using MySQL or PostgreSQL, you'll need to install their servers.</p>
 <ul>
 <li>For MySQL, the package to install is <code>mysql-server</code>.</li>
 <li>For PostgreSQL, the package to install is <code>postgresql-9.3</code></li>
 </ul>
-
-<h2>JavaScript runtime</h2>
-
+<h2 id="javascript-runtime">JavaScript runtime</h2>
 <p>My preferred JavaScript runtime is the <code>nodejs</code> package. You can install it with <code>apt-get install nodejs</code>. This package will be used by the server to during <code>rake assets:precompile</code> to precompile the JavaScript assets.</p>
-
-<h2>Deploying the first version</h2>
-
+<h2 id="deploying-the-first-version">Deploying the first version</h2>
 <p>We can now run <code>bundle exec cap production deploy</code> to deploy our application to our server. The first deploy might be a bit slow while all the gem dependencies are installed on the server. Patience is required for this step.</p>
-
-<p>When it&#39;s complete, the final line should look like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">INFO [9fa64154] Finished in 0.194 seconds with exit status 0 (successful).
-</code></pre></div>
+<p>When it's complete, the final line should look like this:</p>
+<pre><code>INFO [9fa64154] Finished in 0.194 seconds with exit status 0 (successful).
+</code></pre>
 <p>Capistrano has set up your application directory and it has deployed it to a directory at <code>/home/rails_app/app/releases/&lt;timestamp&gt;</code>. This directory is unique to this release so that you may choose to rollback (with <code>bundle exec cap production rollback</code>) if something goes wrong.</p>
-
 <p>Capistrano started out by cloning your application into the directory it created. It then:</p>
-
 <ul>
-<li>Ran <code>bundle install</code> to install your application&#39;s gem dependencies.</li>
-<li>Ran <code>rake assets:precompile</code> to precompile your application&#39;s assets.</li>
+<li>Ran <code>bundle install</code> to install your application's gem dependencies.</li>
+<li>Ran <code>rake assets:precompile</code> to precompile your application's assets.</li>
 <li>Ran <code>rake db:migrate</code> to migrate the production database for the application up to the latest version.</li>
 </ul>
-
 <p>The next step Capistrano will do is symlink the release directory to <code>/home/rails_app/app/current</code>. This is so that we have a sensible name with which to access the current release of our application.</p>
-
 <p>At the end of all of that, it will also check the number of releases in the application directory. If there are more than 5, it will delete the oldest ones and keep only the 5 most recent. Again: these are kept around so that you may choose to rollback if something goes wrong.</p>
-
-<p>With the application deployed, let&#39;s get it to serve our first production request by installing nginx + Passenger and then configuring them.</p>
-
-<h2>Installing nginx + Passenger</h2>
-
-<p>We can install a standalone edition of nginx using the Passenger installer, which massively simplifies what we&#39;re about to do. Without it, we would need to install nginx and Passenger, then we would need to configure these to work with each other.</p>
-
-<p>Before we can install that, we&#39;ll need to install one more package:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">apt-get install libcurl4-openssl-dev
-</code></pre></div>
+<p>With the application deployed, let's get it to serve our first production request by installing nginx + Passenger and then configuring them.</p>
+<h2 id="installing-nginx--passenger">Installing nginx + Passenger</h2>
+<p>We can install a standalone edition of nginx using the Passenger installer, which massively simplifies what we're about to do. Without it, we would need to install nginx and Passenger, then we would need to configure these to work with each other.</p>
+<p>Before we can install that, we'll need to install one more package:</p>
+<pre><code>apt-get install libcurl4-openssl-dev
+</code></pre>
 <p>This installs Curl development headers with SSL support, which Passenger uses during the installation process.</p>
-
 <p>To install Passenger, we will run <code>gem install passenger</code>, as root.</p>
-
-<p>Next, we&#39;ll need to install Passenger and nginx, which we will do by running <code>passenger-install-nginx-module</code> and following the steps. We want to select Ruby when it prompts us for which languages we&#39;re interested in, of course. When it asks if we want Passenger to download + install nginx for us, we&#39;ll select the first option; &quot;Yes: download, compile and install Nginx for me.&quot;</p>
-
-<p>This is another part where we&#39;ll need to wait a bit while Passenger compiles all the things it needs. Once it&#39;s done, it will tell us to put this configuration in our nginx config:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">server {
+<p>Next, we'll need to install Passenger and nginx, which we will do by running <code>passenger-install-nginx-module</code> and following the steps. We want to select Ruby when it prompts us for which languages we're interested in, of course. When it asks if we want Passenger to download + install nginx for us, we'll select the first option; &quot;Yes: download, compile and install Nginx for me.&quot;</p>
+<p>This is another part where we'll need to wait a bit while Passenger compiles all the things it needs. Once it's done, it will tell us to put this configuration in our nginx config:</p>
+<pre><code>server {
    listen 80;
    server_name www.yourhost.com;
    root /somewhere/public;   # &lt;--- be sure to point to 'public'!
    passenger_enabled on;
 }
-</code></pre></div>
+</code></pre>
 <p>The <code>listen</code> directive tells nginx to listen for connections on port 80. The <code>server_name</code> directive is the address of your server, and you should change this from <code>www.yourhost.com</code> to whatever your server is. The <code>root</code> directive tells nginx where to find the application. The <code>passenger_enabled</code> directive should be very obvious.</p>
-
 <p>Open <code>/opt/nginx/conf/nginx.conf</code> and delete the <code>server</code> block inside the <code>http</code> block, and replace it with the above example. Update the values in the example to be specific to your application.</p>
-
 <p>You can start nginx by running:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">/opt/nginx/sbin/nginx
-</code></pre></div>
-<p>If we try to access our application now, we&#39;ll see a &quot;Incomplete response received from application&quot; error. In order to diagnose one of these, we can look in <code>/opt/nginx/logs/error.log</code>, which will tell us what caused that:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">*** Exception RuntimeError in Rack application object (Missing `secret_token` and `secret_key_base` for 'production' environment, set these values in `config/secrets.yml`) (process 5076, thread 0x007fd841f79d58(Worker 1)):
-</code></pre></div>
-<p>It&#39;s telling us that we&#39;re missing the <code>secret_token</code> and <code>secret_key_base</code> for the production environment in <code>config/secrets.yml</code>. If we look at our application&#39;s <code>config/secrets.yml</code>, we&#39;ll see indeed that this is missing:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">development:
+<pre><code>/opt/nginx/sbin/nginx
+</code></pre>
+<p>If we try to access our application now, we'll see a &quot;Incomplete response received from application&quot; error. In order to diagnose one of these, we can look in <code>/opt/nginx/logs/error.log</code>, which will tell us what caused that:</p>
+<pre><code>*** Exception RuntimeError in Rack application object (Missing `secret_token` and `secret_key_base` for 'production' environment, set these values in `config/secrets.yml`) (process 5076, thread 0x007fd841f79d58(Worker 1)):
+</code></pre>
+<p>It's telling us that we're missing the <code>secret_token</code> and <code>secret_key_base</code> for the production environment in <code>config/secrets.yml</code>. If we look at our application's <code>config/secrets.yml</code>, we'll see indeed that this is missing:</p>
+<pre><code>development:
   secret_key_base: [redacted]
 
 test:
@@ -277,77 +223,60 @@ test:
 # Do not keep production secrets in the repository,
 # instead read values from the environment.
 production:
-  secret_key_base: &lt;%= ENV["SECRET_KEY_BASE"] %&gt;
-</code></pre></div>
-<p>While the comment above the production key (and the code itself!) says to read it from the environment, I personally think it&#39;s easier to have a <code>config/secrets.yml</code> with the secret key kept on the server itself, and then have that copied over on each deploy.</p>
-
-<h2>Generating a secret key</h2>
-
-<p>To that end, we will put a <code>config/secrets.yml</code> in the <code>/home/rails_app/app/shared</code> directory and tell Capistrano to copy that file over during deployment. We&#39;re creating the file in the <code>shared</code> directory because it&#39;s going to be a file that is shared across all releases of our application.</p>
-
+  secret_key_base: &lt;%= ENV[&quot;SECRET_KEY_BASE&quot;] %&gt;
+</code></pre>
+<p>While the comment above the production key (and the code itself!) says to read it from the environment, I personally think it's easier to have a <code>config/secrets.yml</code> with the secret key kept on the server itself, and then have that copied over on each deploy.</p>
+<h2 id="generating-a-secret-key">Generating a secret key</h2>
+<p>To that end, we will put a <code>config/secrets.yml</code> in the <code>/home/rails_app/app/shared</code> directory and tell Capistrano to copy that file over during deployment. We're creating the file in the <code>shared</code> directory because it's going to be a file that is shared across all releases of our application.</p>
 <p>To generate the <code>secret_key_base</code> value for the production key inside the new <code>config/secrets.yml</code> file, we will run <code>rake secret</code> inside our application. This will give you a very long key, such as:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">eaccffd1c5d594d4bf8307cac62cddb0870cdfa795bf2257ca173bedabc389a399b066e3b48cc0544604a4a77da38b9af4b46448fdad2efac9b668a18ad47ddf
-</code></pre></div>
-<p><strong>Don&#39;t use this one, because it is not secret! Generate one yourself.</strong></p>
-
-<p>When you&#39;ve generated it, log into the server as <code>rails_app</code> and create a new file at <code>/home/rails_app/app/shared/config/secrets.yml</code> with this content:</p>
-<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="s">production</span><span class="pi">:</span>
-  <span class="s">secret_key_base</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&lt;key</span><span class="nv"> </span><span class="s">generated</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">rake</span><span class="nv"> </span><span class="s">secret&gt;"</span>
-</code></pre></div>
-<p>Next, we&#39;ll need to uncomment the line in <code>config/deploy.rb</code> for the <code>linked_files</code> option. </p>
-<div class="highlight"><pre><code class="language-" data-lang="">set :linked_files, fetch(:linked_files, []).push('config/secrets.yml')
-</code></pre></div>
-<p>We&#39;ve taken out <code>config/database.yml</code> for the time being just so we can confirm that we&#39;re passed this <code>secrets.yml</code> issue. After we&#39;ve dealt with that, we&#39;ll come back and look at creating a shared <code>database.yml</code>.</p>
-
-<p>Let&#39;s run another deploy now with <code>bundle exec cap production deploy</code>. This deploy should fix our <code>secrets.yml</code> problem. Making a request to the application might work now if you&#39;re using SQLite3. If not, then you&#39;ll need to wait until the next section is over before that will all work.</p>
-
-<h2>Database configuration</h2>
-
-<p>If you&#39;re not using SQLite3 in production, then you&#39;ll need to setup a database for your application. This guide will only configure PostgreSQL, since that is what I personally am most familiar with.</p>
-
+<pre><code>eaccffd1c5d594d4bf8307cac62cddb0870cdfa795bf2257ca173bedabc389a399b066e3b48cc0544604a4a77da38b9af4b46448fdad2efac9b668a18ad47ddf
+</code></pre>
+<p><strong>Don't use this one, because it is not secret! Generate one yourself.</strong></p>
+<p>When you've generated it, log into the server as <code>rails_app</code> and create a new file at <code>/home/rails_app/app/shared/config/secrets.yml</code> with this content:</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">production</span><span class="pi">:</span>
+  <span class="na">secret_key_base</span><span class="pi">:</span> <span class="s2">"</span><span class="s">&lt;key</span><span class="nv"> </span><span class="s">generated</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">rake</span><span class="nv"> </span><span class="s">secret&gt;"</span>
+</code></pre></div></div>
+<p>Next, we'll need to uncomment the line in <code>config/deploy.rb</code> for the <code>linked_files</code> option.</p>
+<pre><code>set :linked_files, fetch(:linked_files, []).push('config/secrets.yml')
+</code></pre>
+<p>We've taken out <code>config/database.yml</code> for the time being just so we can confirm that we're passed this <code>secrets.yml</code> issue. After we've dealt with that, we'll come back and look at creating a shared <code>database.yml</code>.</p>
+<p>Let's run another deploy now with <code>bundle exec cap production deploy</code>. This deploy should fix our <code>secrets.yml</code> problem. Making a request to the application might work now if you're using SQLite3. If not, then you'll need to wait until the next section is over before that will all work.</p>
+<h2 id="database-configuration">Database configuration</h2>
+<p>If you're not using SQLite3 in production, then you'll need to setup a database for your application. This guide will only configure PostgreSQL, since that is what I personally am most familiar with.</p>
 <p>The first thing that you will need to do is to create a database + user in PostgreSQL for this user. To do that, run these commands:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">sudo su postgres
+<pre><code>sudo su postgres
 createdb rails_app
 createuser rails_app
-</code></pre></div>
+</code></pre>
 <blockquote>
 <p>While the database name can be different to the username, the username that we use for PostgreSQL must be the same as the user that you use to SSH onto the server to deploy the application. When the application tries connecting to the database, it will do it using the same name as the user that the application runs under; which has been <code>rails_app</code> in this guide.</p>
 </blockquote>
-
-<p>We switch to the <code>postgres</code> user as it has superuser rights on our database which means it can execute the <code>createdb</code> and <code>createuser</code> commands. The <code>root</code> user of the machine cannot run these commands itself. You&#39;ll need to switch back from the postgres user back to root, which you can do by running <code>exit</code>.</p>
-
-<p>Once we&#39;ve run those commands, we can test to see if it&#39;s working by running <code>psql</code> as the <code>rails_app</code> user. If it is working, then we will see a <code>psql</code> console like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">psql (9.3.9)
-Type "help" for help.
+<p>We switch to the <code>postgres</code> user as it has superuser rights on our database which means it can execute the <code>createdb</code> and <code>createuser</code> commands. The <code>root</code> user of the machine cannot run these commands itself. You'll need to switch back from the postgres user back to root, which you can do by running <code>exit</code>.</p>
+<p>Once we've run those commands, we can test to see if it's working by running <code>psql</code> as the <code>rails_app</code> user. If it is working, then we will see a <code>psql</code> console like this:</p>
+<pre><code>psql (9.3.9)
+Type &quot;help&quot; for help.
 
 rails_app=&gt;
-</code></pre></div>
+</code></pre>
 <p>Great! Now we can setup the database configuration for the application. The first step is to change the database engine that the application uses in its <code>Gemfile</code> from <code>sqlite3</code> to the PostgreSQL gem, <code>pg</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'pg'</span>
-</code></pre></div>
-<p>Next, we will need to run <code>bundle install</code> to update our application&#39;s dependencies. We will need to ensure that we change our local <code>config/database.yml</code> to use PostgreSQL as well. You&#39;ll want to be using the same database software locally and on the server, as that means that you have identical environments across the different machines.</p>
-
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'pg'</span>
+</code></pre></div></div>
+<p>Next, we will need to run <code>bundle install</code> to update our application's dependencies. We will need to ensure that we change our local <code>config/database.yml</code> to use PostgreSQL as well. You'll want to be using the same database software locally and on the server, as that means that you have identical environments across the different machines.</p>
 <p>The next step is to put a <code>config/database.yml</code> in the <code>/home/rails_app/app/shared</code> directory which only contains a <code>production</code> key:</p>
-<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="s">production</span><span class="pi">:</span>
-  <span class="s">adapter</span><span class="pi">:</span> <span class="s">postgresql</span>
-  <span class="s">database</span><span class="pi">:</span> <span class="s">rails_app</span>
-</code></pre></div>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">production</span><span class="pi">:</span>
+  <span class="na">adapter</span><span class="pi">:</span> <span class="s">postgresql</span>
+  <span class="na">database</span><span class="pi">:</span> <span class="s">rails_app</span>
+</code></pre></div></div>
 <p>We can copy this file over on deploy by updating <code>config/deploy.rb</code> and changing the <code>linked_files</code> line to this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">set</span> <span class="ss">:linked_files</span><span class="p">,</span> <span class="n">fetch</span><span class="p">(</span><span class="ss">:linked_files</span><span class="p">,</span> <span class="p">[]).</span><span class="nf">push</span><span class="p">(</span><span class="s1">'config/database.yml'</span><span class="p">,</span> <span class="s1">'config/secrets.yml'</span><span class="p">)</span>
-</code></pre></div>
-<p><strong>We&#39;ll need to commit the changes to the <code>Gemfile</code> + <code>Gemfile.lock</code> before continuing here.</strong></p>
-
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">set</span> <span class="ss">:linked_files</span><span class="p">,</span> <span class="n">fetch</span><span class="p">(</span><span class="ss">:linked_files</span><span class="p">,</span> <span class="p">[]).</span><span class="nf">push</span><span class="p">(</span><span class="s1">'config/database.yml'</span><span class="p">,</span> <span class="s1">'config/secrets.yml'</span><span class="p">)</span>
+</code></pre></div></div>
+<p><strong>We'll need to commit the changes to the <code>Gemfile</code> + <code>Gemfile.lock</code> before continuing here.</strong></p>
 <p>The application will now work after one more run of <code>bundle exec cap production deploy</code>. Try it out yourself by visiting your app.</p>
-
 <p>Your app should now be deployed to your server. Go ahead and try it out.</p>
-
-<h2>Conclusion</h2>
-
-<p>Your application is now deployed, but the fun doesn&#39;t stop here. You may need to tweak the <code>PassengerMaxInstances</code> configuration setting inside the <code>VirtualHost</code> block for your application to increase or decrease the amount of instances running on the machine, depending on how much free RAM you have. If you&#39;re running out of RAM, decrease this number. It entirely depends on the application, so just experiment to find out what value suits you.</p>
-
+<h2 id="conclusion">Conclusion</h2>
+<p>Your application is now deployed, but the fun doesn't stop here. You may need to tweak the <code>PassengerMaxInstances</code> configuration setting inside the <code>VirtualHost</code> block for your application to increase or decrease the amount of instances running on the machine, depending on how much free RAM you have. If you're running out of RAM, decrease this number. It entirely depends on the application, so just experiment to find out what value suits you.</p>
 <p>The entire <a href="https://www.phusionpassenger.com/documentation/Users%20guide%20Apache.html">Passenger Users Guide</a> is a good read for other bits of tweaking too.</p>
-
-<p>You may wish to setup exception tracking for your application now that it has been deployed to production, and for that I recommend <a href="https://rollbar.com">Rollbar</a>. It&#39;s very easy to setup for any Rails application and they have instructions on how to do that on their site.</p>
+<p>You may wish to setup exception tracking for your application now that it has been deployed to production, and for that I recommend <a href="https://rollbar.com">Rollbar</a>. It's very easy to setup for any Rails application and they have instructions on how to do that on their site.</p>
 
           </article>
         </div>

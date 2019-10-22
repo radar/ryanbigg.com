@@ -35,16 +35,15 @@
               <small>22 Feb 2016</small>
             </div>
             <p>In pre-2.0 versions of elasticsearch, you may have been truncating indexes using <code>delete_by_query</code>. This has been moved in Elasticsearch 2.0 out to a plugin, which can be installed with:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">bin/plugin install delete-by-query
-</code></pre></div>
+<pre><code>bin/plugin install delete-by-query
+</code></pre>
 <p>Where <code>bin/plugin</code> is located wherever you installed Elasticsearch. On my Mac,
 that path is <code>/usr/local/Cellar/elasticsearch/2.2.0_1/libexec</code> because I
-installed Elasticsearch with Homebrew. If you&#39;re on Ubuntu and you installed
-it from Elasticsearch&#39;s own package repo, it will be at
+installed Elasticsearch with Homebrew. If you're on Ubuntu and you installed
+it from Elasticsearch's own package repo, it will be at
 <code>/usr/share/elasticsearch</code>.</p>
-
-<p>I&#39;m using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I&#39;m using to truncate the indexes:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">Index</span>
+<p>I'm using the Elasticsearch Ruby gem to interact with my Elasticsearch instance, and this is the code I'm using to truncate the indexes:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Index</span>
   <span class="k">class</span> <span class="nc">Indexers</span>
     <span class="k">def</span> <span class="nf">truncate_indexes</span>
       <span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="o">::</span><span class="no">Client</span><span class="p">.</span><span class="nf">new</span>
@@ -53,14 +52,14 @@ it from Elasticsearch&#39;s own package repo, it will be at
     <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This method is called after each spec has finished running. The <code>index_names</code>
 is just a list of indexes that the <code>Index::Indexers</code> class knows about. The
 <code>delete_by_query</code> functionality is available here from the <code>delete-by-query</code>
 plugin that was installed. The <code>indices.flush</code> call is necessary because the
 next query may return data that the <code>delete_by_query</code> request was supposed to
 delete. The <code>flush</code> call clears the transaction log and memory and writes data
-to disk, ensuring that the next query won&#39;t return data that was deleted.</p>
+to disk, ensuring that the next query won't return data that was deleted.</p>
 
           </article>
         </div>

@@ -35,40 +35,28 @@
               <small>05 Mar 2019</small>
             </div>
             <p>Last week I gave a talk at Melbourne Ruby involving some card tricks and Ruby trickery.</p>
-
 <p>The talk is up on Youtube:</p>
-
 <iframe width="560" height="315" src="https://www.youtube.com/embed/lSiD3LZanPI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-<p>I do some card tricks for about 10 minutes, and then some Ruby tricks. I won&#39;t reveal how I did the card tricks in this blog post, but I will reveal how I did the Ruby tricks.</p>
-
+<p>I do some card tricks for about 10 minutes, and then some Ruby tricks. I won't reveal how I did the card tricks in this blog post, but I will reveal how I did the Ruby tricks.</p>
 <p>The Ruby trickery starts at about the 9m30s mark in that video. You can see the code for most of these tricks at <a href="https://github.com/radar/trickery">radar/trickery on GitHub</a>.</p>
-
-<p>In this post, I&#39;ll cover all the tricks I had planned for the talk, not just the ones I showed off.</p>
-
-<p><strong>Please, do not use any code in this blog post in production systems. It can case weird behaviour. Especially the one involving JavaScript sorting.</strong></p>
-
+<p>In this post, I'll cover all the tricks I had planned for the talk, not just the ones I showed off.</p>
+<p><strong>Please, do not use any code in this blog post in production systems. It can cause weird behaviour. Especially the one involving JavaScript sorting.</strong></p>
 <p>The point of this post is to show the things Ruby is capable of.</p>
-
-<h2>Numbers</h2>
-
-<h3>Addition</h3>
-
+<h2 id="numbers">Numbers</h2>
+<h3 id="addition">Addition</h3>
 <p>My first trick was to override addition, which I did with this code:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Integer</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Integer</span>
   <span class="kp">alias_method</span> <span class="ss">:old_plus</span><span class="p">,</span> <span class="p">:</span><span class="o">+</span>
 
   <span class="c1"># 2 + 2 = 6</span>
   <span class="k">def</span> <span class="nf">+</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
     <span class="n">old_plus</span><span class="p">(</span><span class="n">old_plus</span><span class="p">(</span><span class="n">num</span><span class="p">))</span>
   <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This allowed me to call <code>2 + 2</code> and get a result of <code>6</code>. It runs two plus operations, effectively doubling the number on the left before adding the number on the right. This is why <code>2 + 5 = 9</code> and <code>3 + 7 = 13</code>. By aliasing the original <code>+</code> method using <code>old_plus</code>, we can override the <code>+</code> method, but still use the old one.</p>
-
-<h3>Multiplication</h3>
-
+<h3 id="multiplication">Multiplication</h3>
 <p>The next trick applies to multiplication, but is a little more advanced:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Integer</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Integer</span>
   <span class="kp">alias_method</span> <span class="ss">:old_multiply</span><span class="p">,</span> <span class="p">:</span><span class="o">*</span>
 
   <span class="k">def</span> <span class="nf">*</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
@@ -76,67 +64,57 @@
     <span class="n">m</span><span class="p">.</span><span class="nf">bind</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">num</span> <span class="o">/</span> <span class="nb">self</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This code calls <code>method(:old_multiply)</code>, but <code>unbind</code>s it from <code>self</code>. I can then rebind this method to anything else with the <code>bind</code> method, before calling it again. This re-binding makes the number <code>3</code> always the <code>self</code> within the <code>old_multiply</code> method, regardless of what is passed through on the left. However, the <code>self</code> reference inside this override will still be the left-hand-side number.</p>
-
 <p>Some examples:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">3 * 3 == 3
-6 * 3 == 0
-99 * 999 == 30
-</code></pre></div>
-<h3>Unary minus</h3>
-
-<p>The unary methods are often ignored within Ruby, despite having their uses. There&#39;s <a href="http://www.rubyinside.com/rubys-unary-operators-and-how-to-redefine-their-functionality-5610.html">a good Ruby Inside article about unary methods</a>. You should read it.</p>
-
-<p>The TL;DR is that unary methods work as prefixed method calls on particular objects within Ruby. I&#39;ll show you what I mean. But let&#39;s look at the override first:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">-@</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="mi">3</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="mi">6</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="mi">99</span> <span class="o">*</span> <span class="mi">999</span> <span class="o">==</span> <span class="mi">30</span>
+</code></pre></div></div>
+<h3 id="unary-minus">Unary minus</h3>
+<p>The unary methods are often ignored within Ruby, despite having their uses. There's <a href="http://www.rubyinside.com/rubys-unary-operators-and-how-to-redefine-their-functionality-5610.html">a good Ruby Inside article about unary methods</a>. You should read it.</p>
+<p>The TL;DR is that unary methods work as prefixed method calls on particular objects within Ruby. I'll show you what I mean. But let's look at the override first:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">-@</span>
   <span class="o">+</span><span class="nb">self</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>This is pretty straight forward. When we&#39;re told to minus something, make it a positive instead.</p>
-
-<p>What&#39;s interesting here is that it won&#39;t work on negative numbers straight off the bat:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt;&gt; -5
-=&gt; -5
-</code></pre></div>
-<p>This is because negative numbers are... well, they&#39;re negative numbers. The minus symbol there isn&#39;t a unary method call.</p>
-
+</code></pre></div></div>
+<p>This is pretty straight forward. When we're told to minus something, make it a positive instead.</p>
+<p>What's interesting here is that it won't work on negative numbers straight off the bat:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">-</span><span class="mi">5</span>
+<span class="o">=&gt;</span> <span class="o">-</span><span class="mi">5</span>
+</code></pre></div></div>
+<p>This is because negative numbers are... well, they're negative numbers. The minus symbol there isn't a unary method call.</p>
 <p>But things change if you assign a variable:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt;&gt; a = 5
-=&gt; 5
-&gt;&gt; -a
-=&gt; 5
-</code></pre></div>
-<p>The number remains positive, even though it should&#39;ve been negated. This is because this code is calling the <code>-@</code> unary method.</p>
-
-<p>What&#39;s fun with this is that you can keep chaining negative signs, positive signs or a combination of both:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt;&gt; --------a
-=&gt; 5
-&gt;&gt; ++++++++a
-=&gt; 5
-&gt;&gt; +-+-+a
-=&gt; 5
-</code></pre></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="o">=&gt;</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;</span> <span class="o">-</span><span class="n">a</span>
+<span class="o">=&gt;</span> <span class="mi">5</span>
+</code></pre></div></div>
+<p>The number remains positive, even though it should've been negated. This is because this code is calling the <code>-@</code> unary method.</p>
+<p>What's fun with this is that you can keep chaining negative signs, positive signs or a combination of both:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">--------</span><span class="n">a</span>
+<span class="o">=&gt;</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;</span> <span class="o">++++++++</span><span class="n">a</span>
+<span class="o">=&gt;</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;</span> <span class="o">+-+-+</span><span class="n">a</span>
+<span class="o">=&gt;</span> <span class="mi">5</span>
+</code></pre></div></div>
 <p>All of these examples either call <code>-@</code>, <code>+@</code> or a combination of both multiple times.</p>
-
-<h2>Arrays</h2>
-
-<h3>Sorting, the JavaScript (aka &quot;right&quot;) way</h3>
-
+<h2 id="arrays">Arrays</h2>
+<h3 id="sorting-the-javascript-aka-quotrightquot-way">Sorting, the JavaScript (aka &quot;right&quot;) way</h3>
 <p>JavaScript sorting is a well-known case of... well, weird behaviour. For example, this code:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">].</span><span class="nx">sort</span><span class="p">()</span>
-</code></pre></div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">].</span><span class="nx">sort</span><span class="p">()</span>
+</code></pre></div></div>
 <p>Should maintain the same order of the numbers, increasing left-to-right. Instead, the output is this:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-</code></pre></div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</code></pre></div></div>
 <p>This &quot;weird behaviour&quot; happens because JavaScript sorts objects based on their string versions. The string &quot;-1&quot; comes before &quot;-2&quot;, but &quot;-2&quot; comes before &quot;0&quot;, and so on. This  <a href="https://www.ecma-international.org/ecma-262/5.1/#sec-15.4.4.11">is specified in the EcmaScript specification (5.1), Section 15.4.4.11</a>, but you need a PhD or higher qualificatio (read: galaxy brain) to understand exactly what it is saying.</p>
-
 <p>How does this relate to Ruby? Well, first of all Ruby does the sorting order correctly:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">].</span><span class="nf">sort</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">].</span><span class="nf">sort</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>But if we wanted to bring JavaScript style sorting to Ruby, then we can use this code:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">module</span> <span class="nn">JSSort</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">JSSort</span>
   <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
     <span class="n">base</span><span class="p">.</span><span class="nf">alias_method</span> <span class="ss">:old_sort</span><span class="p">,</span> <span class="ss">:sort</span>
   <span class="k">end</span>
@@ -147,94 +125,86 @@
 <span class="k">end</span>
 
 <span class="no">Array</span><span class="p">.</span><span class="nf">include</span><span class="p">(</span><span class="no">JSSort</span><span class="p">)</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This converts each element to a string via <code>map</code>, then sorts them using the old sorting behaviour (the default Ruby way), before converting them all back to integers.</p>
-
-<p>We&#39;re not guaranteed to have arrays of integers at all times, so we might want to put a guard around that to check at least the first element is a number:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">sort</span>
+<p>We're not guaranteed to have arrays of integers at all times, so we might want to put a guard around that to check at least the first element is a number:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">sort</span>
   <span class="k">if</span> <span class="n">first</span><span class="p">.</span><span class="nf">is_a?</span><span class="p">(</span><span class="no">Numeric</span><span class="p">)</span>
     <span class="nb">self</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:to_s</span><span class="p">).</span><span class="nf">old_sort</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:to_i</span><span class="p">)</span>
   <span class="k">else</span>
     <span class="nb">self</span><span class="p">.</span><span class="nf">old_sort</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>This doesn&#39;t prevent against arrays that contain a mix of datatypes (numbers and strings), but only really nefarious people create those, and there aren&#39;t many of those in the Ruby community so I think we can be safe here.</p>
-
+</code></pre></div></div>
+<p>This doesn't prevent against arrays that contain a mix of datatypes (numbers and strings), but only really nefarious people create those, and there aren't many of those in the Ruby community so I think we can be safe here.</p>
 <p>This code will now make Ruby sort &quot;correctly&quot; -- at least according to JavaScript:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt;&gt; [-2, -1, 0, 1, 2].sort
-=&gt; [-1, -2, 0, 1, 2]
-</code></pre></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">].</span><span class="nf">sort</span>
+<span class="o">=&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</code></pre></div></div>
 <p>If we include this module into <code>Range</code>, we can get the same delicious behaviour:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Range</span><span class="p">.</span><span class="nf">include</span><span class="p">(</span><span class="no">JSSort</span><span class="p">)</span>
-</code></pre></div>
-<p>Let&#39;s try it:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt;&gt; (-2..2).sort
-=&gt; [-1, -2, 0, 1, 2]
-</code></pre></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Range</span><span class="p">.</span><span class="nf">include</span><span class="p">(</span><span class="no">JSSort</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Let's try it:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">..</span><span class="mi">2</span><span class="p">).</span><span class="nf">sort</span>
+<span class="o">=&gt;</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</code></pre></div></div>
 <p>Now we can make Ruby sort the same way as JavaScript.</p>
-
-<h3>Double Equality</h3>
-
+<h3 id="double-equality">Double Equality</h3>
 <p>A little known fact is that the <code>==</code> in code like <code>[1,2,3] == [1,2,3]</code> is actually a method call. This code calls <code>Array#==</code>, and we can override this method too.</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Array</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Array</span>
   <span class="kp">alias_method</span> <span class="ss">:old_double_equals</span><span class="p">,</span> <span class="ss">:==</span>
 
   <span class="k">def</span> <span class="nf">==</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
     <span class="nb">method</span><span class="p">(</span><span class="ss">:old_double_equals</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="p">?</span> <span class="s2">"yes"</span> <span class="p">:</span> <span class="s2">"no"</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>Rather than getting the plain (and boring) <code>true</code> or <code>false</code> when we compare arrays, we will now get &quot;yes&quot; or &quot;no&quot;.</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="s2">"yes"</span>
 <span class="o">&gt;&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="s2">"no"</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>You can make this method a little more fun by first checking the length and then determining what to do on that:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">other.length &gt; 3 ? "maybe" : (method(:old_double_equals).(other) ? "yes" : "no")
-</code></pre></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">other</span><span class="p">.</span><span class="nf">length</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="p">?</span> <span class="s2">"maybe"</span> <span class="p">:</span> <span class="p">(</span><span class="nb">method</span><span class="p">(</span><span class="ss">:old_double_equals</span><span class="p">)</span><span class="o">.</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="p">?</span> <span class="s2">"yes"</span> <span class="p">:</span> <span class="s2">"no"</span><span class="p">)</span>
+</code></pre></div></div>
 <p>This way then, you get &quot;maybe&quot; if you try to compare against an array of more than 3 elements:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="s2">"maybe"</span>
-</code></pre></div>
-<h3>Triple Equality</h3>
-
-<p>Similarly to <code>==</code>, <code>===</code> is also a method call. When we&#39;re making this call we want to be <em>really</em> sure that the things are equal. Getting back <code>false</code> would be disappointing, so we can override this method to always return <code>true</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">class Array
-  def ===(_)
-    true
-  end
-end
-</code></pre></div>
-<h3>Not Equal</h3>
-
+</code></pre></div></div>
+<h3 id="triple-equality">Triple Equality</h3>
+<p>Similarly to <code>==</code>, <code>===</code> is also a method call. When we're making this call we want to be <em>really</em> sure that the things are equal. Getting back <code>false</code> would be disappointing, so we can override this method to always return <code>true</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Array</span>
+  <span class="k">def</span> <span class="nf">===</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+    <span class="kp">true</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<h3 id="not-equal">Not Equal</h3>
 <p>Just like its siblings <code>==</code> and <code>===</code>, <code>!=</code> is also a method call. We can override this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">class Array
-  def !=(_)
-    "can't say, tbqh"
-  end
-end
-</code></pre></div>
-<p>We can&#39;t say, to be quite honest.</p>
-
-<h3>Unary Minus (again)</h3>
-
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Array</span>
+  <span class="k">def</span> <span class="o">!=</span><span class="p">(</span><span class="n">_</span><span class="p">)</span>
+    <span class="s2">"can't say, tbqh"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>We can't say, to be quite honest.</p>
+<h3 id="unary-minus-again">Unary Minus (again)</h3>
 <p>We saw an example of unary minus working on a variable, but unary methods can be called before data types in Ruby too. Strings are one case where we can freeze a string by prefixing it with <code>-</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="s2">"string"</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="s2">"string"</span>
 <span class="o">=&gt;</span> <span class="s2">"string"</span>
 <span class="o">&gt;&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">frozen?</span>
 <span class="o">=&gt;</span> <span class="kp">true</span>
-</code></pre></div>
-<p>But arrays are another case. Arrays in Ruby don&#39;t have a unary minus method defined by default, but that doesn&#39;t stop us defining our own:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Array</span>
+</code></pre></div></div>
+<p>But arrays are another case. Arrays in Ruby don't have a unary minus method defined by default, but that doesn't stop us defining our own:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Array</span>
   <span class="k">def</span> <span class="nf">-@</span>
     <span class="n">clear</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>What this code allows us to do is to clear an array by prefixing it with <code>-</code>. It&#39;ll work for the array itself, or a variable representing the array too:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="o">-</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+</code></pre></div></div>
+<p>What this code allows us to do is to clear an array by prefixing it with <code>-</code>. It'll work for the array itself, or a variable representing the array too:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">-</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="p">[]</span>
 <span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
@@ -242,110 +212,87 @@ end
 <span class="o">=&gt;</span> <span class="p">[]</span>
 <span class="o">&gt;&gt;</span> <span class="n">a</span>
 <span class="o">=&gt;</span> <span class="p">[]</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This saves us a full 5 characters of typing that we would otherwise have to do:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">clear</span>
-</code></pre></div>
-<h3>Unary Plus</h3>
-
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">clear</span>
+</code></pre></div></div>
+<h3 id="unary-plus">Unary Plus</h3>
 <p>Just like <code>-@</code>, we can add a <code>+@</code> method to arrays:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">+@</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">+@</span>
   <span class="n">replace</span> <span class="n">flat_map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span> <span class="p">}</span>
   <span class="nb">self</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>The Japanese &quot;十&quot; character is the one for 10, so it makes sorta-sense that our <code>+@</code> method takes each of the element, and makes 10 of those in the array:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">&gt;&gt;</span> <span class="o">+</span><span class="n">a</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-</code></pre></div>
-<p>This operation mutates the array using <code>replace</code>, replacing whatever&#39;s in the array with 10 of each of the elements.</p>
-
-<p>It should be noted that <code>*</code> is <a href="http://ruby-doc.org/core-2.6.1/Array.html#method-i-2A">also an Array method</a>, but this one hasn&#39;t been overriden here. I should also note that the <code>*</code> method can take <em>either</em> an Integer or a String as an argument and it behaves differently depending. Check out the docs for more info.</p>
-
-<h3>Unary Bang</h3>
-
-<p>We&#39;ve seen a few unary methods so far, but an even lesser known one is the <code>!@</code> unary method. My override for this is straightforward:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Array</span>
+</code></pre></div></div>
+<p>This operation mutates the array using <code>replace</code>, replacing whatever's in the array with 10 of each of the elements.</p>
+<p>It should be noted that <code>*</code> is <a href="http://ruby-doc.org/core-2.6.1/Array.html#method-i-2A">also an Array method</a>, but this one hasn't been overriden here. I should also note that the <code>*</code> method can take <em>either</em> an Integer or a String as an argument and it behaves differently depending. Check out the docs for more info.</p>
+<h3 id="unary-bang">Unary Bang</h3>
+<p>We've seen a few unary methods so far, but an even lesser known one is the <code>!@</code> unary method. My override for this is straightforward:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Array</span>
   <span class="k">def</span> <span class="o">!</span><span class="err">@</span>
     <span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> <span class="p">}</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This will give us random numbers in our array, between 0 and 100:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">70</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">82</span><span class="p">]</span>
-</code></pre></div>
-<h3>Unary Tilde</h3>
-
+</code></pre></div></div>
+<h3 id="unary-tilde">Unary Tilde</h3>
 <p>The last in the long line of unary methods is <code>~@</code>. This one kinda looks like a wave, so I think it should shuffle arrays:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Array</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Array</span>
   <span class="k">def</span> <span class="nf">~</span><span class="err">@</span>
     <span class="n">shuffle</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>Here&#39;s an example of using it:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="o">~</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+</code></pre></div></div>
+<p>Here's an example of using it:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">~</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This saves us a grand total of 8 characters. Wow, such savings!</p>
-
-<h3>Unary combos</h3>
-
+<h3 id="unary-combos">Unary combos</h3>
 <p>As we saw before with the unary methods <code>+@</code> and <code>-@</code>, we can chain them:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="o">--------</span><span class="n">a</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">--------</span><span class="n">a</span>
 <span class="o">=&gt;</span> <span class="mi">5</span>
 <span class="o">&gt;&gt;</span> <span class="o">++++++++</span><span class="n">a</span>
 <span class="o">=&gt;</span> <span class="mi">5</span>
 <span class="o">&gt;&gt;</span> <span class="o">+-+-+</span><span class="n">a</span>
 <span class="o">=&gt;</span> <span class="mi">5</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>Same goes for these array methods:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="o">&gt;&gt;</span> <span class="o">!+~</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">!+~</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
 <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">53</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">66</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">93</span><span class="p">,</span> <span class="mi">71</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">68</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">83</span><span class="p">,</span> <span class="mi">88</span><span class="p">,</span> <span class="mi">86</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">85</span><span class="p">,</span> <span class="mi">72</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">78</span><span class="p">,</span> <span class="mi">36</span><span class="p">]</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>Why would you want to do this? I am not sure. I think it is a quirk of the Ruby language that allows this.</p>
-
 <p>But the order matters:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">&gt;&gt; +!~[1,2,3]
-Traceback (most recent call last):
-        1: from /usr/local/opt/asdf/installs/ruby/2.5.1/bin/irb:11:in `&lt;main&gt;'
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="o">+!~</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="no">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">from</span> <span class="sr">/usr/</span><span class="n">local</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">asdf</span><span class="o">/</span><span class="n">installs</span><span class="o">/</span><span class="n">ruby</span><span class="o">/</span><span class="mf">2.5</span><span class="o">.</span><span class="mi">1</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">irb</span><span class="p">:</span><span class="mi">11</span><span class="ss">:in</span> <span class="sb">`&lt;main&gt;'
 SyntaxError ((irb):4: syntax error, unexpected !~)
 +!~[1,2,3]
  ^~
-</code></pre></div>
-<h2>Typing without typing</h2>
-
+</span></code></pre></div></div>
+<h2 id="typing-without-typing">Typing without typing</h2>
 <p>That covers all my Ruby tricks in the video (and some more!), but there were a couple of other tricks I should mention. There were two distinct tricks: one where the code typed itself, and another where a terminal displayed a card after someone spoke it.</p>
-
-<h3>Self-writing code</h3>
-
-<p>It sure would be nice if code wrote itself. But alas, technology hasn&#39;t reached that particular zenith yet.</p>
-
+<h3 id="self-writing-code">Self-writing code</h3>
+<p>It sure would be nice if code wrote itself. But alas, technology hasn't reached that particular zenith yet.</p>
 <p>We can simulate this sort of technology using <em>other</em> tech, such as <a href="https://asciinema.org/">Asciinema</a>. This will record your terminal session, and you can play it back as you wish. This is what I did when I wrote the original <code>cards.rb</code>.</p>
-
-<h3>ActiveListening</h3>
-
-<p>The <a href="https://github.com/radar/trickery/blob/master/cards.rb">second <code>cards.rb</code></a>, works with a dual keypress on the keyboard. Six of diamonds is &quot;6D&quot;. Ten of hearts is &quot;0H&quot; or &quot;TH&quot;. Jokers aren&#39;t used in any serious card games, so they are not accounted for in this script.</p>
-
+<h3 id="activelistening">ActiveListening</h3>
+<p>The <a href="https://github.com/radar/trickery/blob/master/cards.rb">second <code>cards.rb</code></a>, works with a dual keypress on the keyboard. Six of diamonds is &quot;6D&quot;. Ten of hearts is &quot;0H&quot; or &quot;TH&quot;. Jokers aren't used in any serious card games, so they are not accounted for in this script.</p>
 <p>So this code, if you read it, works by taking terminal input of two characters. But during the talk I get Kasia to read out some cards and then, a little while later, they appear on the screen.</p>
-
 <p>But how?</p>
-
-<p>This is a cheeky trick, and I needed another assitant for it. I recruited one of my juniors, Nick Wolf for this. I ran a <a href="https://en.wikipedia.org/wiki/Tmux"><code>tmux</code></a> session for all the code demos during the talk, and gave Nick <code>ssh</code> access to my machine.</p>
-
+<p>This is a cheeky trick, and I needed another assistant for it. I recruited one of my juniors, Nick Wolf for this. I ran a <a href="https://en.wikipedia.org/wiki/Tmux"><code>tmux</code></a> session for all the code demos during the talk, and gave Nick <code>ssh</code> access to my machine.</p>
 <p>Nick then connected in via <code>ssh</code>, ran <code>tmux attach-session</code> and then could control my terminal as easily as I could. When Kasia read out a card, Nick would type in the two characters required for that card.</p>
-
-<p>Magic isn&#39;t magic if you know how it works. This trick was a little cheeky, but I included it as I wanted to show off that <code>tmux</code> can allow two people to share a terminal over SSH.</p>
-
-<h2>Conclusion</h2>
-
-<p>I hope this post has been helpful to understand what strange things Ruby is capable of. There&#39;s no logical reason to override the <code>+</code> method on <code>Integer</code>, or to add extra unary methods to Arrays. It&#39;s just something that Ruby allows us to do because of the language&#39;s flexibility.</p>
-
-<p>Other people have done truly amazing things with the Ruby language. There&#39;s the <a href="https://github.com/tric/trick2018/">trick2018</a> repo which includes some really amazing Ruby files. Go through those and take a look.</p>
-
+<p>Magic isn't magic if you know how it works. This trick was a little cheeky, but I included it as I wanted to show off that <code>tmux</code> can allow two people to share a terminal over SSH.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I hope this post has been helpful to understand what strange things Ruby is capable of. There's no logical reason to override the <code>+</code> method on <code>Integer</code>, or to add extra unary methods to Arrays. It's just something that Ruby allows us to do because of the language's flexibility.</p>
+<p>Other people have done truly amazing things with the Ruby language. There's the <a href="https://github.com/tric/trick2018/">trick2018</a> repo which includes some really amazing Ruby files. Go through those and take a look.</p>
 <p>My favourite though is the <a href="https://github.com/knoxknox/qlobe">qlobe</a> -- a quine that outputs a rotating globe of the earth. It even <a href="https://www.youtube.com/watch?v=HynsTvRVLiI">remembered to include New Zealand</a>.</p>
 
           </article>

@@ -35,66 +35,58 @@
               <small>28 Sep 2008</small>
             </div>
             <p>This tutorial was written using Ruby 1.8.6, Rails 2.1.</p>
-
-<p>A lot of the time I see people asking how they can do something like access levels for their Rails applications and this usually boils down to some STI (single table inheritance) love. You&#39;ll need to have <a href="http://github.com/technoweenie/restful-authentication/tree/master">restful_authentication</a> installed.
+<p>A lot of the time I see people asking how they can do something like access levels for their Rails applications and this usually boils down to some STI (single table inheritance) love. You'll need to have <a href="http://github.com/technoweenie/restful-authentication/tree/master">restful_authentication</a> installed.</p>
 <h3>What is Single Table Inhertiance?</h3>
-Single Table Inheritance is where you have multiple models that inherit from a single table, hence the name. It&#39;s great for situations like this where we want multiple user access levels, but we don&#39;t want to create multiple tables for the different kinds of users of our application.
+Single Table Inheritance is where you have multiple models that inherit from a single table, hence the name. It's great for situations like this where we want multiple user access levels, but we don't want to create multiple tables for the different kinds of users of our application.
 <h3>Okay.. so how do I use it?</h3>
-Firstly you start off with one model that inherits from <span class="term">ActiveRecord::Base</span>, and I would advise running <span class="term">script/generate authenticated person session</span> to get this:</p>
+Firstly you start off with one model that inherits from <span class="term">ActiveRecord::Base</span>, and I would advise running <span class="term">script/generate authenticated person session</span> to get this:
+<p><strong>app/models/person.rb</strong></p>
+<pre lang="rails">class Person < ActiveRecord::Base
 
-<p><strong>app/models/person.rb</strong>
-<pre lang="rails">class Person &lt; ActiveRecord::Base</p>
+end</pre>
+<p>And then you subclass some other classes from <span class="term">Person</span>
+<strong>app/models/student.rb</strong></p>
+<pre lang="rails">class Student < Person
 
-<p>end</pre>
-And then you subclass some other classes from <span class="term">Person</span>
-<strong>app/models/student.rb</strong>
-<pre lang="rails">class Student &lt; Person</p>
+end</pre>
+<p><strong>app/models/teacher.rb</strong></p>
+<pre lang="rails">class Teacher < Person
 
-<p>end</pre>
-<strong>app/models/teacher.rb</strong>
-<pre lang="rails">class Teacher &lt; Person</p>
+end</pre>
+<p><strong>app/models/admin.rb</strong></p>
+<pre lang="rails">class Admin < Person
 
-<p>end</pre>
-<strong>app/models/admin.rb</strong>
-<pre lang="rails">class Admin &lt; Person</p>
-
-<p>end</pre></p>
-
-<p>The great thing about splitting these into individual files is because they&#39;re more easily managed and closely follows the convention of one model per file.</p>
-
-<p>Now you have a person, student and teacher model and you should have a brand new migration for your people table in <em>db/migrate</em> so go on and open that up and you&#39;ll see something like this:
-<pre lang="rails">class CreatePeople &lt; ActiveRecord::Migration
+end</pre>
+<p>The great thing about splitting these into individual files is because they're more easily managed and closely follows the convention of one model per file.</p>
+<p>Now you have a person, student and teacher model and you should have a brand new migration for your people table in <em>db/migrate</em> so go on and open that up and you'll see something like this:</p>
+<pre lang="rails">class CreatePeople < ActiveRecord::Migration
   def self.up
-    create<em>table &quot;people&quot;, :force =&gt; true do |t|
-      t.column :login,                     :string, :limit =&gt; 40
-      t.column :name,                      :string, :limit =&gt; 100, :default =&gt; &#39;&#39;, :null =&gt; true
-      t.column :email,                     :string, :limit =&gt; 100
-      t.column :crypted</em>password,          :string, :limit =&gt; 40
-      t.column :salt,                      :string, :limit =&gt; 40
-      t.column :created<em>at,                :datetime
-      t.column :updated</em>at,                :datetime
-      t.column :remember<em>token,            :string, :limit =&gt; 40
-      t.column :remember</em>token<em>expires</em>at, :datetime</p>
-<div class="highlight"><pre><code class="language-" data-lang="">end
-add_index :people, :login, :unique =&gt; true
-</code></pre></div>
-<p>end</p>
+    create_table "people", :force => true do |t|
+      t.column :login,                     :string, :limit => 40
+      t.column :name,                      :string, :limit => 100, :default => '', :null => true
+      t.column :email,                     :string, :limit => 100
+      t.column :crypted_password,          :string, :limit => 40
+      t.column :salt,                      :string, :limit => 40
+      t.column :created_at,                :datetime
+      t.column :updated_at,                :datetime
+      t.column :remember_token,            :string, :limit => 40
+      t.column :remember_token_expires_at, :datetime
 
-<p>def self.down
-    drop<em>table &quot;people&quot;
+    end
+    add_index :people, :login, :unique => true
+  end
+
+  def self.down
+    drop_table "people"
   end
 end</pre>
-To enable STI for this table, just add:
+<p>To enable STI for this table, just add:</p>
 <pre lang="rails">t.column :type, :string</pre>
-into the create</em>table block, just after <span class="term">t.column :remember<em>token</em>expires_at, :datetime</span>. This type column will be set to whatever class the record is, so if we create a new Student object, this type column will be set to &quot;Student&quot;.</p>
-
+<p>into the create_table block, just after <span class="term">t.column :remember_token_expires_at, :datetime</span>. This type column will be set to whatever class the record is, so if we create a new Student object, this type column will be set to &quot;Student&quot;.</p>
 <h3>Controllers</h3>
-
-<p>To create new objects for these subclasses I would recommend building a people controller and using the form partial from that to base your form off from the other controllers, such as <span class='term'>StudentsController</span> and <span class='term'>TeachersController</span>. These controllers should <strong>NOT</strong> subclass from PeopleController, they should be their own independent controllers because Teachers, People and Students are all individual resource types. </p>
-
+To create new objects for these subclasses I would recommend building a people controller and using the form partial from that to base your form off from the other controllers, such as <span class='term'>StudentsController</span> and <span class='term'>TeachersController</span>. These controllers should <strong>NOT</strong> subclass from PeopleController, they should be their own independent controllers because Teachers, People and Students are all individual resource types. 
 <h3>Associated Models</h3>
-
-<p>If you have associated models (e.g. Person has<em>many :enrolments), any subclass of Person will inherit this relationship. For the relationship, this will be referenced via person</em>id still in the enrolments table.</p>
+<p>If you have associated models (e.g. Person has_many :enrolments), any subclass of Person will inherit this relationship. For the relationship, this will be referenced via person_id still in the enrolments table.</p>
 
           </article>
         </div>

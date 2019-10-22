@@ -34,20 +34,15 @@
               <a href="/2008/01/restful-routing-an-overview"><h2>Restful Routing: An Overview</h2></a>
               <small>06 Jan 2008</small>
             </div>
-            <p>Here&#39;s something I posted on rubyonrails talk:</p>
-
-<p>In truth, restful routing is plain and simple. It&#39;s like those books you wrote when you were a kid in kindergarten that if a book critic were to read them he would jab his eyes out with a pen.</p>
-
-<p>For this example I&#39;m going to use a personal favourite: a forum system. It&#39;s small enough to not be overwhelming, yet large enough to explain how restful routing should work (and generally why you should use it).</p>
-
-<p>It all starts with the good &#39;ol config/routes.rb file. In here is where all the nice little routes live, from map.root all the way down to the   map.connect &#39;:controller/service.wsdl&#39;, :action =&gt; &#39;wsdl&#39; that many people still leave in their routes file, thinking that if they remove it the entire world would collapse upon itself into one small quantum singularity. In here you&#39;d place something similar to:
+            <p>Here's something I posted on rubyonrails talk:</p>
+<p>In truth, restful routing is plain and simple. It's like those books you wrote when you were a kid in kindergarten that if a book critic were to read them he would jab his eyes out with a pen.</p>
+<p>For this example I'm going to use a personal favourite: a forum system. It's small enough to not be overwhelming, yet large enough to explain how restful routing should work (and generally why you should use it).</p>
+<p>It all starts with the good 'ol config/routes.rb file. In here is where all the nice little routes live, from map.root all the way down to the   map.connect ':controller/service.wsdl', :action =&gt; 'wsdl' that many people still leave in their routes file, thinking that if they remove it the entire world would collapse upon itself into one small quantum singularity. In here you'd place something similar to:</p>
 <pre lang="rails">
-map.resources :forums, :has<em>many =&gt; :topics
-map.resources :topics, :has</em>many =&gt; :posts
-map.resources :posts</pre></p>
-
+map.resources :forums, :has_many => :topics
+map.resources :topics, :has_many => :posts
+map.resources :posts</pre>
 <p>Not running on Rails 2.0? Then this is the code you want:</p>
-
 <pre lang="rails">
 map.resources :forums do |forum|
   forum.resources :topics, :name_prefix => "forum_"
@@ -59,229 +54,213 @@ end
 
 map.resources :posts
 </pre>
-
-<p>This defines routes like:
+<p>This defines routes like:</p>
 <pre>/forums/1</pre>
-- Show a forum
+<ul>
+<li>Show a forum</li>
+</ul>
 <pre>/forums/1/topics</pre>
-- Index action for a single forum
+<ul>
+<li>Index action for a single forum</li>
+</ul>
 <pre>/forums/1/topics/1</pre>
-- showing a single topic
+<ul>
+<li>showing a single topic</li>
+</ul>
 <pre>/topics/1</pre>
-- Same thing
+<ul>
+<li>Same thing</li>
+</ul>
 <pre>/topics/1/posts/</pre>
-- I would imagine this would do a similar thing to /topics/1
+<ul>
+<li>I would imagine this would do a similar thing to /topics/1</li>
+</ul>
 <pre>/topics/1/posts/1/edit</pre>
-- Allows you to edit a single post
+<ul>
+<li>Allows you to edit a single post</li>
+</ul>
 <pre>/posts/1/edit</pre>
-- Same thing</p>
-
-<p>Now to define something like this without the magic of restful routing, one would have to be clinically insane:
+<ul>
+<li>Same thing</li>
+</ul>
+<p>Now to define something like this without the magic of restful routing, one would have to be clinically insane:</p>
 <pre lang="rails">
-map.connect &quot;/forums/:id&quot;, :controller =&gt; &quot;forums&quot;, :action =&gt; &quot;show&quot;
-map.connect &quot;/forums/:forum<em>id/topics/&quot;, :controller =&gt; &quot;topics&quot;, :action =&gt; &quot;index&quot;
-map.connect &quot;/forums/:forum</em>id/topics/:id&quot;, :controller =&gt; &quot;topics&quot;, :action =&gt; &quot;show&quot;
-map.connect &quot;/topics/:id&quot;, :controller =&gt; &quot;topics&quot;, :action =&gt; &quot;show&quot; &lt;- Does this look familar to /forums/:id?
-map.connect &quot;/topics/:topic<em>id/posts&quot;, :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;index&quot;
-map.connect &quot;/topics/:topic</em>id/posts/:id/edit&quot;, :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;edit&quot;
-map.connect &quot;/posts/:id/edit&quot;, :controller =&gt; &quot;posts&quot;, :action =&gt; &quot;edit&quot;</pre>
-And this is only the tip of the iceberg!</p>
-
-<p>Seeing a pattern here? Restful routing gives you a whole heap of cool stuff, namely the 7 core methods that I&#39;ll cover right after the models.</p>
-
-<p>A forum system has the following tables: forums, topics, posts and users, and the models would look something like the following:
+map.connect "/forums/:id", :controller => "forums", :action => "show"
+map.connect "/forums/:forum_id/topics/", :controller => "topics", :action => "index"
+map.connect "/forums/:forum_id/topics/:id", :controller => "topics", :action => "show"
+map.connect "/topics/:id", :controller => "topics", :action => "show" <- Does this look familar to /forums/:id?
+map.connect "/topics/:topic_id/posts", :controller => "posts", :action => "index"
+map.connect "/topics/:topic_id/posts/:id/edit", :controller => "posts", :action => "edit"
+map.connect "/posts/:id/edit", :controller => "posts", :action => "edit"</pre>
+<p>And this is only the tip of the iceberg!</p>
+<p>Seeing a pattern here? Restful routing gives you a whole heap of cool stuff, namely the 7 core methods that I'll cover right after the models.</p>
+<p>A forum system has the following tables: forums, topics, posts and users, and the models would look something like the following:</p>
 <pre lang="rails">
-class Forum &lt; ActiveRecord::Base
-  has<em>many :topics
-  has</em>many :posts, :through =&gt; :topics
+class Forum < ActiveRecord::Base
+  has_many :topics
+  has_many :posts, :through => :topics
 end</pre>
 <br>
 <pre lang="rails">
-class Topic &lt; ActiveRecord::Base
-  has<em>many :posts
-  belongs</em>to :forum
+class Topic < ActiveRecord::Base
+  has_many :posts
+  belongs_to :forum
   belongs_to :user
 end
-</pre></p>
-
-<p><br>
+</pre>
+<br>
 <pre lang="rails">
-class Post &lt; ActiveRecord::Base
-  belongs<em>to :topic
-  belongs</em>to :user
-end</pre></p>
-
-<p><br>
+class Post < ActiveRecord::Base
+  belongs_to :topic
+  belongs_to :user
+end</pre>
+<br>
 <pre lang="rails">
-class User &lt; ActiveRecord::Base
-  has<em>many :topics
-  has</em>many :posts
+class User < ActiveRecord::Base
+  has_many :topics
+  has_many :posts
   def to_s
     login
   end
 end
 </pre>
-The fields don&#39;t matter, but throughout the tutorial I make reference to @forum.name or something similar, so we&#39;ll assume forums has at least a name field. We&#39;ll assume post has a text field and users has a login field.</p>
-
-<p>That&#39;ll give you some idea of how the system works: Forum -&gt; Topics -&gt; Posts.</p>
-
-<p>In restful routing there are seven &quot;core&quot; methods (actions) that you&#39;re given for the controllers: index, show, new, create, edit, update, destroy. Each of these have a set request method on them, for example you can&#39;t GET to the create, update and destroy actions and you can&#39;t post to the index, new or edit actions. These actions work with these request methods:</p>
-
+The fields don't matter, but throughout the tutorial I make reference to @forum.name or something similar, so we'll assume forums has at least a name field. We'll assume post has a text field and users has a login field.
+<p>That'll give you some idea of how the system works: Forum -&gt; Topics -&gt; Posts.</p>
+<p>In restful routing there are seven &quot;core&quot; methods (actions) that you're given for the controllers: index, show, new, create, edit, update, destroy. Each of these have a set request method on them, for example you can't GET to the create, update and destroy actions and you can't post to the index, new or edit actions. These actions work with these request methods:</p>
 <p>GET: index, show, new, edit
 POST: create
 PUT: update
 DELETE: destroy</p>
-
 <p>&quot;What the?! PUT &amp; DELETE, where did they come from?&quot;, I hear you cry! These are hacked into the calls for the appropriate action using javascript, it passes in one more parameter (_method) which is then handled by the rails code and depending on what method you called you will get the page you were looking for, or a routing error.</p>
-
-<p>The forums controller could look like this:
+<p>The forums controller could look like this:</p>
 <pre lang="rails">
-class ForumsController &lt; ApplicationController
+class ForumsController < ApplicationController
   def index
     @forums = Forum.find(:all)
-  end</p>
+  end
 
-<p>def show
+  def show
     @forum = Forum.find(params[:id])
-  end</p>
+  end
 
-<p>def new
+  def new
     @forum = Forum.new
-  end</p>
+  end
 
-<p>def create
+  def create
     @forum = Forum.new(params[:forum])
     if @forum.save
-      flash[:notice] = &quot;You have created a forum!&quot;
-      redirect<em>to forums</em>path
+      flash[:notice] = "You have created a forum!"
+      redirect_to forums_path
     else
-      render :action =&gt; &quot;new&quot;
+      render :action => "new"
     end
-  end</p>
+  end
 
-<p>def edit
+  def edit
     @forum = Forum.find(params[:id])
-  end</p>
+  end
 
-<p>def update
+  def update
     @forum = Forum.find(params[:id])
-    if @forum.update<em>attributes(params[:forum])
-      flash[:notice] = &quot;You have updated #{@forum.name}&quot;
-      redirect</em>to forum_path
+    if @forum.update_attributes(params[:forum])
+      flash[:notice] = "You have updated #{@forum.name}"
+      redirect_to forum_path
     else
-      flash[:error] = &quot;This forum could not be updated.&quot;
-      render :action =&gt; &quot;new&quot;
+      flash[:error] = "This forum could not be updated."
+      render :action => "new"
     end
-  end</p>
+  end
 
-<p>def destroy
+  def destroy
     @forum = Forum.find(params[:id])
     @forum.destroy
-    flash[:notice] = &quot;You have deleted #{@forum.name}&quot;
-    redirect<em>to forums</em>path
-  end</p>
+    flash[:notice] = "You have deleted #{@forum.name}"
+    redirect_to forums_path
+  end
 
-<p>end</pre>
-You&#39;ll see here that I&#39;ve twice made a call to redirect<em>to using the argument of forums</em>path. Because we&#39;ve defined map.resources :forums in our config/routes.rb file, it knows that we want to go to { :controller =&gt; &quot;forums&quot;, :action =&gt; &quot;index&quot; } and the best part is that we don&#39;t have to keep trying { :controller =&gt; &quot;forums&quot;, :action =&gt; &quot;index&quot; } every time we want to go to that specific action, but instead we type forums_path.</p>
-
-<p>I&#39;ve also made a single call to forum_path, and I haven&#39;t specified an argument for it, so how does Rails know that I want to go to the forum that I just updated?</p>
-
-<p>Rails will see that there&#39;s an argument mission from the forum_path and will go looking for the @forum instance variable you&#39;ve defined in your controller. If you never defined one or defined it as something other than @forum, it will mention something about ambiguous routes and you&#39;ll have to specify the variable.</p>
-
-<p>Now what if you wanted to go to the new or edit action? Simple: new<em>forum</em>path and edit<em>forum</em>path(@forum) will take you to the corresponding actions. Remember that you don&#39;t need to specify an argument for the edit<em>forum</em>path if @forum is defined. Inside these actions you&#39;ll want to go further, you&#39;ll want to create a new forum and update a forum.</p>
-
+end</pre>
+<p>You'll see here that I've twice made a call to redirect_to using the argument of forums_path. Because we've defined map.resources :forums in our config/routes.rb file, it knows that we want to go to { :controller =&gt; &quot;forums&quot;, :action =&gt; &quot;index&quot; } and the best part is that we don't have to keep trying { :controller =&gt; &quot;forums&quot;, :action =&gt; &quot;index&quot; } every time we want to go to that specific action, but instead we type forums_path.</p>
+<p>I've also made a single call to forum_path, and I haven't specified an argument for it, so how does Rails know that I want to go to the forum that I just updated?</p>
+<p>Rails will see that there's an argument mission from the forum_path and will go looking for the @forum instance variable you've defined in your controller. If you never defined one or defined it as something other than @forum, it will mention something about ambiguous routes and you'll have to specify the variable.</p>
+<p>Now what if you wanted to go to the new or edit action? Simple: new_forum_path and edit_forum_path(@forum) will take you to the corresponding actions. Remember that you don't need to specify an argument for the edit_forum_path if @forum is defined. Inside these actions you'll want to go further, you'll want to create a new forum and update a forum.</p>
 <p>For the create action you could specify this for your form:
-<strong>Rails 2.0:</strong>
-<pre lang="rails">&lt;% form_for @forum do |f|%&gt;</pre>
-Rails 2.0 will see that @forum is a new record and link you the create action.</p>
-
-<p><strong>Pre Rails  2.0:</strong>
-<pre lang="rails">&lt;% form<em>for :forum, @forum, :url =&gt; forums</em>path do |f|%&gt;</pre>
-Prior to Rails 2.0 that checking wasn&#39;t in, you&#39;ll have to define your own link.</p>
-
-<p>&quot;B-b-b-ut&quot;, you stammer, &quot;you&#39;ve linked to the forums index, right? Isn&#39;t that what forums_path is?&quot;</p>
-
-<p>Well, yes and no. This has everything to do with the four request methods mentioned previously, because the form&#39;s method attribute is &quot;post&quot;, Rails knows that if you&#39;re posting to forums_path, you mean the create action. And now for the update action!</p>
-
-<p>Here the form_for&#39;s a little different, but only for pre-Rails 2.0:</p>
-
-<p><strong>Rails 2.0:</strong>
+<strong>Rails 2.0:</strong></p>
+<pre lang="rails"><% form_for @forum do |f|%></pre>
+<p>Rails 2.0 will see that @forum is a new record and link you the create action.</p>
+<p><strong>Pre Rails  2.0:</strong></p>
+<pre lang="rails"><% form_for :forum, @forum, :url => forums_path do |f|%></pre>
+<p>Prior to Rails 2.0 that checking wasn't in, you'll have to define your own link.</p>
+<p>&quot;B-b-b-ut&quot;, you stammer, &quot;you've linked to the forums index, right? Isn't that what forums_path is?&quot;</p>
+<p>Well, yes and no. This has everything to do with the four request methods mentioned previously, because the form's method attribute is &quot;post&quot;, Rails knows that if you're posting to forums_path, you mean the create action. And now for the update action!</p>
+<p>Here the form_for's a little different, but only for pre-Rails 2.0:</p>
+<p><strong>Rails 2.0:</strong></p>
 <pre lang="rails">
-&lt;% form_for @forum do |f| %&gt;</pre>
-Again the same deal applies: Rails 2.0 knows that @forum is not a new record, so it&#39;ll link you to to the update action because it&#39;s included in a form. This automatically specifies  :html =&gt; { :method =&gt; :put } for you.</p>
-
-<p><strong>Pre Rails 2.0</strong>
+<% form_for @forum do |f| %></pre>
+<p>Again the same deal applies: Rails 2.0 knows that @forum is not a new record, so it'll link you to to the update action because it's included in a form. This automatically specifies  :html =&gt; { :method =&gt; :put } for you.</p>
+<p><strong>Pre Rails 2.0</strong></p>
 <pre lang="rails">
-&lt;% form<em>for :forum, @forum, :url =&gt; forum</em>path(@forum), :html =&gt; { :method =&gt; &quot;put&quot; } do |f| %&gt;</pre>
-It knows to link you to the update action because of the method =&gt; &quot;put&quot; we&#39;ve specified.</p>
-
-<p>Now lets escape from the confines of a single controller and bring the topics controller into the mix. In the forum show action is where you would generally show all the topics for that forum, but for the purposes of this tutorial I will do it in the topics controller instead. This will have something similar defined to the forums controller but personally I would define this for the controller:
+<% form_for :forum, @forum, :url => forum_path(@forum), :html => { :method => "put" } do |f| %></pre>
+<p>It knows to link you to the update action because of the method =&gt; &quot;put&quot; we've specified.</p>
+<p>Now lets escape from the confines of a single controller and bring the topics controller into the mix. In the forum show action is where you would generally show all the topics for that forum, but for the purposes of this tutorial I will do it in the topics controller instead. This will have something similar defined to the forums controller but personally I would define this for the controller:</p>
 <pre lang="rails">
-class TopicsController &lt; ApplicationController
-  before<em>filter :get</em>forum</p>
+class TopicsController < ApplicationController
+  before_filter :get_forum
 
-<p>def index
+  def index
     @topics = @forum.topics
-  end</p>
+  end
 
-<p>#other actions
+  #other actions
   private
-    def get<em>forum
-      @forum = Forum.find(params[:forum</em>id]) if params[:forum_id]
+    def get_forum
+      @forum = Forum.find(params[:forum_id]) if params[:forum_id]
     end
 end</pre>
-The private call makes any method after it private, that means that if you were to try and access this method (without restful routing), it would play dumb. Personally, I think something like this should be in-built to Rails, if you&#39;re accessing a child object (topics) from a parent (forum) it should automatically define @forum for you.</p>
-
-<p>Because we&#39;ve already defined the :has<em>many topics on map.resources :forums, the topic routes are already defined for us, so to view all the topics for a forum, before you would have to do define a route like this:
+<p>The private call makes any method after it private, that means that if you were to try and access this method (without restful routing), it would play dumb. Personally, I think something like this should be in-built to Rails, if you're accessing a child object (topics) from a parent (forum) it should automatically define @forum for you.</p>
+<p>Because we've already defined the :has_many topics on map.resources :forums, the topic routes are already defined for us, so to view all the topics for a forum, before you would have to do define a route like this:</p>
 <pre lang="rails">
-map.connect &quot;/forums/:forum</em>id/topics/&quot;, :controller =&gt; &quot;topics&quot;, :action =&gt; &quot;index&quot;</pre>
-and then call it like this:
+map.connect "/forums/:forum_id/topics/", :controller => "topics", :action => "index"</pre>
+<p>and then call it like this:</p>
 <pre lang="rails">
-{ :controller =&gt; &quot;topics&quot;, :action =&gt; &quot;index&quot;, :forum<em>id =&gt; @forum.id }</pre>
-Instead you&#39;ve already defined :has</em>many =&gt; :topics, so instantly you&#39;ll gain access to forum<em>topics</em>path. Again the wonderful Rails will realise that you want all topics for the @forum object and then direct you to &quot;/forums/1/topics/&quot; through forum<em>topic</em>path. To edit a single topic, you could do edit<em>forum</em>topic<em>path as of Rails 2.0, or forum</em>edit<em>topic</em>path prior to Rails 2.0. The first reads more like &quot;edit this topic belonging to this forum&quot; where the second reads like &quot;in this forum, edit this topic&quot;. Alternatively you could ditch the whole forum part out of the method call and just do edit<em>topic</em>path because we&#39;ve defined map.resources :topics.</p>
-
-<p>Throwing one more controller into the mix now, called posts<em>controller. This would be very similar to the topics controller but instead of get</em>forum it would have get_topic, modified correctly.</p>
-
+{ :controller => "topics", :action => "index", :forum_id => @forum.id }</pre>
+<p>Instead you've already defined :has_many =&gt; :topics, so instantly you'll gain access to forum_topics_path. Again the wonderful Rails will realise that you want all topics for the @forum object and then direct you to &quot;/forums/1/topics/&quot; through forum_topic_path. To edit a single topic, you could do edit_forum_topic_path as of Rails 2.0, or forum_edit_topic_path prior to Rails 2.0. The first reads more like &quot;edit this topic belonging to this forum&quot; where the second reads like &quot;in this forum, edit this topic&quot;. Alternatively you could ditch the whole forum part out of the method call and just do edit_topic_path because we've defined map.resources :topics.</p>
+<p>Throwing one more controller into the mix now, called posts_controller. This would be very similar to the topics controller but instead of get_forum it would have get_topic, modified correctly.</p>
 <p>Now what if you wanted to add a custom action to posts_controller, called quote? This action would bring up a form with the post you were quoting which would then send the information from the form into posts/new to create a new post:</p>
-
-<p><strong>config/routes.rb</strong>
+<p><strong>config/routes.rb</strong></p>
 <pre lang="rails">
-map.resources :posts, :member =&gt; { :quote =&gt; :get }</pre>
-The extra argument of :member indicates a hash of any further actions and their request methods you would like to be added onto singular posts. You can call these like all the other singular methods: quote<em>post</em>path(@post), for example. The request methods can be in string or symbol format, it doesn&#39;t matter.
+map.resources :posts, :member => { :quote => :get }</pre>
+<p>The extra argument of :member indicates a hash of any further actions and their request methods you would like to be added onto singular posts. You can call these like all the other singular methods: quote_post_path(@post), for example. The request methods can be in string or symbol format, it doesn't matter.</p>
 <pre lang="rails">def quote
-  @old<em>post = Post.find(params[:id])
+  @old_post = Post.find(params[:id])
   @post = Post.new
-  @post.text = &quot;[quote=&#39;#{@old</em>post.user}&#39;]#{<wbr></wbr>@old_post.text}[/quote]&quot;
-  render :action =&gt; &quot;new&quot;
+  @post.text = "[quote='#{@old_post.user}']#{<wbr></wbr>@old_post.text}[/quote]"
+  render :action => "new"
 end</pre>
-Here I&#39;ve defined the old post only to get the text and the user&#39;s name from it, and then we&#39;re rendering the new view so we have the form. Everything from there on is taken care by Rails.</p>
-
+<p>Here I've defined the old post only to get the text and the user's name from it, and then we're rendering the new view so we have the form. Everything from there on is taken care by Rails.</p>
 <p>Now what if you want to define a new action to work with a group of posts? Well you define it like this:
-<strong>routes.rb</strong>
-<pre lang="rails">map.resources :posts, :member =&gt; { :quote =&gt; :get }, :collection =&gt; { :destroy<em>all =&gt; :delete }</pre>
-Now if you wanted to destroy all posts for a topic, bar the first one, with an action like this (remembering @topic is defined in get</em>topic):
-<strong>posts<em>controller.rb</strong>
-<pre lang="rails">def destroy</em>all
+<strong>routes.rb</strong></p>
+<pre lang="rails">map.resources :posts, :member => { :quote => :get }, :collection => { :destroy_all => :delete }</pre>
+<p>Now if you wanted to destroy all posts for a topic, bar the first one, with an action like this (remembering @topic is defined in get_topic):
+<strong>posts_controller.rb</strong></p>
+<pre lang="rails">def destroy_all
   @posts = @topic.posts  - @topic.posts.first
   @posts.each { |post| post.destroy }
-  flash[:notice] = &quot;All posts have been deleted.
+  flash[:notice] = "All posts have been deleted.
 end</pre>
-You would link<em>to it like this:
+<p>You would link_to it like this:</p>
 <pre lang="rails">
-&lt;%= link</em>to &quot;Delete all posts&quot;, destroy<em>all</em>topic<em>posts</em>path(@topic), :method =&gt; &quot;delete&quot;, 
-:confirm =&gt; &quot;Are you sure you want to delete all posts from this topic?&quot; %&gt;</pre>
-The :method =&gt; &quot;delete&quot; corresponds with the :delete_all =&gt; :delete we 
+<%= link_to "Delete all posts", destroy_all_topic_posts_path(@topic), :method => "delete", 
+:confirm => "Are you sure you want to delete all posts from this topic?" %></pre>
+<p>The :method =&gt; &quot;delete&quot; corresponds with the :delete_all =&gt; :delete we
 specified in config/routes.rb.</p>
-
 <p>One last thing is nested <span class='term'>form_for</span>s. Say you want to edit a post within a topic. To do this you would use this code:</p>
-
 <pre lang='rails'>
 <% form_for [@topic, @post] do |f| %>
   <%= render :partial => "form", :locals => { :f => f } %>
   <%= submit_tag "Update" %>
 <% end %>
 </pre>
-
 <p>Here you pass one argument still to <span class='term'>form_for</span>, an array. It passes the array and will give you a url like <span class='term'>/topics/1/posts/1</span> if you were editing an existing post, or <span class='term'>/topics/1/posts</span> if you were creating a new post.</p>
 
           </article>

@@ -16,7 +16,7 @@ The Ruby trickery starts at about the 9m30s mark in that video. You can see the 
 
 In this post, I'll cover all the tricks I had planned for the talk, not just the ones I showed off.
 
-**Please, do not use any code in this blog post in production systems. It can case weird behaviour. Especially the one involving JavaScript sorting.**
+**Please, do not use any code in this blog post in production systems. It can cause weird behaviour. Especially the one involving JavaScript sorting.**
 
 The point of this post is to show the things Ruby is capable of.
 
@@ -57,7 +57,7 @@ This code calls `method(:old_multiply)`, but `unbind`s it from `self`. I can the
 
 Some examples:
 
-```
+```ruby
 3 * 3 == 3
 6 * 3 == 0
 99 * 999 == 30
@@ -79,7 +79,7 @@ This is pretty straight forward. When we're told to minus something, make it a p
 
 What's interesting here is that it won't work on negative numbers straight off the bat:
 
-```
+```ruby
 >> -5
 => -5
 ```
@@ -88,7 +88,7 @@ This is because negative numbers are... well, they're negative numbers. The minu
 
 But things change if you assign a variable:
 
-```
+```ruby
 >> a = 5
 => 5
 >> -a
@@ -99,7 +99,7 @@ The number remains positive, even though it should've been negated. This is beca
 
 What's fun with this is that you can keep chaining negative signs, positive signs or a combination of both:
 
-```
+```ruby
 >> --------a
 => 5
 >> ++++++++a
@@ -169,7 +169,7 @@ This doesn't prevent against arrays that contain a mix of datatypes (numbers and
 
 This code will now make Ruby sort "correctly" -- at least according to JavaScript:
 
-```
+```ruby
 >> [-2, -1, 0, 1, 2].sort
 => [-1, -2, 0, 1, 2]
 ```
@@ -182,7 +182,7 @@ Range.include(JSSort)
 
 Let's try it:
 
-```
+```ruby
 >> (-2..2).sort
 => [-1, -2, 0, 1, 2]
 ```
@@ -214,7 +214,7 @@ Rather than getting the plain (and boring) `true` or `false` when we compare arr
 
 You can make this method a little more fun by first checking the length and then determining what to do on that:
 
-```
+```ruby
 other.length > 3 ? "maybe" : (method(:old_double_equals).(other) ? "yes" : "no")
 ```
 
@@ -229,7 +229,7 @@ This way then, you get "maybe" if you try to compare against an array of more th
 
 Similarly to `==`, `===` is also a method call. When we're making this call we want to be _really_ sure that the things are equal. Getting back `false` would be disappointing, so we can override this method to always return `true`:
 
-```
+```ruby
 class Array
   def ===(_)
     true
@@ -241,7 +241,7 @@ end
 
 Just like its siblings `==` and `===`, `!=` is also a method call. We can override this:
 
-```
+```ruby
 class Array
   def !=(_)
     "can't say, tbqh"
@@ -379,7 +379,7 @@ Why would you want to do this? I am not sure. I think it is a quirk of the Ruby 
 
 But the order matters:
 
-```
+```ruby
 >> +!~[1,2,3]
 Traceback (most recent call last):
         1: from /usr/local/opt/asdf/installs/ruby/2.5.1/bin/irb:11:in `<main>'
@@ -406,7 +406,7 @@ So this code, if you read it, works by taking terminal input of two characters. 
 
 But how?
 
-This is a cheeky trick, and I needed another assitant for it. I recruited one of my juniors, Nick Wolf for this. I ran a [`tmux`](https://en.wikipedia.org/wiki/Tmux) session for all the code demos during the talk, and gave Nick `ssh` access to my machine.
+This is a cheeky trick, and I needed another assistant for it. I recruited one of my juniors, Nick Wolf for this. I ran a [`tmux`](https://en.wikipedia.org/wiki/Tmux) session for all the code demos during the talk, and gave Nick `ssh` access to my machine.
 
 Nick then connected in via `ssh`, ran `tmux attach-session` and then could control my terminal as easily as I could. When Kasia read out a card, Nick would type in the two characters required for that card.
 

@@ -34,130 +34,95 @@
               <a href="/2017/08/rails-dropzone-js-amazon-s3-and-imgix"><h2>Rails, Dropzone.js, Amazon S3 and imgix</h2></a>
               <small>28 Aug 2017</small>
             </div>
-            <p>In this tutorial I&#39;ll cover how you can upload files directly to S3 by using a feature called <code>PresignedPost</code>. I&#39;ll then show how you can use <a href="https://imgix.com">imgix</a> to resize these images dynamically after they&#39;ve been uploaded.</p>
-
+            <p>In this tutorial I'll cover how you can upload files directly to S3 by using a feature called <code>PresignedPost</code>. I'll then show how you can use <a href="https://imgix.com">imgix</a> to resize these images dynamically after they've been uploaded.</p>
 <p>The Rails app that I use for this tutorial is <a href="https://github.com/radar/dropzone-example">dropzone-example</a>, with the <a href="https://github.com/radar/dropzone-example/tree/finished">finished branch</a> being the final version of the code from this tutorial.</p>
-
-<h3>Background</h3>
-
-<p>I&#39;ve got a small hobby Rails app that I use to share photos with my extended family. This app had humble beginnings: it was a very light Rails application with one model that used <a href="https://rubygems.org/gems/paperclip">Paperclip</a> to handle the attachments. Paperclip works very well, and I especially love that I don&#39;t have to care about <em>how</em> my photos get resized; Paperclip just does it -- as long as you have the right things installed.</p>
-
+<h3 id="background">Background</h3>
+<p>I've got a small hobby Rails app that I use to share photos with my extended family. This app had humble beginnings: it was a very light Rails application with one model that used <a href="https://rubygems.org/gems/paperclip">Paperclip</a> to handle the attachments. Paperclip works very well, and I especially love that I don't have to care about <em>how</em> my photos get resized; Paperclip just does it -- as long as you have the right things installed.</p>
 <p>I got the attachments through to Paperclip by using the wonderful <a href="http://www.dropzonejs.com/">Dropzone.js</a>. A simple file input would also work, but I wanted to be able to upload multiple files from all kinds of devices. Dropzone lets me do that.</p>
-
-<p>But then I wanted to add video support to this application. It&#39;s at this point that I should mention three things: 1) this application is hosted on Heroku 2) Heroku&#39;s request timeout is set to a hard 30 seconds 3) Australian internet is prohibitively slow and iPhone videos are so big that any video longer than 25 seconds does not upload within that 30 second window.</p>
-
-<p>So I had to come up with an inventive solution. Googling for other people&#39;s attempts to solve or workaround this problem suggest that the best solution was to upload to s3 directly; but then I would lose the automatic resizing for images that comes with Paperclip. Fortunately, I knew about <a href="https:/imgix.com">imgix</a>.</p>
-
-<p>A lot of the other writings on the internet don&#39;t really cover it from start-to-finish, and so I pieced all this together from many, many blog posts and documentation pages.</p>
-
+<p>But then I wanted to add video support to this application. It's at this point that I should mention three things: 1) this application is hosted on Heroku 2) Heroku's request timeout is set to a hard 30 seconds 3) Australian internet is prohibitively slow and iPhone videos are so big that any video longer than 25 seconds does not upload within that 30 second window.</p>
+<p>So I had to come up with an inventive solution. Googling for other people's attempts to solve or workaround this problem suggest that the best solution was to upload to s3 directly; but then I would lose the automatic resizing for images that comes with Paperclip. Fortunately, I knew about <a href="https:/imgix.com">imgix</a>.</p>
+<p>A lot of the other writings on the internet don't really cover it from start-to-finish, and so I pieced all this together from many, many blog posts and documentation pages.</p>
 <p>Contrary to my tweet earlier:</p>
-
 <blockquote class="twitter-tweet" data-lang="en-gb"><p lang="en" dir="ltr">Hooked up dropzone + s3 direct file uploads and now I&#39;m going to keep all that knowledge to myself mwhahahaha</p>&mdash; A Ryan (@ryanbigg) <a href="https://twitter.com/ryanbigg/status/901668466599510017">27 August 2017</a></blockquote>
-
-<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<p>I&#39;m not going to keep all this knowledge to myself, but instead I&#39;ll share with you how I did it here.</p>
-
-<h3>Dropzone setup</h3>
-
-<p>I&#39;m going to assume that people reading this already have at least a Rails application setup and they want to add this functionality to it. I&#39;ve got a <a href="https://github.com/radar/dropzone-example">small example app</a> with dropzone added, if you want to take a look.</p>
-
-<p>I&#39;m going to go old-school on this: no Webpacker, no React. If you want those things I am sure you can figure it out.</p>
-
-<p>To start with, you can download the Dropzone files from the Download link in the <a href="https://gitlab.com/meno/dropzone/blob/master/README.md">project&#39;s README</a>. This will download the latest release. Extract this zip, and then move <code>dropzone.css</code> into <code>vendor/assets/stylesheets/dropzone.css</code>, and <code>dropzone.js</code> into <code>vendor/assets/javascripts/dropzone.js</code>. These two files will need to be required in both <code>application.scss</code> and <code>application.js</code>:</p>
-
+&lt;script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>I'm not going to keep all this knowledge to myself, but instead I'll share with you how I did it here.</p>
+<h3 id="dropzone-setup">Dropzone setup</h3>
+<p>I'm going to assume that people reading this already have at least a Rails application setup and they want to add this functionality to it. I've got a <a href="https://github.com/radar/dropzone-example">small example app</a> with dropzone added, if you want to take a look.</p>
+<p>I'm going to go old-school on this: no Webpacker, no React. If you want those things I am sure you can figure it out.</p>
+<p>To start with, you can download the Dropzone files from the Download link in the <a href="https://gitlab.com/meno/dropzone/blob/master/README.md">project's README</a>. This will download the latest release. Extract this zip, and then move <code>dropzone.css</code> into <code>vendor/assets/stylesheets/dropzone.css</code>, and <code>dropzone.js</code> into <code>vendor/assets/javascripts/dropzone.js</code>. These two files will need to be required in both <code>application.scss</code> and <code>application.js</code>:</p>
 <p><strong>application.scss</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang="">*= require dropzone
-</code></pre></div>
+<pre><code>*= require dropzone
+</code></pre>
 <p><strong>application.js</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang="">//= require dropzone
-</code></pre></div>
+<pre><code>//= require dropzone
+</code></pre>
 <p>Then wherever you want the dropzone to appear, put this code:</p>
-
 <p><strong>app/views/uploads/new.html.erb</strong></p>
-<div class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">uploads_path</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">"dropzone"</span><span class="p">,</span> <span class="ss">id: </span><span class="s2">"uploader"</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="n">uploads_path</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">"dropzone"</span><span class="p">,</span> <span class="ss">id: </span><span class="s2">"uploader"</span> <span class="k">do</span> <span class="cp">%&gt;</span>
 
 <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</code></pre></div>
-<p>The <code>dropzone</code> class is the special bit here: Dropzone will automatically apply itself to any element with this class. If you&#39;ve done this correctly, you&#39;ll see this:</p>
-
-<p><img src="/images/dropzone/drop-files-to-upload.png" alt="Test"></p>
-
-<p>The styling isn&#39;t exactly pretty, but that&#39;s something you can fix up later. (<a href="https://gist.github.com/radar/4e2957edf84efb40e222b43439e772a1">Here&#39;s the CSS</a> that I use for my own; I think I cribbed it from the Dropzone site.)</p>
-
+</code></pre></div></div>
+<p>The <code>dropzone</code> class is the special bit here: Dropzone will automatically apply itself to any element with this class. If you've done this correctly, you'll see this:</p>
+<p><img src="/images/dropzone/drop-files-to-upload.png" alt="Test" /></p>
+<p>The styling isn't exactly pretty, but that's something you can fix up later. (<a href="https://gist.github.com/radar/4e2957edf84efb40e222b43439e772a1">Here's the CSS</a> that I use for my own; I think I cribbed it from the Dropzone site.)</p>
 <p>What this will do is submit files to the <code>uploads_path</code>, as if there was a file input and we had selected a file and hit &quot;submit&quot;. If we had a controller action to receive these files, it might look something like this:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
   <span class="no">Photo</span><span class="p">.</span><span class="nf">create!</span><span class="p">(</span><span class="ss">photo: </span><span class="n">params</span><span class="p">[</span><span class="ss">:file</span><span class="p">])</span>
 
   <span class="n">head</span> <span class="ss">:ok</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This action would use Paperclip to do the processing and resizing. The configuration in the <code>Photo</code> model would look like:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">has_attached_file</span> <span class="ss">:photo</span><span class="p">,</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">has_attached_file</span> <span class="ss">:photo</span><span class="p">,</span>
   <span class="ss">styles: </span><span class="p">{</span> <span class="ss">small: </span><span class="s2">"250x250#"</span><span class="p">,</span> <span class="ss">large: </span><span class="s2">"1000x1000#"</span><span class="p">}</span>
-</code></pre></div>
-<p>This would all result in the files being stored locally, in the <code>public/system</code> directory of the application. This might suit some, but for an application hosted on Heroku it is a terrible idea, because Heroku&#39;s filesystem is read-only; your uploads would fail.</p>
-
-<p>So let&#39;s assume that this application is going to be hosted on Heroku. That means that we need to find somewhere else to host our files, and one very good place for that is Amazon S3.</p>
-
-<h3>Upload direct to S3</h3>
-
-<p>There&#39;s an interim step here where you could configure Paperclip to upload the files to S3 after it has finished processing them on the server. In fact, there&#39;s a <a href="https://devcenter.heroku.com/articles/paperclip-s3">great Heroku tutorial</a> demonstrating just that.</p>
-
-<p>However, as I mentioned at the beginning, we&#39;re looking to upload files <em>directly</em> to s3 to avoid Heroku&#39;s 30 second timeout. The Rails app may not have time to process the upload before the timeout if the file is sufficiently large enough. Therefore configuring Paperclip in this way won&#39;t suit us. What we&#39;ll do instead is upload this file directly to S3.</p>
-
-<p><strong>I will assume at this stage that you&#39;ve setup an AWS account and at least one S3 bucket to receive uploads into. I will also assume that you know what an AWS access key and AWS secret key are. If you haven&#39;t configured these things, then go ahead and do that now.</strong></p>
-
+</code></pre></div></div>
+<p>This would all result in the files being stored locally, in the <code>public/system</code> directory of the application. This might suit some, but for an application hosted on Heroku it is a terrible idea, because Heroku's filesystem is read-only; your uploads would fail.</p>
+<p>So let's assume that this application is going to be hosted on Heroku. That means that we need to find somewhere else to host our files, and one very good place for that is Amazon S3.</p>
+<h3 id="upload-direct-to-s3">Upload direct to S3</h3>
+<p>There's an interim step here where you could configure Paperclip to upload the files to S3 after it has finished processing them on the server. In fact, there's a <a href="https://devcenter.heroku.com/articles/paperclip-s3">great Heroku tutorial</a> demonstrating just that.</p>
+<p>However, as I mentioned at the beginning, we're looking to upload files <em>directly</em> to s3 to avoid Heroku's 30 second timeout. The Rails app may not have time to process the upload before the timeout if the file is sufficiently large enough. Therefore configuring Paperclip in this way won't suit us. What we'll do instead is upload this file directly to S3.</p>
+<p><strong>I will assume at this stage that you've setup an AWS account and at least one S3 bucket to receive uploads into. I will also assume that you know what an AWS access key and AWS secret key are. If you haven't configured these things, then go ahead and do that now.</strong></p>
 <p><strong>I highly recommend creating a new user that only has read + write access to S3, and even then that access is limited to just this bucket. Your default user has <em>all</em> the permissions, and so if your keys leaked then someone could access your entire AWS account. Be careful.</strong></p>
-
-<p>To let users upload to our application, we&#39;ll need to use an S3 feature called a <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/PresignedUrlUploadObject.html"><em>presigned post</em></a>. S3 Buckets by default are not writeable by the general public. In this particular case, we <em>do</em> want the general public to upload files to our bucket.</p>
-
+<p>To let users upload to our application, we'll need to use an S3 feature called a <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/PresignedUrlUploadObject.html"><em>presigned post</em></a>. S3 Buckets by default are not writeable by the general public. In this particular case, we <em>do</em> want the general public to upload files to our bucket.</p>
 <p>This feature will allow us to generate a URL and some fields for our upload form. The combination of this URL and these fields will allow regular users of our application to upload files straight to our S3 bucket.</p>
-
 <p>To use any AWS feature in our application, we first need to add the <code>aws-sdk</code> gem to our Gemfile:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'aws-sdk'</span><span class="p">,</span> <span class="s1">'~&gt; 2'</span>
-</code></pre></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'aws-sdk'</span><span class="p">,</span> <span class="s1">'~&gt; 2'</span>
+</code></pre></div></div>
 <p>We can use this gem to generate a presigned post, but before that we need to setup some credentials within our application. I like to use the <a href="https://rubygems.org/gems/dotenv-rails">dotenv-rails</a> gem for this purpose:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'dotenv-rails'</span>
-</code></pre></div>
-<p>This gem will load any environment variable specified in an <code>.env</code> file. Let&#39;s create one of those now with these values:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">AWS_ACCESS_KEY_ID=[your access key goes here]
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'dotenv-rails'</span>
+</code></pre></div></div>
+<p>This gem will load any environment variable specified in an <code>.env</code> file. Let's create one of those now with these values:</p>
+<pre><code>AWS_ACCESS_KEY_ID=[your access key goes here]
 AWS_SECRET_KEY=[your secret key goes here]
 AWS_REGION=[your region name goes here]
 AWS_BUCKET=[your bucket name goes here]
-</code></pre></div>
-<p><strong>NOTE: Make sure to add this <code>.env</code> file to <code>.gitignore</code>. You don&#39;t want to commit your AWS access keys!</strong></p>
-
-<p>Now let&#39;s go ahead and generate a presigned post in the Rails console:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resource</span> <span class="o">=</span> <span class="no">Aws</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">Resource</span><span class="p">.</span><span class="nf">new</span>
+</code></pre>
+<p><strong>NOTE: Make sure to add this <code>.env</code> file to <code>.gitignore</code>. You don't want to commit your AWS access keys!</strong></p>
+<p>Now let's go ahead and generate a presigned post in the Rails console:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resource</span> <span class="o">=</span> <span class="no">Aws</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">Resource</span><span class="p">.</span><span class="nf">new</span>
 <span class="n">post</span> <span class="o">=</span> <span class="n">resource</span><span class="p">.</span><span class="nf">bucket</span><span class="p">(</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"AWS_BUCKET"</span><span class="p">)).</span><span class="nf">presigned_post</span><span class="p">(</span>
   <span class="ss">key: </span><span class="s2">"uploads/</span><span class="si">#{</span><span class="no">Time</span><span class="p">.</span><span class="nf">now</span><span class="p">.</span><span class="nf">to_i</span><span class="si">}</span><span class="s2">/${filename}"</span>
 <span class="p">)</span>
-</code></pre></div>
-<p>The <code>aws-sdk</code> gem will automatically reference the <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_KEY</code> and <code>AWS_REGION</code> keys from the environment to correctly configure itself. If you don&#39;t believe me, try these three methods:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">resource</span><span class="p">.</span><span class="nf">client</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">credentials</span><span class="p">.</span><span class="nf">access_key_id</span>
+</code></pre></div></div>
+<p>The <code>aws-sdk</code> gem will automatically reference the <code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_KEY</code> and <code>AWS_REGION</code> keys from the environment to correctly configure itself. If you don't believe me, try these three methods:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resource</span><span class="p">.</span><span class="nf">client</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">credentials</span><span class="p">.</span><span class="nf">access_key_id</span>
 <span class="n">resource</span><span class="p">.</span><span class="nf">client</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">credentials</span><span class="p">.</span><span class="nf">secret_access_key</span>
 <span class="n">resource</span><span class="p">.</span><span class="nf">client</span><span class="p">.</span><span class="nf">config</span><span class="p">.</span><span class="nf">region</span>
-</code></pre></div>
-<p>They will return the same values as specified in <code>.env</code>, if you&#39;ve configured all the above correctly.</p>
-
-<p>Let&#39;s go back and look at what that <code>post</code> is. It&#39;s an instance of <code>Aws::S3::PresignedPost</code>, and it has two main methods that you need to know about: <code>url</code> and <code>fields</code>.</p>
-
+</code></pre></div></div>
+<p>They will return the same values as specified in <code>.env</code>, if you've configured all the above correctly.</p>
+<p>Let's go back and look at what that <code>post</code> is. It's an instance of <code>Aws::S3::PresignedPost</code>, and it has two main methods that you need to know about: <code>url</code> and <code>fields</code>.</p>
 <p>The <code>url</code> method is easy: it returns the URL to the bucket that will contain your uploaded files. Something like <code>https://[bucket].s3-[region].amazonaws.com</code>. Yours might be slightly different depending on the region you specified.</p>
-
 <p>The <code>fields</code> method is a little more complicated. It will return a hash with the following keys:</p>
-
 <ul>
 <li><code>key</code>: The path where the file will live. We specified a timestamp and <code>${filename}</code> here. The <code>${filename}</code> part will be replaced by the name of the actual file when it has been uploaded.</li>
 <li><code>policy</code>: A Base64 encoded JSON blob, listing the policy for this post. For more info, <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html">read here</a>.</li>
 <li><code>x-amz-credential</code>: Specifies the access key used, the current date, and the scope to where this particular credential is used.</li>
 <li><code>x-amz-algorithm</code>: The encryption algorithm used to generate the signature.</li>
-<li><code>x-amz-date</code>: Today&#39;s date.</li>
+<li><code>x-amz-date</code>: Today's date.</li>
 <li><code>x-amz-signature</code>: The &quot;signed&quot; part of the request. A unique signature which verifies this request. For information on how this is constructed, <a href="http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html#query-string-auth-v4-signing">read this</a>.</li>
 </ul>
-
-<p>When we&#39;re building our form, we need to use both the <code>url</code> and the <code>fields</code> parts of this <code>PresignedPost</code>. The combination of these two things will authenticate users with AWS and allow them to put files in our S3 buckets. We must generate the <code>PresignedPost</code> object server-side first, which we can do in our <code>UploadsController</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">UploadsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+<p>When we're building our form, we need to use both the <code>url</code> and the <code>fields</code> parts of this <code>PresignedPost</code>. The combination of these two things will authenticate users with AWS and allow them to put files in our S3 buckets. We must generate the <code>PresignedPost</code> object server-side first, which we can do in our <code>UploadsController</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UploadsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
   <span class="k">def</span> <span class="nf">new</span>
     <span class="n">s3</span> <span class="o">=</span> <span class="no">Aws</span><span class="o">::</span><span class="no">S3</span><span class="o">::</span><span class="no">Resource</span><span class="p">.</span><span class="nf">new</span>
     <span class="vi">@post</span> <span class="o">=</span> <span class="n">s3</span><span class="p">.</span><span class="nf">bucket</span><span class="p">(</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s1">'AWS_BUCKET'</span><span class="p">)).</span><span class="nf">presigned_post</span><span class="p">(</span>
@@ -167,33 +132,28 @@ AWS_BUCKET=[your bucket name goes here]
     <span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>We&#39;re generating that <code>PresignedPost</code> here the same way as we&#39;ve done in the console, with two small differences: we&#39;re using an <code>allow_any</code> and an <code>acl</code> key.</p>
-
-<p>Rails forms automatically insert two fields called <code>utf8</code> and <code>authenticity_token</code>. AWS uses the fields of the request to build the signature, and if any extra fields are added to the request then that may alter the signature. By using <code>allow_any</code> here, we&#39;re saying that it&#39;s OK for these fields to be <em>present</em>, and we don&#39;t -- and AWS shouldn&#39;t -- necessarily care about what those fields&#39; values are.</p>
-
-<p>If we didn&#39;t specify this <code>allow_any</code> key, our upload would fail with a &quot;403 Forbidden&quot; status, and the response body would say:</p>
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;Error&gt;</span>
+</code></pre></div></div>
+<p>We're generating that <code>PresignedPost</code> here the same way as we've done in the console, with two small differences: we're using an <code>allow_any</code> and an <code>acl</code> key.</p>
+<p>Rails forms automatically insert two fields called <code>utf8</code> and <code>authenticity_token</code>. AWS uses the fields of the request to build the signature, and if any extra fields are added to the request then that may alter the signature. By using <code>allow_any</code> here, we're saying that it's OK for these fields to be <em>present</em>, and we don't -- and AWS shouldn't -- necessarily care about what those fields' values are.</p>
+<p>If we didn't specify this <code>allow_any</code> key, our upload would fail with a &quot;403 Forbidden&quot; status, and the response body would say:</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;Error&gt;</span>
   <span class="nt">&lt;Code&gt;</span>AccessDenied<span class="nt">&lt;/Code&gt;</span>
     <span class="nt">&lt;Message&gt;</span>Invalid according to Policy: Extra input fields: utf8<span class="nt">&lt;/Message&gt;</span>
     ...
 <span class="nt">&lt;/Error&gt;</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>By setting up this little bit of configuration now, we avoid those issues later on.</p>
-
 <p>The <code>acl</code> key will configure our uploaded objects permissions in such a way that only signed S3 requests can read those files.</p>
-
-<p>Now with the <code>PresignedPost</code> generated server-side, we&#39;re going to need to change our upload form to use that <code>PresignedPost</code>&#39;s <code>url</code> and <code>fields</code>. Let&#39;s change <code>app/views/uploads/new.html.erb</code> to this:</p>
-<div class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="vi">@post</span><span class="p">.</span><span class="nf">url</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">"dropzone"</span><span class="p">,</span> <span class="ss">id: </span><span class="s2">"uploader"</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+<p>Now with the <code>PresignedPost</code> generated server-side, we're going to need to change our upload form to use that <code>PresignedPost</code>'s <code>url</code> and <code>fields</code>. Let's change <code>app/views/uploads/new.html.erb</code> to this:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_tag</span> <span class="vi">@post</span><span class="p">.</span><span class="nf">url</span><span class="p">,</span> <span class="ss">class: </span><span class="s2">"dropzone"</span><span class="p">,</span> <span class="ss">id: </span><span class="s2">"uploader"</span> <span class="k">do</span> <span class="cp">%&gt;</span>
   <span class="cp">&lt;%</span> <span class="vi">@post</span><span class="p">.</span><span class="nf">fields</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span> <span class="cp">%&gt;</span>
     <span class="cp">&lt;%=</span> <span class="n">hidden_field_tag</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="cp">%&gt;</span>
   <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
 <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</code></pre></div>
-<p>These simple changes will now use the <code>PresignedPost</code> object&#39;s <code>url</code> and <code>fields</code> to build out our form. When files are uploaded, they will go to the S3 bucket that we specified with <code>AWS_BUCKET</code> in <code>.env</code>.</p>
-
-<p>There&#39;s one more small configuration change that we need to make on the AWS side of things before this will all work, and that&#39;s CORS (Cross-Origin Resource Sharing). Open up your S3 bucket in the AWS console, go to Permissions, and then CORS Configuration and paste in this:</p>
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;CORSConfiguration&gt;</span>
+</code></pre></div></div>
+<p>These simple changes will now use the <code>PresignedPost</code> object's <code>url</code> and <code>fields</code> to build out our form. When files are uploaded, they will go to the S3 bucket that we specified with <code>AWS_BUCKET</code> in <code>.env</code>.</p>
+<p>There's one more small configuration change that we need to make on the AWS side of things before this will all work, and that's CORS (Cross-Origin Resource Sharing). Open up your S3 bucket in the AWS console, go to Permissions, and then CORS Configuration and paste in this:</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;CORSConfiguration&gt;</span>
  <span class="nt">&lt;CORSRule&gt;</span>
    <span class="nt">&lt;AllowedOrigin&gt;</span>*<span class="nt">&lt;/AllowedOrigin&gt;</span>
 
@@ -204,52 +164,40 @@ AWS_BUCKET=[your bucket name goes here]
    <span class="nt">&lt;AllowedHeader&gt;</span>*<span class="nt">&lt;/AllowedHeader&gt;</span>
  <span class="nt">&lt;/CORSRule&gt;</span>
 <span class="nt">&lt;/CORSConfiguration&gt;</span>
-</code></pre></div>
-<p>You may want to set the <code>AllowedOrigin</code> to your website here; I&#39;ve just left it as an asterisk to make it easier for myself. This configuration allows any authenticated website&#39;s users to issue <code>PUT</code>, <code>POST</code> and <code>GET</code> requests to this S3 bucket. If we tried to do an upload without this configuration, we would see an error that said:</p>
-
+</code></pre></div></div>
+<p>You may want to set the <code>AllowedOrigin</code> to your website here; I've just left it as an asterisk to make it easier for myself. This configuration allows any authenticated website's users to issue <code>PUT</code>, <code>POST</code> and <code>GET</code> requests to this S3 bucket. If we tried to do an upload without this configuration, we would see an error that said:</p>
 <blockquote>
-<p>XMLHttpRequest cannot load https://[bucket].s3-[region].amazonaws.com/. Response to preflight request doesn&#39;t pass access control check: No &#39;Access-Control-Allow-Origin&#39; header is present on the requested resource. Origin &#39;http://localhost:3000&#39; is therefore not allowed access. The response had HTTP status code 403.</p>
+<p>XMLHttpRequest cannot load https://[bucket].s3-[region].amazonaws.com/. Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin '<a href="http://localhost:3000">http://localhost:3000</a>' is therefore not allowed access. The response had HTTP status code 403.</p>
 </blockquote>
-
 <p>With this configuration in place, it should now be possible to upload a file to the bucket:</p>
-
-<p><img src="/images/dropzone/successful-upload.gif" alt="Successful upload"></p>
-
+<p><img src="/images/dropzone/successful-upload.gif" alt="Successful upload" /></p>
 <p>This is what you should see too with your upload.</p>
-
-<h3>Recording the upload</h3>
-
-<p>Our upload now arrives safely on S3, but we currently do not have any record of it within our application. With Paperclip, when a file is uploaded we have to attach it to a particular model&#39;s instance, and through that model instance we track the location of the file. When we upload directly to S3, we don&#39;t have that same kind of &quot;automatic&quot; tracking that Paperclip provides.</p>
-
-<p>We&#39;re going to have to come up with another way of recording this upload within our application. Some hipster ops would probably recommend that you trigger an AWS lambda event whenever a file is uploaded to the bucket, and then that event posts back to your application... but I think that is a touch too complicated.</p>
-
-<p>What we&#39;ll do instead is to get S3 to report back after the file has been successfully uploaded. S3 will do this in the response it returns from a file upload request, as long as we configure it to do so. This response will contain the location of the file that has been uploaded, and then with that information we can then create an <code>Upload</code> record.</p>
-
-<p>To make S3 report back information about the upload, we need to make a small change to our controller. We&#39;ll need to add an extra key to our <code>presigned_post</code> call:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="vi">@post</span> <span class="o">=</span> <span class="n">s3</span><span class="p">.</span><span class="nf">bucket</span><span class="p">(</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s1">'AWS_BUCKET'</span><span class="p">)).</span><span class="nf">presigned_post</span><span class="p">(</span>
+<h3 id="recording-the-upload">Recording the upload</h3>
+<p>Our upload now arrives safely on S3, but we currently do not have any record of it within our application. With Paperclip, when a file is uploaded we have to attach it to a particular model's instance, and through that model instance we track the location of the file. When we upload directly to S3, we don't have that same kind of &quot;automatic&quot; tracking that Paperclip provides.</p>
+<p>We're going to have to come up with another way of recording this upload within our application. Some hipster ops would probably recommend that you trigger an AWS lambda event whenever a file is uploaded to the bucket, and then that event posts back to your application... but I think that is a touch too complicated.</p>
+<p>What we'll do instead is to get S3 to report back after the file has been successfully uploaded. S3 will do this in the response it returns from a file upload request, as long as we configure it to do so. This response will contain the location of the file that has been uploaded, and then with that information we can then create an <code>Upload</code> record.</p>
+<p>To make S3 report back information about the upload, we need to make a small change to our controller. We'll need to add an extra key to our <code>presigned_post</code> call:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vi">@post</span> <span class="o">=</span> <span class="n">s3</span><span class="p">.</span><span class="nf">bucket</span><span class="p">(</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s1">'AWS_BUCKET'</span><span class="p">)).</span><span class="nf">presigned_post</span><span class="p">(</span>
   <span class="ss">key: </span><span class="s2">"uploads/</span><span class="si">#{</span><span class="no">Time</span><span class="p">.</span><span class="nf">now</span><span class="p">.</span><span class="nf">to_i</span><span class="si">}</span><span class="s2">/${filename}"</span><span class="p">,</span>
   <span class="ss">allow_any: </span><span class="p">[</span><span class="s1">'utf8'</span><span class="p">,</span> <span class="s1">'authenticity_token'</span><span class="p">],</span>
   <span class="ss">success_action_status: </span><span class="mi">201</span><span class="p">,</span>
 <span class="p">)</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>This small change tells S3 that we would like a response back. By default, S3 returns a &quot;204 No Content&quot; status. This configuration option changes that to a &quot;201 Created&quot;, which will contain a response body that contains the file information.</p>
-
-<p>The next issue that we have to deal with is that Dropzone + S3 are handling the upload, and we don&#39;t currently have a way to intercept the response back from S3. Fortunately, Dropzone is easily configurable and so we can get it perform an action once a file has been uploaded successfully.</p>
-
-<p>Let&#39;s configure Dropzone like this now:</p>
-
+<p>The next issue that we have to deal with is that Dropzone + S3 are handling the upload, and we don't currently have a way to intercept the response back from S3. Fortunately, Dropzone is easily configurable and so we can get it perform an action once a file has been uploaded successfully.</p>
+<p>Let's configure Dropzone like this now:</p>
 <p><strong>app/assets/javascripts/uploads.js</strong></p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">Dropzone</span><span class="p">.</span><span class="nx">autoDiscover</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Dropzone</span><span class="p">.</span><span class="nx">autoDiscover</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 
 <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">myDropzone</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dropzone</span><span class="p">(</span><span class="s1">'#uploader'</span><span class="p">,</span> <span class="p">{</span> <span class="na">timeout</span><span class="p">:</span> <span class="mi">0</span> <span class="p">});</span>
+  <span class="kd">var</span> <span class="nx">myDropzone</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Dropzone</span><span class="p">(</span><span class="dl">'</span><span class="s1">#uploader</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">timeout</span><span class="p">:</span> <span class="mi">0</span> <span class="p">});</span>
 
-  <span class="nx">myDropzone</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">"success"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">myDropzone</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">success</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span> <span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
     <span class="kd">var</span> <span class="nx">resp</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">parseXML</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
-    <span class="kd">var</span> <span class="nx">filePath</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">resp</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">"Key"</span><span class="p">).</span><span class="nx">text</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">filePath</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">resp</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">Key</span><span class="dl">"</span><span class="p">).</span><span class="nx">text</span><span class="p">();</span>
 
-    <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/uploads'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="dl">'</span><span class="s1">/uploads</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
       <span class="na">authenticity_token</span><span class="p">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">rails</span><span class="p">.</span><span class="nx">csrfToken</span><span class="p">(),</span>
       <span class="na">upload</span><span class="p">:</span> <span class="p">{</span>
         <span class="na">path</span><span class="p">:</span> <span class="nx">filePath</span><span class="p">,</span>
@@ -259,30 +207,24 @@ AWS_BUCKET=[your bucket name goes here]
     <span class="p">})</span>
   <span class="p">});</span>
 <span class="p">});</span>
-</code></pre></div>
-<p>Again, I&#39;m going a bit &quot;old-school&quot; with the jQuery usage. Sorry, JS hipsters. This could very well <a href="https://github.com/founderlab/react-dropzone-s3-uploader">just as easily be a React component</a>, but I&#39;m wanting to keep it relatively simple here.</p>
-
-<p>The first thing that we do here is to turn off Dropzone&#39;s autodiscovery. We do this because we want to configure a custom dropzone component, but at the same time we want to keep the styling provided by <code>dropzone.css</code>. This styling refers to the class <code>dropzone</code>, but Dropzone&#39;s autodiscovery feature applies dropzone to any element with that class. So to have the styling but <em>not</em> the autodiscovery, we disable this option.</p>
-
-<p>Then we go about configuring the custom Dropzone component. We start by linking it to the <code>#uploader</code> element (our <code>form_tag</code>), and setting the timeout to 0. By default Dropzone&#39;s timeout is 30 seconds, just like Heroku&#39;s. If we have a large file that we&#39;re uploading through Dropzone and/or a slow (read: Australian) internet connection, then Dropzone will cancel the request after 30 seconds. This option disables that feature.</p>
-
-<p>The <code>on</code> function call then sets a handler for a &quot;success&quot; event, which is what happens right after a file has been uploaded. The first argument to this callback is the <code>file</code> which has just been uploaded, and contains some handy information like the file&#39;s content type and its last modification date.</p>
-
+</code></pre></div></div>
+<p>Again, I'm going a bit &quot;old-school&quot; with the jQuery usage. Sorry, JS hipsters. This could very well <a href="https://github.com/founderlab/react-dropzone-s3-uploader">just as easily be a React component</a>, but I'm wanting to keep it relatively simple here.</p>
+<p>The first thing that we do here is to turn off Dropzone's autodiscovery. We do this because we want to configure a custom dropzone component, but at the same time we want to keep the styling provided by <code>dropzone.css</code>. This styling refers to the class <code>dropzone</code>, but Dropzone's autodiscovery feature applies dropzone to any element with that class. So to have the styling but <em>not</em> the autodiscovery, we disable this option.</p>
+<p>Then we go about configuring the custom Dropzone component. We start by linking it to the <code>#uploader</code> element (our <code>form_tag</code>), and setting the timeout to 0. By default Dropzone's timeout is 30 seconds, just like Heroku's. If we have a large file that we're uploading through Dropzone and/or a slow (read: Australian) internet connection, then Dropzone will cancel the request after 30 seconds. This option disables that feature.</p>
+<p>The <code>on</code> function call then sets a handler for a &quot;success&quot; event, which is what happens right after a file has been uploaded. The first argument to this callback is the <code>file</code> which has just been uploaded, and contains some handy information like the file's content type and its last modification date.</p>
 <p>The content type can come in handy if you want to display different files differently. For instance, for images you might want to display a smallnail but for a video or a PDF file you might want to display an icon.</p>
-
 <p>The <code>request</code> argument represents the response that we get back from S3 after the file has been uploaded. Because of that <code>success_action_status</code> configuration in our controller, this response will be a short XML document.</p>
-<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
 <span class="nt">&lt;PostResponse&gt;</span>
   <span class="nt">&lt;Location&gt;</span>https://[bucket].s3-[region].amazonaws.com/[file]<span class="nt">&lt;/Location&gt;</span>
   <span class="nt">&lt;Bucket&gt;</span>[bucket]<span class="nt">&lt;/Bucket&gt;</span>
   <span class="nt">&lt;Key&gt;</span>[file]<span class="nt">&lt;/Key&gt;</span>
   <span class="nt">&lt;ETag&gt;</span>[etag]<span class="nt">&lt;/ETag&gt;</span>
 <span class="nt">&lt;/PostResponse&gt;</span>
-</code></pre></div>
-<p>From this XML response, we extract the <code>Key</code> element by using jQuery&#39;s <code>$.parseXML</code> function, and then send that through in a <code>POST</code> request with <code>$.post</code> to <code>/uploads</code>. With this request, we need to send through the authenticity token, which we get with <code>$.rails.csrfToken</code>.</p>
-
-<p>This request will hit the <code>create</code> action of our <code>UploadsController</code> which doesn&#39;t yet exist, so let&#39;s create it:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">create</span>
+</code></pre></div></div>
+<p>From this XML response, we extract the <code>Key</code> element by using jQuery's <code>$.parseXML</code> function, and then send that through in a <code>POST</code> request with <code>$.post</code> to <code>/uploads</code>. With this request, we need to send through the authenticity token, which we get with <code>$.rails.csrfToken</code>.</p>
+<p>This request will hit the <code>create</code> action of our <code>UploadsController</code> which doesn't yet exist, so let's create it:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
   <span class="no">Upload</span><span class="p">.</span><span class="nf">create!</span><span class="p">(</span><span class="n">upload_params</span><span class="p">)</span>
 
   <span class="n">head</span> <span class="ss">:ok</span>
@@ -293,76 +235,64 @@ AWS_BUCKET=[your bucket name goes here]
 <span class="k">def</span> <span class="nf">upload_params</span>
   <span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:upload</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:path</span><span class="p">,</span> <span class="ss">:file_type</span><span class="p">,</span> <span class="ss">:last_modified</span><span class="p">)</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>With all this hooked up, we should now see uploads coming through to this controller. Go ahead and upload one and give it a spin. If it&#39;s successful, you&#39;ll see something like this in the Rails server output:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">Started POST "/uploads" for 127.0.0.1 at 2017-08-29 10:36:38 +1000
+</code></pre></div></div>
+<p>With all this hooked up, we should now see uploads coming through to this controller. Go ahead and upload one and give it a spin. If it's successful, you'll see something like this in the Rails server output:</p>
+<pre><code>Started POST &quot;/uploads&quot; for 127.0.0.1 at 2017-08-29 10:36:38 +1000
 Processing by UploadsController#create as */*
   Parameters: {
-    "authenticity_token"=&gt;"[token]",
-    "upload"=&gt;{
-      "path"=&gt;"uploads/1503966995/joe.png",
-      "file_type"=&gt;"image/png",
-      "last_modified"=&gt;"1503965717000"
+    &quot;authenticity_token&quot;=&gt;&quot;[token]&quot;,
+    &quot;upload&quot;=&gt;{
+      &quot;path&quot;=&gt;&quot;uploads/1503966995/joe.png&quot;,
+      &quot;file_type&quot;=&gt;&quot;image/png&quot;,
+      &quot;last_modified&quot;=&gt;&quot;1503965717000&quot;
     }}
    (0.1ms)  begin transaction
-  SQL (0.5ms)  INSERT INTO "uploads" ...
+  SQL (0.5ms)  INSERT INTO &quot;uploads&quot; ...
    (1.5ms)  commit transaction
 Completed 200 OK in 21ms (ActiveRecord: 2.8ms)
-</code></pre></div>
+</code></pre>
 <p>Hooray!</p>
-
-<p>One issue though: if we display these uploads from S3 then they&#39;ll be displayed in their original resolutions. With Paperclip, it automatically resized uploads to smallnail or smaller versions, but with direct-to-S3 upload we&#39;re missing out on that feature. Let&#39;s look at how we can add that feature back to our app with imgix.</p>
-
-<h3>Serving images using imgix</h3>
-
+<p>One issue though: if we display these uploads from S3 then they'll be displayed in their original resolutions. With Paperclip, it automatically resized uploads to smallnail or smaller versions, but with direct-to-S3 upload we're missing out on that feature. Let's look at how we can add that feature back to our app with imgix.</p>
+<h3 id="serving-images-using-imgix">Serving images using imgix</h3>
 <p><a href="https://imgix.com">imgix</a> is a real-time image processing and CDN service. We can use them to dynamically resize the photos uploaded to our application.</p>
-
 <p>imgix takes image hosting quite seriously. <a href="http://photos.imgix.com/building-a-graphics-card-for-the-internet">Take a look at their &quot;Building a Graphics Card for the Internet&quot; writeup + photos</a> just to see how serious they are about it.</p>
-
 <p>Signing up is free, and they give you a $10 credit on signing up. That should be plenty to at least trial this.</p>
-
-<p>Sign up to imgix, and create a new source. For the &quot;Source Type&quot; you&#39;ll want to choose &quot;Amazon S3&quot;, and then you&#39;ll need to fill in the AWS Settings. The images do not have a path prefix, so leave that blank. Under &quot;Security&quot; check &quot;Secure URLs&quot;. For why you&#39;d want to check that box, read <a href="https://docs.imgix.com/setup/securing-images">this page from imgix&#39;s docs</a>.</p>
-
-<p>Once you&#39;ve setup the source, you&#39;ll need to get the token from under the &quot;Security&quot; section. It will look like <code>5pXdqzZw69drsRgB</code>. We&#39;ll use this token to securely sign our imgix URLs.</p>
-
-<p>To generate these URLs, we can use the <code>imgix</code> gem. Let&#39;s add that to the <code>Gemfile</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">gem</span> <span class="s1">'imgix'</span><span class="p">,</span> <span class="s1">'~&gt; 1.1.0'</span>
-</code></pre></div>
-<p>Then run <code>bundle install</code>. Let&#39;s add our secure token to the <code>.env</code> file, just so it&#39;s not in our committed code. We&#39;ll also add in the subdomain for the source that we setup:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">IMGIX_TOKEN=5pXdqzZw69drsRgB
+<p>Sign up to imgix, and create a new source. For the &quot;Source Type&quot; you'll want to choose &quot;Amazon S3&quot;, and then you'll need to fill in the AWS Settings. The images do not have a path prefix, so leave that blank. Under &quot;Security&quot; check &quot;Secure URLs&quot;. For why you'd want to check that box, read <a href="https://docs.imgix.com/setup/securing-images">this page from imgix's docs</a>.</p>
+<p>Once you've setup the source, you'll need to get the token from under the &quot;Security&quot; section. It will look like <code>5pXdqzZw69drsRgB</code>. We'll use this token to securely sign our imgix URLs.</p>
+<p>To generate these URLs, we can use the <code>imgix</code> gem. Let's add that to the <code>Gemfile</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'imgix'</span><span class="p">,</span> <span class="s1">'~&gt; 1.1.0'</span>
+</code></pre></div></div>
+<p>Then run <code>bundle install</code>. Let's add our secure token to the <code>.env</code> file, just so it's not in our committed code. We'll also add in the subdomain for the source that we setup:</p>
+<pre><code>IMGIX_TOKEN=5pXdqzZw69drsRgB
 IMGIX_SUBDOMAIN=[your subdomain goes here]
-</code></pre></div>
-<p>We&#39;re adding in the subdomain here as it will be different for our production environment. The subdomain here should be a <em>development-specific</em> one.</p>
-
-<p>With that there, let&#39;s now try generating an imgix URL with this gem in the rails console. First, we&#39;ll need an <code>Imgix::Client</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">client</span> <span class="o">=</span> <span class="no">Imgix</span><span class="o">::</span><span class="no">Client</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+</code></pre>
+<p>We're adding in the subdomain here as it will be different for our production environment. The subdomain here should be a <em>development-specific</em> one.</p>
+<p>With that there, let's now try generating an imgix URL with this gem in the rails console. First, we'll need an <code>Imgix::Client</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">client</span> <span class="o">=</span> <span class="no">Imgix</span><span class="o">::</span><span class="no">Client</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
   <span class="ss">host: </span><span class="s2">"</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"IMGIX_SUBDOMAIN"</span><span class="p">)</span><span class="si">}</span><span class="s2">.imgix.net"</span><span class="p">,</span>
   <span class="ss">secure_url_token: </span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"IMGIX_TOKEN"</span><span class="p">)</span>
 <span class="p">)</span>
-</code></pre></div>
-<p>Then to sign a URL, we can use <code>Imgix::Client#path</code>. By this point, we should have at least one upload, so let&#39;s use that upload&#39;s path to generate this URL:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">path</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="no">Upload</span><span class="p">.</span><span class="nf">last</span><span class="p">.</span><span class="nf">path</span><span class="p">)</span>
-</code></pre></div>
+</code></pre></div></div>
+<p>Then to sign a URL, we can use <code>Imgix::Client#path</code>. By this point, we should have at least one upload, so let's use that upload's path to generate this URL:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">path</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="no">Upload</span><span class="p">.</span><span class="nf">last</span><span class="p">.</span><span class="nf">path</span><span class="p">)</span>
+</code></pre></div></div>
 <p>This gives us an <code>Imgix::Path</code> object. We can transform this path into a URL with the <code>to_url</code> method:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">path</span><span class="p">.</span><span class="nf">to_url</span>
-</code></pre></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">path</span><span class="p">.</span><span class="nf">to_url</span>
+</code></pre></div></div>
 <p>The URL returned here will look something like:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">https://[imgix subdomain].imgix.net/uploads/[path]?ixlib=rb-1.1.0&amp;s=[signature]
-</code></pre></div>
-<p>If you open this URL in your browser you&#39;ll see the image that you have just uploaded, at the resolution you uploaded it. This is a good thing, as it proves that imgix&#39;s proxying service is working: imgix is fetching the image from the S3 bucket and serving the image through the imgix CDN.</p>
-
-<p>The next step that we want to acheive is to get imgix to dynamically resize these photos. Let&#39;s say that we want an image that&#39;s 250×250 pixels to use as our smallnail. To get imgix to generate an image like that, we need to pass some options to <code>to_url</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">path.to_url(w: 250, h: 250)
-</code></pre></div>
+<pre><code>https://[imgix subdomain].imgix.net/uploads/[path]?ixlib=rb-1.1.0&amp;s=[signature]
+</code></pre>
+<p>If you open this URL in your browser you'll see the image that you have just uploaded, at the resolution you uploaded it. This is a good thing, as it proves that imgix's proxying service is working: imgix is fetching the image from the S3 bucket and serving the image through the imgix CDN.</p>
+<p>The next step that we want to acheive is to get imgix to dynamically resize these photos. Let's say that we want an image that's 250×250 pixels to use as our smallnail. To get imgix to generate an image like that, we need to pass some options to <code>to_url</code>:</p>
+<pre><code>path.to_url(w: 250, h: 250)
+</code></pre>
 <p>This will return an image that maintains its aspect ratio, but at least the width or the height is a maximum of 250 pixels. Let me explain what I mean by this with an example: I have an image hosted through imgix that is 3264×2448 pixels. With the above options, imgix resizes this image to 250×188, effectively reducing the measurements of the photo by a ratio of 13.058.</p>
-
 <p>However, in this particular application I want images that are perfect squares because I display these photos in a grid fashion. You might want this too, and so to generate images like this we can use the <code>:fit</code> option in <code>to_url</code>:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">path.to_url(w: 250, h: 250, fit: 'crop')
-</code></pre></div>
+<pre><code>path.to_url(w: 250, h: 250, fit: 'crop')
+</code></pre>
 <p>imgix will now crop the image so that it fits neatly into a 250×250 square. There are <a href="https://docs.imgix.com/apis/url/size/fit">other styles of cropping, which are explained here</a>. You can load up the two images in two browser tabs to compare what they look like.</p>
-
-<p>Let&#39;s make our images do this now through our view, and not just through the console. We can create a new class for this at <code>lib/upload_url.rb</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">UploadURL</span>
+<p>Let's make our images do this now through our view, and not just through the console. We can create a new class for this at <code>lib/upload_url.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UploadURL</span>
   <span class="k">def</span> <span class="nf">initialize</span>
     <span class="vi">@client</span> <span class="o">=</span> <span class="no">Imgix</span><span class="o">::</span><span class="no">Client</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
       <span class="ss">host: </span><span class="s2">"</span><span class="si">#{</span><span class="no">ENV</span><span class="p">.</span><span class="nf">fetch</span><span class="p">(</span><span class="s2">"IMGIX_SUBDOMAIN"</span><span class="p">)</span><span class="si">}</span><span class="s2">.imgix.net"</span><span class="p">,</span>
@@ -378,11 +308,10 @@ IMGIX_SUBDOMAIN=[your subdomain goes here]
     <span class="vi">@client</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="nf">to_url</span><span class="p">(</span><span class="ss">w: </span><span class="mi">1000</span><span class="p">,</span> <span class="ss">h: </span><span class="mi">1000</span><span class="p">,</span> <span class="ss">fit: </span><span class="s1">'crop'</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>Then we can use this new class in <code>UploadsHelper</code>:</p>
-
 <p><em>app/helpers/uploads_helper.rb</em></p>
-<div class="highlight"><pre><code class="language-" data-lang="">require_dependency 'upload_url'
+<pre><code>require_dependency 'upload_url'
 
 module UploadsHelper
   def small_image(upload)
@@ -399,27 +328,23 @@ module UploadsHelper
     @upload_url ||= UploadURL.new
   end
 end
-</code></pre></div>
+</code></pre>
 <p>We can then use these helpers to display smallnail versions of our image on the <code>index</code> template:</p>
-
 <p><strong>app/views/uploads/index.html.erb</strong></p>
-<div class="highlight"><pre><code class="language-erb" data-lang="erb"><span class="nt">&lt;h1&gt;</span>Uploads<span class="nt">&lt;/h1&gt;</span>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Uploads<span class="nt">&lt;/h1&gt;</span>
 
 <span class="cp">&lt;%</span> <span class="vi">@uploads</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">upload</span><span class="o">|</span> <span class="cp">%&gt;</span>
   <span class="cp">&lt;%=</span> <span class="n">small_image</span><span class="p">(</span><span class="n">upload</span><span class="p">)</span> <span class="cp">%&gt;</span>
 <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-</code></pre></div>
+</code></pre></div></div>
 <p>Or large images on the <code>show</code> template:</p>
-
 <p><strong>app/views/uploads/show.html.erb</strong></p>
-<div class="highlight"><pre><code class="language-erb" data-lang="erb">...
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
   <span class="cp">&lt;%=</span> <span class="n">large_image</span><span class="p">(</span><span class="vi">@upload</span><span class="p">)</span> <span class="cp">%&gt;</span>
 ...
-</code></pre></div>
-<h3>Summary</h3>
-
-<p>Dropzone, S3 and imgix allow us to upload and host our images very easily, without the need of the paperclip gem. By uploading directly to S3, we avoid tying up our application&#39;s processes with lengthy file uploads too.</p>
-
+</code></pre></div></div>
+<h3 id="summary">Summary</h3>
+<p>Dropzone, S3 and imgix allow us to upload and host our images very easily, without the need of the paperclip gem. By uploading directly to S3, we avoid tying up our application's processes with lengthy file uploads too.</p>
 <p>If you found this post helpful, chuck a few bucks my way on PayPal: <a href="https://paypal.me/ryanbigg">https://paypal.me/ryanbigg</a>.</p>
 
           </article>

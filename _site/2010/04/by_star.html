@@ -34,12 +34,9 @@
               <a href="/2010/04/by_star"><h2>by_star</h2></a>
               <small>28 Apr 2010</small>
             </div>
-            <p>It&#39;s plugin / gem pimping time!</p>
-
+            <p>It's plugin / gem pimping time!</p>
 <p>I started writing <a href='http://github.com/radar/by_star'>by_star</a> back in November 2008 when Thomas Sinclair asked me if I could write a method that could find records for a given month. I was in my gem creating phase then so I created a gem called by_month and Thomas paid me for it (the sucker!).</p>
-
-<p>Later on, I realised that by_month wasn&#39;t good enough so I added a couple more finders to it. Then I added some more. Now you can find by all of these things:</p>
-
+<p>Later on, I realised that by_month wasn't good enough so I added a couple more finders to it. Then I added some more. Now you can find by all of these things:</p>
 <ul>
 <li>A given year</li>
 <li>A given month</li>
@@ -57,15 +54,13 @@
 <li>Before a specific record</li>
 <li>After a specific record</li>
 </ul>
-
-<p>So if you&#39;re ever doing anything in your application where you need to find by dates / times, why are you not using <a href='http://github.com/radar/by_star'>by_star</a>? Here&#39;s a good reason you should be using by_star:</p>
-
+<p>So if you're ever doing anything in your application where you need to find by dates / times, why are you not using <a href='http://github.com/radar/by_star'>by_star</a>? Here's a good reason you should be using by_star:</p>
 <p><strong>Before by_star</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang=""> Post.all(:conditions =&gt; ["created_at &gt;= ? AND created_at &lt;= ?", "01/01/#{Time.now.year}".to_time, "31/01/#{Time.now.year}"])
-</code></pre></div>
+<pre><code> Post.all(:conditions =&gt; [&quot;created_at &gt;= ? AND created_at &lt;= ?&quot;, &quot;01/01/#{Time.now.year}&quot;.to_time, &quot;31/01/#{Time.now.year}&quot;])
+</code></pre>
 <p><strong>After by_star</strong></p>
-<div class="highlight"><pre><code class="language-" data-lang="">Post.by_month(1)
-</code></pre></div>
+<pre><code>Post.by_month(1)
+</code></pre>
 <p>This is only a <strong>taste</strong> of the shiny things in by_star! Use it!</p>
 
           </article>

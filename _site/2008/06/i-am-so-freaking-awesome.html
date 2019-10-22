@@ -39,9 +39,7 @@
     has_many model.split(".").first.pluralize.to_sym, :foreign_key => "owner_id"
   end
 </pre>
-
 <p>I tried adding:</p>
-
 <pre lang='rails'>
  if model.classify.is_a?(ActiveRecord::Base)
       <<-EVAL
@@ -51,8 +49,7 @@
       EVAL
     end
 </pre>
-
-<p>too, but Rails didn&#39;t like that.</p>
+<p>too, but Rails didn't like that.</p>
 
           </article>
         </div>

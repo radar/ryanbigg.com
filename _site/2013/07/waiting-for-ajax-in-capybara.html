@@ -34,33 +34,30 @@
               <a href="/2013/07/waiting-for-ajax-in-capybara"><h2>Waiting for AJAX in Capybara</h2></a>
               <small>09 Jul 2013</small>
             </div>
-            <p>In Spree recently, we&#39;ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree&#39;s API</a> for the Backend component. This means that we&#39;ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
-
-<p>Some of these test failures are that the tests just aren&#39;t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more ... bewildering:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">F
+            <p>In Spree recently, we've been using more and more of <a href="http://guides.spreecommerce.com/api">Spree's API</a> for the Backend component. This means that we've introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
+<p>Some of these test failures are that the tests just aren't waiting long enough for an AJAX request to complete before checking for content on the page. Others are more ... bewildering:</p>
+<pre><code>F
 An error occurred in an after hook
   ActiveRecord::StatementInvalid: 
     SQLite3::BusyException:
-    database is locked: DELETE FROM "spree_activators";
+    database is locked: DELETE FROM &quot;spree_activators&quot;;
   occurred at ...lib/sqlite3/statement.rb:108:in `step'
-</code></pre></div>
-<p>This error happens when an AJAX request is still being processed by the server, but the test finishes and Database Cleaner attempts to wipe the database. The server has locked the database until it&#39;s done what it needs to do, and during that lock Database Cleaner attempts to wipe all the data and can&#39;t.</p>
-
+</code></pre>
+<p>This error happens when an AJAX request is still being processed by the server, but the test finishes and Database Cleaner attempts to wipe the database. The server has locked the database until it's done what it needs to do, and during that lock Database Cleaner attempts to wipe all the data and can't.</p>
 <p>To fix this, we just needed to wait for all AJAX requests to complete. This means replacing <code>sleep</code> with magic numbers, like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">sleep(2)
-</code></pre></div>
+<pre><code>sleep(2)
+</code></pre>
 <p>With this method:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">def wait_for_ajax
+<pre><code>def wait_for_ajax
   counter = 0
-  while page.execute_script("return $.active").to_i &gt; 0
+  while page.execute_script(&quot;return $.active&quot;).to_i &gt; 0
     counter += 1
     sleep(0.1)
-    raise "AJAX request took longer than 5 seconds." if counter &gt;= 50
+    raise &quot;AJAX request took longer than 5 seconds.&quot; if counter &gt;= 50
   end
 end
-</code></pre></div>
+</code></pre>
 <p>This code will call <code>$.active</code> which is jQuery-code for &quot;how many <code>$.ajax</code> requests are still active?&quot;, and if that returns more than 0, then it will sleep for a moment, and check again. This code gives AJAX requests 5 seconds to wrap up before raising an exception and moving on.</p>
-
 <p>Use this <code>wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
 
           </article>

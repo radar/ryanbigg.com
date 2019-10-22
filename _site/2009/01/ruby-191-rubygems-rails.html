@@ -35,51 +35,30 @@
               <small>31 Jan 2009</small>
             </div>
             <p><strong>I have <a href="http://ryanbigg.com/2009/12/ruby-1-9-1-friends-11-months-on/">made a followup post</a>to this which contains more up-to-date information. This post is left here as an example of the state of Ruby 1.9 in January-July 2009.</strong></p>
-
 <p><strong>Last updated: July 11th, 2009</strong></p>
-
 <p><a href='http://eigenclass.org/hiki/Changes+in+Ruby+1.9'>For changes between Ruby 1.8 and Ruby 1.9, look here</a></p>
-
-<p>So this morning I sat down to give Ruby 1.9.1 a shot with my goal being to get at least the very, very basic Rails application running on it. I&#39;ve run this guide on Mac OS X. Your mileage may vary.</p>
-
+<p>So this morning I sat down to give Ruby 1.9.1 a shot with my goal being to get at least the very, very basic Rails application running on it. I've run this guide on Mac OS X. Your mileage may vary.</p>
 <h2>Ruby 1.9.1</h2>
-
-<p>Download it from the <a href='http://ruby-lang.org'>ruby-lang.org website</a>, install it using <span class='term'>autoconf &amp;&amp; ./configure --with-readline-dir=/usr/local --program-suffix=1.9 &amp;&amp; make &amp;&amp; sudo make install</span> and everything should be peachy. I&#39;ve gone about installing Ruby 1.9.1 alongside my current installation of Ruby. If you wish to go the &quot;whole hog&quot; (and I don&#39;t recommend that you do, unless you know how to revert it) don&#39;t run the configure command with the <span class='term'>--program-suffix</span> option specified.</p>
-
+Download it from the <a href='http://ruby-lang.org'>ruby-lang.org website</a>, install it using <span class='term'>autoconf && ./configure --with-readline-dir=/usr/local --program-suffix=1.9 && make && sudo make install</span> and everything should be peachy. I've gone about installing Ruby 1.9.1 alongside my current installation of Ruby. If you wish to go the "whole hog" (and I don't recommend that you do, unless you know how to revert it) don't run the configure command with the <span class='term'>--program-suffix</span> option specified.
 <h2>Rubygems</h2>
-
-<p>Since <a href='http://ryanbigg.com/2009/01/ruby-191-rubygems-rails/#comment-7575'>Ruby 1.9.1 comes with Rubygems now</a>, and this has been confirmed to Just Work (tm). The command used was <span class='term'>gem1.9</span>.</p>
-
+Since <a href='http://ryanbigg.com/2009/01/ruby-191-rubygems-rails/#comment-7575'>Ruby 1.9.1 comes with Rubygems now</a>, and this has been confirmed to Just Work (tm). The command used was <span class='term'>gem1.9</span>.
 <h2>Rails</h2>
-
-<p><span class='term'>gem1.9 install rails rack sqlite3-ruby</span> works too, which is nice to see. The versions of the things installed were:</p>
-
+<span class='term'>gem1.9 install rails rack sqlite3-ruby</span> works too, which is nice to see. The versions of the things installed were:
 <ul>
   <li>Rails: 2.3.2</li>
   <li>Rack: 1.0.0</li>
   <li>Sqlite3 Ruby: 1.2.4</li>
 </ul>
-
 <p>You need the rack gem for running your Rails app and of course the sqlite3-ruby gem because, by default, Rails applications use sqlite3.</p>
-
 <h2>The Rails App</h2>
-
-<p>We&#39;ll generate a Rails application by typing <span class='term'>rails onepointnine</span> and we&#39;ll head into this directory.</p>
-
-<p>Because I&#39;ve installed 1.9.1 alongside 1.8, the version that Rails will try to use by default is 1.8.  To fix this, we&#39;ll be running our commands with a <span class='term'>ruby1.9</span> prefix.</p>
-
-<p>We launch our server by <span class='term'>ruby1.9 script/server</span> and then go to <a href='http://localhost:3000'>http://localhost:3000</a>. Welcome aboard! Clicking on &quot;About your application&#39;s environment&quot; should give you something like <a href='http://skitch.com/radarlistener/baeqh/ruby1.9-rails2.3.2'>this</a>.  If you don&#39;t see Ruby 1.9.1, you&#39;re using the wrong version of Ruby. Ensure that you launched the server with <span class='term'>ruby 1.9 script/server</span></p>
-
-<p>In another tab, we run <span class='term'>ruby1.9 script/generate scaffold blog title:string text:text</span> to get our scaffold and <span class='term'>rake1.9 db:migrate</span> to put some tables in our sqlite3 database. Now go to <a href='http://localhost:3000/blogs'>http://localhost:3000/blogs</a> and play around a bit. Everything at this point should be working.</p>
-
+We'll generate a Rails application by typing <span class='term'>rails onepointnine</span> and we'll head into this directory.
+<p>Because I've installed 1.9.1 alongside 1.8, the version that Rails will try to use by default is 1.8.  To fix this, we'll be running our commands with a <span class='term'>ruby1.9</span> prefix.</p>
+<p>We launch our server by <span class='term'>ruby1.9 script/server</span> and then go to <a href='http://localhost:3000'><a href="http://localhost:3000">http://localhost:3000</a></a>. Welcome aboard! Clicking on &quot;About your application's environment&quot; should give you something like <a href='http://skitch.com/radarlistener/baeqh/ruby1.9-rails2.3.2'>this</a>.  If you don't see Ruby 1.9.1, you're using the wrong version of Ruby. Ensure that you launched the server with <span class='term'>ruby 1.9 script/server</span></p>
+<p>In another tab, we run <span class='term'>ruby1.9 script/generate scaffold blog title:string text:text</span> to get our scaffold and <span class='term'>rake1.9 db:migrate</span> to put some tables in our sqlite3 database. Now go to <a href='http://localhost:3000/blogs'><a href="http://localhost:3000/blogs">http://localhost:3000/blogs</a></a> and play around a bit. Everything at this point should be working.</p>
 <!--more-->
-
 <h2>Tests</h2>
-
-<p>So now I&#39;ll try a <a href='http://github.com/radar/rboard'>real app</a>, rBoard.</p>
-
+<p>So now I'll try a <a href='http://github.com/radar/rboard'>real app</a>, rBoard.</p>
 <p>Upon trying to run <span class='term'>rake1.9 spec</span> it gives:</p>
-
 <pre>
 frozenplague:rboard radar (master)$ rake1.9 spec --trace
 (in /Users/radar/Sites/rboard)
@@ -102,17 +81,12 @@ undefined method `>=' for nil:NilClass
 /usr/local/lib/ruby1.9/gems/1.9.1/gems/rake-0.8.7/lib/rake.rb:1998:in `run'
 /usr/local/bin/rake1.9:31:in `<main>'
 </pre>
-
-<p>To fix this we find the <span class='term'>rubygems_version</span> on line 69 and (even though I can&#39;t explain how this happens), putting the following code above all the code inside this method makes it magically work:</p>
-
+<p>To fix this we find the <span class='term'>rubygems_version</span> on line 69 and (even though I can't explain how this happens), putting the following code above all the code inside this method makes it magically work:</p>
 <pre>
 puts Gem::RubyGemsVersion.inspect
 </pre>
-
-<p>I&#39;m serious. Go figure.</p>
-
-<p>Now we&#39;ll run it again and we&#39;ll get a slightly better error:</p>
-
+<p>I'm serious. Go figure.</p>
+<p>Now we'll run it again and we'll get a slightly better error:</p>
 <pre>
 frozenplague:rboard radar (master)$ rake1.9 spec --trace
 (in /Users/radar/Sites/rboard)
@@ -144,22 +118,16 @@ Could not find RubyGem test-unit (= 1.2.3) <--- BINGO!
 /usr/local/lib/ruby1.9/gems/1.9.1/gems/rake-0.8.7/lib/rake.rb:1998:in `run'
 /usr/local/bin/rake1.9:31:in `<main>'
 </pre>
-
-<p>Annotated the output a little bit. This just tells us we&#39;re missing <span class='term'>test-unit</span>, version 1.2.3. Usually we would go ahead and do <span class='term'>sudo gem1.9 install test-unit</span>, but this installs 2.0.2! Never fear, just a quick edit of <em>lib/tasks/rspec.rake</em>&#39;s first line and we&#39;re off and racing. </p>
-
+<p>Annotated the output a little bit. This just tells us we're missing <span class='term'>test-unit</span>, version 1.2.3. Usually we would go ahead and do <span class='term'>sudo gem1.9 install test-unit</span>, but this installs 2.0.2! Never fear, just a quick edit of <em>lib/tasks/rspec.rake</em>'s first line and we're off and racing.</p>
 <h2>Misbehaving Gems</h2>
-
-<p><a name='gem_solution'>&nbsp;</a>
-Generally gems will not install because they are using functions in Ruby that no longer exist. Upon suggestion from the first comment on this blog post and from <a href='http://writequit.org/blog/?p=247&cpage=1#comment-442'>another blog on the interwebs</a> I replace occurrences of<span class='term'>RARRAY(blah)-&gt;ptr</span> with <span class='term'>RARRAYPTR(blah)</span>, <span class='term'>RARRAY(blah)-&gt;len</span> with <span class='term'>RARRAYLEN(blah)</span>, and commented out all the places where it said <span class='term'>rb<em>thread</em>start<em>timer()</span> and <span class='term'>rb</em>thread<em>stop</em>timer()</span> and this generally fixes the gem so I can install it.</p>
-
+<a name='gem_solution'>&nbsp;</a>
+Generally gems will not install because they are using functions in Ruby that no longer exist. Upon suggestion from the first comment on this blog post and from <a href='http://writequit.org/blog/?p=247&cpage=1#comment-442'>another blog on the interwebs</a> I replace occurrences of<span class='term'>RARRAY(blah)->ptr</span> with <span class='term'>RARRAYPTR(blah)</span>, <span class='term'>RARRAY(blah)->len</span> with <span class='term'>RARRAYLEN(blah)</span>, and commented out all the places where it said <span class='term'>rb_thread_start_timer()</span> and <span class='term'>rb_thread_stop_timer()</span> and this generally fixes the gem so I can install it.
 <h3>MySQL</h3>
-
 <p>To install mysql I first attempted <span class='term'>gem1.9 install mysql</span> (for Mac OS X, you need to specify additional parameters for this command: <span class='term'>-- --with-mysql-dir=/usr/local/mysql --with-mysql-lib=/usr/local/mysql/lib  --with-mysql-include=/usr/local/mysql/include</span>) and it failed epically:</p>
-
 <pre>
 Building native extensions.  This could take a while...
 ERROR:  Error installing mysql:
-    ERROR: Failed to build gem native extension.
+	ERROR: Failed to build gem native extension.
 
 /usr/local/bin/ruby1.9 extconf.rb install mysql -- --with-mysql-dir=/usr/local/mysql --with-mysql-lib=/usr/local/mysql/lib --with-mysql-include=/usr/local/mysql/include
 checking for mysql_query() in -lmysqlclient... yes
@@ -222,37 +190,21 @@ make: *** [mysql.o] Error 1
 Gem files will remain installed in /usr/local/lib/ruby1.9/gems/1.9.1/gems/mysql-2.7 for inspection.
 Results logged to /usr/local/lib/ruby1.9/gems/1.9.1/gems/mysql-2.7/gem_make.out
 </pre>
-
 <p>The <a href='#gem_solution'>solution above</a> fixes this problem, also using <a href='http://github.com/radar/mysql'>my own fixed version of the gem</a> works too, but throws an error when trying to install the documentation. Just use <span class='term'>--no-ri --no-rdoc</span> options until this is fixed.</p>
-
 <h3>Hpricot</h3>
-
 <p>Once upon a time reported as a failing gem, now passes! Good work!</p>
-
 <h3>pg (postgresql gem)</h3>
-
 <p>Another one previously reported as failing, now succeeds. Previous attempt was with the <span class='term'>postgres</span> gem.</p>
-
 <h3>thin (1.2.2)</h3>
-
 <p>Confirmed working.</p>
-
 <h3>mongrel</h3>
-
 <p>Lost cause, use Rack instead.</p>
-
 <h3>passenger (2.2.4)</h3>
-
 <p>Tested with passenger 2.2.4.</p>
-
 <p><a href='http://blog.phusion.nl/2009/02/02/getting-ready-for-ruby-191'>As stated here</a>, passenger is compatible with Ruby 1.9.1. This has been used to run a Rails 2.3 test application without issue.</p>
-
 <h3><a name='nokogiri'>nokigiri</a> & <a name='ruby-xslt'>ruby-xslt</a></h3>
-
-<p>Mac users apparently do not need to install ruby-xslt. Everyone else is not so lucky.</p>
-
+Mac users apparently do not need to install ruby-xslt. Everyone else is not so lucky.
 <p>To install this on Ubuntu, we first need to do this: <span class='term'>sudo apt-get install libxml-ruby1.8 libxslt1-dev</span> and then we do <span class='term'>sudo gem1.9 install ruby-xslt</span> but we encounter:</p>
-
 <pre>
 /usr/local/bin/ruby extconf.rb install ruby-xslt
 checking for xmlParseDoc() in -lxml2... yes
@@ -277,22 +229,14 @@ make: *** [extfunc.o] Error 1
 
 Gem files will remain installed in /usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6 for inspection.
 </pre>
-
-<p>So we use <a href='#gem_solution'>the solution above</a> and we patch this gem to work by editing the <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt<em>lib/extfunc.c</em>, line 141.  We&#39;ll also need to edit <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt</em>lib/extfunc.c</em>, lines 504, 533 (two occurrences), parameters.c lines 42 and 43. Then run <span class='term'>sudo ruby extconf.rb &amp;&amp; sudo make &amp;&amp; sudo make install</span> and this gem should install. </p>
-
+<p>So we use <a href='#gem_solution'>the solution above</a> and we patch this gem to work by editing the <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt_lib/extfunc.c</em>, line 141.  We'll also need to edit <em>/usr/local/lib/ruby/gems/1.9.1/gems/ruby-xslt-0.9.6/ext/xslt_lib/extfunc.c</em>, lines 504, 533 (two occurrences), parameters.c lines 42 and 43. Then run <span class='term'>sudo ruby extconf.rb &amp;&amp; sudo make &amp;&amp; sudo make install</span> and this gem should install.</p>
 <p>To install nokogiri, ensure you have followed the steps above and then <span class='term'>sudo gem1.9 install nokogiri</span>. Tested with nokogiri 1.2.3 and ruby-xslt 0.9.6.</p>
-
 <h3>haml (2.2.0)</h3>
-
-<p>haml works right out of the box too, throws some errors for <span class='term'>--inline-source</span> and has recently attained Ruby 1.9 compatibility.</p>
-
+haml works right out of the box too, throws some errors for <span class='term'>--inline-source</span> and has recently attained Ruby 1.9 compatibility.
 <h2>Further Notes</h2>
-
 <p>I tried <a href='http://github.com/radar/rboard'>rboard</a> and that worked on this setup (with a <a href='http://github.com/Radar/rboard/commit/4a94cce6c562c106b7ce89042f2c6efbe3d533ef'>few minor tweaks to the paperclip plugin</a> and <a href='http://github.com/Radar/rboard/commit/591d3222494e7e546fe1d000055dacebf0ec8b9e'>the script commands</a>). I also had to freeze rails to <em>vendor/rails</em>.</p>
-
 <h2>Conclusion</h2>
-
-<p>My original summary was that you should hold off completely from using Ruby 1.9.1, but that was back in January. Whilst &quot;important&quot; things such as the mysql gem and ruby-xslt are broken, there&#39;s no real dealbreakers stopping you from running your applications on Ruby 1.9.1. As reassurance of this, <a href='http://m.wikipedia.org'>wikipedia&#39;s mobile site</a> is a merb application, running Ruby 1.9.1 and was <a href='http://techblog.wikimedia.org/2009/06/wikimedia-mobile-launch/'>launched last month</a> and handles a fair bit of traffic.</p>
+<p>My original summary was that you should hold off completely from using Ruby 1.9.1, but that was back in January. Whilst &quot;important&quot; things such as the mysql gem and ruby-xslt are broken, there's no real dealbreakers stopping you from running your applications on Ruby 1.9.1. As reassurance of this, <a href='http://m.wikipedia.org'>wikipedia's mobile site</a> is a merb application, running Ruby 1.9.1 and was <a href='http://techblog.wikimedia.org/2009/06/wikimedia-mobile-launch/'>launched last month</a> and handles a fair bit of traffic.</p>
 
           </article>
         </div>

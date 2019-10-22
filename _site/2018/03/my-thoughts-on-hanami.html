@@ -35,63 +35,34 @@
               <small>07 Mar 2018</small>
             </div>
             <p>(<a href='https://www.reddit.com/r/rails/comments/81z9oe/what_are_your_opinions_about_hanami_framework/dvale8q/?st=jegb17z5&sh=e9d18fa1'>This was originally posted as a comment on Reddit</a>)</p>
-
 <p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2018_03_28/54381">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
-
-<p>I&#39;ve been toying around with Hanami for a few weeks now and imo it <em>feels</em> better than Rails.  If you want to see some code rather than text, <a href="http://github.com/radar/hanami-example">here&#39;s my little example app I&#39;ve been building with Hanami</a>.</p>
-
+<p>I've been toying around with Hanami for a few weeks now and imo it <em>feels</em> better than Rails.  If you want to see some code rather than text, <a href="http://github.com/radar/hanami-example">here's my little example app I've been building with Hanami</a>.</p>
 <p>Here are the top three things that I like about Hanami, in long form:</p>
-
-<h2>Repository pattern instead of Active Record</h2>
-
+<h2 id="repository-pattern-instead-of-active-record">Repository pattern instead of Active Record</h2>
 <p>Documentation link: <a href="http://hanamirb.org/guides/1.1/models/overview/">Hanami | Guides - Models Overview</a></p>
-
 <p>The Active Record pattern encourages you to throw everything into the model. Think: callbacks, validations, persistence, database logic (queries) and business logic.</p>
-
 <p>In contrast, the repository pattern (through ROM) leads to a cleaner separation between your database and your application. I <em>especially</em> like how validations are handled by <code>dry-validation</code>, a completely separate library to ROM. This <em>enforces</em> a separation between your models, persistence and validation layers, allowing you to pick and choose which ones you wish to use.</p>
-
-<p>My <em>favourite</em> part about the repository pattern is that it&#39;s incredibly difficult to make database queries from a view. This helps prevent things like N+1 queries.</p>
-
-<p>Also: ROM has no such thing as callbacks, and that&#39;s a huge plus in my eyes too. Callbacks are <em>way</em> too magical and -- using DHH&#39;s words -- too sharp a knife for developers to have. Explicitness in code leads to a much better understanding.</p>
-
-<h2>Action classes</h2>
-
+<p>My <em>favourite</em> part about the repository pattern is that it's incredibly difficult to make database queries from a view. This helps prevent things like N+1 queries.</p>
+<p>Also: ROM has no such thing as callbacks, and that's a huge plus in my eyes too. Callbacks are <em>way</em> too magical and -- using DHH's words -- too sharp a knife for developers to have. Explicitness in code leads to a much better understanding.</p>
+<h2 id="action-classes">Action classes</h2>
 <p>Documentation link: <a href="http://hanamirb.org/guides/1.1/actions/overview/">Hanami | Guides - Actions Overview</a></p>
-
-<p>Rather than throwing all your actions into the same controller, they&#39;re separated out into their own classes.  This helps keep each action isolated from one another, leading to overall a cleaner application architecture.</p>
-
-<p>If you want to share things across actions, it&#39;s very easy to create a module for that functionality and to include it into those action classes. For instance, if you wanted a <code>find_post</code> method for <code>show</code>, <code>edit</code>, <code>update</code> and <code>destroy</code> actions, you can define this in a module and only include it in the actions you want.</p>
-
-<p>A Rails controller is typically made messier by the addition of &quot;helper&quot; methods like this. It&#39;s not uncommon to have Rails controllers of multiple hundreds of lines, due to the complexity of the actions and these helper methods. Separating out each action into its own class indeed makes them easier to work with.</p>
-
-<p>You&#39;re also able to test the action in complete isolation from the routing layer, as it is simply a class. I think this is what was attempted with Rails&#39; controller specs... but those never really felt &quot;right&quot; to me and I typically go to Request Specs these days instead. Hanami brings me back to testing the actions easily. I like that.</p>
-
-<h3>Params validation for actions</h3>
-
+<p>Rather than throwing all your actions into the same controller, they're separated out into their own classes.  This helps keep each action isolated from one another, leading to overall a cleaner application architecture.</p>
+<p>If you want to share things across actions, it's very easy to create a module for that functionality and to include it into those action classes. For instance, if you wanted a <code>find_post</code> method for <code>show</code>, <code>edit</code>, <code>update</code> and <code>destroy</code> actions, you can define this in a module and only include it in the actions you want.</p>
+<p>A Rails controller is typically made messier by the addition of &quot;helper&quot; methods like this. It's not uncommon to have Rails controllers of multiple hundreds of lines, due to the complexity of the actions and these helper methods. Separating out each action into its own class indeed makes them easier to work with.</p>
+<p>You're also able to test the action in complete isolation from the routing layer, as it is simply a class. I think this is what was attempted with Rails' controller specs... but those never really felt &quot;right&quot; to me and I typically go to Request Specs these days instead. Hanami brings me back to testing the actions easily. I like that.</p>
+<h3 id="params-validation-for-actions">Params validation for actions</h3>
 <p>Documentation link: <a href="http://hanamirb.org/guides/1.1/actions/parameters/">Hanami | Guides - Action Parameters</a></p>
-
 <p>Somewhat related to the previous point:</p>
-
 <p>Actions in Hanami also use parameter validation (with the help of <code>dry-validation</code>, I think). This means that each action can uniquely validate the parameters. Rather than having <code>create_project_params</code> and <code>update_project_params</code> defined within a controller -- as you might do in Rails -- you can define what constitutes valid parameters right there in the action class.</p>
-
-<p>In my Hanami experiments, I&#39;ve not found a use for this yet, but I can think of several places where I&#39;ve needed this sort of thing in a Rails app.</p>
-
-<h2>View classes</h2>
-
+<p>In my Hanami experiments, I've not found a use for this yet, but I can think of several places where I've needed this sort of thing in a Rails app.</p>
+<h2 id="view-classes">View classes</h2>
 <p>Documentation link: <a href="http://hanamirb.org/guides/1.1/views/overview/">Hanami | Guides - Views Overview</a></p>
-
 <p>Similarly to Action classes, Hanami also has the concept of a view class.  I like these because they separate the logic of view &quot;helper&quot; methods and the templates very cleanly.</p>
-
-<p>In a Rails application, you define a helper in a module named after the controller. I never liked this approach for two main reasons: 1) normally I would only ever use the helper in <em>one</em> particular view and 2) the helper is made <em>globally available</em> across <em>all</em> views in the application, which means I can&#39;t have a similarly named method in another helper module. A quite horrible design decision.</p>
-
-<p>In Hanami, the view classes are a <em>great</em> place to put these little helper methods <em>and</em> because they&#39;re just small, isolated classes, you can test these without involving the router, controller or model.</p>
-
-<h2>Conclusion</h2>
-
-<p>As I said at the beginning: Hanami <em>feels</em> right. It&#39;s &quot;familiar&quot; enough -- still somewhat following the Model-View-Controller architecture we know-and-love Rails -- that it feels comfortable to use. There&#39;s a few places where your mind has to change into the &quot;Hanami Way&quot;, but ultimately once your mind does that you&#39;ll realise that the Hanami way <em>is</em> better.</p>
-
+<p>In a Rails application, you define a helper in a module named after the controller. I never liked this approach for two main reasons: 1) normally I would only ever use the helper in <em>one</em> particular view and 2) the helper is made <em>globally available</em> across <em>all</em> views in the application, which means I can't have a similarly named method in another helper module. A quite horrible design decision.</p>
+<p>In Hanami, the view classes are a <em>great</em> place to put these little helper methods <em>and</em> because they're just small, isolated classes, you can test these without involving the router, controller or model.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>As I said at the beginning: Hanami <em>feels</em> right. It's &quot;familiar&quot; enough -- still somewhat following the Model-View-Controller architecture we know-and-love Rails -- that it feels comfortable to use. There's a few places where your mind has to change into the &quot;Hanami Way&quot;, but ultimately once your mind does that you'll realise that the Hanami way <em>is</em> better.</p>
 <p>Hanami has demonstrably learned the very hard lessons of big Rails application development and presents a robust, well-developed alternative web framework for Ruby.</p>
-
 <p>In fact, it is so robust and well-developed that if I was to develop a Ruby web application from scratch for production use, I would use Hanami over Rails -- despite my 10 years Rails experience.</p>
 
           </article>

@@ -35,24 +35,19 @@
               <small>24 Nov 2008</small>
             </div>
             <p>This tutorial was written using Ruby 1.8.6, Rails 2.2.2 and Rubygems 1.3.1.</p>
-
-<p>This question has been coming up a lot recently. People want urls like http://domain.com/frozenplague-rules-my-world but they don&#39;t know how to do it.</p>
-
-<p>Let&#39;s say you have a model called Blog and this is what you want to match to http://domain.com/frozenplague-rules-my-world. In this model you define:</p>
-
-<p><b>app/models/blog.rb</b>
+<p>This question has been coming up a lot recently. People want urls like <a href="http://domain.com/frozenplague-rules-my-world">http://domain.com/frozenplague-rules-my-world</a> but they don't know how to do it.</p>
+<p>Let's say you have a model called Blog and this is what you want to match to <a href="http://domain.com/frozenplague-rules-my-world">http://domain.com/frozenplague-rules-my-world</a>. In this model you define:</p>
+<p><b>app/models/blog.rb</b></p>
 <pre lang='rails'>
 def to_param
-  &quot;#{id}-#{title.parameterize}&quot;
+  "#{id}-#{title.parameterize}"
 end
-</pre></p>
-
-<p>And then this in your config/routes.rb
+</pre>
+<p>And then this in your config/routes.rb</p>
 <pre lang='rails'>
-map.connect &#39;:slug&#39;, :controller =&gt; &quot;blogs&quot;, :action =&gt; &quot;show&quot;
-</pre></p>
-
-<p>And now you should be able to access blogs through http://domain.com/frozenplague-rules-my-world.</p>
+map.connect ':slug', :controller => "blogs", :action => "show"
+</pre>
+<p>And now you should be able to access blogs through <a href="http://domain.com/frozenplague-rules-my-world">http://domain.com/frozenplague-rules-my-world</a>.</p>
 
           </article>
         </div>

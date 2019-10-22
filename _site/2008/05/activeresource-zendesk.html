@@ -34,54 +34,50 @@
               <a href="/2008/05/activeresource-zendesk"><h2>ActiveResource & ZenDesk</h2></a>
               <small>14 May 2008</small>
             </div>
-            <p>With many, many thanks to Frederick Cheung, who without this would&#39;ve been way more painful and time-consuming. My original question and our discussion can be found <a href="http://groups.google.ca/group/rubyonrails-talk/browse_thread/thread/49616be220fb8d1d">here</a>.</p>
-
-<p>At my new job we signed up with <a href="http://zendesk.com">ZenDesk</a>, which acts as our helpdesk/ticketing system for our clients who sign up to our site and buy our product. Because ZenDesk uses emails instead of plain ol&#39; usernames for authentication, Ruby chucked a fit when we tried doing stuff like:
+            <p>With many, many thanks to Frederick Cheung, who without this would've been way more painful and time-consuming. My original question and our discussion can be found <a href="http://groups.google.ca/group/rubyonrails-talk/browse_thread/thread/49616be220fb8d1d">here</a>.</p>
+<p>At my new job we signed up with <a href="http://zendesk.com">ZenDesk</a>, which acts as our helpdesk/ticketing system for our clients who sign up to our site and buy our product. Because ZenDesk uses emails instead of plain ol' usernames for authentication, Ruby chucked a fit when we tried doing stuff like:</p>
 <pre lang="rails">class User &lt; ActiveResource::Base
-self.site = &quot;http://ouremail@ourwebsite.com:ourpassword@ourplace.zendesk.com&quot;
+self.site = "http://ouremail@ourwebsite.com:ourpassword@ourplace.zendesk.com"
 end</pre>
-Ruby&#39;s URI class just didn&#39;t like that first @ sign in there! So Fred originally recommended we try to encode it, %40. That didn&#39;t work. Then the next morning Fred suggests doing this:
+<p>Ruby's URI class just didn't like that first @ sign in there! So Fred originally recommended we try to encode it, %40. That didn't work. Then the next morning Fred suggests doing this:</p>
 <pre lang="rails">class User &lt; ActiveResource::Base
-self.site = &quot;http://ourplace.zendesk.com&quot;</p>
+self.site = "http://ourplace.zendesk.com"
 
-<p>def (self.site).user
-&quot;ouremail@ourwebsite.com&quot;
-end</p>
+def (self.site).user
+"ouremail@ourwebsite.com"
+end
 
-<p>def (self.site).password
-&quot;ourpassword&quot;
-end</p>
+def (self.site).password
+"ourpassword"
+end
 
-<p>end</pre>
-And &#39;lo and behold the thing worked!</p>
-
-<p>So for all you savvy kids using Rails&#39; ActiveResource and trying to make it play nice with ZenDesk, that&#39;s how we did it.</p>
-
-<p>Then I went a little further with the refactoring and just made a ZenDesk model:
-<pre lang="rails">class ZenDesk &lt; ActiveResource::Base</p>
-
-<p>self.site = &quot;http://ourplace.zendesk.com&quot;</p>
-
-<p>def (self.site).user
-&quot;ouremail@ourwebsite.com&quot;
-end</p>
-
-<p>def (self.site).password
-&quot;ourpassword&quot;
-end</p>
-
-<p>end
 end</pre>
-And then got the models I wanted to inherit from that.
+<p>And 'lo and behold the thing worked!</p>
+<p>So for all you savvy kids using Rails' ActiveResource and trying to make it play nice with ZenDesk, that's how we did it.</p>
+<p>Then I went a little further with the refactoring and just made a ZenDesk model:</p>
+<pre lang="rails">class ZenDesk &lt; ActiveResource::Base
+
+self.site = "http://ourplace.zendesk.com"
+
+def (self.site).user
+"ouremail@ourwebsite.com"
+end
+
+def (self.site).password
+"ourpassword"
+end
+
+end
+end</pre>
+<p>And then got the models I wanted to inherit from that.</p>
 <pre lang="rails">class User &lt; ZenDesk
 end</pre>
-Brilliant!</p>
-
-<p>Also one more note. If you&#39;re going through and testing out creating Organisations/Users in ZenDesk through ActiveResource, don&#39;t forget to delete them as you go! It&#39;s time-consuming clicking edit, and then the delete button for 50 odd objects... but of course you could do this:
-<pre lang="ruby">for i in original<em>object</em>id..last<em>object</em>id
+<p>Brilliant!</p>
+<p>Also one more note. If you're going through and testing out creating Organisations/Users in ZenDesk through ActiveResource, don't forget to delete them as you go! It's time-consuming clicking edit, and then the delete button for 50 odd objects... but of course you could do this:</p>
+<pre lang="ruby">for i in original_object_id..last_object_id
 User.find(i).destroy
 end</pre>
-Which, if you did it, say, all in the same day like I did, should delete all the users within that range.</p>
+<p>Which, if you did it, say, all in the same day like I did, should delete all the users within that range.</p>
 
           </article>
         </div>

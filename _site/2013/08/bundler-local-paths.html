@@ -34,31 +34,26 @@
               <a href="/2013/08/bundler-local-paths"><h2>Bundler local paths</h2></a>
               <small>16 Aug 2013</small>
             </div>
-            <p>There&#39;s a little known feature of Bundler that allows you to use a local Git
+            <p>There's a little known feature of Bundler that allows you to use a local Git
 repository while developing locally, and a remote Git repo when deploying. This
 feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem 'spree', :path =&gt; "~/Projects/gems/spree"
-</code></pre></div>
+<pre><code>gem 'spree', :path =&gt; &quot;~/Projects/gems/spree&quot;
+</code></pre>
 <p>And remote paths:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
-</code></pre></div>
+<pre><code>gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
+</code></pre>
 <p>How does it work?</p>
-
-<hr>
-
+<hr />
 <p>Well, what you can do instead is tell Bundler that you have a local copy of
 this repository by running a command like this in your terminal:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">bundle config local.spree ~/Projects/gems/spree
-</code></pre></div>
+<pre><code>bundle config local.spree ~/Projects/gems/spree
+</code></pre>
 <p>Then in your Gemfile whenever you reference a Git repo for this gem, like this...</p>
-<div class="highlight"><pre><code class="language-" data-lang="">gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
-</code></pre></div>
+<pre><code>gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
+</code></pre>
 <p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
-
 <p>For more information, check out the <a href="http://bundler.io/v1.3/git.html">Bundler documentation page</a>, under &quot;Local Git Repos&quot;.</p>
-
-<hr>
-
+<hr />
 <p>Thanks to <a href="http://p.arndt.io">Phil Arndt</a> who first showed me this trick many moons ago.</p>
 
           </article>

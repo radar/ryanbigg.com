@@ -35,27 +35,19 @@
               <small>03 Oct 2012</small>
             </div>
             <p><a href="https://github.com/spree/spree/blob/bf0b85472e477f20f84d030c575382b9c0922903/core/app/views/spree/admin/return_authorizations/_form.html.erb#L54-56">These three little lovely lines</a> of very-much obtrusive JavaScript caused a little bit of frustration this afternoon.</p>
-
-<p>What was happening was that in Google Chrome, the page was giving an &quot;aw snap!&quot; error. So I went to Firefox, where the page didn&#39;t &quot;aw snap&quot;, but instead hung for a moment then asked if I wanted to stop the script.</p>
-
-<p>What could that JavaScript be doing? Well, it&#39;s not that hard to understand <em>now</em>, but it didn&#39;t click the first couple of times I read it.</p>
-
+<p>What was happening was that in Google Chrome, the page was giving an &quot;aw snap!&quot; error. So I went to Firefox, where the page didn't &quot;aw snap&quot;, but instead hung for a moment then asked if I wanted to stop the script.</p>
+<p>What could that JavaScript be doing? Well, it's not that hard to understand <em>now</em>, but it didn't click the first couple of times I read it.</p>
 <p>The script initializes a new JavaScript array, like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">var variant_prices = new Array();
-</code></pre></div>
-<p>Fairly innocuous. We would&#39;ve also accepted <code>var variant_prices = [];</code>.</p>
-
-<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant&#39;s id <em>as an index in the array</em>. If a variant has an <code>id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code>variant_prices[0]</code> being undefined, and <code>variant_prices[1]</code> being whatever value is assigned.</p>
-
-<p><em>However</em>, if the variant&#39;s <code>id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
-
-<p>Obviously, this is not very efficient and would lead to some performance degredations. Smart browsers would detect this early on and show a vague warning screen and dumber browsers would ask politely if you&#39;d like to stop the script. Which script? Well, they won&#39;t tell you that. You have to play guessing games, like most of the time with the beautiful language that is JavaScript.</p>
-
-<hr>
-
+<pre><code>var variant_prices = new Array();
+</code></pre>
+<p>Fairly innocuous. We would've also accepted <code>var variant_prices = [];</code>.</p>
+<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant's id <em>as an index in the array</em>. If a variant has an <code>id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code>variant_prices[0]</code> being undefined, and <code>variant_prices[1]</code> being whatever value is assigned.</p>
+<p><em>However</em>, if the variant's <code>id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
+<p>Obviously, this is not very efficient and would lead to some performance degredations. Smart browsers would detect this early on and show a vague warning screen and dumber browsers would ask politely if you'd like to stop the script. Which script? Well, they won't tell you that. You have to play guessing games, like most of the time with the beautiful language that is JavaScript.</p>
+<hr />
 <p>The <em>now obvious</em> solution to this problem is to <em>not</em> use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">var variant_prices = {};
-</code></pre></div>
+<pre><code>var variant_prices = {};
+</code></pre>
 <p>Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.</p>
 
           </article>
