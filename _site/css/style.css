@@ -1,4 +1,4 @@
-/* Solarized Dark 
+/* Solarized Dark
 
 For use with Jekyll and Pygments
 
@@ -231,6 +231,7 @@ Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/b
 
 */
 code[class*="language-"], pre[class*="language-"] { font-family: "Ubuntu Mono", monospace; font-size: 12pt; line-height: 1.5; direction: ltr; text-align: left; white-space: pre; word-spacing: normal; word-break: normal; -moz-tab-size: 4; -o-tab-size: 4; tab-size: 4; -webkit-hyphens: none; -moz-hyphens: none; -ms-hyphens: none; hyphens: none; background: #212733; color: #D9D7CE; }
+@media (prefers-color-scheme: dark) { code[class*="language-"], pre[class*="language-"] { background-color: #2f3d5a; } }
 
 pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection, code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection { text-shadow: none; background: #dfe2f1; }
 
@@ -296,17 +297,19 @@ pre > code.highlight { outline: 0.4em solid #c94922; outline-offset: .4em; }
 
 html, body { height: 100%; }
 
-body { font-family: "Nunito Sans"; font-size: 14pt; margin: 0; color: #232323; }
+body { font-family: "Nunito Sans"; font-size: 14pt; margin: 0; }
+@media (prefers-color-scheme: dark) { body { background: #232323; color: #e3e3e3; } }
+@media (prefers-color-scheme: light) { body { color: #232323; background: #efefef; } }
 
 h1 { font-size: 3rem; }
 
 a { color: #2aa863; }
+@media (prefers-color-scheme: dark) { a { color: #61d796; } }
 
 .main { margin: 2% 7.5%; margin-bottom: 7.5rem; }
 @media (min-width: 1000px) { .main { margin: 2% 15%; } }
 
-article { background: white; }
-article h2 { font-size: 2rem; color: #484851; }
+article h2 { font-size: 2rem; }
 article code { font-family: "Ubuntu Mono"; }
 article p, article ul { line-height: 1.6; }
 article small { font-size: 75%; }
@@ -325,6 +328,7 @@ article img { max-width: 50%; }
 #books .book blockquote { width: 66%; }
 
 blockquote { background: #effbf5; border-left: 8px solid #2aa863; font-size: 90%; padding: 0.66rem; }
+@media (prefers-color-scheme: dark) { blockquote { background: #114227; } }
 
 aside { background: #303036; color: #dedede; padding: 20px; }
 aside p { margin: 0px; }
@@ -337,6 +341,7 @@ aside header { font-size: 1.5rem; }
 #archive abbr { float: right; }
 
 hr { border: 2px solid #2aa863; }
+@media (prefers-color-scheme: dark) { hr { border: 2px solid #61d796; } }
 
 .references p { text-indent: -1em; margin-left: 1em; }
 
@@ -344,7 +349,9 @@ hr { border: 2px solid #2aa863; }
 .photo #my-photo { max-height: 150px; border-radius: 150px; }
 
 footer { color: #fefefe; font-size: 5px; min-height: 3rem; }
+@media (prefers-color-scheme: dark) { footer { color: #343434; } }
 
 header.topbar { background: #232323; color: #6de6a3; border-bottom: 3px solid #6de6a3; display: flex; justify-content: space-between; padding: 10px; }
+@media (prefers-color-scheme: dark) { header.topbar { border-bottom: 3px solid #61d796; } }
 header.topbar h1 { margin: 0; font-size: 20px; }
 header.topbar .items { justify-content: flex-end; }

@@ -9,7 +9,16 @@ body {
   font-family: "Nunito Sans";
   font-size: 14pt;
   margin: 0;
-  color: #232323;
+
+  @media (prefers-color-scheme: dark) {
+    background: #232323;
+    color: #e3e3e3;
+  }
+
+  @media (prefers-color-scheme: light) {
+    color: #232323;
+    background: #efefef;
+  }
 }
 
 h1 {
@@ -18,6 +27,12 @@ h1 {
 
 a {
   color: $primary-color;
+
+  @media (prefers-color-scheme: dark) {
+    color: lighten($primary-color, 20);
+  }
+
+
 }
 
 .main {
@@ -30,11 +45,9 @@ a {
 }
 
 article {
-  background: white;
 
   h2 {
     font-size: 2rem;
-    color: #484851;
   }
 
   code {
@@ -93,6 +106,11 @@ article {
 
 blockquote {
   background: lighten($primary-color, 55%);
+
+  @media (prefers-color-scheme: dark) {
+    background: darken($primary-color, 25%);
+  }
+
   border-left: 8px solid $primary-color;
   font-size: 90%;
   padding: 0.66rem;
@@ -135,6 +153,10 @@ aside {
 
 hr {
   border: 2px solid $primary-color;
+
+  @media (prefers-color-scheme: dark) {
+    border: 2px solid lighten($primary-color, 20);
+  }
 }
 
 .references {
@@ -155,6 +177,10 @@ hr {
 
 footer {
   color: #fefefe;
+
+  @media (prefers-color-scheme: dark) {
+    color: #343434;
+  }
   font-size: 5px;
   min-height: 3rem;
 }
