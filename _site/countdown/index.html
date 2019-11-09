@@ -1,18 +1,20 @@
 <html>
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js" integrity="sha256-H9jAz//QLkDOy/nzE9G4aYijQtkLt9FvGmdUTwBk6gs=" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Fira+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
 
     <style>
       body {
-        font: 14pt "Fira Sans";
+        font: 24pt "Inconsolata";
       }
 
       .number {
         font-size: 15vw;
+        transition: color 1s ease;
       }
 
       .unit {
+
         width: 20vw;
         font-weight: bold;
         display: inline-block;
@@ -41,19 +43,41 @@
       </div>
     </div>
     <script>
+      const startColor = [212, 20, 90]
+      const endColor = [251, 176, 59]
+      function pickHex(color1, color2, weight) {
+          var w1 = weight;
+          var w2 = 1 - w1;
+          var rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+              Math.round(color1[1] * w1 + color2[1] * w2),
+              Math.round(color1[2] * w1 + color2[2] * w2)];
+          return rgb;
+      }
+
+      function pad(unit) {
+        return unit.toString().padStart(2, '0')
+      }
+
+      function updateUnit(name, duration, max) {
+        let dur = duration[name]()
+        let el = document.getElementById(name)
+        el.style.color = "rgb(" + pickHex(startColor, endColor, dur / max).join(",") + ")"
+        el.innerHTML = pad(dur)
+      }
+
       function update() {
         then = moment("2019-11-29 17:00:00")
         now = moment()
 
-        duration = moment.duration(then.diff(now))
+        let duration = moment.duration(then.diff(now))
 
-        document.getElementById('days').innerHTML = duration.days()
-        document.getElementById('hours').innerHTML = duration.hours()
-        document.getElementById('minutes').innerHTML = duration.minutes()
-        document.getElementById('seconds').innerHTML = duration.seconds()
+        updateUnit('days', duration, 30)
+        updateUnit('hours', duration, 24)
+        updateUnit('minutes', duration, 60)
+        updateUnit('seconds', duration, 60)
       }
 
-      setInterval(update, 1000);
+      setInterval(update, 10);
     </script>
   </body>
 </html>
