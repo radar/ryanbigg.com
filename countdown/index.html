@@ -2,22 +2,20 @@
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js" integrity="sha256-H9jAz//QLkDOy/nzE9G4aYijQtkLt9FvGmdUTwBk6gs=" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Inconsolata&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Countdown</title>
 
     <style>
       body {
-        font: 24pt "Inconsolata";
-      }
-
-      .number {
-        font-size: 15vw;
-        transition: color 1s ease;
+        font: 24pt "Courier New";
       }
 
       .unit {
-
-        width: 20vw;
+        line-height: 75%;
+        font-size: 30vh;
         font-weight: bold;
-        display: inline-block;
+        transition: color 1s ease;
       }
 
       .center {
@@ -28,18 +26,13 @@
 
   <body>
     <div class='center'>
-      <h1>Time left at Culture Amp</h1>
-      <div class='days unit'>
-        <div class='number' id='days'></div> days
+      <div id='seconds' class='unit'>
       </div>
-      <div class='hours unit'>
-        <div class='number' id='hours'></div> hours
+      <div id='minutes' class='unit'>
       </div>
-      <div class='minutes unit'>
-        <div class='number' id='minutes'></div> minutes
+      <div id='hours' class='unit'>
       </div>
-      <div class='seconds unit'>
-        <div class='number' id='seconds'></div> seconds
+      <div id='days' class='unit'>
       </div>
     </div>
     <script>
@@ -77,7 +70,12 @@
         updateUnit('seconds', duration, 60)
       }
 
-      setInterval(update, 10);
+      setInterval(update, 1000);
+
+      window.addEventListener('DOMContentLoaded', (event) => {
+        update()
+      });
+
     </script>
   </body>
 </html>
