@@ -20,6 +20,7 @@ For users of our software this can look like:
 
 * A page that takes 10 seconds to load _is a rough edge_. Could we make it load in 5 seconds, or under a second? Why are our users waiting so long?
 * A process that takes a user several clicks through tricky menus _is a rough edge_. Can we make a shortcut for common user flows instead?
+* A part of our application that works on browsers, but not on mobile _is a rough edge_. Can we make that page responsive and useable on devices smaller than a 30" desktop or 13" laptop?
 * A feature that works in one part of our application, but not in another _is a rough edge_. A feature should work in predictable ways, everywhere. For instance: `/collapse` works in the main Slack window, but not in threads. Why not?
 
 Rough edges in software are human-software interaction problems. They should be treated at the same level as a bug or as an exception. A rough edge _is an exceptional thing_.
