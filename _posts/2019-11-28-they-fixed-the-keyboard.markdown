@@ -27,7 +27,7 @@ So I went over to [TypeRacer](https://typeracer.com) on my _old_ MacBook Pro and
 
 Then I went to TypeRacer on my _new_ MacBook Pro and did 5 more tests.
 
-My range there was 105-120WPM. So I'm typing at about 15-20WPM _on average_ faster on this keyboard than I was on the old one.
+My range there was 105-120WPM. So I'm typing at 15-20WPM faster on this keyboard than I was on the old one.
 
 This keyboard _is_ better for me than the old one was. It seems that Apple has fixed the keyboard issues.
 
