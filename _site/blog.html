@@ -421,7 +421,7 @@ create      <span class="nb">test</span>/fixtures/articles.yml
 <tbody>
 <tr>
 <td></td>
-<td></td>
+<td> </td>
 <td></td>
 <td></td>
 <td></td>
@@ -429,10 +429,10 @@ create      <span class="nb">test</span>/fixtures/articles.yml
 </tbody>
 </table>
 <p>To create this table in our application's database, we can run this command:</p>
-<pre><code>rails db:migrate
-</code></pre>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails db:migrate
+</code></pre></div></div>
 <p>This command will show us output indicating that the table was created:</p>
-<pre><code>== 20200118233119 CreateArticles: migrating ===================================
+<pre><code class="language-plain">>== 20200118233119 CreateArticles: migrating ===================================
 -- create_table(:articles)
    -&gt; 0.0018s
 == 20200118233119 CreateArticles: migrated (0.0018s) ==========================
@@ -445,7 +445,7 @@ create      <span class="nb">test</span>/fixtures/articles.yml
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails c
 </code></pre></div></div>
 <p>When we launch this, we should see an irb prompt:</p>
-<pre><code>Loading development environment (Rails 6.0.2.1)
+<pre><code class="language-plain">>Loading development environment (Rails 6.0.2.1)
 irb(main):001:0&gt;
 </code></pre>
 <p>In this prompt, we can use our model to initialize a new <code>Article</code> object:</p>
@@ -455,7 +455,7 @@ irb(main):001:0&gt;
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">article</span><span class="p">.</span><span class="nf">save</span>
 </code></pre></div></div>
 <p>This command will show us the following output:</p>
-<pre><code>(0.1ms)  begin transaction
+<pre><code class="language-plain">>(0.1ms)  begin transaction
 Article Create (0.4ms)  INSERT INTO &quot;articles&quot; (&quot;title&quot;, &quot;body&quot;, &quot;created_at&quot;, &quot;updated_at&quot;) VALUES (?, ?, ?, ?)  [[&quot;title&quot;, &quot;Hello Rails&quot;], [&quot;body&quot;, &quot;I am on Rails!&quot;], [&quot;created_at&quot;, &quot;2020-01-18 23:47:30.734416&quot;], [&quot;updated_at&quot;, &quot;2020-01-18 23:47:30.734416&quot;]]
 (0.9ms)  commit transaction
 =&gt; true
@@ -561,7 +561,7 @@ Article Create (0.4ms)  INSERT INTO &quot;articles&quot; (&quot;title&quot;, &qu
 </code></pre></div></div>
 <p>Now when we go to <a href="http://localhost:3000/articles/1">http://localhost:3000/articles/1</a> we will see the article:</p>
 <p><img src="/images/getting_started/single_article_view.png" alt="Single Article View" /></p>
-<p>Excellent! We now have our second action working in our controller. But in order to navigate to it, we have to manually type in <a href="http://localhost:3000/articles/1">http://localhost:3000/articles/1</a>. That seems a bit silly. Let's change our application a little, so that we can navigate to an article by clicking a link from the list of articles. And then we'll also add a back button, to go back from a single article to the list.</p>
+<p>Excellent! We now have our second action working in our controller. But in order to navigate to it, we have to manually type in <a href="http://localhost:3000/articles/1">http://localhost:3000/articles/1</a>. That seems a bit silly. Let's change our application a little, so that we can navigate to an article by clicking a link from the list of articles.</p>
 <p>To add the link to an article, we need to change <code>app/views/articles/index.html.erb</code>, which currently looks like this:</p>
 <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Articles<span class="nt">&lt;/h1&gt;</span>
 
@@ -572,393 +572,73 @@ Article Create (0.4ms)  INSERT INTO &quot;articles&quot; (&quot;title&quot;, &qu
 <span class="nt">&lt;/ul&gt;</span>
 </code></pre></div></div>
 <p>This code will render an <code>li</code> element for each of the articles, and that element contains the title of the article. But we can't click on the title to go to an article yet! To make that happen, we need to use an <code>a</code> tag:</p>
+<pre><code class="language-erb+html">>&lt;h1&gt;Articles&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;% @articles.each do |article| %&gt;
+    &lt;li&gt;
+      &lt;a href='/articles/&lt;%= article.id %&gt;'&gt;
+        &lt;%= article.title %&gt;
+      &lt;/a&gt;
+    &lt;/li&gt;
+  &lt;% end %&gt;
+&lt;/ul&gt;
+</code></pre>
+<p>This <code>a</code> tag will provide us with a link to the specific article. If we go back to <a href="http://localhost:3000/">http://localhost:3000/</a>, we'll see that we can now click on the articles:</p>
+<p><img src="/images/getting_started/articles_list_with_links.png" alt="Articles list with links" /></p>
+<p>Clicking either of these links will take us to the relevant article:</p>
+<p><img src="/images/getting_started/single_article_view.png" alt="Single Article View" /></p>
+<p>Now we have been able to link together the <code>index</code> and <code>show</code> pages in our application using a simple <code>a</code> tag. What could be simpler than that?</p>
+<p>Well, Rails has a method called <code>link_to</code> that can make that linking a little simpler. Let's use this in <code>app/views/articles/index.html.erb</code>:</p>
 <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Articles<span class="nt">&lt;/h1&gt;</span>
 
 <span class="nt">&lt;ul&gt;</span>
   <span class="cp">&lt;%</span> <span class="vi">@articles</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">article</span><span class="o">|</span> <span class="cp">%&gt;</span>
     <span class="nt">&lt;li&gt;</span>
-      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">'/articles/</span><span class="cp">&lt;%=</span> <span class="n">article</span><span class="p">.</span><span class="nf">id</span> <span class="cp">%&gt;</span><span class="s">'</span><span class="nt">&gt;</span>
-        <span class="cp">&lt;%=</span> <span class="n">article</span><span class="p">.</span><span class="nf">title</span> <span class="cp">%&gt;</span>
-      <span class="nt">&lt;/a&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">article</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span> <span class="s2">"/articles/</span><span class="si">#{</span><span class="n">article</span><span class="p">.</span><span class="nf">id</span><span class="si">}</span><span class="s2">"</span> <span class="cp">%&gt;</span>
     <span class="nt">&lt;/li&gt;</span>
   <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
 <span class="nt">&lt;/ul&gt;</span>
 </code></pre></div></div>
-<p>This <code>a</code> tag will provide us with a link to the specific article. If we go back to <a href="http://localhost:3000/">http://localhost:3000/</a></p>
-<h3 id="laying-down-the-groundwork">Laying down the Groundwork</h3>
-<p>Firstly, you need a place within the application to create a new article. A
-great place for that would be at <code>/articles/new</code>. With the route already
-defined, requests can now be made to <code>/articles/new</code> in the application.
-Navigate to <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> and you'll see a routing
-error:</p>
-<p><img src="images/getting_started/routing_error_no_controller.png" alt="Another routing error, uninitialized constant ArticlesController" /></p>
-<p>This error occurs because the route needs to have a controller defined in order
-to serve the request. The solution to this particular problem is simple: create
-a controller called <code>ArticlesController</code>. You can do this by running this
-command:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/rails generate controller Articles
+<p>There we go, that is now a little bit cleaner. Rails has given us a way to shorten this code a little. But what you don't know yet is that this line can be made even simpler.</p>
+<p>Rails has a feature called <em>routing helpers</em>. These are methods that can be used to generate route paths like <code>&quot;/articles/#{article.id}&quot;</code> programatically. We'll use one of these to generate the route for our article. To set this up, let's go back to <code>config/routes.rb</code> and change this line:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">get</span> <span class="s2">"/articles/:id"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#show"</span>
 </code></pre></div></div>
-<p>If you open up the newly generated <code>app/controllers/articles_controller.rb</code>
-you'll see a fairly empty controller:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+<p>To this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">get</span> <span class="s2">"/articles/:id"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#show"</span><span class="p">,</span> <span class="ss">as: :article</span>
+</code></pre></div></div>
+<p>The <code>:as</code> option here tells Rails that we want routing helpers for this article route to be available in our application. Rails will then let us use this helper to build that route.</p>
+<p>Let's look at how we can use that in <code>app/views/articles/index.html.erb</code> now, by changing the end of the <code>link_to</code> call to this:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Articles<span class="nt">&lt;/h1&gt;</span>
+
+<span class="nt">&lt;ul&gt;</span>
+  <span class="cp">&lt;%</span> <span class="vi">@articles</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">article</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">article</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span> <span class="n">article_path</span><span class="p">(</span><span class="n">article</span><span class="p">)</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;/li&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+<p>The <code>link_to</code> now assembles its path using the <code>article_path</code> helper. This will still generate the same <code>/articles/:id</code> route we used earlier, but now it happens programatically instead. Now there is not so much switching happening between HTML and Ruby in this code. We enter Ruby, generate a link, and exit Ruby. The code still does the same thing: it links an article's title to the <code>show</code> page for that article.</p>
+<p>TIP: To learn more about routing, read the <a href="https://guides.rubyonrails.org/routing.html">Rails Routing from the Outside In Guide</a>.</p>
+<p>We now have an <code>index</code> action that lists the articles, and a <code>show</code> action that shows the title and body for a specific article. Let's now look at how we can create new articles within this application.</p>
+<h3 id="creating-new-articles">Creating new articles</h3>
+<p>To have a place to create new articles in our application, we're going to need create a new route, action and view. On that view, we're going to have this form:</p>
+<p>IMAGE GOES HERE</p>
+<p>Let's start with the route:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+  <span class="n">root</span> <span class="s2">"articles#index"</span>
+  <span class="n">get</span> <span class="s2">"/articles"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#index"</span>
+  <span class="n">get</span> <span class="s2">"/articles/new"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#new"</span><span class="p">,</span> <span class="ss">as: :new_article</span>
+  <span class="n">get</span> <span class="s2">"/articles/:id"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#show"</span><span class="p">,</span> <span class="ss">as: :article</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>A controller is simply a class that is defined to inherit from
-<code>ApplicationController</code>.
-It's inside this class that you'll define methods that will become the actions
-for this controller. These actions will perform CRUD operations on the articles
-within our system.</p>
-<p>NOTE: There are <code>public</code>, <code>private</code> and <code>protected</code> methods in Ruby,
-but only <code>public</code> methods can be actions for controllers.
-For more details check out <a href="https://ruby-doc.org/docs/ProgrammingRuby/">Programming Ruby</a>.</p>
-<p>If you refresh <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> now, you'll get a new error:</p>
+<p>This place to create new articles will be <code>/articles/new</code>, and the route for this has <em>very</em> intentionally been placed above the route for the <code>show</code> action. The reason for this is because routes in a Rails application are matched top-to-bottom. If we had <code>/articles/:id</code> first, that route would match <code>/articles/new</code>, and so if we went to <code>/articles/new</code>, the <code>show</code> action would serve that request, not the <code>new</code> action. And so for this reason, we put the <code>new</code> route <em>above</em> the <code>show</code> action.</p>
+<p>This <code>/articles/new</code> route will send the request to the <code>new</code> action within the <code>ArticlesController</code>, which we'll see in a minute. We've added the <code>:as</code> option here, as we will be using the <code>new_article_path</code> helper in a little while to provide a way to navigate to this form.</p>
+<p>If we were to attempt to go to this route now, would see an error for the first time:</p>
 <p><img src="images/getting_started/unknown_action_new_for_articles.png" alt="Unknown action new for ArticlesController!" /></p>
 <p>This error indicates that Rails cannot find the <code>new</code> action inside the
-<code>ArticlesController</code> that you just generated. This is because when controllers
-are generated in Rails they are empty by default, unless you tell it
-your desired actions during the generation process.</p>
-<p>To manually define an action inside a controller, all you need to do is to
-define a new method inside the controller. Open
-<code>app/controllers/articles_controller.rb</code> and inside the <code>ArticlesController</code>
-class, define the <code>new</code> method so that your controller now looks like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="k">def</span> <span class="nf">new</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>With the <code>new</code> method defined in <code>ArticlesController</code>, if you refresh
-<a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> you'll see another error:</p>
-<p>![Template is missing for articles/new]
-(images/getting_started/template_is_missing_articles_new.png)</p>
-<p>You're getting this error now because Rails expects plain actions like this one
-to have views associated with them to display their information. With no view
-available, Rails will raise an exception.</p>
-<p>Let's look at the full error message again:</p>
-<blockquote>
-<p>ArticlesController#new is missing a template for request formats: text/html</p>
-</blockquote>
-<blockquote>
-<p>NOTE!
-Unless told otherwise, Rails expects an action to render a template with the same name, contained in a folder named after its controller. If this controller is an API responding with 204 (No Content), which does not require a template, then this error will occur when trying to access it via browser, since we expect an HTML template to be rendered for such requests. If that's the case, carry on.</p>
-</blockquote>
-<p>The message identifies which template is missing. In this case, it's the
-<code>articles/new</code> template. Rails will first look for this template. If not found,
-then it will attempt to load a template called <code>application/new</code>, because the
-<code>ArticlesController</code> inherits from <code>ApplicationController</code>.</p>
-<p>Next the message contains <code>request.formats</code> which specifies the format of
-template to be served in response. It is set to <code>text/html</code> as we requested
-this page via browser, so Rails is looking for an HTML template.</p>
-<p>The simplest template that would work in this case would be one located at
-<code>app/views/articles/new.html.erb</code>. The extension of this file name is important:
-the first extension is the <em>format</em> of the template, and the second extension
-is the <em>handler</em> that will be used to render the template. Rails is attempting
-to find a template called <code>articles/new</code> within <code>app/views</code> for the
-application. The format for this template can only be <code>html</code> and the default
-handler for HTML is <code>erb</code>. Rails uses other handlers for other formats.
-<code>builder</code> handler is used to build XML templates and <code>coffee</code> handler uses
-CoffeeScript to build JavaScript templates. Since you want to create a new
-HTML form, you will be using the <code>ERB</code> language which is designed to embed Ruby
-in HTML.</p>
-<p>Therefore the file should be called <code>articles/new.html.erb</code> and needs to be
-located inside the <code>app/views</code> directory of the application.</p>
-<p>Go ahead now and create a new file at <code>app/views/articles/new.html.erb</code> and
-write this content in it:</p>
-<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>New Article<span class="nt">&lt;/h1&gt;</span>
-</code></pre></div></div>
-<p>When you refresh <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> you'll now see that the
-page has a title. The route, controller, action, and view are now working
-harmoniously! It's time to create the form for a new article.</p>
-<h3 id="the-first-form">The first form</h3>
-<p>To create a form within this template, you will use a <em>form
-builder</em>. The primary form builder for Rails is provided by a helper
-method called <code>form_with</code>. To use this method, add this code into
-<code>app/views/articles/new.html.erb</code>:</p>
-<pre><code class="language-html+erb">>&lt;%= form_with scope: :article, local: true do |form| %&gt;
-  &lt;p&gt;
-    &lt;%= form.label :title %&gt;&lt;br&gt;
-    &lt;%= form.text_field :title %&gt;
-  &lt;/p&gt;
-
-  &lt;p&gt;
-    &lt;%= form.label :text %&gt;&lt;br&gt;
-    &lt;%= form.text_area :text %&gt;
-  &lt;/p&gt;
-
-  &lt;p&gt;
-    &lt;%= form.submit %&gt;
-  &lt;/p&gt;
-&lt;% end %&gt;
-</code></pre>
-<p>If you refresh the page now, you'll see the exact same form from our example above.
-Building forms in Rails is really just that easy!</p>
-<p>When you call <code>form_with</code>, you pass it an identifying scope for this
-form. In this case, it's the symbol <code>:article</code>. This tells the <code>form_with</code>
-helper what this form is for. Inside the block for this method, the
-<code>FormBuilder</code> object - represented by <code>form</code> - is used to build two labels and two
-text fields, one each for the title and text of an article. Finally, a call to
-<code>submit</code> on the <code>form</code> object will create a submit button for the form.</p>
-<p>There's one problem with this form though. If you inspect the HTML that is
-generated, by viewing the source of the page, you will see that the <code>action</code>
-attribute for the form is pointing at <code>/articles/new</code>. This is a problem because
-this route goes to the very page that you're on right at the moment, and that
-route should only be used to display the form for a new article.</p>
-<p>The form needs to use a different URL in order to go somewhere else.
-This can be done quite simply with the <code>:url</code> option of <code>form_with</code>.
-Typically in Rails, the action that is used for new form submissions
-like this is called &quot;create&quot;, and so the form should be pointed to that action.</p>
-<p>Edit the <code>form_with</code> line inside <code>app/views/articles/new.html.erb</code> to look like
-this:</p>
-<pre><code class="language-html+erb">>&lt;%= form_with scope: :article, url: articles_path, local: true do |form| %&gt;
-</code></pre>
-<p>In this example, the <code>articles_path</code> helper is passed to the <code>:url</code> option.
-To see what Rails will do with this, we look back at the output of
-<code>bin/rails routes</code>:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/rails routes
-      Prefix Verb   URI Pattern                  Controller#Action
-welcome_index GET    /welcome/index<span class="o">(</span>.:format<span class="o">)</span>     welcome#index
-     articles GET    /articles<span class="o">(</span>.:format<span class="o">)</span>          articles#index
-              POST   /articles<span class="o">(</span>.:format<span class="o">)</span>          articles#create
-  new_article GET    /articles/new<span class="o">(</span>.:format<span class="o">)</span>      articles#new
- edit_article GET    /articles/:id/edit<span class="o">(</span>.:format<span class="o">)</span> articles#edit
-      article GET    /articles/:id<span class="o">(</span>.:format<span class="o">)</span>      articles#show
-              PATCH  /articles/:id<span class="o">(</span>.:format<span class="o">)</span>      articles#update
-              PUT    /articles/:id<span class="o">(</span>.:format<span class="o">)</span>      articles#update
-              DELETE /articles/:id<span class="o">(</span>.:format<span class="o">)</span>      articles#destroy
-         root GET    /                            welcome#index
-</code></pre></div></div>
-<p>The <code>articles_path</code> helper tells Rails to point the form to the URI Pattern
-associated with the <code>articles</code> prefix; and the form will (by default) send a
-<code>POST</code> request to that route. This is associated with the <code>create</code> action of
-the current controller, the <code>ArticlesController</code>.</p>
-<p>With the form and its associated route defined, you will be able to fill in the
-form and then click the submit button to begin the process of creating a new
-article, so go ahead and do that. When you submit the form, you should see a
-familiar error:</p>
-<p>![Unknown action create for ArticlesController]
-(images/getting_started/unknown_action_create_for_articles.png)</p>
-<p>You now need to create the <code>create</code> action within the <code>ArticlesController</code> for
-this to work.</p>
-<p>NOTE: By default <code>form_with</code> submits forms using Ajax thereby skipping full page
-redirects. To make this guide easier to get into we've disabled that with
-<code>local: true</code> for now.</p>
-<h3 id="creating-articles">Creating Articles</h3>
-<p>To make the &quot;Unknown action&quot; go away, you can define a <code>create</code> action within
-the <code>ArticlesController</code> class in <code>app/controllers/articles_controller.rb</code>,
-underneath the <code>new</code> action, as shown:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="k">def</span> <span class="nf">new</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">create</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>If you re-submit the form now, you may not see any change on the page. Don't worry!
-This is because Rails by default returns <code>204 No Content</code> response for an action if
-we don't specify what the response should be. We just added the <code>create</code> action
-but didn't specify anything about how the response should be. In this case, the
-<code>create</code> action should save our new article to the database.</p>
-<p>When a form is submitted, the fields of the form are sent to Rails as
-<em>parameters</em>. These parameters can then be referenced inside the controller
-actions, typically to perform a particular task. To see what these parameters
-look like, change the <code>create</code> action to this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
-  <span class="n">render</span> <span class="ss">plain: </span><span class="n">params</span><span class="p">[</span><span class="ss">:article</span><span class="p">].</span><span class="nf">inspect</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>The <code>render</code> method here is taking a very simple hash with a key of <code>:plain</code> and
-value of <code>params[:article].inspect</code>. The <code>params</code> method is the object which
-represents the parameters (or fields) coming in from the form. The <code>params</code>
-method returns an <code>ActionController::Parameters</code> object, which
-allows you to access the keys of the hash using either strings or symbols. In
-this situation, the only parameters that matter are the ones from the form.</p>
-<p>TIP: Ensure you have a firm grasp of the <code>params</code> method, as you'll use it fairly regularly. Let's consider an example URL: <strong><a href="http://www.example.com/?username=dhh&amp;email=dhh@email.com">http://www.example.com/?username=dhh&amp;email=dhh@email.com</a></strong>. In this URL, <code>params[:username]</code> would equal &quot;dhh&quot; and <code>params[:email]</code> would equal &quot;<a href="mailto:dhh@email.com">dhh@email.com</a>&quot;.</p>
-<p>If you re-submit the form one more time, you'll see something that looks like the following:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="no">ActionController</span><span class="o">::</span><span class="no">Parameters</span> <span class="p">{</span><span class="s2">"title"</span><span class="o">=&gt;</span><span class="s2">"First Article!"</span><span class="p">,</span> <span class="s2">"text"</span><span class="o">=&gt;</span><span class="s2">"This is my first article."</span><span class="p">}</span> <span class="ss">permitted: </span><span class="kp">false</span><span class="o">&gt;</span>
-</code></pre></div></div>
-<p>This action is now displaying the parameters for the article that are coming in
-from the form. However, this isn't really all that helpful. Yes, you can see the
-parameters but nothing in particular is being done with them.</p>
-<h3 id="creating-the-article-model">Creating the Article Model</h3>
-<p>Models in Rails use a singular name, and their corresponding database tables
-use a plural name. Rails provides a generator for creating models, which most
-Rails developers tend to use when creating new models. To create the new model,
-run this command in your terminal:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/rails generate model Article title:string text:text
-</code></pre></div></div>
-<p>With that command we told Rails that we want an <code>Article</code> model, together
-with a <em>title</em> attribute of type string, and a <em>text</em> attribute
-of type text. Those attributes are automatically added to the <code>articles</code>
-table in the database and mapped to the <code>Article</code> model.</p>
-<p>Rails responded by creating a bunch of files. For now, we're only interested
-in <code>app/models/article.rb</code> and <code>db/migrate/20140120191729_create_articles.rb</code>
-(your name could be a bit different). The latter is responsible for creating
-the database structure, which is what we'll look at next.</p>
-<p>TIP: Active Record is smart enough to automatically map column names to model
-attributes, which means you don't have to declare attributes inside Rails
-models, as that will be done automatically by Active Record.</p>
-<h3 id="running-a-migration">Running a Migration</h3>
-<p>As we've just seen, <code>bin/rails generate model</code> created a <em>database migration</em> file
-inside the <code>db/migrate</code> directory. Migrations are Ruby classes that are
-designed to make it simple to create and modify database tables. Rails uses
-rake commands to run migrations, and it's possible to undo a migration after
-it's been applied to your database. Migration filenames include a timestamp to
-ensure that they're processed in the order that they were created.</p>
-<p>If you look in the <code>db/migrate/YYYYMMDDHHMMSS_create_articles.rb</code> file
-(remember, yours will have a slightly different name), here's what you'll find:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateArticles</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span><span class="p">[</span><span class="mf">6.0</span><span class="p">]</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">create_table</span> <span class="ss">:articles</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-      <span class="n">t</span><span class="p">.</span><span class="nf">string</span> <span class="ss">:title</span>
-      <span class="n">t</span><span class="p">.</span><span class="nf">text</span> <span class="ss">:text</span>
-
-      <span class="n">t</span><span class="p">.</span><span class="nf">timestamps</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>The above migration creates a method named <code>change</code> which will be called when
-you run this migration. The action defined in this method is also reversible,
-which means Rails knows how to reverse the change made by this migration,
-in case you want to reverse it later. When you run this migration it will create
-an <code>articles</code> table with one string column and a text column. It also creates
-two timestamp fields to allow Rails to track article creation and update times.</p>
-<p>TIP: For more information about migrations, refer to [Active Record Migrations]
-(active_record_migrations.html).</p>
-<p>At this point, you can use a rails command to run the migration:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bin/rails db:migrate
-</code></pre></div></div>
-<p>Rails will execute this migration command and tell you it created the Articles
-table.</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">==</span>  CreateArticles: migrating <span class="o">==================================================</span>
-<span class="nt">--</span> create_table<span class="o">(</span>:articles<span class="o">)</span>
-   -&gt; 0.0019s
-<span class="o">==</span>  CreateArticles: migrated <span class="o">(</span>0.0020s<span class="o">)</span> <span class="o">=========================================</span>
-</code></pre></div></div>
-<p>NOTE. Because you're working in the development environment by default, this
-command will apply to the database defined in the <code>development</code> section of your
-<code>config/database.yml</code> file. If you would like to execute migrations in another
-environment, for instance in production, you must explicitly pass it when
-invoking the command: <code>bin/rails db:migrate RAILS_ENV=production</code>.</p>
-<h3 id="saving-data-in-the-controller">Saving Data in the Controller</h3>
-<p>Back in <code>ArticlesController</code>, we need to change the <code>create</code> action
-to use the new <code>Article</code> model to save the data in the database.
-Open <code>app/controllers/articles_controller.rb</code> and change the <code>create</code> action to
-look like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:article</span><span class="p">])</span>
-
-  <span class="vi">@article</span><span class="p">.</span><span class="nf">save</span>
-  <span class="n">redirect_to</span> <span class="vi">@article</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>Here's what's going on: every Rails model can be initialized with its
-respective attributes, which are automatically mapped to the respective
-database columns. In the first line we do just that (remember that
-<code>params[:article]</code> contains the attributes we're interested in). Then,
-<code>@article.save</code> is responsible for saving the model in the database. Finally,
-we redirect the user to the <code>show</code> action, which we'll define later.</p>
-<p>TIP: You might be wondering why the <code>A</code> in <code>Article.new</code> is capitalized above, whereas most other references to articles in this guide have used lowercase. In this context, we are referring to the class named <code>Article</code> that is defined in <code>app/models/article.rb</code>. Class names in Ruby must begin with a capital letter.</p>
-<p>TIP: As we'll see later, <code>@article.save</code> returns a boolean indicating whether
-the article was saved or not.</p>
-<p>If you now go to <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> you'll <em>almost</em> be able
-to create an article. Try it! You should get an error that looks like this:</p>
-<p>![Forbidden attributes for new article]
-(images/getting_started/forbidden_attributes_for_new_article.png)</p>
-<p>Rails has several security features that help you write secure applications,
-and you're running into one of them now. This one is called <a href="action_controller_overview.html#strong-parameters">strong parameters</a>,
-which requires us to tell Rails exactly which parameters are allowed into our
-controller actions.</p>
-<p>Why do you have to bother? The ability to grab and automatically assign all
-controller parameters to your model in one shot makes the programmer's job
-easier, but this convenience also allows malicious use. What if a request to
-the server was crafted to look like a new article form submit but also included
-extra fields with values that violated your application's integrity? They would
-be 'mass assigned' into your model and then into the database along with the
-good stuff - potentially breaking your application or worse.</p>
-<p>We have to define our permitted controller parameters to prevent wrongful mass
-assignment. In this case, we want to both allow and require the <code>title</code> and
-<code>text</code> parameters for valid use of <code>create</code>. The syntax for this introduces
-<code>require</code> and <code>permit</code>. The change will involve one line in the <code>create</code>
-action:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:article</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:text</span><span class="p">))</span>
-</code></pre></div></div>
-<p>This is often factored out into its own method so it can be reused by multiple
-actions in the same controller, for example <code>create</code> and <code>update</code>. Above and
-beyond mass assignment issues, the method is often made <code>private</code> to make sure
-it can't be called outside its intended context. Here is the result:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
-  <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">article_params</span><span class="p">)</span>
-
-  <span class="vi">@article</span><span class="p">.</span><span class="nf">save</span>
-  <span class="n">redirect_to</span> <span class="vi">@article</span>
-<span class="k">end</span>
-
-<span class="kp">private</span>
-  <span class="k">def</span> <span class="nf">article_params</span>
-    <span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:article</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:text</span><span class="p">)</span>
-  <span class="k">end</span>
-</code></pre></div></div>
-<p>TIP: For more information, refer to the reference above and
-[this blog article about Strong Parameters]
-(<a href="https://weblog.rubyonrails.org/2012/3/21/strong-parameters/">https://weblog.rubyonrails.org/2012/3/21/strong-parameters/</a>).</p>
-<h3 id="showing-articles">Showing Articles</h3>
-<p>If you submit the form again now, Rails will complain about not finding the
-<code>show</code> action. That's not very useful though, so let's add the <code>show</code> action
-before proceeding.</p>
-<p>As we have seen in the output of <code>bin/rails routes</code>, the route for <code>show</code> action is
-as follows:</p>
-<pre><code>article GET    /articles/:id(.:format)      articles#show
-</code></pre>
-<p>The special syntax <code>:id</code> tells rails that this route expects an <code>:id</code>
-parameter, which in our case will be the id of the article.</p>
-<p>As we did before, we need to add the <code>show</code> action in
-<code>app/controllers/articles_controller.rb</code> and its respective view.</p>
-<p>NOTE: A frequent practice is to place the standard CRUD actions in each
-controller in the following order: <code>index</code>, <code>show</code>, <code>new</code>, <code>edit</code>, <code>create</code>, <code>update</code>
-and <code>destroy</code>. You may use any order you choose, but keep in mind that these
-are public methods; as mentioned earlier in this guide, they must be placed
-before declaring <code>private</code> visibility in the controller.</p>
-<p>Given that, let's add the <code>show</code> action, as follows:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-  <span class="k">def</span> <span class="nf">show</span>
-    <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">new</span>
-  <span class="k">end</span>
-
-  <span class="c1"># snippet for brevity</span>
-</code></pre></div></div>
-<p>A couple of things to note. We use <code>Article.find</code> to find the article we're
-interested in, passing in <code>params[:id]</code> to get the <code>:id</code> parameter from the
-request. We also use an instance variable (prefixed with <code>@</code>) to hold a
-reference to the article object. We do this because Rails will pass all instance
-variables to the view.</p>
-<p>Now, create a new file <code>app/views/articles/show.html.erb</code> with the following
-content:</p>
-<pre><code class="language-html+erb">>&lt;p&gt;
-  &lt;strong&gt;Title:&lt;/strong&gt;
-  &lt;%= @article.title %&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;strong&gt;Text:&lt;/strong&gt;
-  &lt;%= @article.text %&gt;
-&lt;/p&gt;
-</code></pre>
-<p>With this change, you should finally be able to create new articles.
-Visit <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> and give it a try!</p>
-<p><img src="images/getting_started/show_action_for_articles.png" alt="Show action for articles" /></p>
-<h3 id="listing-all-articles">Listing all Articles</h3>
-<p>We still need a way to list all our articles, so let's do that.
-The route for this as per output of <code>bin/rails routes</code> is:</p>
-<pre><code>articles GET    /articles(.:format)          articles#index
-</code></pre>
-<p>Add the corresponding <code>index</code> action for that route inside the
-<code>ArticlesController</code> in the <code>app/controllers/articles_controller.rb</code> file.
-When we write an <code>index</code> action, the usual practice is to place it as the
-first method in the controller. Let's do it:</p>
+<code>ArticlesController</code>. No worries, we will need to define this action.</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
   <span class="k">def</span> <span class="nf">index</span>
     <span class="vi">@articles</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">all</span>
@@ -970,77 +650,200 @@ first method in the controller. Let's do it:</p>
 
   <span class="k">def</span> <span class="nf">new</span>
   <span class="k">end</span>
-
-  <span class="c1"># snippet for brevity</span>
+<span class="k">end</span>
 </code></pre></div></div>
-<p>And then finally, add the view for this action, located at
-<code>app/views/articles/index.html.erb</code>:</p>
-<pre><code class="language-html+erb">>&lt;h1&gt;Listing Articles&lt;/h1&gt;
-
-&lt;table&gt;
-  &lt;tr&gt;
-    &lt;th&gt;Title&lt;/th&gt;
-    &lt;th&gt;Text&lt;/th&gt;
-    &lt;th&gt;&lt;/th&gt;
-  &lt;/tr&gt;
-
-  &lt;% @articles.each do |article| %&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;%= article.title %&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;%= article.text %&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;%= link_to 'Show', article_path(article) %&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;% end %&gt;
-&lt;/table&gt;
-</code></pre>
-<p>Now if you go to <a href="http://localhost:3000/articles">http://localhost:3000/articles</a> you will see a list of all the
-articles that you have created.</p>
-<h3 id="adding-links">Adding Links</h3>
-<p>You can now create, show, and list articles. Now let's add some links to
-navigate through pages.</p>
-<p>Open <code>app/views/welcome/index.html.erb</code> and modify it as follows:</p>
-<pre><code class="language-html+erb">>&lt;h1&gt;Hello, Rails!&lt;/h1&gt;
-&lt;%= link_to 'My Blog', controller: 'articles' %&gt;
-</code></pre>
-<p>The <code>link_to</code> method is one of Rails' built-in view helpers. It creates a
-hyperlink based on text to display and where to go - in this case, to the path
-for articles.</p>
-<p>Let's add links to the other views as well, starting with adding this
-&quot;New Article&quot; link to <code>app/views/articles/index.html.erb</code>, placing it above the
-<code>&lt;table&gt;</code> tag:</p>
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">'New article'</span><span class="p">,</span> <span class="n">new_article_path</span> <span class="cp">%&gt;</span>
+<p>We can put the <code>new</code> action under <code>show</code> in the controller, because the order of methods in classes doesn't matter in Ruby.</p>
+<p>With the <code>new</code> method defined in <code>ArticlesController</code>, if you refresh
+<a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> you'll see another error:</p>
+<p><img src="images/getting_started/template_is_missing_articles_new.png" alt="Template is missing for articles/new" /></p>
+<p>You're getting this error now because Rails expects empty actions like this one to have views associated with them to display their information. With no view available, Rails will raise an exception.</p>
+<p>Let's look at the full error message again:</p>
+<blockquote>
+<p>ArticlesController#new is missing a template for request formats: text/html</p>
+</blockquote>
+<blockquote>
+<p>NOTE!
+Unless told otherwise, Rails expects an action to render a template with the same name, contained in a folder named after its controller. If this controller is an API responding with 204 (No Content), which does not require a template, then this error will occur when trying to access it via browser, since we expect an HTML template to be rendered for such requests. If that's the case, carry on.</p>
+</blockquote>
+<p>The message identifies which template is missing. In this case, it's the
+<code>articles/new</code> template. Next the message contains <code>request.formats</code> which specifies the format of template to be served in response. It is set to <code>text/html</code> as we requested this page via browser, so Rails is looking for an HTML template.</p>
+<p>The simplest template that would work in this case would be one located at <code>app/views/articles/new.html.erb</code>. The extension of this file name is important: the first extension is the <em>format</em> of the template, and the second extension is the <em>handler</em> that will be used to render the template.  Think of it reading right-to-left: &quot;I'm going to <em>execute ERB</em> to <em>generate HTML</em> for the <em><code>new</code> action</em>&quot;.</p>
+<p>So let's now go ahead now and create a new file at <code>app/views/articles/new.html.erb</code> and write this content in it:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>New Article<span class="nt">&lt;/h1&gt;</span>
 </code></pre></div></div>
-<p>This link will allow you to bring up the form that lets you create a new article.</p>
-<p>Now, add another link in <code>app/views/articles/new.html.erb</code>, underneath the
-form, to go back to the <code>index</code> action:</p>
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_with</span> <span class="ss">scope: :article</span><span class="p">,</span> <span class="ss">url: </span><span class="n">articles_path</span><span class="p">,</span> <span class="ss">local: </span><span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">form</span><span class="o">|</span> <span class="cp">%&gt;</span>
-  ...
+<p>To create a form within this template, you will use a <em>form
+builder</em>. The primary form builder for Rails is provided by a helper
+method called <code>form_with</code>. To use this method, add this code into
+<code>app/views/articles/new.html.erb</code>:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>New Article<span class="nt">&lt;/h1&gt;</span>
+
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"/articles"</span> <span class="na">method=</span><span class="s">"post"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"title"</span><span class="nt">&gt;</span>Title<span class="nt">&lt;/label&gt;&lt;br&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">id=</span><span class="s">"title"</span> <span class="na">name=</span><span class="s">"title"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"text"</span><span class="nt">&gt;</span>Text<span class="nt">&lt;/label&gt;&lt;br&gt;</span>
+    <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">"text"</span> <span class="na">id=</span><span class="s">"text"</span><span class="nt">&gt;&lt;/textarea&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Save Article"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+</code></pre></div></div>
+<p>This is an awful lot of typing for building a form. Fortunately, Rails provides helpers for us to simplify matters:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>New Article<span class="nt">&lt;/h1&gt;</span>
+
+<span class="cp">&lt;%=</span> <span class="n">form_with</span> <span class="ss">scope: :article</span><span class="p">,</span> <span class="ss">local: </span><span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">form</span><span class="o">|</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;p&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">form</span><span class="p">.</span><span class="nf">label</span> <span class="ss">:title</span> <span class="cp">%&gt;</span><span class="nt">&lt;br&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">form</span><span class="p">.</span><span class="nf">text_field</span> <span class="ss">:title</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+
+  <span class="nt">&lt;p&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">form</span><span class="p">.</span><span class="nf">label</span> <span class="ss">:body</span> <span class="cp">%&gt;</span><span class="nt">&lt;br&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">form</span><span class="p">.</span><span class="nf">text_area</span> <span class="ss">:body</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+
+  <span class="nt">&lt;p&gt;</span>
+    <span class="cp">&lt;%=</span> <span class="n">form</span><span class="p">.</span><span class="nf">submit</span> <span class="cp">%&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
 <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
-
-<span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s1">'Back'</span><span class="p">,</span> <span class="n">articles_path</span> <span class="cp">%&gt;</span>
 </code></pre></div></div>
-<p>Finally, add a link to the <code>app/views/articles/show.html.erb</code> template to
-go back to the <code>index</code> action as well, so that people who are viewing a single
-article can go back and view the whole list again:</p>
-<pre><code class="language-html+erb">>&lt;p&gt;
-  &lt;strong&gt;Title:&lt;/strong&gt;
-  &lt;%= @article.title %&gt;
-&lt;/p&gt;
+<p>The <code>form_with</code> helper method allows us to build a form. The first line of this provides us a block argument called <code>form</code>, and then throughout the form we use that to build labels and text inputs for our field.</p>
+<p>NOTE: By default <code>form_with</code> submits forms using Ajax thereby skipping full page redirects. To make this guide easier to get into we've disabled that with <code>local: true</code> for now.</p>
+<p>This ERB code that uses <code>form_with</code> will output a HTML form that looks very similar to the one we hand-rolled, but there are some key differences. Here's what the <code>form_with</code> outputs:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"/articles/new"</span> <span class="na">accept-charset=</span><span class="s">"UTF-8"</span> <span class="na">method=</span><span class="s">"post"</span><span class="nt">&gt;&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"authenticity_token"</span> <span class="na">value=</span><span class="s">"DIwa34..."</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"article_title"</span><span class="nt">&gt;</span>Title<span class="nt">&lt;/label&gt;&lt;br&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"article[title]"</span> <span class="na">id=</span><span class="s">"article_title"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
 
-&lt;p&gt;
-  &lt;strong&gt;Text:&lt;/strong&gt;
-  &lt;%= @article.text %&gt;
-&lt;/p&gt;
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"article_text"</span><span class="nt">&gt;</span>Text<span class="nt">&lt;/label&gt;&lt;br&gt;</span>
+    <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">"article[text]"</span> <span class="na">id=</span><span class="s">"article_text"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/textarea&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
 
-&lt;%= link_to 'Back', articles_path %&gt;
-</code></pre>
-<p>TIP: If you want to link to an action in the same controller, you don't need to
-specify the <code>:controller</code> option, as Rails will use the current controller by
-default.</p>
-<p>TIP: In development mode (which is what you're working in by default), Rails
-reloads your application with every browser request, so there's no need to stop
-and restart the web server when a change is made.</p>
+  <span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">name=</span><span class="s">"commit"</span> <span class="na">value=</span><span class="s">"Save Article"</span> <span class="na">data-disable-with=</span><span class="s">"Save Article"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+</code></pre></div></div>
+<p>The first key difference is that there is a hidden field called <code>authenticity_token</code> at the top. This is a security feature of Rails and it prevents outside people from submitting your forms maliciously using a technique called Cross Site Request Forgery. <a href="https://stackoverflow.com/a/1571900/15245">This Stack Overflow answer explains further</a>.</p>
+<p>The labels and fields are mostly the way they were, with a key difference: the <code>name</code> fields have an <code>article[]</code> wrapping around their values. This wrapping comes from the <code>scope</code> argument that we have passed to <code>form_with</code>. This wrapping groups all the fields of the form into one hash once they're submitted, and that will make it easy to process once they reach our application.</p>
+<p>Speaking of, let's try and fill out this form now with a title and a body for our 3rd article:</p>
+<p><img src="/images/getting_started/article_the_third.png" alt="The third article" /></p>
+<p>There's one problem with this form though. If you inspect the HTML that is generated, by viewing the source of the page, you will see that the <code>action</code> attribute for the form is pointing at <code>/articles/new</code>. This is a problem because this route goes to the very page that you're on right at the moment, and that route should only be used to display the form for a new article.</p>
+<p>The form needs to use a different URL in order to go somewhere else.
+This can be done quite simply with the <code>:url</code> option of <code>form_with</code>.
+Typically in Rails, the action that is used for new form submissions
+like this is called &quot;create&quot;, and so the form should be pointed to that action.</p>
+<p>Edit the <code>form_with</code> line inside <code>app/views/articles/new.html.erb</code> to look like this:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_with</span> <span class="ss">scope: :article</span><span class="p">,</span> <span class="ss">url: </span><span class="s2">"/articles"</span><span class="p">,</span> <span class="ss">local: </span><span class="kp">true</span> <span class="k">do</span> <span class="o">|</span><span class="n">form</span><span class="o">|</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>Once the form is submitted, it will send a <code>POST</code> request to <code>/articles</code>. If we hit submit on that form now, we'll be shown a Routing Error:</p>
+<p><img src="/images/getting_started/routing_error_post_articles.png" alt="Routing Error" /></p>
+<p>This error means that we haven't set up a route to handle <code>POST</code> requests to <code>/articles</code>. If we look in our <code>config/routes.rb</code> file, we'll see that is correct:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+  <span class="n">root</span> <span class="s2">"articles#index"</span>
+  <span class="n">get</span> <span class="s2">"/articles"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#index"</span>
+  <span class="n">get</span> <span class="s2">"/articles/new"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#new"</span><span class="p">,</span> <span class="ss">as: :new_article_path</span>
+  <span class="n">get</span> <span class="s2">"/articles/:id"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#show"</span><span class="p">,</span> <span class="ss">as: :article</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>Let's add this new route now:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Rails</span><span class="p">.</span><span class="nf">application</span><span class="p">.</span><span class="nf">routes</span><span class="p">.</span><span class="nf">draw</span> <span class="k">do</span>
+  <span class="n">root</span> <span class="s2">"articles#index"</span>
+  <span class="n">get</span> <span class="s2">"/articles"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#index"</span>
+  <span class="n">get</span> <span class="s2">"/articles/new"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#new"</span><span class="p">,</span> <span class="ss">as: :new_article_path</span>
+  <span class="n">get</span> <span class="s2">"/articles/:id"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#show"</span><span class="p">,</span> <span class="ss">as: :article</span>
+  <span class="n">post</span> <span class="s2">"/articles"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"articles#create"</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>When Rails receives a <code>POST /articles</code> request, it will now route that request to the <code>create</code> action of the <code>ArticlesController</code>. However, if we re-submit that form, we'll see that the action cannot be found:</p>
+<p><img src="images/getting_started/unknown_action_create_for_articles.png" alt="Unknown action create for ArticlesController" /></p>
+<p>You now need to create the <code>create</code> action within the <code>ArticlesController</code> for this to work.</p>
+<h3 id="creating-articles">Creating Articles</h3>
+<p>To make the &quot;Unknown action&quot; go away, we can define a <code>create</code> action within the <code>ArticlesController</code> class in <code>app/controllers/articles_controller.rb</code>, underneath the <code>new</code> action, as shown:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">new</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">create</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>If you re-submit the form now, you may not see any change on the page. Don't worry!</p>
+<p>This is because Rails by default returns <code>204 No Content</code> response for an action if we don't specify what the response should be. We just added the <code>create</code> action but didn't specify anything about how the response should be. In this case, the <code>create</code> action should save our new article to the database.</p>
+<p>When a form is submitted, the fields of the form are sent to Rails as
+<em>parameters</em>. Yes, there are the same parameters as we saw earlier when we used <code>params[:id]</code>. These parameters can then be referenced inside the controller actions, typically to perform a particular task. To see what these parameters look like, change the <code>create</code> action to this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
+  <span class="n">render</span> <span class="ss">plain: </span><span class="n">params</span><span class="p">[</span><span class="ss">:article</span><span class="p">].</span><span class="nf">inspect</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>The <code>render</code> method here is taking a very simple hash with a key of <code>:plain</code> and value of <code>params[:article].inspect</code>. The <code>params</code> method is the object which represents the parameters (or fields) coming in from the form. The <code>params</code> method returns an <code>ActionController::Parameters</code> object, which allows you to access the keys of the hash using either strings or symbols. In this situation, the only parameters that matter are the ones from the form. Thanks to the use of the <code>scope</code> option on the form, all of our form's parameters are grouped under <code>params[:article]</code>.</p>
+<p>TIP: Ensure you have a firm grasp of the <code>params</code> method, as you'll use it fairly regularly. Let's consider an example URL: <strong><a href="http://www.example.com/?username=dhh&amp;email=dhh@email.com">http://www.example.com/?username=dhh&amp;email=dhh@email.com</a></strong>. In this URL, <code>params[:username]</code> would equal &quot;dhh&quot; and <code>params[:email]</code> would equal &quot;<a href="mailto:dhh@email.com">dhh@email.com</a>&quot;.</p>
+<p>If you re-submit the form one more time, you'll see something that looks like the following:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="no">ActionController</span><span class="o">::</span><span class="no">Parameters</span> <span class="p">{</span><span class="s2">"title"</span><span class="o">=&gt;</span><span class="s2">"Article the Third"</span><span class="p">,</span> <span class="s2">"text"</span><span class="o">=&gt;</span><span class="s2">"The Trilogy Ends"</span><span class="p">}</span> <span class="ss">permitted: </span><span class="kp">false</span><span class="o">&gt;</span>
+</code></pre></div></div>
+<p>This action is now displaying the parameters for the article that are coming in from the form. However, this isn't really all that helpful. Yes, you can see the parameters but nothing in particular is being done with them.</p>
+<p>Let's change the  <code>create</code> action to use the <code>Article</code> model to save the data in the database. Let's change the <code>create</code> action to look like this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
+  <span class="n">article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:article</span><span class="p">])</span>
+  <span class="n">article</span><span class="p">.</span><span class="nf">save</span>
+
+  <span class="n">redirect_to</span> <span class="n">article_path</span><span class="p">(</span><span class="n">article</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>NOTE: We're <em>not</em> using an instance variable in this action. This is because this action redirects at the end, and since there is a redirection there is no view. So there is no need to make these variables instance variables.</p>
+<p>Here we use some familar code to create a new article -- we saw this previously right after we generated the <code>Article</code> model. The call to <code>new</code> and then to <code>save</code> will create a new article record in the database.</p>
+<p>The final line, a <code>redirect_to</code>, uses <code>article_path</code> to redirect back to the <code>show</code> action.</p>
+<p>If you now go to <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> you'll <em>almost</em> be able to create an article. Try it! You should get an error that looks like this:</p>
+<p><img src="images/getting_started/forbidden_attributes_for_new_article.png" alt="Forbidden attributes for new article" /></p>
+<p>Rails has several security features that help you write secure applications, and you're running into one of them now. This one is called <a href="action_controller_overview.html#strong-parameters">strong parameters</a>,
+which requires us to tell Rails exactly which parameters are allowed into our controller actions.</p>
+<p>Why do you have to bother? The ability to grab and automatically assign all controller parameters to your model in one shot makes the programmer's job easier, but this convenience also allows malicious use. What if this form was a bank account and we allowed just anyone to add in a new field that set their balance to whatever they wished? This would end up bad for us!</p>
+<p>We have to define our permitted controller parameters to prevent wrongful mass assignment. In this case, we want to both allow and require the <code>title</code> and <code>body</code> parameters for valid use of <code>create</code>. The syntax for this introduces <code>require</code> and <code>permit</code>. The change will involve one line in the <code>create</code> action:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:article</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:body</span><span class="p">))</span>
+</code></pre></div></div>
+<p>This code is quite long and is often pulled out into its own method so it can be reused by multiple actions in the same controller. Above and beyond mass assignment issues, the method is often made <code>private</code> to make sure it can't be called outside its intended context. Here is the result:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
+  <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">article_params</span><span class="p">)</span>
+
+  <span class="vi">@article</span><span class="p">.</span><span class="nf">save</span>
+  <span class="n">redirect_to</span> <span class="vi">@article</span>
+<span class="k">end</span>
+
+<span class="kp">private</span>
+  <span class="k">def</span> <span class="nf">article_params</span>
+    <span class="n">params</span><span class="p">.</span><span class="nf">require</span><span class="p">(</span><span class="ss">:article</span><span class="p">).</span><span class="nf">permit</span><span class="p">(</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:body</span><span class="p">)</span>
+  <span class="k">end</span>
+</code></pre></div></div>
+<p>TIP: For more information, refer to the reference above and
+[this blog article about Strong Parameters]
+(<a href="https://weblog.rubyonrails.org/2012/3/21/strong-parameters/">https://weblog.rubyonrails.org/2012/3/21/strong-parameters/</a>).</p>
+<p>If we attempt to submit our form once more, this time it will succeed and we'll see the article's title and body. The URL should be <a href="http://localhost:3000/articles/3">http://localhost:3000/articles/3</a>, indicating that we're now on the <code>show</code> action.</p>
+<p>Before we wrap up this section, let's add a link to <code>app/views/articles/index.html.erb</code> so that we can go to the &quot;New Article&quot; page from there:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Articles<span class="nt">&lt;/h1&gt;</span>
+
+<span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="s2">"New Article"</span><span class="p">,</span> <span class="n">new_article_path</span> <span class="cp">%&gt;</span>
+
+<span class="nt">&lt;ul&gt;</span>
+  <span class="cp">&lt;%</span> <span class="vi">@articles</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">article</span><span class="o">|</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;li&gt;</span>
+      <span class="cp">&lt;%=</span> <span class="n">link_to</span> <span class="n">article</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span> <span class="n">article_path</span><span class="p">(</span><span class="n">article</span><span class="p">)</span> <span class="cp">%&gt;</span>
+    <span class="nt">&lt;/li&gt;</span>
+  <span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+<span class="nt">&lt;/ul&gt;</span>
+</code></pre></div></div>
+<p>Now we'll have an easy link to go back to that page:</p>
+<p><img src="/images/getting_started/three_articles.png" alt="Three articles" /></p>
+<p>Great! That's another two actions finished in our controller: <code>new</code> and <code>create</code>.</p>
 <h3 id="adding-some-validation">Adding Some Validation</h3>
+<p>Sometimes, in web applications, we want to make sure certain fields are filled in.</p>
 <p>The model file, <code>app/models/article.rb</code> is about as simple as it can get:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
 <span class="k">end</span>

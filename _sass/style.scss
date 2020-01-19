@@ -51,11 +51,21 @@ article {
 
   pre {
     overflow: auto;
+
   }
 
   code {
+    background: #eee;
+    padding: 1px 3px;
+    border-radius: 2px;
     font-family: "Ubuntu Mono";
+
+    @media (prefers-color-scheme: dark) {
+      background: #454545;
+    }
   }
+
+
 
   p,
   ul {
@@ -181,19 +191,29 @@ hr {
 }
 
 table {
+  width: 100%;
   border: 2px solid #ccc;
+  @media (prefers-color-scheme: dark) {
+    border-color: #575757;
+  }
   border-collapse: collapse;
 
   thead {
     tr {
       th {
         background: #ccc;
+        @media (prefers-color-scheme: dark) {
+          background: #575757;
+        }
         padding: 10px;
       }
     }
   }
   td {
     border: 1px solid #ccc;
+    @media (prefers-color-scheme: dark) {
+      border-color: #575757;
+    }
     border-collapse: collapse;
     padding: 10px;
   }
@@ -205,6 +225,7 @@ footer {
   @media (prefers-color-scheme: dark) {
     color: #343434;
   }
+
   font-size: 5px;
   min-height: 3rem;
 }
