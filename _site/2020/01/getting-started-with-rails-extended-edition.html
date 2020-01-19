@@ -846,29 +846,46 @@ which requires us to tell Rails exactly which parameters are allowed into our co
 <span class="k">end</span>
 </code></pre></div></div>
 <p>There isn't much to this file - but note that the <code>Article</code> class inherits from
-<code>ApplicationRecord</code>. <code>ApplicationRecord</code> inherits from <code>ActiveRecord::Base</code>
-which supplies a great deal of functionality to your Rails models for free,
-including basic database CRUD (Create, Read, Update, Destroy) operations, data
-validation, as well as sophisticated search support and the ability to relate
-multiple models to one another.</p>
-<p>Rails includes methods to help you validate the data that you send to models.
-Open the <code>app/models/article.rb</code> file and edit it:</p>
+<code>ApplicationRecord</code>. <code>ApplicationRecord</code> inherits from <code>ActiveRecord::Base</code> which supplies a great deal of functionality to your Rails models for free. We've used some of this already: <code>Article.new</code>, <code>Article.all</code>, <code>Article.find</code> and so on.</p>
+<p>One of these pieces of functionality is that Active Record includes methods to help you validate the data that you send to models and it's easy to use.</p>
+<p>Open the <code>app/models/article.rb</code> file and edit it to this:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
   <span class="n">validates</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">presence: </span><span class="kp">true</span><span class="p">,</span>
                     <span class="ss">length: </span><span class="p">{</span> <span class="ss">minimum: </span><span class="mi">5</span> <span class="p">}</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>These changes will ensure that all articles have a title that is at least five
-characters long. Rails can validate a variety of conditions in a model,
-including the presence or uniqueness of columns, their format, and the
-existence of associated objects. Validations are covered in detail in <a href="active_record_validations.html">Active
-Record Validations</a>.</p>
-<p>With the validation now in place, when you call <code>@article.save</code> on an invalid
-article, it will return <code>false</code>. If you open
-<code>app/controllers/articles_controller.rb</code> again, you'll notice that we don't
-check the result of calling <code>@article.save</code> inside the <code>create</code> action.
-If <code>@article.save</code> fails in this situation, we need to show the form back to the
-user. To do this, change the <code>new</code> and <code>create</code> actions inside
+<p>These changes will ensure that all articles have a title that is at least five characters long. Rails can validate a variety of conditions in a model, including the presence or uniqueness of columns, their format, and the existence of associated objects. Validations are covered in detail in <a href="active_record_validations.html">Active Record Validations</a>.</p>
+<p>This validation will now only let us save articles that have titles longer than 5 characters. Let's open up the console now and try:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails console
+</code></pre></div></div>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">invalid_article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span>
+<span class="o">=&gt;</span> <span class="c1">#&lt;Article id: nil, title: nil, body: nil, created_at: nil, updated_at: nil&gt;</span>
+<span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">invalid_article</span><span class="p">.</span><span class="nf">save</span>
+<span class="o">=&gt;</span> <span class="kp">false</span>
+</code></pre></div></div>
+<p>When <code>save</code> returns <code>false</code>, it means that the object is invalid and won't be saved to the database. To find out why, we can use this code:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">invalid_article</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">messages</span>
+<span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:title</span><span class="o">=&gt;</span><span class="p">[</span><span class="s2">"can't be blank"</span><span class="p">,</span> <span class="s2">"is too short (minimum is 5 characters)"</span><span class="p">]}</span>
+</code></pre></div></div>
+<p>The <code>errors.messages</code> method chain shows us a hash of validation messages, linked to the <code>title</code> field. There are two validations failing on the <code>title</code> field at the moment:</p>
+<ul>
+<li>The title can't be blank</li>
+<li>The title is too short (minimum of 5 characters)</li>
+</ul>
+<p>That's because we've left the title blank. Now let's see what happens when we save an article with a valid title:</p>
+<pre><code class="language-plain">>irb(main):006:0&gt; article = Article.new title: &quot;Getting Started&quot;
+=&gt; #&lt;Article id: nil, title: &quot;Getting Started&quot;, body: nil, created_at: nil, updated_at: nil&gt;
+
+irb(main):007:0&gt; article.save
+   (0.1ms)  begin transaction
+  Article Create (0.4ms)  INSERT INTO &quot;articles&quot; (&quot;title&quot;, &quot;created_at&quot;, &quot;updated_at&quot;) VALUES (?, ?, ?)  [[&quot;title&quot;, &quot;Getting Started&quot;], [&quot;created_at&quot;, &quot;2020-01-19 09:56:25.693465&quot;], [&quot;updated_at&quot;, &quot;2020-01-19 09:56:25.693465&quot;]]
+   (0.6ms)  commit transaction
+=&gt; true
+</code></pre>
+<p>The <code>save</code> call here has returned <code>true</code>, indicating that the article has passed validations. Also in the console, we can see an <code>Article Create</code> message, that contains an <code>INSERT INTO</code> database query, and so we can be confident that this article has now been inserted into our database.</p>
+<p>If you open
+<code>app/controllers/articles_controller.rb</code> again, you'll notice that we don't check the result of calling <code>@article.save</code> inside the <code>create</code> action.</p>
+<p>If <code>@article.save</code> fails in this situation, we need to show the form back to the user. To do this, change the <code>new</code> and <code>create</code> actions inside
 <code>app/controllers/articles_controller.rb</code> to these:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">new</span>
   <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">new</span>

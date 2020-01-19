@@ -1080,14 +1080,11 @@ end
 ```
 
 There isn't much to this file - but note that the `Article` class inherits from
-`ApplicationRecord`. `ApplicationRecord` inherits from `ActiveRecord::Base`
-which supplies a great deal of functionality to your Rails models for free,
-including basic database CRUD (Create, Read, Update, Destroy) operations, data
-validation, as well as sophisticated search support and the ability to relate
-multiple models to one another.
+`ApplicationRecord`. `ApplicationRecord` inherits from `ActiveRecord::Base` which supplies a great deal of functionality to your Rails models for free. We've used some of this already: `Article.new`, `Article.all`, `Article.find` and so on.
 
-Rails includes methods to help you validate the data that you send to models.
-Open the `app/models/article.rb` file and edit it:
+One of these pieces of functionality is that Active Record includes methods to help you validate the data that you send to models and it's easy to use.
+
+Open the `app/models/article.rb` file and edit it to this:
 
 ```ruby
 class Article < ApplicationRecord
@@ -1096,18 +1093,54 @@ class Article < ApplicationRecord
 end
 ```
 
-These changes will ensure that all articles have a title that is at least five
-characters long. Rails can validate a variety of conditions in a model,
-including the presence or uniqueness of columns, their format, and the
-existence of associated objects. Validations are covered in detail in [Active
-Record Validations](active_record_validations.html).
+These changes will ensure that all articles have a title that is at least five characters long. Rails can validate a variety of conditions in a model, including the presence or uniqueness of columns, their format, and the existence of associated objects. Validations are covered in detail in [Active Record Validations](active_record_validations.html).
 
-With the validation now in place, when you call `@article.save` on an invalid
-article, it will return `false`. If you open
-`app/controllers/articles_controller.rb` again, you'll notice that we don't
-check the result of calling `@article.save` inside the `create` action.
-If `@article.save` fails in this situation, we need to show the form back to the
-user. To do this, change the `new` and `create` actions inside
+This validation will now only let us save articles that have titles longer than 5 characters. Let's open up the console now and try:
+
+```bash
+rails console
+```
+
+```ruby
+irb(main):001:0> invalid_article = Article.new
+=> #<Article id: nil, title: nil, body: nil, created_at: nil, updated_at: nil>
+irb(main):002:0> invalid_article.save
+=> false
+```
+
+When `save` returns `false`, it means that the object is invalid and won't be saved to the database. To find out why, we can use this code:
+
+```ruby
+irb(main):003:0> invalid_article.errors.messages
+=> {:title=>["can't be blank", "is too short (minimum is 5 characters)"]}
+```
+
+The `errors.messages` method chain shows us a hash of validation messages, linked to the `title` field. There are two validations failing on the `title` field at the moment:
+
+* The title can't be blank
+* The title is too short (minimum of 5 characters)
+
+That's because we've left the title blank. Now let's see what happens when we save an article with a valid title:
+
+```plain
+irb(main):006:0> article = Article.new title: "Getting Started"
+=> #<Article id: nil, title: "Getting Started", body: nil, created_at: nil, updated_at: nil>
+
+irb(main):007:0> article.save
+   (0.1ms)  begin transaction
+  Article Create (0.4ms)  INSERT INTO "articles" ("title", "created_at", "updated_at") VALUES (?, ?, ?)  [["title", "Getting Started"], ["created_at", "2020-01-19 09:56:25.693465"], ["updated_at", "2020-01-19 09:56:25.693465"]]
+   (0.6ms)  commit transaction
+=> true
+```
+
+The `save` call here has returned `true`, indicating that the article has passed validations. Also in the console, we can see an `Article Create` message, that contains an `INSERT INTO` database query, and so we can be confident that this article has now been inserted into our database.
+
+
+
+ If you open
+`app/controllers/articles_controller.rb` again, you'll notice that we don't check the result of calling `@article.save` inside the `create` action.
+
+If `@article.save` fails in this situation, we need to show the form back to the user. To do this, change the `new` and `create` actions inside
 `app/controllers/articles_controller.rb` to these:
 
 ```ruby
