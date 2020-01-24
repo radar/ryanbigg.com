@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Action Text Overview — Ruby on Rails Guides</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/default.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/rails-guides.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" data-turbolinks-track="reload">
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <script src="javascripts/prism.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/turbolinks.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/guides.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/responsive-tables.js" data-turbolinks-track="reload"></script>
+  <meta property="og:title" content="Action Text Overview — Ruby on Rails Guides" />
+  <meta name="description" content="Action Text OverviewThis guide provides you with all you need to get started in handling rich text content.After reading this guide, you will know: How to configure Action Text. How to handle rich text content. How to style rich text content." />
+  <meta property="og:description" content="Action Text OverviewThis guide provides you with all you need to get started in handling rich text content.After reading this guide, you will know: How to configure Action Text. How to handle rich text content. How to style rich text content." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Ruby on Rails Guides" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/4223" />
+  <meta property="og:type" content="website" />
+</head>
+<body class="guide">
+  <div>
+    <img src="images/edge_badge.png" alt="edge-badge" id="edge-badge" />
+  </div>
+  <div id="topNav">
+    <div class="wrapper">
+      <strong class="more-info-label">More at <a href="https://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <span class="red-button more-info-button">
+        More Ruby on Rails
+      </span>
+      <ul class="more-info-links s-hidden">
+        <li class="more-info"><a href="https://weblog.rubyonrails.org/">Blog</a></li>
+        <li class="more-info"><a href="https://guides.rubyonrails.org/">Guides</a></li>
+        <li class="more-info"><a href="https://api.rubyonrails.org/">API</a></li>
+        <li class="more-info"><a href="https://stackoverflow.com/questions/tagged/ruby-on-rails">Ask for help</a></li>
+        <li class="more-info"><a href="https://github.com/rails/rails">Contribute on GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a class="nav-item" href="index.html">Home</a></li>
+        <li class="guides-index guides-index-large">
+          <a href="index.html" id="guidesMenu" class="guides-index-item nav-item">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+            <dl class="guides-section-container">
+                <div class="guides-section">
+                  <dt>Start Here</dt>
+                  <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Models</dt>
+                  <dd><a href="active_record_basics.html">Active Record Basics</a></dd>
+                  <dd><a href="active_record_migrations.html">Active Record Migrations</a></dd>
+                  <dd><a href="active_record_validations.html">Active Record Validations</a></dd>
+                  <dd><a href="active_record_callbacks.html">Active Record Callbacks</a></dd>
+                  <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                  <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Views</dt>
+                  <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                  <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Controllers</dt>
+                  <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                  <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Other Components</dt>
+                  <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                  <dd><a href="action_mailer_basics.html">Action Mailer Basics</a></dd>
+                  <dd><a href="active_job_basics.html">Active Job Basics</a></dd>
+                  <dd><a href="active_storage_overview.html">Active Storage Overview</a></dd>
+                  <dd><a href="action_cable_overview.html">Action Cable Overview</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Digging Deeper</dt>
+                  <dd><a href="i18n.html">Rails Internationalization (I18n) API</a></dd>
+                  <dd><a href="testing.html">Testing Rails Applications</a></dd>
+                  <dd><a href="security.html">Securing Rails Applications</a></dd>
+                  <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                  <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                  <dd><a href="command_line.html">The Rails Command Line</a></dd>
+                  <dd><a href="asset_pipeline.html">The Asset Pipeline</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</a></dd>
+                  <dd><a href="caching_with_rails.html">Caching with Rails: An Overview</a></dd>
+                  <dd><a href="api_app.html">Using Rails for API-only Applications</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Extending Rails</dt>
+                  <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                  <dd><a href="generators.html">Creating and Customizing Rails Generators &amp; Templates</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Contributions</dt>
+                  <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                  <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                  <dd><a href="ruby_on_rails_guides_guidelines.html">Guides Guidelines</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Policies</dt>
+                  <dd><a href="maintenance_policy.html">Maintenance Policy</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Release Notes</dt>
+                  <dd><a href="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</a></dd>
+                  <dd><a href="6_0_release_notes.html">Version 6.0 - August 2019</a></dd>
+                  <dd><a href="5_2_release_notes.html">Version 5.2 - April 2018</a></dd>
+                  <dd><a href="5_1_release_notes.html">Version 5.1 - April 2017</a></dd>
+                  <dd><a href="5_0_release_notes.html">Version 5.0 - June 2016</a></dd>
+                  <dd><a href="4_2_release_notes.html">Version 4.2 - December 2014</a></dd>
+                  <dd><a href="4_1_release_notes.html">Version 4.1 - April 2014</a></dd>
+                  <dd><a href="4_0_release_notes.html">Version 4.0 - June 2013</a></dd>
+                  <dd><a href="3_2_release_notes.html">Version 3.2 - January 2012</a></dd>
+                  <dd><a href="3_1_release_notes.html">Version 3.1 - August 2011</a></dd>
+                  <dd><a href="3_0_release_notes.html">Version 3.0 - August 2010</a></dd>
+                  <dd><a href="2_3_release_notes.html">Version 2.3 - March 2009</a></dd>
+                  <dd><a href="2_2_release_notes.html">Version 2.2 - November 2008</a></dd>
+                </div>
+            </dl>
+          </div>
+        </li>
+        <li><a class="nav-item" href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li class="guides-index guides-index-small">
+          <select class="guides-index-item nav-item">
+            <option value="index.html">Guides Index</option>
+              <optgroup label="Start Here">
+                  <option value="getting_started.html">Getting Started with Rails</option>
+              </optgroup>
+              <optgroup label="Models">
+                  <option value="active_record_basics.html">Active Record Basics</option>
+                  <option value="active_record_migrations.html">Active Record Migrations</option>
+                  <option value="active_record_validations.html">Active Record Validations</option>
+                  <option value="active_record_callbacks.html">Active Record Callbacks</option>
+                  <option value="association_basics.html">Active Record Associations</option>
+                  <option value="active_record_querying.html">Active Record Query Interface</option>
+              </optgroup>
+              <optgroup label="Views">
+                  <option value="layouts_and_rendering.html">Layouts and Rendering in Rails</option>
+                  <option value="form_helpers.html">Action View Form Helpers</option>
+              </optgroup>
+              <optgroup label="Controllers">
+                  <option value="action_controller_overview.html">Action Controller Overview</option>
+                  <option value="routing.html">Rails Routing from the Outside In</option>
+              </optgroup>
+              <optgroup label="Other Components">
+                  <option value="active_support_core_extensions.html">Active Support Core Extensions</option>
+                  <option value="action_mailer_basics.html">Action Mailer Basics</option>
+                  <option value="active_job_basics.html">Active Job Basics</option>
+                  <option value="active_storage_overview.html">Active Storage Overview</option>
+                  <option value="action_cable_overview.html">Action Cable Overview</option>
+              </optgroup>
+              <optgroup label="Digging Deeper">
+                  <option value="i18n.html">Rails Internationalization (I18n) API</option>
+                  <option value="testing.html">Testing Rails Applications</option>
+                  <option value="security.html">Securing Rails Applications</option>
+                  <option value="debugging_rails_applications.html">Debugging Rails Applications</option>
+                  <option value="configuring.html">Configuring Rails Applications</option>
+                  <option value="command_line.html">The Rails Command Line</option>
+                  <option value="asset_pipeline.html">The Asset Pipeline</option>
+                  <option value="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</option>
+                  <option value="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</option>
+                  <option value="caching_with_rails.html">Caching with Rails: An Overview</option>
+                  <option value="api_app.html">Using Rails for API-only Applications</option>
+              </optgroup>
+              <optgroup label="Extending Rails">
+                  <option value="rails_on_rack.html">Rails on Rack</option>
+                  <option value="generators.html">Creating and Customizing Rails Generators &amp; Templates</option>
+              </optgroup>
+              <optgroup label="Contributions">
+                  <option value="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</option>
+                  <option value="api_documentation_guidelines.html">API Documentation Guidelines</option>
+                  <option value="ruby_on_rails_guides_guidelines.html">Guides Guidelines</option>
+              </optgroup>
+              <optgroup label="Policies">
+                  <option value="maintenance_policy.html">Maintenance Policy</option>
+              </optgroup>
+              <optgroup label="Release Notes">
+                  <option value="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</option>
+                  <option value="6_0_release_notes.html">Version 6.0 - August 2019</option>
+                  <option value="5_2_release_notes.html">Version 5.2 - April 2018</option>
+                  <option value="5_1_release_notes.html">Version 5.1 - April 2017</option>
+                  <option value="5_0_release_notes.html">Version 5.0 - June 2016</option>
+                  <option value="4_2_release_notes.html">Version 4.2 - December 2014</option>
+                  <option value="4_1_release_notes.html">Version 4.1 - April 2014</option>
+                  <option value="4_0_release_notes.html">Version 4.0 - June 2013</option>
+                  <option value="3_2_release_notes.html">Version 3.2 - January 2012</option>
+                  <option value="3_1_release_notes.html">Version 3.1 - August 2011</option>
+                  <option value="3_0_release_notes.html">Version 3.0 - August 2010</option>
+                  <option value="2_3_release_notes.html">Version 2.3 - March 2009</option>
+                  <option value="2_2_release_notes.html">Version 2.2 - November 2008</option>
+              </optgroup>
+          </select>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Action Text Overview</h2><p>This guide provides you with all you need to get started in handling
+rich text content.</p><p>After reading this guide, you will know:</p>
+<ul>
+<li>How to configure Action Text.</li>
+<li>How to handle rich text content.</li>
+<li>How to style rich text content.</li>
+</ul>
+
+
+                <div id="subCol">
+            <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+            <ol class="chapters">
+<li><a href="#what-is-action-text-questionmark">What is Action Text?</a></li>
+<li><a href="#trix-compared-to-other-rich-text-editors">Trix compared to other rich text editors</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#custom-styling">Custom styling</a></li>
+<li><a href="#api-backend-development">API / Backend development</a></li>
+</ol>
+
+          </div>
+
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="what-is-action-text-questionmark"><a class="anchorlink" href="#what-is-action-text-questionmark">1 What is Action Text?</a></h3><p>Action Text brings rich text content and editing to Rails. It includes
+the <a href="https://trix-editor.org">Trix editor</a> that handles everything from formatting
+to links to quotes to lists to embedded images and galleries.
+The rich text content generated by the Trix editor is saved in its own
+RichText model that's associated with any existing Active Record model in the application.
+Any embedded images (or other attachments) are automatically stored using
+Active Storage and associated with the included RichText model.</p><h3 id="trix-compared-to-other-rich-text-editors"><a class="anchorlink" href="#trix-compared-to-other-rich-text-editors">2 Trix compared to other rich text editors</a></h3><p>Most WYSIWYG editors are wrappers around HTML’s <code>contenteditable</code> and <code>execCommand</code> APIs,
+designed by Microsoft to support live editing of web pages in Internet Explorer 5.5,
+and <a href="https://blog.whatwg.org/the-road-to-html-5-contenteditable#history">eventually reverse-engineered</a>
+and copied by other browsers.</p><p>Because these APIs were never fully specified or documented,
+and because WYSIWYG HTML editors are enormous in scope, each
+browser's implementation has its own set of bugs and quirks,
+and JavaScript developers are left to resolve the inconsistencies.</p><p>Trix sidesteps these inconsistencies by treating contenteditable
+as an I/O device: when input makes its way to the editor, Trix converts that input
+into an editing operation on its internal document model, then re-renders
+that document back into the editor. This gives Trix complete control over what
+happens after every keystroke, and avoids the need to use execCommand at all.</p><h3 id="installation"><a class="anchorlink" href="#installation">3 Installation</a></h3><p>Run <code>bin/rails action_text:install</code> to add the Yarn package and copy over the necessary migration. Also, you need to set up Active Storage for embedded images and other attachments. Please refer to the <a href="active_storage_overview.html">Active Storage Overview</a> guide.</p><p>After the installation is complete, a Rails app using Webpacker should have the following changes:</p>
+<ol>
+<li>
+<p>Both <code>trix</code> and <code>@rails/actiontext</code> should be required in your JavaScript pack.</p>
+<div class="code_container">
+<pre><code class="language-js">// application.js
+require("trix")
+require("@rails/actiontext")
+</code></pre>
+</div>
+</li>
+<li>
+<p>The <code>trix</code> stylesheet should be imported into <code>actiontext.scss</code>.</p>
+<div class="code_container">
+<pre><code class="language-plain">@import "trix/dist/trix";
+</code></pre>
+</div>
+<p>Additionally, this <code>actiontext.scss</code> file should be imported into your stylesheet pack.</p>
+<div class="code_container">
+<pre><code class="language-plain">// application.scss
+@import "./actiontext.scss";
+</code></pre>
+</div>
+</li>
+</ol>
+<h3 id="examples"><a class="anchorlink" href="#examples">4 Examples</a></h3><p>Adding a rich text field to an existing model:</p><div class="code_container">
+<pre><code class="language-ruby"># app/models/message.rb
+class Message &lt; ApplicationRecord
+  has_rich_text :content
+end
+</code></pre>
+</div>
+<p>Note that you don't need to add a <code>content</code> field to your <code>messages</code> table.</p><p>Then refer to this field in the form for the model:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%# app/views/messages/_form.html.erb %&gt;
+&lt;%= form_with model: message do |form| %&gt;
+  &lt;div class="field"&gt;
+    &lt;%= form.label :content %&gt;
+    &lt;%= form.rich_text_area :content %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+</div>
+<p>And finally, display the sanitized rich text on a page:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= @message.content %&gt;
+</code></pre>
+</div>
+<p>To accept the rich text content, all you have to do is permit the referenced attribute:</p><div class="code_container">
+<pre><code class="language-ruby">class MessagesController &lt; ApplicationController
+  def create
+    message = Message.create! params.require(:message).permit(:title, :content)
+    redirect_to message
+  end
+end
+</code></pre>
+</div>
+<h3 id="custom-styling"><a class="anchorlink" href="#custom-styling">5 Custom styling</a></h3><p>By default, the Action Text editor and content is styled by the Trix defaults.
+If you want to change these defaults, you'll want to remove
+the <code>app/assets/stylesheets/actiontext.scss</code> linker and base your stylings on
+the <a href="https://raw.githubusercontent.com/basecamp/trix/master/dist/trix.css">contents of that file</a>.</p><p>You can also style the HTML used for embedded images and other attachments (known as blobs).
+On installation, Action Text will copy over a partial to
+<code>app/views/active_storage/blobs/_blob.html.erb</code>, which you can specialize.</p><h3 id="api-backend-development"><a class="anchorlink" href="#api-backend-development">6 API / Backend development</a></h3>
+<ol>
+<li>
+<p>A backend API (for example, using JSON) needs a separate endpoint for uploading files that creates an <code>ActiveStorage::Blob</code> and returns its <code>attachable_sgid</code>:</p>
+<div class="code_container">
+<pre><code class="language-plain">{
+  "attachable_sgid": "BAh7CEkiCG…"
+}
+</code></pre>
+</div>
+</li>
+<li>
+<p>Take that <code>attachable_sgid</code> and ask your frontend to insert it in rich text content using an <code>&lt;action-text-attachment&gt;</code> tag:</p>
+<div class="code_container">
+<pre><code class="language-xml">&lt;action-text-attachment sgid="BAh7CEkiCG…"&gt;&lt;/action-text-attachment&gt;
+</code></pre>
+</div>
+</li>
+</ol>
+<p>This is based on Basecamp, so if you still can't find what you are looking for, check this <a href="https://github.com/basecamp/bc3-api/blob/master/sections/rich_text.md">Basecamp Doc</a>.</p>
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          Please contribute if you see any typos or factual errors.
+          To get started, you can read our <a href="https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation">documentation contributions</a> section.
+        </p>
+        <p>
+          You may also find incomplete content or stuff that is not up to date.
+          Please do add any missing documentation for master. Make sure to check
+          <a href="https://edgeguides.rubyonrails.org">Edge Guides</a> first to verify
+          if the issues are already fixed or not on the master branch.
+          Check the <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome on the <a href="https://groups.google.com/forum/#!forum/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+</body>
+</html>

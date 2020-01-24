@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Active Record Basics — Ruby on Rails Guides</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/default.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/rails-guides.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" data-turbolinks-track="reload">
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <script src="javascripts/prism.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/turbolinks.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/guides.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/responsive-tables.js" data-turbolinks-track="reload"></script>
+  <meta property="og:title" content="Active Record Basics — Ruby on Rails Guides" />
+  <meta name="description" content="Active Record BasicsThis guide is an introduction to Active Record.After reading this guide, you will know: What Object Relational Mapping and Active Record are and how they are used in Rails. How Active Record fits into the Model-View-Controller paradigm. How to use Active Record models to manipulate data stored in a relational database. Active Record schema naming conventions. The concepts of database migrations, validations, and callbacks." />
+  <meta property="og:description" content="Active Record BasicsThis guide is an introduction to Active Record.After reading this guide, you will know: What Object Relational Mapping and Active Record are and how they are used in Rails. How Active Record fits into the Model-View-Controller paradigm. How to use Active Record models to manipulate data stored in a relational database. Active Record schema naming conventions. The concepts of database migrations, validations, and callbacks." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Ruby on Rails Guides" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/4223" />
+  <meta property="og:type" content="website" />
+</head>
+<body class="guide">
+  <div>
+    <img src="images/edge_badge.png" alt="edge-badge" id="edge-badge" />
+  </div>
+  <div id="topNav">
+    <div class="wrapper">
+      <strong class="more-info-label">More at <a href="https://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <span class="red-button more-info-button">
+        More Ruby on Rails
+      </span>
+      <ul class="more-info-links s-hidden">
+        <li class="more-info"><a href="https://weblog.rubyonrails.org/">Blog</a></li>
+        <li class="more-info"><a href="https://guides.rubyonrails.org/">Guides</a></li>
+        <li class="more-info"><a href="https://api.rubyonrails.org/">API</a></li>
+        <li class="more-info"><a href="https://stackoverflow.com/questions/tagged/ruby-on-rails">Ask for help</a></li>
+        <li class="more-info"><a href="https://github.com/rails/rails">Contribute on GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a class="nav-item" href="index.html">Home</a></li>
+        <li class="guides-index guides-index-large">
+          <a href="index.html" id="guidesMenu" class="guides-index-item nav-item">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+            <dl class="guides-section-container">
+                <div class="guides-section">
+                  <dt>Start Here</dt>
+                  <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Models</dt>
+                  <dd><a href="active_record_basics.html">Active Record Basics</a></dd>
+                  <dd><a href="active_record_migrations.html">Active Record Migrations</a></dd>
+                  <dd><a href="active_record_validations.html">Active Record Validations</a></dd>
+                  <dd><a href="active_record_callbacks.html">Active Record Callbacks</a></dd>
+                  <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                  <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Views</dt>
+                  <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                  <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Controllers</dt>
+                  <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                  <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Other Components</dt>
+                  <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                  <dd><a href="action_mailer_basics.html">Action Mailer Basics</a></dd>
+                  <dd><a href="active_job_basics.html">Active Job Basics</a></dd>
+                  <dd><a href="active_storage_overview.html">Active Storage Overview</a></dd>
+                  <dd><a href="action_cable_overview.html">Action Cable Overview</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Digging Deeper</dt>
+                  <dd><a href="i18n.html">Rails Internationalization (I18n) API</a></dd>
+                  <dd><a href="testing.html">Testing Rails Applications</a></dd>
+                  <dd><a href="security.html">Securing Rails Applications</a></dd>
+                  <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                  <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                  <dd><a href="command_line.html">The Rails Command Line</a></dd>
+                  <dd><a href="asset_pipeline.html">The Asset Pipeline</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</a></dd>
+                  <dd><a href="caching_with_rails.html">Caching with Rails: An Overview</a></dd>
+                  <dd><a href="api_app.html">Using Rails for API-only Applications</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Extending Rails</dt>
+                  <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                  <dd><a href="generators.html">Creating and Customizing Rails Generators &amp; Templates</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Contributions</dt>
+                  <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                  <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                  <dd><a href="ruby_on_rails_guides_guidelines.html">Guides Guidelines</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Policies</dt>
+                  <dd><a href="maintenance_policy.html">Maintenance Policy</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Release Notes</dt>
+                  <dd><a href="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</a></dd>
+                  <dd><a href="6_0_release_notes.html">Version 6.0 - August 2019</a></dd>
+                  <dd><a href="5_2_release_notes.html">Version 5.2 - April 2018</a></dd>
+                  <dd><a href="5_1_release_notes.html">Version 5.1 - April 2017</a></dd>
+                  <dd><a href="5_0_release_notes.html">Version 5.0 - June 2016</a></dd>
+                  <dd><a href="4_2_release_notes.html">Version 4.2 - December 2014</a></dd>
+                  <dd><a href="4_1_release_notes.html">Version 4.1 - April 2014</a></dd>
+                  <dd><a href="4_0_release_notes.html">Version 4.0 - June 2013</a></dd>
+                  <dd><a href="3_2_release_notes.html">Version 3.2 - January 2012</a></dd>
+                  <dd><a href="3_1_release_notes.html">Version 3.1 - August 2011</a></dd>
+                  <dd><a href="3_0_release_notes.html">Version 3.0 - August 2010</a></dd>
+                  <dd><a href="2_3_release_notes.html">Version 2.3 - March 2009</a></dd>
+                  <dd><a href="2_2_release_notes.html">Version 2.2 - November 2008</a></dd>
+                </div>
+            </dl>
+          </div>
+        </li>
+        <li><a class="nav-item" href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li class="guides-index guides-index-small">
+          <select class="guides-index-item nav-item">
+            <option value="index.html">Guides Index</option>
+              <optgroup label="Start Here">
+                  <option value="getting_started.html">Getting Started with Rails</option>
+              </optgroup>
+              <optgroup label="Models">
+                  <option value="active_record_basics.html">Active Record Basics</option>
+                  <option value="active_record_migrations.html">Active Record Migrations</option>
+                  <option value="active_record_validations.html">Active Record Validations</option>
+                  <option value="active_record_callbacks.html">Active Record Callbacks</option>
+                  <option value="association_basics.html">Active Record Associations</option>
+                  <option value="active_record_querying.html">Active Record Query Interface</option>
+              </optgroup>
+              <optgroup label="Views">
+                  <option value="layouts_and_rendering.html">Layouts and Rendering in Rails</option>
+                  <option value="form_helpers.html">Action View Form Helpers</option>
+              </optgroup>
+              <optgroup label="Controllers">
+                  <option value="action_controller_overview.html">Action Controller Overview</option>
+                  <option value="routing.html">Rails Routing from the Outside In</option>
+              </optgroup>
+              <optgroup label="Other Components">
+                  <option value="active_support_core_extensions.html">Active Support Core Extensions</option>
+                  <option value="action_mailer_basics.html">Action Mailer Basics</option>
+                  <option value="active_job_basics.html">Active Job Basics</option>
+                  <option value="active_storage_overview.html">Active Storage Overview</option>
+                  <option value="action_cable_overview.html">Action Cable Overview</option>
+              </optgroup>
+              <optgroup label="Digging Deeper">
+                  <option value="i18n.html">Rails Internationalization (I18n) API</option>
+                  <option value="testing.html">Testing Rails Applications</option>
+                  <option value="security.html">Securing Rails Applications</option>
+                  <option value="debugging_rails_applications.html">Debugging Rails Applications</option>
+                  <option value="configuring.html">Configuring Rails Applications</option>
+                  <option value="command_line.html">The Rails Command Line</option>
+                  <option value="asset_pipeline.html">The Asset Pipeline</option>
+                  <option value="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</option>
+                  <option value="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</option>
+                  <option value="caching_with_rails.html">Caching with Rails: An Overview</option>
+                  <option value="api_app.html">Using Rails for API-only Applications</option>
+              </optgroup>
+              <optgroup label="Extending Rails">
+                  <option value="rails_on_rack.html">Rails on Rack</option>
+                  <option value="generators.html">Creating and Customizing Rails Generators &amp; Templates</option>
+              </optgroup>
+              <optgroup label="Contributions">
+                  <option value="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</option>
+                  <option value="api_documentation_guidelines.html">API Documentation Guidelines</option>
+                  <option value="ruby_on_rails_guides_guidelines.html">Guides Guidelines</option>
+              </optgroup>
+              <optgroup label="Policies">
+                  <option value="maintenance_policy.html">Maintenance Policy</option>
+              </optgroup>
+              <optgroup label="Release Notes">
+                  <option value="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</option>
+                  <option value="6_0_release_notes.html">Version 6.0 - August 2019</option>
+                  <option value="5_2_release_notes.html">Version 5.2 - April 2018</option>
+                  <option value="5_1_release_notes.html">Version 5.1 - April 2017</option>
+                  <option value="5_0_release_notes.html">Version 5.0 - June 2016</option>
+                  <option value="4_2_release_notes.html">Version 4.2 - December 2014</option>
+                  <option value="4_1_release_notes.html">Version 4.1 - April 2014</option>
+                  <option value="4_0_release_notes.html">Version 4.0 - June 2013</option>
+                  <option value="3_2_release_notes.html">Version 3.2 - January 2012</option>
+                  <option value="3_1_release_notes.html">Version 3.1 - August 2011</option>
+                  <option value="3_0_release_notes.html">Version 3.0 - August 2010</option>
+                  <option value="2_3_release_notes.html">Version 2.3 - March 2009</option>
+                  <option value="2_2_release_notes.html">Version 2.2 - November 2008</option>
+              </optgroup>
+          </select>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Active Record Basics</h2><p>This guide is an introduction to Active Record.</p><p>After reading this guide, you will know:</p>
+<ul>
+<li>What Object Relational Mapping and Active Record are and how they are used in
+Rails.</li>
+<li>How Active Record fits into the Model-View-Controller paradigm.</li>
+<li>How to use Active Record models to manipulate data stored in a relational
+database.</li>
+<li>Active Record schema naming conventions.</li>
+<li>The concepts of database migrations, validations, and callbacks.</li>
+</ul>
+
+
+                <div id="subCol">
+            <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+            <ol class="chapters">
+<li>
+<a href="#what-is-active-record-questionmark">What is Active Record?</a>
+
+<ul>
+<li><a href="#the-active-record-pattern">The Active Record Pattern</a></li>
+<li><a href="#object-relational-mapping">Object Relational Mapping</a></li>
+<li><a href="#active-record-as-an-orm-framework">Active Record as an ORM Framework</a></li>
+</ul>
+</li>
+<li>
+<a href="#convention-over-configuration-in-active-record">Convention over Configuration in Active Record</a>
+
+<ul>
+<li><a href="#naming-conventions">Naming Conventions</a></li>
+<li><a href="#schema-conventions">Schema Conventions</a></li>
+</ul>
+</li>
+<li><a href="#creating-active-record-models">Creating Active Record Models</a></li>
+<li><a href="#overriding-the-naming-conventions">Overriding the Naming Conventions</a></li>
+<li>
+<a href="#crud-reading-and-writing-data">CRUD: Reading and Writing Data</a>
+
+<ul>
+<li><a href="#create">Create</a></li>
+<li><a href="#read">Read</a></li>
+<li><a href="#update">Update</a></li>
+<li><a href="#delete">Delete</a></li>
+</ul>
+</li>
+<li><a href="#validations">Validations</a></li>
+<li><a href="#callbacks">Callbacks</a></li>
+<li><a href="#migrations">Migrations</a></li>
+</ol>
+
+          </div>
+
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="what-is-active-record-questionmark"><a class="anchorlink" href="#what-is-active-record-questionmark">1 What is Active Record?</a></h3><p>Active Record is the M in <a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a> - the
+model - which is the layer of the system responsible for representing business
+data and logic. Active Record facilitates the creation and use of business
+objects whose data requires persistent storage to a database. It is an
+implementation of the Active Record pattern which itself is a description of an
+Object Relational Mapping system.</p><h4 id="the-active-record-pattern"><a class="anchorlink" href="#the-active-record-pattern">1.1 The Active Record Pattern</a></h4><p><a href="https://www.martinfowler.com/eaaCatalog/activeRecord.html">Active Record was described by Martin Fowler</a>
+in his book <em>Patterns of Enterprise Application Architecture</em>. In
+Active Record, objects carry both persistent data and behavior which
+operates on that data. Active Record takes the opinion that ensuring
+data access logic as part of the object will educate users of that
+object on how to write to and read from the database.</p><h4 id="object-relational-mapping"><a class="anchorlink" href="#object-relational-mapping">1.2 Object Relational Mapping</a></h4><p><a href="https://en.wikipedia.org/wiki/Object-relational_mapping">Object Relational Mapping</a>, commonly referred to as its abbreviation ORM, is
+a technique that connects the rich objects of an application to tables in
+a relational database management system. Using ORM, the properties and
+relationships of the objects in an application can be easily stored and
+retrieved from a database without writing SQL statements directly and with less
+overall database access code.</p><div class="note"><p>Basic knowledge of relational database management systems (RDBMS) and structured query language (SQL) is helpful in order to fully understand Active Record. Please refer to <a href="https://www.w3schools.com/sql/default.asp">this tutorial</a> (or <a href="http://www.sqlcourse.com/">this one</a>) or study them by other means if you would like to learn more.</p></div><h4 id="active-record-as-an-orm-framework"><a class="anchorlink" href="#active-record-as-an-orm-framework">1.3 Active Record as an ORM Framework</a></h4><p>Active Record gives us several mechanisms, the most important being the ability
+to:</p>
+<ul>
+<li>Represent models and their data.</li>
+<li>Represent associations between these models.</li>
+<li>Represent inheritance hierarchies through related models.</li>
+<li>Validate models before they get persisted to the database.</li>
+<li>Perform database operations in an object-oriented fashion.</li>
+</ul>
+<h3 id="convention-over-configuration-in-active-record"><a class="anchorlink" href="#convention-over-configuration-in-active-record">2 Convention over Configuration in Active Record</a></h3><p>When writing applications using other programming languages or frameworks, it
+may be necessary to write a lot of configuration code. This is particularly true
+for ORM frameworks in general. However, if you follow the conventions adopted by
+Rails, you'll need to write very little configuration (in some cases no
+configuration at all) when creating Active Record models. The idea is that if
+you configure your applications in the very same way most of the time then this
+should be the default way. Thus, explicit configuration would be needed
+only in those cases where you can't follow the standard convention.</p><h4 id="naming-conventions"><a class="anchorlink" href="#naming-conventions">2.1 Naming Conventions</a></h4><p>By default, Active Record uses some naming conventions to find out how the
+mapping between models and database tables should be created. Rails will
+pluralize your class names to find the respective database table. So, for
+a class <code>Book</code>, you should have a database table called <strong>books</strong>. The Rails
+pluralization mechanisms are very powerful, being capable of pluralizing (and
+singularizing) both regular and irregular words. When using class names composed
+of two or more words, the model class name should follow the Ruby conventions,
+using the CamelCase form, while the table name must contain the words separated
+by underscores. Examples:</p>
+<ul>
+<li>Model Class - Singular with the first letter of each word capitalized (e.g.,
+<code>BookClub</code>).</li>
+<li>Database Table - Plural with underscores separating words (e.g., <code>book_clubs</code>).</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>Model / Class</th>
+<th>Table / Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Article</code></td>
+<td><code>articles</code></td>
+</tr>
+<tr>
+<td><code>LineItem</code></td>
+<td><code>line_items</code></td>
+</tr>
+<tr>
+<td><code>Deer</code></td>
+<td><code>deers</code></td>
+</tr>
+<tr>
+<td><code>Mouse</code></td>
+<td><code>mice</code></td>
+</tr>
+<tr>
+<td><code>Person</code></td>
+<td><code>people</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="schema-conventions"><a class="anchorlink" href="#schema-conventions">2.2 Schema Conventions</a></h4><p>Active Record uses naming conventions for the columns in database tables,
+depending on the purpose of these columns.</p>
+<ul>
+<li>
+<strong>Foreign keys</strong> - These fields should be named following the pattern
+<code>singularized_table_name_id</code> (e.g., <code>item_id</code>, <code>order_id</code>). These are the
+fields that Active Record will look for when you create associations between
+your models.</li>
+<li>
+<strong>Primary keys</strong> - By default, Active Record will use an integer column named
+<code>id</code> as the table's primary key (<code>bigint</code> for PostgreSQL and MySQL, <code>integer</code>
+for SQLite). When using <a href="active_record_migrations.html">Active Record Migrations</a>
+to create your tables, this column will be automatically created.</li>
+</ul>
+<p>There are also some optional column names that will add additional features
+to Active Record instances:</p>
+<ul>
+<li>
+<code>created_at</code> - Automatically gets set to the current date and time when the
+record is first created.</li>
+<li>
+<code>updated_at</code> - Automatically gets set to the current date and time whenever
+the record is created or updated.</li>
+<li>
+<code>lock_version</code> - Adds <a href="https://edgeapi.rubyonrails.org/classes/ActiveRecord/Locking.html">optimistic
+locking</a> to
+a model.</li>
+<li>
+<code>type</code> - Specifies that the model uses <a href="https://edgeapi.rubyonrails.org/classes/ActiveRecord/Base.html#class-ActiveRecord::Base-label-Single+table+inheritance">Single Table
+Inheritance</a>.</li>
+<li>
+<code>(association_name)_type</code> - Stores the type for
+<a href="association_basics.html#polymorphic-associations">polymorphic associations</a>.</li>
+<li>
+<code>(table_name)_count</code> - Used to cache the number of belonging objects on
+associations. For example, a <code>comments_count</code> column in an <code>Article</code> class that
+has many instances of <code>Comment</code> will cache the number of existent comments
+for each article.</li>
+</ul>
+<div class="note"><p>While these column names are optional, they are in fact reserved by Active Record. Steer clear of reserved keywords unless you want the extra functionality. For example, <code>type</code> is a reserved keyword used to designate a table using Single Table Inheritance (STI). If you are not using STI, try an analogous keyword like "context", that may still accurately describe the data you are modeling.</p></div><h3 id="creating-active-record-models"><a class="anchorlink" href="#creating-active-record-models">3 Creating Active Record Models</a></h3><p>To create Active Record models, subclass the <code>ApplicationRecord</code> class and you're good to go:</p><div class="code_container">
+<pre><code class="language-ruby">class Product &lt; ApplicationRecord
+end
+</code></pre>
+</div>
+<p>This will create a <code>Product</code> model, mapped to a <code>products</code> table at the
+database. By doing this you'll also have the ability to map the columns of each
+row in that table with the attributes of the instances of your model. Suppose
+that the <code>products</code> table was created using an SQL (or one of its extensions) statement like:</p><div class="code_container">
+<pre><code class="language-sql">CREATE TABLE products (
+   id int(11) NOT NULL auto_increment,
+   name varchar(255),
+   PRIMARY KEY  (id)
+);
+</code></pre>
+</div>
+<p>Schema above declares a table with two columns: <code>id</code> and <code>name</code>. Each row of
+this table represents a certain product with these two parameters. Thus, you
+would be able to write code like the following:</p><div class="code_container">
+<pre><code class="language-ruby">p = Product.new
+p.name = "Some Book"
+puts p.name # "Some Book"
+</code></pre>
+</div>
+<h3 id="overriding-the-naming-conventions"><a class="anchorlink" href="#overriding-the-naming-conventions">4 Overriding the Naming Conventions</a></h3><p>What if you need to follow a different naming convention or need to use your
+Rails application with a legacy database? No problem, you can easily override
+the default conventions.</p><p><code>ApplicationRecord</code> inherits from <code>ActiveRecord::Base</code>, which defines a
+number of helpful methods. You can use the <code>ActiveRecord::Base.table_name=</code>
+method to specify the table name that should be used:</p><div class="code_container">
+<pre><code class="language-ruby">class Product &lt; ApplicationRecord
+  self.table_name = "my_products"
+end
+</code></pre>
+</div>
+<p>If you do so, you will have to define manually the class name that is hosting
+the fixtures (my_products.yml) using the <code>set_fixture_class</code> method in your test
+definition:</p><div class="code_container">
+<pre><code class="language-ruby">class ProductTest &lt; ActiveSupport::TestCase
+  set_fixture_class my_products: Product
+  fixtures :my_products
+  ...
+end
+</code></pre>
+</div>
+<p>It's also possible to override the column that should be used as the table's
+primary key using the <code>ActiveRecord::Base.primary_key=</code> method:</p><div class="code_container">
+<pre><code class="language-ruby">class Product &lt; ApplicationRecord
+  self.primary_key = "product_id"
+end
+</code></pre>
+</div>
+<div class="note"><p>Active Record does not support using non-primary key columns named <code>id</code>.</p></div><h3 id="crud-reading-and-writing-data"><a class="anchorlink" href="#crud-reading-and-writing-data">5 CRUD: Reading and Writing Data</a></h3><p>CRUD is an acronym for the four verbs we use to operate on data: <strong>C</strong>reate,
+<strong>R</strong>ead, <strong>U</strong>pdate and <strong>D</strong>elete. Active Record automatically creates methods
+to allow an application to read and manipulate data stored within its tables.</p><h4 id="create"><a class="anchorlink" href="#create">5.1 Create</a></h4><p>Active Record objects can be created from a hash, a block, or have their
+attributes manually set after creation. The <code>new</code> method will return a new
+object while <code>create</code> will return the object and save it to the database.</p><p>For example, given a model <code>User</code> with attributes of <code>name</code> and <code>occupation</code>,
+the <code>create</code> method call will create and save a new record into the database:</p><div class="code_container">
+<pre><code class="language-ruby">user = User.create(name: "David", occupation: "Code Artist")
+</code></pre>
+</div>
+<p>Using the <code>new</code> method, an object can be instantiated without being saved:</p><div class="code_container">
+<pre><code class="language-ruby">user = User.new
+user.name = "David"
+user.occupation = "Code Artist"
+</code></pre>
+</div>
+<p>A call to <code>user.save</code> will commit the record to the database.</p><p>Finally, if a block is provided, both <code>create</code> and <code>new</code> will yield the new
+object to that block for initialization:</p><div class="code_container">
+<pre><code class="language-ruby">user = User.new do |u|
+  u.name = "David"
+  u.occupation = "Code Artist"
+end
+</code></pre>
+</div>
+<h4 id="read"><a class="anchorlink" href="#read">5.2 Read</a></h4><p>Active Record provides a rich API for accessing data within a database. Below
+are a few examples of different data access methods provided by Active Record.</p><div class="code_container">
+<pre><code class="language-ruby"># return a collection with all users
+users = User.all
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-ruby"># return the first user
+user = User.first
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-ruby"># return the first user named David
+david = User.find_by(name: 'David')
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-ruby"># find all users named David who are Code Artists and sort by created_at in reverse chronological order
+users = User.where(name: 'David', occupation: 'Code Artist').order(created_at: :desc)
+</code></pre>
+</div>
+<p>You can learn more about querying an Active Record model in the <a href="active_record_querying.html">Active Record
+Query Interface</a> guide.</p><h4 id="update"><a class="anchorlink" href="#update">5.3 Update</a></h4><p>Once an Active Record object has been retrieved, its attributes can be modified
+and it can be saved to the database.</p><div class="code_container">
+<pre><code class="language-ruby">user = User.find_by(name: 'David')
+user.name = 'Dave'
+user.save
+</code></pre>
+</div>
+<p>A shorthand for this is to use a hash mapping attribute names to the desired
+value, like so:</p><div class="code_container">
+<pre><code class="language-ruby">user = User.find_by(name: 'David')
+user.update(name: 'Dave')
+</code></pre>
+</div>
+<p>This is most useful when updating several attributes at once. If, on the other
+hand, you'd like to update several records in bulk, you may find the
+<code>update_all</code> class method useful:</p><div class="code_container">
+<pre><code class="language-ruby">User.update_all "max_login_attempts = 3, must_change_password = 'true'"
+</code></pre>
+</div>
+<h4 id="delete"><a class="anchorlink" href="#delete">5.4 Delete</a></h4><p>Likewise, once retrieved an Active Record object can be destroyed which removes
+it from the database.</p><div class="code_container">
+<pre><code class="language-ruby">user = User.find_by(name: 'David')
+user.destroy
+</code></pre>
+</div>
+<p>If you'd like to delete several records in bulk, you may use <code>destroy_by</code>
+or <code>destroy_all</code> method:</p><div class="code_container">
+<pre><code class="language-ruby"># find and delete all users named David
+User.destroy_by(name: 'David')
+
+# delete all users
+User.destroy_all
+</code></pre>
+</div>
+<h3 id="validations"><a class="anchorlink" href="#validations">6 Validations</a></h3><p>Active Record allows you to validate the state of a model before it gets written
+into the database. There are several methods that you can use to check your
+models and validate that an attribute value is not empty, is unique and not
+already in the database, follows a specific format, and many more.</p><p>Validation is a very important issue to consider when persisting to the database, so
+the methods <code>save</code> and <code>update</code> take it into account when
+running: they return <code>false</code> when validation fails and they don't actually
+perform any operations on the database. All of these have a bang counterpart (that
+is, <code>save!</code> and <code>update!</code>), which are stricter in that
+they raise the exception <code>ActiveRecord::RecordInvalid</code> if validation fails.
+A quick example to illustrate:</p><div class="code_container">
+<pre><code class="language-ruby">class User &lt; ApplicationRecord
+  validates :name, presence: true
+end
+
+user = User.new
+user.save  # =&gt; false
+user.save! # =&gt; ActiveRecord::RecordInvalid: Validation failed: Name can't be blank
+</code></pre>
+</div>
+<p>You can learn more about validations in the <a href="active_record_validations.html">Active Record Validations
+guide</a>.</p><h3 id="callbacks"><a class="anchorlink" href="#callbacks">7 Callbacks</a></h3><p>Active Record callbacks allow you to attach code to certain events in the
+life-cycle of your models. This enables you to add behavior to your models by
+transparently executing code when those events occur, like when you create a new
+record, update it, destroy it, and so on. You can learn more about callbacks in
+the <a href="active_record_callbacks.html">Active Record Callbacks guide</a>.</p><h3 id="migrations"><a class="anchorlink" href="#migrations">8 Migrations</a></h3><p>Rails provides a domain-specific language for managing a database schema called
+migrations. Migrations are stored in files which are executed against any
+database that Active Record supports using <code>rake</code>. Here's a migration that
+creates a table:</p><div class="code_container">
+<pre><code class="language-ruby">class CreatePublications &lt; ActiveRecord::Migration[5.0]
+  def change
+    create_table :publications do |t|
+      t.string :title
+      t.text :description
+      t.references :publication_type
+      t.integer :publisher_id
+      t.string :publisher_type
+      t.boolean :single_issue
+
+      t.timestamps
+    end
+    add_index :publications, :publication_type_id
+  end
+end
+</code></pre>
+</div>
+<p>Rails keeps track of which files have been committed to the database and
+provides rollback features. To actually create the table, you'd run <code>bin/rails db:migrate</code>
+and to roll it back, <code>bin/rails db:rollback</code>.</p><p>Note that the above code is database-agnostic: it will run in MySQL,
+PostgreSQL, Oracle, and others. You can learn more about migrations in the
+<a href="active_record_migrations.html">Active Record Migrations guide</a>.</p>
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          Please contribute if you see any typos or factual errors.
+          To get started, you can read our <a href="https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation">documentation contributions</a> section.
+        </p>
+        <p>
+          You may also find incomplete content or stuff that is not up to date.
+          Please do add any missing documentation for master. Make sure to check
+          <a href="https://edgeguides.rubyonrails.org">Edge Guides</a> first to verify
+          if the issues are already fixed or not on the master branch.
+          Check the <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome on the <a href="https://groups.google.com/forum/#!forum/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+</body>
+</html>

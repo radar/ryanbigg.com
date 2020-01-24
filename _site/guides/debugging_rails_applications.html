@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Debugging Rails Applications — Ruby on Rails Guides</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/default.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/rails-guides.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" data-turbolinks-track="reload">
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <script src="javascripts/prism.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/turbolinks.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/guides.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/responsive-tables.js" data-turbolinks-track="reload"></script>
+  <meta property="og:title" content="Debugging Rails Applications — Ruby on Rails Guides" />
+  <meta name="description" content="Debugging Rails ApplicationsThis guide introduces techniques for debugging Ruby on Rails applications.After reading this guide, you will know: The purpose of debugging. How to track down problems and issues in your application that your tests aren&#39;t identifying. The different ways of debugging. How to analyze the stack trace." />
+  <meta property="og:description" content="Debugging Rails ApplicationsThis guide introduces techniques for debugging Ruby on Rails applications.After reading this guide, you will know: The purpose of debugging. How to track down problems and issues in your application that your tests aren&#39;t identifying. The different ways of debugging. How to analyze the stack trace." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Ruby on Rails Guides" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/4223" />
+  <meta property="og:type" content="website" />
+</head>
+<body class="guide">
+  <div>
+    <img src="images/edge_badge.png" alt="edge-badge" id="edge-badge" />
+  </div>
+  <div id="topNav">
+    <div class="wrapper">
+      <strong class="more-info-label">More at <a href="https://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <span class="red-button more-info-button">
+        More Ruby on Rails
+      </span>
+      <ul class="more-info-links s-hidden">
+        <li class="more-info"><a href="https://weblog.rubyonrails.org/">Blog</a></li>
+        <li class="more-info"><a href="https://guides.rubyonrails.org/">Guides</a></li>
+        <li class="more-info"><a href="https://api.rubyonrails.org/">API</a></li>
+        <li class="more-info"><a href="https://stackoverflow.com/questions/tagged/ruby-on-rails">Ask for help</a></li>
+        <li class="more-info"><a href="https://github.com/rails/rails">Contribute on GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a class="nav-item" href="index.html">Home</a></li>
+        <li class="guides-index guides-index-large">
+          <a href="index.html" id="guidesMenu" class="guides-index-item nav-item">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+            <dl class="guides-section-container">
+                <div class="guides-section">
+                  <dt>Start Here</dt>
+                  <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Models</dt>
+                  <dd><a href="active_record_basics.html">Active Record Basics</a></dd>
+                  <dd><a href="active_record_migrations.html">Active Record Migrations</a></dd>
+                  <dd><a href="active_record_validations.html">Active Record Validations</a></dd>
+                  <dd><a href="active_record_callbacks.html">Active Record Callbacks</a></dd>
+                  <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                  <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Views</dt>
+                  <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                  <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Controllers</dt>
+                  <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                  <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Other Components</dt>
+                  <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                  <dd><a href="action_mailer_basics.html">Action Mailer Basics</a></dd>
+                  <dd><a href="active_job_basics.html">Active Job Basics</a></dd>
+                  <dd><a href="active_storage_overview.html">Active Storage Overview</a></dd>
+                  <dd><a href="action_cable_overview.html">Action Cable Overview</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Digging Deeper</dt>
+                  <dd><a href="i18n.html">Rails Internationalization (I18n) API</a></dd>
+                  <dd><a href="testing.html">Testing Rails Applications</a></dd>
+                  <dd><a href="security.html">Securing Rails Applications</a></dd>
+                  <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                  <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                  <dd><a href="command_line.html">The Rails Command Line</a></dd>
+                  <dd><a href="asset_pipeline.html">The Asset Pipeline</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</a></dd>
+                  <dd><a href="caching_with_rails.html">Caching with Rails: An Overview</a></dd>
+                  <dd><a href="api_app.html">Using Rails for API-only Applications</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Extending Rails</dt>
+                  <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                  <dd><a href="generators.html">Creating and Customizing Rails Generators &amp; Templates</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Contributions</dt>
+                  <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                  <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                  <dd><a href="ruby_on_rails_guides_guidelines.html">Guides Guidelines</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Policies</dt>
+                  <dd><a href="maintenance_policy.html">Maintenance Policy</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Release Notes</dt>
+                  <dd><a href="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</a></dd>
+                  <dd><a href="6_0_release_notes.html">Version 6.0 - August 2019</a></dd>
+                  <dd><a href="5_2_release_notes.html">Version 5.2 - April 2018</a></dd>
+                  <dd><a href="5_1_release_notes.html">Version 5.1 - April 2017</a></dd>
+                  <dd><a href="5_0_release_notes.html">Version 5.0 - June 2016</a></dd>
+                  <dd><a href="4_2_release_notes.html">Version 4.2 - December 2014</a></dd>
+                  <dd><a href="4_1_release_notes.html">Version 4.1 - April 2014</a></dd>
+                  <dd><a href="4_0_release_notes.html">Version 4.0 - June 2013</a></dd>
+                  <dd><a href="3_2_release_notes.html">Version 3.2 - January 2012</a></dd>
+                  <dd><a href="3_1_release_notes.html">Version 3.1 - August 2011</a></dd>
+                  <dd><a href="3_0_release_notes.html">Version 3.0 - August 2010</a></dd>
+                  <dd><a href="2_3_release_notes.html">Version 2.3 - March 2009</a></dd>
+                  <dd><a href="2_2_release_notes.html">Version 2.2 - November 2008</a></dd>
+                </div>
+            </dl>
+          </div>
+        </li>
+        <li><a class="nav-item" href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li class="guides-index guides-index-small">
+          <select class="guides-index-item nav-item">
+            <option value="index.html">Guides Index</option>
+              <optgroup label="Start Here">
+                  <option value="getting_started.html">Getting Started with Rails</option>
+              </optgroup>
+              <optgroup label="Models">
+                  <option value="active_record_basics.html">Active Record Basics</option>
+                  <option value="active_record_migrations.html">Active Record Migrations</option>
+                  <option value="active_record_validations.html">Active Record Validations</option>
+                  <option value="active_record_callbacks.html">Active Record Callbacks</option>
+                  <option value="association_basics.html">Active Record Associations</option>
+                  <option value="active_record_querying.html">Active Record Query Interface</option>
+              </optgroup>
+              <optgroup label="Views">
+                  <option value="layouts_and_rendering.html">Layouts and Rendering in Rails</option>
+                  <option value="form_helpers.html">Action View Form Helpers</option>
+              </optgroup>
+              <optgroup label="Controllers">
+                  <option value="action_controller_overview.html">Action Controller Overview</option>
+                  <option value="routing.html">Rails Routing from the Outside In</option>
+              </optgroup>
+              <optgroup label="Other Components">
+                  <option value="active_support_core_extensions.html">Active Support Core Extensions</option>
+                  <option value="action_mailer_basics.html">Action Mailer Basics</option>
+                  <option value="active_job_basics.html">Active Job Basics</option>
+                  <option value="active_storage_overview.html">Active Storage Overview</option>
+                  <option value="action_cable_overview.html">Action Cable Overview</option>
+              </optgroup>
+              <optgroup label="Digging Deeper">
+                  <option value="i18n.html">Rails Internationalization (I18n) API</option>
+                  <option value="testing.html">Testing Rails Applications</option>
+                  <option value="security.html">Securing Rails Applications</option>
+                  <option value="debugging_rails_applications.html">Debugging Rails Applications</option>
+                  <option value="configuring.html">Configuring Rails Applications</option>
+                  <option value="command_line.html">The Rails Command Line</option>
+                  <option value="asset_pipeline.html">The Asset Pipeline</option>
+                  <option value="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</option>
+                  <option value="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</option>
+                  <option value="caching_with_rails.html">Caching with Rails: An Overview</option>
+                  <option value="api_app.html">Using Rails for API-only Applications</option>
+              </optgroup>
+              <optgroup label="Extending Rails">
+                  <option value="rails_on_rack.html">Rails on Rack</option>
+                  <option value="generators.html">Creating and Customizing Rails Generators &amp; Templates</option>
+              </optgroup>
+              <optgroup label="Contributions">
+                  <option value="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</option>
+                  <option value="api_documentation_guidelines.html">API Documentation Guidelines</option>
+                  <option value="ruby_on_rails_guides_guidelines.html">Guides Guidelines</option>
+              </optgroup>
+              <optgroup label="Policies">
+                  <option value="maintenance_policy.html">Maintenance Policy</option>
+              </optgroup>
+              <optgroup label="Release Notes">
+                  <option value="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</option>
+                  <option value="6_0_release_notes.html">Version 6.0 - August 2019</option>
+                  <option value="5_2_release_notes.html">Version 5.2 - April 2018</option>
+                  <option value="5_1_release_notes.html">Version 5.1 - April 2017</option>
+                  <option value="5_0_release_notes.html">Version 5.0 - June 2016</option>
+                  <option value="4_2_release_notes.html">Version 4.2 - December 2014</option>
+                  <option value="4_1_release_notes.html">Version 4.1 - April 2014</option>
+                  <option value="4_0_release_notes.html">Version 4.0 - June 2013</option>
+                  <option value="3_2_release_notes.html">Version 3.2 - January 2012</option>
+                  <option value="3_1_release_notes.html">Version 3.1 - August 2011</option>
+                  <option value="3_0_release_notes.html">Version 3.0 - August 2010</option>
+                  <option value="2_3_release_notes.html">Version 2.3 - March 2009</option>
+                  <option value="2_2_release_notes.html">Version 2.2 - November 2008</option>
+              </optgroup>
+          </select>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Debugging Rails Applications</h2><p>This guide introduces techniques for debugging Ruby on Rails applications.</p><p>After reading this guide, you will know:</p>
+<ul>
+<li>The purpose of debugging.</li>
+<li>How to track down problems and issues in your application that your tests aren&#39;t identifying.</li>
+<li>The different ways of debugging.</li>
+<li>How to analyze the stack trace.</li>
+</ul>
+
+
+                <div id="subCol">
+            <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+            <ol class="chapters">
+<li>
+<a href="#view-helpers-for-debugging">View Helpers for Debugging</a>
+
+<ul>
+<li><a href="#debug"><code>debug</code></a></li>
+<li><a href="#to-yaml"><code>to_yaml</code></a></li>
+<li><a href="#inspect"><code>inspect</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#the-logger">The Logger</a>
+
+<ul>
+<li><a href="#what-is-the-logger-questionmark">What is the Logger?</a></li>
+<li><a href="#log-levels">Log Levels</a></li>
+<li><a href="#sending-messages">Sending Messages</a></li>
+<li><a href="#verbose-query-logs">Verbose Query Logs</a></li>
+<li><a href="#tagged-logging">Tagged Logging</a></li>
+<li><a href="#impact-of-logs-on-performance">Impact of Logs on Performance</a></li>
+</ul>
+</li>
+<li>
+<a href="#debugging-with-the-byebug-gem">Debugging with the <code>byebug</code> gem</a>
+
+<ul>
+<li><a href="#setup">Setup</a></li>
+<li><a href="#the-shell">The Shell</a></li>
+<li><a href="#the-context">The Context</a></li>
+<li><a href="#threads">Threads</a></li>
+<li><a href="#debugging-with-the-byebug-gem-inspecting-variables">Inspecting Variables</a></li>
+<li><a href="#step-by-step">Step by Step</a></li>
+<li><a href="#breakpoints">Breakpoints</a></li>
+<li><a href="#catching-exceptions">Catching Exceptions</a></li>
+<li><a href="#resuming-execution">Resuming Execution</a></li>
+<li><a href="#editing">Editing</a></li>
+<li><a href="#quitting">Quitting</a></li>
+<li><a href="#debugging-with-the-byebug-gem-settings">Settings</a></li>
+</ul>
+</li>
+<li>
+<a href="#debugging-with-the-web-console-gem">Debugging with the <code>web-console</code> gem</a>
+
+<ul>
+<li><a href="#console">Console</a></li>
+<li><a href="#debugging-with-the-web-console-gem-inspecting-variables">Inspecting Variables</a></li>
+<li><a href="#debugging-with-the-web-console-gem-settings">Settings</a></li>
+</ul>
+</li>
+<li>
+<a href="#debugging-memory-leaks">Debugging Memory Leaks</a>
+
+<ul>
+<li><a href="#valgrind">Valgrind</a></li>
+<li><a href="#find-a-memory-leak">Find a Memory Leak</a></li>
+</ul>
+</li>
+<li><a href="#plugins-for-debugging">Plugins for Debugging</a></li>
+<li><a href="#references">References</a></li>
+</ol>
+
+          </div>
+
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="view-helpers-for-debugging"><a class="anchorlink" href="#view-helpers-for-debugging">1 View Helpers for Debugging</a></h3><p>One common task is to inspect the contents of a variable. Rails provides three different ways to do this:</p>
+<ul>
+<li><code>debug</code></li>
+<li><code>to_yaml</code></li>
+<li><code>inspect</code></li>
+</ul>
+<h4 id="debug"><a class="anchorlink" href="#debug">1.1 <code>debug</code></a></h4><p>The <code>debug</code> helper will return a &lt;pre&gt; tag that renders the object using the YAML format. This will generate human-readable data from any object. For example, if you have this code in a view:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= debug @article %&gt;
+&lt;p&gt;
+  &lt;b&gt;Title:&lt;/b&gt;
+  &lt;%= @article.title %&gt;
+&lt;/p&gt;
+</code></pre>
+</div>
+<p>You'll see something like this:</p><div class="code_container">
+<pre><code class="language-yaml">--- !ruby/object Article
+attributes:
+  updated_at: 2008-09-05 22:55:47
+  body: It's a very helpful guide for debugging your Rails app.
+  title: Rails debugging guide
+  published: t
+  id: "1"
+  created_at: 2008-09-05 22:55:47
+attributes_cache: {}
+
+
+Title: Rails debugging guide
+</code></pre>
+</div>
+<h4 id="to-yaml"><a class="anchorlink" href="#to-yaml">1.2 <code>to_yaml</code></a></h4><p>Alternatively, calling <code>to_yaml</code> on any object converts it to YAML. You can pass this converted object into the <code>simple_format</code> helper method to format the output. This is how <code>debug</code> does its magic.</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= simple_format @article.to_yaml %&gt;
+&lt;p&gt;
+  &lt;b&gt;Title:&lt;/b&gt;
+  &lt;%= @article.title %&gt;
+&lt;/p&gt;
+</code></pre>
+</div>
+<p>The above code will render something like this:</p><div class="code_container">
+<pre><code class="language-yaml">--- !ruby/object Article
+attributes:
+updated_at: 2008-09-05 22:55:47
+body: It's a very helpful guide for debugging your Rails app.
+title: Rails debugging guide
+published: t
+id: "1"
+created_at: 2008-09-05 22:55:47
+attributes_cache: {}
+
+Title: Rails debugging guide
+</code></pre>
+</div>
+<h4 id="inspect"><a class="anchorlink" href="#inspect">1.3 <code>inspect</code></a></h4><p>Another useful method for displaying object values is <code>inspect</code>, especially when working with arrays or hashes. This will print the object value as a string. For example:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= [1, 2, 3, 4, 5].inspect %&gt;
+&lt;p&gt;
+  &lt;b&gt;Title:&lt;/b&gt;
+  &lt;%= @article.title %&gt;
+&lt;/p&gt;
+</code></pre>
+</div>
+<p>Will render:</p><div class="code_container">
+<pre><code class="language-plain">[1, 2, 3, 4, 5]
+
+Title: Rails debugging guide
+</code></pre>
+</div>
+<h3 id="the-logger"><a class="anchorlink" href="#the-logger">2 The Logger</a></h3><p>It can also be useful to save information to log files at runtime. Rails maintains a separate log file for each runtime environment.</p><h4 id="what-is-the-logger-questionmark"><a class="anchorlink" href="#what-is-the-logger-questionmark">2.1 What is the Logger?</a></h4><p>Rails makes use of the <code>ActiveSupport::Logger</code> class to write log information. Other loggers, such as <code>Log4r</code>, may also be substituted.</p><p>You can specify an alternative logger in <code>config/application.rb</code> or any other environment file, for example:</p><div class="code_container">
+<pre><code class="language-ruby">config.logger = Logger.new(STDOUT)
+config.logger = Log4r::Logger.new("Application Log")
+</code></pre>
+</div>
+<p>Or in the <code>Initializer</code> section, add <em>any</em> of the following</p><div class="code_container">
+<pre><code class="language-ruby">Rails.logger = Logger.new(STDOUT)
+Rails.logger = Log4r::Logger.new("Application Log")
+</code></pre>
+</div>
+<div class="info"><p>By default, each log is created under <code>Rails.root/log/</code> and the log file is named after the environment in which the application is running.</p></div><h4 id="log-levels"><a class="anchorlink" href="#log-levels">2.2 Log Levels</a></h4><p>When something is logged, it's printed into the corresponding log if the log
+level of the message is equal to or higher than the configured log level. If you
+want to know the current log level, you can call the <code>Rails.logger.level</code>
+method.</p><p>The available log levels are: <code>:debug</code>, <code>:info</code>, <code>:warn</code>, <code>:error</code>, <code>:fatal</code>,
+and <code>:unknown</code>, corresponding to the log level numbers from 0 up to 5,
+respectively. To change the default log level, use</p><div class="code_container">
+<pre><code class="language-ruby">config.log_level = :warn # In any environment initializer, or
+Rails.logger.level = 0 # at any time
+</code></pre>
+</div>
+<p>This is useful when you want to log under development or staging without flooding your production log with unnecessary information.</p><div class="info"><p>The default Rails log level is <code>debug</code> in all environments.</p></div><h4 id="sending-messages"><a class="anchorlink" href="#sending-messages">2.3 Sending Messages</a></h4><p>To write in the current log use the <code>logger.(debug|info|warn|error|fatal|unknown)</code> method from within a controller, model, or mailer:</p><div class="code_container">
+<pre><code class="language-ruby">logger.debug "Person attributes hash: #{@person.attributes.inspect}"
+logger.info "Processing the request..."
+logger.fatal "Terminating application, raised unrecoverable error!!!"
+</code></pre>
+</div>
+<p>Here's an example of a method instrumented with extra logging:</p><div class="code_container">
+<pre><code class="language-ruby">class ArticlesController &lt; ApplicationController
+  # ...
+
+  def create
+    @article = Article.new(article_params)
+    logger.debug "New article: #{@article.attributes.inspect}"
+    logger.debug "Article should be valid: #{@article.valid?}"
+
+    if @article.save
+      logger.debug "The article was saved and now the user is going to be redirected..."
+      redirect_to @article, notice: 'Article was successfully created.'
+    else
+      render :new
+    end
+  end
+
+  # ...
+
+  private
+    def article_params
+      params.require(:article).permit(:title, :body, :published)
+    end
+end
+</code></pre>
+</div>
+<p>Here's an example of the log generated when this controller action is executed:</p><div class="code_container">
+<pre><code class="language-plain">Started POST "/articles" for 127.0.0.1 at 2018-10-18 20:09:23 -0400
+Processing by ArticlesController#create as HTML
+  Parameters: {"utf8"=&gt;"✓", "authenticity_token"=&gt;"XLveDrKzF1SwaiNRPTaMtkrsTzedtebPPkmxEFIU0ordLjICSnXsSNfrdMa4ccyBjuGwnnEiQhEoMN6H1Gtz3A==", "article"=&gt;{"title"=&gt;"Debugging Rails", "body"=&gt;"I'm learning how to print in logs.", "published"=&gt;"0"}, "commit"=&gt;"Create Article"}
+New article: {"id"=&gt;nil, "title"=&gt;"Debugging Rails", "body"=&gt;"I'm learning how to print in logs.", "published"=&gt;false, "created_at"=&gt;nil, "updated_at"=&gt;nil}
+Article should be valid: true
+   (0.0ms)  begin transaction
+  ↳ app/controllers/articles_controller.rb:31
+  Article Create (0.5ms)  INSERT INTO "articles" ("title", "body", "published", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)  [["title", "Debugging Rails"], ["body", "I'm learning how to print in logs."], ["published", 0], ["created_at", "2018-10-19 00:09:23.216549"], ["updated_at", "2018-10-19 00:09:23.216549"]]
+  ↳ app/controllers/articles_controller.rb:31
+   (2.3ms)  commit transaction
+  ↳ app/controllers/articles_controller.rb:31
+The article was saved and now the user is going to be redirected...
+Redirected to http://localhost:3000/articles/1
+Completed 302 Found in 4ms (ActiveRecord: 0.8ms)
+</code></pre>
+</div>
+<p>Adding extra logging like this makes it easy to search for unexpected or unusual behavior in your logs. If you add extra logging, be sure to make sensible use of log levels to avoid filling your production logs with useless trivia.</p><h4 id="verbose-query-logs"><a class="anchorlink" href="#verbose-query-logs">2.4 Verbose Query Logs</a></h4><p>When looking at database query output in logs, it may not be immediately clear why multiple database queries are triggered when a single method is called:</p><div class="code_container">
+<pre><code class="language-plain">irb(main):001:0&gt; Article.pamplemousse
+  Article Load (0.4ms)  SELECT "articles".* FROM "articles"
+  Comment Load (0.2ms)  SELECT "comments".* FROM "comments" WHERE "comments"."article_id" = ?  [["article_id", 1]]
+  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."article_id" = ?  [["article_id", 2]]
+  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."article_id" = ?  [["article_id", 3]]
+=&gt; #&lt;Comment id: 2, author: "1", body: "Well, actually...", article_id: 1, created_at: "2018-10-19 00:56:10", updated_at: "2018-10-19 00:56:10"&gt;
+</code></pre>
+</div>
+<p>After running <code>ActiveRecord::Base.verbose_query_logs = true</code> in the <code>bin/rails console</code> session to enable verbose query logs and running the method again, it becomes obvious what single line of code is generating all these discrete database calls:</p><div class="code_container">
+<pre><code class="language-plain">irb(main):003:0&gt; Article.pamplemousse
+  Article Load (0.2ms)  SELECT "articles".* FROM "articles"
+  ↳ app/models/article.rb:5
+  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."article_id" = ?  [["article_id", 1]]
+  ↳ app/models/article.rb:6
+  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."article_id" = ?  [["article_id", 2]]
+  ↳ app/models/article.rb:6
+  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."article_id" = ?  [["article_id", 3]]
+  ↳ app/models/article.rb:6
+=&gt; #&lt;Comment id: 2, author: "1", body: "Well, actually...", article_id: 1, created_at: "2018-10-19 00:56:10", updated_at: "2018-10-19 00:56:10"&gt;
+</code></pre>
+</div>
+<p>Below each database statement you can see arrows pointing to the specific source filename (and line number) of the method that resulted in a database call. This can help you identify and address performance problems caused by N+1 queries: single database queries that generates multiple additional queries.</p><p>Verbose query logs are enabled by default in the development environment logs after Rails 5.2.</p><div class="warning"><p>We recommend against using this setting in production environments. It relies on Ruby's <code>Kernel#caller</code> method which tends to allocate a lot of memory in order to generate stacktraces of method calls.</p></div><h4 id="tagged-logging"><a class="anchorlink" href="#tagged-logging">2.5 Tagged Logging</a></h4><p>When running multi-user, multi-account applications, it's often useful
+to be able to filter the logs using some custom rules. <code>TaggedLogging</code>
+in Active Support helps you do exactly that by stamping log lines with subdomains, request ids, and anything else to aid debugging such applications.</p><div class="code_container">
+<pre><code class="language-ruby">logger = ActiveSupport::TaggedLogging.new(Logger.new(STDOUT))
+logger.tagged("BCX") { logger.info "Stuff" }                            # Logs "[BCX] Stuff"
+logger.tagged("BCX", "Jason") { logger.info "Stuff" }                   # Logs "[BCX] [Jason] Stuff"
+logger.tagged("BCX") { logger.tagged("Jason") { logger.info "Stuff" } } # Logs "[BCX] [Jason] Stuff"
+</code></pre>
+</div>
+<h4 id="impact-of-logs-on-performance"><a class="anchorlink" href="#impact-of-logs-on-performance">2.6 Impact of Logs on Performance</a></h4><p>Logging will always have a small impact on the performance of your Rails app,
+        particularly when logging to disk. Additionally, there are a few subtleties:</p><p>Using the <code>:debug</code> level will have a greater performance penalty than <code>:fatal</code>,
+      as a far greater number of strings are being evaluated and written to the
+      log output (e.g. disk).</p><p>Another potential pitfall is too many calls to <code>Logger</code> in your code:</p><div class="code_container">
+<pre><code class="language-ruby">logger.debug "Person attributes hash: #{@person.attributes.inspect}"
+</code></pre>
+</div>
+<p>In the above example, there will be a performance impact even if the allowed
+output level doesn't include debug. The reason is that Ruby has to evaluate
+these strings, which includes instantiating the somewhat heavy <code>String</code> object
+and interpolating the variables.
+Therefore, it's recommended to pass blocks to the logger methods, as these are
+only evaluated if the output level is the same as — or included in — the allowed level
+(i.e. lazy loading). The same code rewritten would be:</p><div class="code_container">
+<pre><code class="language-ruby">logger.debug {"Person attributes hash: #{@person.attributes.inspect}"}
+</code></pre>
+</div>
+<p>The contents of the block, and therefore the string interpolation, are only
+evaluated if debug is enabled. This performance savings are only really
+noticeable with large amounts of logging, but it's a good practice to employ.</p><h3 id="debugging-with-the-byebug-gem"><a class="anchorlink" href="#debugging-with-the-byebug-gem">3 Debugging with the <code>byebug</code> gem</a></h3><p>When your code is behaving in unexpected ways, you can try printing to logs or
+the console to diagnose the problem. Unfortunately, there are times when this
+sort of error tracking is not effective in finding the root cause of a problem.
+When you actually need to journey into your running source code, the debugger
+is your best companion.</p><p>The debugger can also help you if you want to learn about the Rails source code
+but don't know where to start. Just debug any request to your application and
+use this guide to learn how to move from the code you have written into the
+underlying Rails code.</p><h4 id="setup"><a class="anchorlink" href="#setup">3.1 Setup</a></h4><p>You can use the <code>byebug</code> gem to set breakpoints and step through live code in
+Rails. To install it, just run:</p><div class="code_container">
+<pre><code class="language-shell-session">$ gem install byebug
+</code></pre>
+</div>
+<p>Inside any Rails application you can then invoke the debugger by calling the
+<code>byebug</code> method.</p><p>Here's an example:</p><div class="code_container">
+<pre><code class="language-ruby">class PeopleController &lt; ApplicationController
+  def new
+    byebug
+    @person = Person.new
+  end
+end
+</code></pre>
+</div>
+<h4 id="the-shell"><a class="anchorlink" href="#the-shell">3.2 The Shell</a></h4><p>As soon as your application calls the <code>byebug</code> method, the debugger will be
+started in a debugger shell inside the terminal window where you launched your
+application server, and you will be placed at the debugger's prompt <code>(byebug)</code>.
+Before the prompt, the code around the line that is about to be run will be
+displayed and the current line will be marked by '=&gt;', like this:</p><div class="code_container">
+<pre><code class="language-plain">[1, 10] in /PathTo/project/app/controllers/articles_controller.rb
+    3:
+    4:   # GET /articles
+    5:   # GET /articles.json
+    6:   def index
+    7:     byebug
+=&gt;  8:     @articles = Article.find_recent
+    9:
+   10:     respond_to do |format|
+   11:       format.html # index.html.erb
+   12:       format.json { render json: @articles }
+
+(byebug)
+</code></pre>
+</div>
+<p>If you got there by a browser request, the browser tab containing the request
+will be hung until the debugger has finished and the trace has finished
+processing the entire request.</p><p>For example:</p><div class="code_container">
+<pre><code class="language-shell-session">=&gt; Booting Puma
+=&gt; Rails 6.0.0 application starting in development
+=&gt; Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Version 3.12.1 (ruby 2.5.7-p206), codename: Llamas in Pajamas
+* Min threads: 5, max threads: 5
+* Environment: development
+* Listening on tcp://localhost:3000
+Use Ctrl-C to stop
+Started GET "/" for 127.0.0.1 at 2014-04-11 13:11:48 +0200
+  ActiveRecord::SchemaMigration Load (0.2ms)  SELECT "schema_migrations".* FROM "schema_migrations"
+Processing by ArticlesController#index as HTML
+
+[3, 12] in /PathTo/project/app/controllers/articles_controller.rb
+    3:
+    4:   # GET /articles
+    5:   # GET /articles.json
+    6:   def index
+    7:     byebug
+=&gt;  8:     @articles = Article.find_recent
+    9:
+   10:     respond_to do |format|
+   11:       format.html # index.html.erb
+   12:       format.json { render json: @articles }
+(byebug)
+</code></pre>
+</div>
+<p>Now it's time to explore your application. A good place to start is
+by asking the debugger for help. Type: <code>help</code></p><div class="code_container">
+<pre><code class="language-plain">(byebug) help
+
+  break      -- Sets breakpoints in the source code
+  catch      -- Handles exception catchpoints
+  condition  -- Sets conditions on breakpoints
+  continue   -- Runs until program ends, hits a breakpoint or reaches a line
+  debug      -- Spawns a subdebugger
+  delete     -- Deletes breakpoints
+  disable    -- Disables breakpoints or displays
+  display    -- Evaluates expressions every time the debugger stops
+  down       -- Moves to a lower frame in the stack trace
+  edit       -- Edits source files
+  enable     -- Enables breakpoints or displays
+  finish     -- Runs the program until frame returns
+  frame      -- Moves to a frame in the call stack
+  help       -- Helps you using byebug
+  history    -- Shows byebug's history of commands
+  info       -- Shows several informations about the program being debugged
+  interrupt  -- Interrupts the program
+  irb        -- Starts an IRB session
+  kill       -- Sends a signal to the current process
+  list       -- Lists lines of source code
+  method     -- Shows methods of an object, class or module
+  next       -- Runs one or more lines of code
+  pry        -- Starts a Pry session
+  quit       -- Exits byebug
+  restart    -- Restarts the debugged program
+  save       -- Saves current byebug session to a file
+  set        -- Modifies byebug settings
+  show       -- Shows byebug settings
+  source     -- Restores a previously saved byebug session
+  step       -- Steps into blocks or methods one or more times
+  thread     -- Commands to manipulate threads
+  tracevar   -- Enables tracing of a global variable
+  undisplay  -- Stops displaying all or some expressions when program stops
+  untracevar -- Stops tracing a global variable
+  up         -- Moves to a higher frame in the stack trace
+  var        -- Shows variables and its values
+  where      -- Displays the backtrace
+
+(byebug)
+</code></pre>
+</div>
+<p>To see the previous ten lines you should type <code>list-</code> (or <code>l-</code>).</p><div class="code_container">
+<pre><code class="language-plain">(byebug) l-
+
+[1, 10] in /PathTo/project/app/controllers/articles_controller.rb
+   1  class ArticlesController &lt; ApplicationController
+   2    before_action :set_article, only: [:show, :edit, :update, :destroy]
+   3
+   4    # GET /articles
+   5    # GET /articles.json
+   6    def index
+   7      byebug
+   8      @articles = Article.find_recent
+   9
+   10     respond_to do |format|
+</code></pre>
+</div>
+<p>This way you can move inside the file and see the code above the line where you
+added the <code>byebug</code> call. Finally, to see where you are in the code again you can
+type <code>list=</code></p><div class="code_container">
+<pre><code class="language-plain">(byebug) list=
+
+[3, 12] in /PathTo/project/app/controllers/articles_controller.rb
+    3:
+    4:   # GET /articles
+    5:   # GET /articles.json
+    6:   def index
+    7:     byebug
+=&gt;  8:     @articles = Article.find_recent
+    9:
+   10:     respond_to do |format|
+   11:       format.html # index.html.erb
+   12:       format.json { render json: @articles }
+(byebug)
+</code></pre>
+</div>
+<h4 id="the-context"><a class="anchorlink" href="#the-context">3.3 The Context</a></h4><p>When you start debugging your application, you will be placed in different
+contexts as you go through the different parts of the stack.</p><p>The debugger creates a context when a stopping point or an event is reached. The
+context has information about the suspended program which enables the debugger
+to inspect the frame stack, evaluate variables from the perspective of the
+debugged program, and know the place where the debugged program is stopped.</p><p>At any time you can call the <code>backtrace</code> command (or its alias <code>where</code>) to print
+the backtrace of the application. This can be very helpful to know how you got
+where you are. If you ever wondered about how you got somewhere in your code,
+then <code>backtrace</code> will supply the answer.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) where
+--&gt; #0  ArticlesController.index
+      at /PathToProject/app/controllers/articles_controller.rb:8
+    #1  ActionController::BasicImplicitRender.send_action(method#String, *args#Array)
+      at /PathToGems/actionpack-5.1.0/lib/action_controller/metal/basic_implicit_render.rb:4
+    #2  AbstractController::Base.process_action(action#NilClass, *args#Array)
+      at /PathToGems/actionpack-5.1.0/lib/abstract_controller/base.rb:181
+    #3  ActionController::Rendering.process_action(action, *args)
+      at /PathToGems/actionpack-5.1.0/lib/action_controller/metal/rendering.rb:30
+...
+</code></pre>
+</div>
+<p>The current frame is marked with <code>--&gt;</code>. You can move anywhere you want in this
+trace (thus changing the context) by using the <code>frame n</code> command, where <em>n</em> is
+the specified frame number. If you do that, <code>byebug</code> will display your new
+context.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) frame 2
+
+[176, 185] in /PathToGems/actionpack-5.1.0/lib/abstract_controller/base.rb
+   176:       # is the intended way to override action dispatching.
+   177:       #
+   178:       # Notice that the first argument is the method to be dispatched
+   179:       # which is *not* necessarily the same as the action name.
+   180:       def process_action(method_name, *args)
+=&gt; 181:         send_action(method_name, *args)
+   182:       end
+   183:
+   184:       # Actually call the method associated with the action. Override
+   185:       # this method if you wish to change how action methods are called,
+(byebug)
+</code></pre>
+</div>
+<p>The available variables are the same as if you were running the code line by
+line. After all, that's what debugging is.</p><p>You can also use <code>up [n]</code> and <code>down [n]</code> commands in order to change the context
+<em>n</em> frames up or down the stack respectively. <em>n</em> defaults to one. Up in this
+case is towards higher-numbered stack frames, and down is towards lower-numbered
+stack frames.</p><h4 id="threads"><a class="anchorlink" href="#threads">3.4 Threads</a></h4><p>The debugger can list, stop, resume, and switch between running threads by using
+the <code>thread</code> command (or the abbreviated <code>th</code>). This command has a handful of
+options:</p>
+<ul>
+<li>
+<code>thread</code>: shows the current thread.</li>
+<li>
+<code>thread list</code>: is used to list all threads and their statuses. The current
+thread is marked with a plus (+) sign.</li>
+<li>
+<code>thread stop n</code>: stops thread <em>n</em>.</li>
+<li>
+<code>thread resume n</code>: resumes thread <em>n</em>.</li>
+<li>
+<code>thread switch n</code>: switches the current thread context to <em>n</em>.</li>
+</ul>
+<p>This command is very helpful when you are debugging concurrent threads and need
+to verify that there are no race conditions in your code.</p><h4 id="debugging-with-the-byebug-gem-inspecting-variables"><a class="anchorlink" href="#debugging-with-the-byebug-gem-inspecting-variables">3.5 Inspecting Variables</a></h4><p>Any expression can be evaluated in the current context. To evaluate an
+expression, just type it!</p><p>This example shows how you can print the instance variables defined within the
+current context:</p><div class="code_container">
+<pre><code class="language-plain">[3, 12] in /PathTo/project/app/controllers/articles_controller.rb
+    3:
+    4:   # GET /articles
+    5:   # GET /articles.json
+    6:   def index
+    7:     byebug
+=&gt;  8:     @articles = Article.find_recent
+    9:
+   10:     respond_to do |format|
+   11:       format.html # index.html.erb
+   12:       format.json { render json: @articles }
+
+(byebug) instance_variables
+[:@_action_has_layout, :@_routes, :@_request, :@_response, :@_lookup_context,
+ :@_action_name, :@_response_body, :@marked_for_same_origin_verification,
+ :@_config]
+</code></pre>
+</div>
+<p>As you may have figured out, all of the variables that you can access from a
+controller are displayed. This list is dynamically updated as you execute code.
+For example, run the next line using <code>next</code> (you'll learn more about this
+command later in this guide).</p><div class="code_container">
+<pre><code class="language-plain">(byebug) next
+
+[5, 14] in /PathTo/project/app/controllers/articles_controller.rb
+   5     # GET /articles.json
+   6     def index
+   7       byebug
+   8       @articles = Article.find_recent
+   9
+=&gt; 10      respond_to do |format|
+   11        format.html # index.html.erb
+   12        format.json { render json: @articles }
+   13      end
+   14    end
+   15
+(byebug)
+</code></pre>
+</div>
+<p>And then ask again for the instance_variables:</p><div class="code_container">
+<pre><code class="language-plain">(byebug) instance_variables
+[:@_action_has_layout, :@_routes, :@_request, :@_response, :@_lookup_context,
+ :@_action_name, :@_response_body, :@marked_for_same_origin_verification,
+ :@_config, :@articles]
+</code></pre>
+</div>
+<p>Now <code>@articles</code> is included in the instance variables, because the line defining
+it was executed.</p><div class="info"><p>You can also step into <strong>irb</strong> mode with the command <code>irb</code> (of course!).
+This will start an irb session within the context you invoked it.</p></div><p>The <code>var</code> method is the most convenient way to show variables and their values.
+Let's have <code>byebug</code> help us with it.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) help var
+
+  [v]ar &lt;subcommand&gt;
+
+  Shows variables and its values
+
+
+  var all      -- Shows local, global and instance variables of self.
+  var args     -- Information about arguments of the current scope
+  var const    -- Shows constants of an object.
+  var global   -- Shows global variables.
+  var instance -- Shows instance variables of self or a specific object.
+  var local    -- Shows local variables in current scope.
+
+</code></pre>
+</div>
+<p>This is a great way to inspect the values of the current context variables. For
+example, to check that we have no local variables currently defined:</p><div class="code_container">
+<pre><code class="language-plain">(byebug) var local
+(byebug)
+</code></pre>
+</div>
+<p>You can also inspect for an object method this way:</p><div class="code_container">
+<pre><code class="language-plain">(byebug) var instance Article.new
+@_start_transaction_state = {}
+@aggregation_cache = {}
+@association_cache = {}
+@attributes = #&lt;ActiveRecord::AttributeSet:0x007fd0682a9b18 @attributes={"id"=&gt;#&lt;ActiveRecord::Attribute::FromDatabase:0x007fd0682a9a00 @name="id", @value_be...
+@destroyed = false
+@destroyed_by_association = nil
+@marked_for_destruction = false
+@new_record = true
+@readonly = false
+@transaction_state = nil
+</code></pre>
+</div>
+<p>You can also use <code>display</code> to start watching variables. This is a good way of
+tracking the values of a variable while the execution goes on.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) display @articles
+1: @articles = nil
+</code></pre>
+</div>
+<p>The variables inside the displayed list will be printed with their values after
+you move in the stack. To stop displaying a variable use <code>undisplay n</code> where
+<em>n</em> is the variable number (1 in the last example).</p><h4 id="step-by-step"><a class="anchorlink" href="#step-by-step">3.6 Step by Step</a></h4><p>Now you should know where you are in the running trace and be able to print the
+available variables. But let's continue and move on with the application
+execution.</p><p>Use <code>step</code> (abbreviated <code>s</code>) to continue running your program until the next
+logical stopping point and return control to the debugger. <code>next</code> is similar to
+<code>step</code>, but while <code>step</code> stops at the next line of code executed, doing just a
+single step, <code>next</code> moves to the next line without descending inside methods.</p><p>For example, consider the following situation:</p><div class="code_container">
+<pre><code class="language-plain">Started GET "/" for 127.0.0.1 at 2014-04-11 13:39:23 +0200
+Processing by ArticlesController#index as HTML
+
+[1, 6] in /PathToProject/app/models/article.rb
+   1: class Article &lt; ApplicationRecord
+   2:   def self.find_recent(limit = 10)
+   3:     byebug
+=&gt; 4:     where('created_at &gt; ?', 1.week.ago).limit(limit)
+   5:   end
+   6: end
+
+(byebug)
+</code></pre>
+</div>
+<p>If we use <code>next</code>, we won't go deep inside method calls. Instead, <code>byebug</code> will
+go to the next line within the same context. In this case, it is the last line
+of the current method, so <code>byebug</code> will return to the next line of the caller
+method.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) next
+[4, 13] in /PathToProject/app/controllers/articles_controller.rb
+    4:   # GET /articles
+    5:   # GET /articles.json
+    6:   def index
+    7:     @articles = Article.find_recent
+    8:
+=&gt;  9:     respond_to do |format|
+   10:       format.html # index.html.erb
+   11:       format.json { render json: @articles }
+   12:     end
+   13:   end
+
+(byebug)
+</code></pre>
+</div>
+<p>If we use <code>step</code> in the same situation, <code>byebug</code> will literally go to the next
+Ruby instruction to be executed -- in this case, Active Support's <code>week</code> method.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) step
+
+[49, 58] in /PathToGems/activesupport-5.1.0/lib/active_support/core_ext/numeric/time.rb
+   49:
+   50:   # Returns a Duration instance matching the number of weeks provided.
+   51:   #
+   52:   #   2.weeks # =&gt; 14 days
+   53:   def weeks
+=&gt; 54:     ActiveSupport::Duration.weeks(self)
+   55:   end
+   56:   alias :week :weeks
+   57:
+   58:   # Returns a Duration instance matching the number of fortnights provided.
+(byebug)
+</code></pre>
+</div>
+<p>This is one of the best ways to find bugs in your code.</p><div class="info"><p>You can also use <code>step n</code> or <code>next n</code> to move forward <code>n</code> steps at once.</p></div><h4 id="breakpoints"><a class="anchorlink" href="#breakpoints">3.7 Breakpoints</a></h4><p>A breakpoint makes your application stop whenever a certain point in the program
+is reached. The debugger shell is invoked in that line.</p><p>You can add breakpoints dynamically with the command <code>break</code> (or just <code>b</code>).
+There are 3 possible ways of adding breakpoints manually:</p>
+<ul>
+<li>
+<code>break n</code>: set breakpoint in line number <em>n</em> in the current source file.</li>
+<li>
+<code>break file:n [if expression]</code>: set breakpoint in line number <em>n</em> inside
+file named <em>file</em>. If an <em>expression</em> is given it must evaluated to <em>true</em> to
+fire up the debugger.</li>
+<li>
+<code>break class(.|\#)method [if expression]</code>: set breakpoint in <em>method</em> (. and
+# for class and instance method respectively) defined in <em>class</em>. The
+<em>expression</em> works the same way as with file:n.</li>
+</ul>
+<p>For example, in the previous situation</p><div class="code_container">
+<pre><code class="language-plain">[4, 13] in /PathToProject/app/controllers/articles_controller.rb
+    4:   # GET /articles
+    5:   # GET /articles.json
+    6:   def index
+    7:     @articles = Article.find_recent
+    8:
+=&gt;  9:     respond_to do |format|
+   10:       format.html # index.html.erb
+   11:       format.json { render json: @articles }
+   12:     end
+   13:   end
+
+(byebug) break 11
+Successfully created breakpoint with id 1
+
+</code></pre>
+</div>
+<p>Use <code>info breakpoints</code> to list breakpoints. If you supply a number, it lists
+that breakpoint. Otherwise it lists all breakpoints.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) info breakpoints
+Num Enb What
+1   y   at /PathToProject/app/controllers/articles_controller.rb:11
+</code></pre>
+</div>
+<p>To delete breakpoints: use the command <code>delete n</code> to remove the breakpoint
+number <em>n</em>. If no number is specified, it deletes all breakpoints that are
+currently active.</p><div class="code_container">
+<pre><code class="language-plain">(byebug) delete 1
+(byebug) info breakpoints
+No breakpoints.
+</code></pre>
+</div>
+<p>You can also enable or disable breakpoints:</p>
+<ul>
+<li>
+<code>enable breakpoints [n [m [...]]]</code>: allows a specific breakpoint list or all
+breakpoints to stop your program. This is the default state when you create a
+breakpoint.</li>
+<li>
+<code>disable breakpoints [n [m [...]]]</code>: make certain (or all) breakpoints have
+no effect on your program.</li>
+</ul>
+<h4 id="catching-exceptions"><a class="anchorlink" href="#catching-exceptions">3.8 Catching Exceptions</a></h4><p>The command <code>catch exception-name</code> (or just <code>cat exception-name</code>) can be used to
+intercept an exception of type <em>exception-name</em> when there would otherwise be no
+handler for it.</p><p>To list all active catchpoints use <code>catch</code>.</p><h4 id="resuming-execution"><a class="anchorlink" href="#resuming-execution">3.9 Resuming Execution</a></h4><p>There are two ways to resume execution of an application that is stopped in the
+debugger:</p>
+<ul>
+<li>
+<code>continue [n]</code>: resumes program execution at the address where your script last
+stopped; any breakpoints set at that address are bypassed. The optional argument
+<code>n</code> allows you to specify a line number to set a one-time breakpoint which is
+deleted when that breakpoint is reached.</li>
+<li>
+<code>finish [n]</code>: execute until the selected stack frame returns. If no frame
+number is given, the application will run until the currently selected frame
+returns. The currently selected frame starts out the most-recent frame or 0 if
+no frame positioning (e.g up, down, or frame) has been performed. If a frame
+number is given it will run until the specified frame returns.</li>
+</ul>
+<h4 id="editing"><a class="anchorlink" href="#editing">3.10 Editing</a></h4><p>Two commands allow you to open code from the debugger into an editor:</p>
+<ul>
+<li>
+<code>edit [file:n]</code>: edit file named <em>file</em> using the editor specified by the
+EDITOR environment variable. A specific line <em>n</em> can also be given.</li>
+</ul>
+<h4 id="quitting"><a class="anchorlink" href="#quitting">3.11 Quitting</a></h4><p>To exit the debugger, use the <code>quit</code> command (abbreviated to <code>q</code>). Or, type <code>q!</code>
+to bypass the <code>Really quit? (y/n)</code> prompt and exit unconditionally.</p><p>A simple quit tries to terminate all threads in effect. Therefore your server
+will be stopped and you will have to start it again.</p><h4 id="debugging-with-the-byebug-gem-settings"><a class="anchorlink" href="#debugging-with-the-byebug-gem-settings">3.12 Settings</a></h4><p><code>byebug</code> has a few available options to tweak its behavior:</p><div class="code_container">
+<pre><code class="language-plain">(byebug) help set
+
+  set &lt;setting&gt; &lt;value&gt;
+
+  Modifies byebug settings
+
+  Boolean values take "on", "off", "true", "false", "1" or "0". If you
+  don't specify a value, the boolean setting will be enabled. Conversely,
+  you can use "set no&lt;setting&gt;" to disable them.
+
+  You can see these environment settings with the "show" command.
+
+  List of supported settings:
+
+  autosave       -- Automatically save command history record on exit
+  autolist       -- Invoke list command on every stop
+  width          -- Number of characters per line in byebug's output
+  autoirb        -- Invoke IRB on every stop
+  basename       -- &lt;file&gt;:&lt;line&gt; information after every stop uses short paths
+  linetrace      -- Enable line execution tracing
+  autopry        -- Invoke Pry on every stop
+  stack_on_error -- Display stack trace when `eval` raises an exception
+  fullpath       -- Display full file names in backtraces
+  histfile       -- File where cmd history is saved to. Default: ./.byebug_history
+  listsize       -- Set number of source lines to list by default
+  post_mortem    -- Enable/disable post-mortem mode
+  callstyle      -- Set how you want method call parameters to be displayed
+  histsize       -- Maximum number of commands that can be stored in byebug history
+  savefile       -- File where settings are saved to. Default: ~/.byebug_save
+</code></pre>
+</div>
+<div class="info"><p>You can save these settings in an <code>.byebugrc</code> file in your home directory.
+The debugger reads these global settings when it starts. For example:</p></div><div class="code_container">
+<pre><code class="language-shell-session">set callstyle short
+set listsize 25
+</code></pre>
+</div>
+<h3 id="debugging-with-the-web-console-gem"><a class="anchorlink" href="#debugging-with-the-web-console-gem">4 Debugging with the <code>web-console</code> gem</a></h3><p>Web Console is a bit like <code>byebug</code>, but it runs in the browser. In any page you
+are developing, you can request a console in the context of a view or a
+controller. The console would be rendered next to your HTML content.</p><h4 id="console"><a class="anchorlink" href="#console">4.1 Console</a></h4><p>Inside any controller action or view, you can invoke the console by
+calling the <code>console</code> method.</p><p>For example, in a controller:</p><div class="code_container">
+<pre><code class="language-ruby">class PostsController &lt; ApplicationController
+  def new
+    console
+    @post = Post.new
+  end
+end
+</code></pre>
+</div>
+<p>Or in a view:</p><div class="code_container">
+<pre><code class="language-erb">&lt;% console %&gt;
+
+&lt;h2&gt;New Post&lt;/h2&gt;
+</code></pre>
+</div>
+<p>This will render a console inside your view. You don't need to care about the
+location of the <code>console</code> call; it won't be rendered on the spot of its
+invocation but next to your HTML content.</p><p>The console executes pure Ruby code: You can define and instantiate
+custom classes, create new models, and inspect variables.</p><div class="note"><p>Only one console can be rendered per request. Otherwise <code>web-console</code>
+will raise an error on the second <code>console</code> invocation.</p></div><h4 id="debugging-with-the-web-console-gem-inspecting-variables"><a class="anchorlink" href="#debugging-with-the-web-console-gem-inspecting-variables">4.2 Inspecting Variables</a></h4><p>You can invoke <code>instance_variables</code> to list all the instance variables
+available in your context. If you want to list all the local variables, you can
+do that with <code>local_variables</code>.</p><h4 id="debugging-with-the-web-console-gem-settings"><a class="anchorlink" href="#debugging-with-the-web-console-gem-settings">4.3 Settings</a></h4>
+<ul>
+<li>
+<code>config.web_console.whitelisted_ips</code>: Authorized list of IPv4 or IPv6
+addresses and networks (defaults: <code>127.0.0.1/8, ::1</code>).</li>
+<li>
+<code>config.web_console.whiny_requests</code>: Log a message when a console rendering
+is prevented (defaults: <code>true</code>).</li>
+</ul>
+<p>Since <code>web-console</code> evaluates plain Ruby code remotely on the server, don't try
+to use it in production.</p><h3 id="debugging-memory-leaks"><a class="anchorlink" href="#debugging-memory-leaks">5 Debugging Memory Leaks</a></h3><p>A Ruby application (on Rails or not), can leak memory — either in the Ruby code
+or at the C code level.</p><p>In this section, you will learn how to find and fix such leaks by using tools
+such as Valgrind.</p><h4 id="valgrind"><a class="anchorlink" href="#valgrind">5.1 Valgrind</a></h4><p><a href="http://valgrind.org/">Valgrind</a> is an application for detecting C-based memory
+leaks and race conditions.</p><p>There are Valgrind tools that can automatically detect many memory management
+and threading bugs, and profile your programs in detail. For example, if a C
+extension in the interpreter calls <code>malloc()</code> but doesn't properly call
+<code>free()</code>, this memory won't be available until the app terminates.</p><p>For further information on how to install Valgrind and use with Ruby, refer to
+<a href="https://blog.evanweaver.com/2008/02/05/valgrind-and-ruby/">Valgrind and Ruby</a>
+by Evan Weaver.</p><h4 id="find-a-memory-leak"><a class="anchorlink" href="#find-a-memory-leak">5.2 Find a Memory Leak</a></h4><p>There is an excellent article about detecting and fixing memory leaks at Derailed, <a href="https://github.com/schneems/derailed_benchmarks#is-my-app-leaking-memory">which you can read here</a>.</p><h3 id="plugins-for-debugging"><a class="anchorlink" href="#plugins-for-debugging">6 Plugins for Debugging</a></h3><p>There are some Rails plugins to help you to find errors and debug your
+application. Here is a list of useful plugins for debugging:</p>
+<ul>
+<li>
+<a href="https://github.com/ruckus/active-record-query-trace/tree/master">Query Trace</a> Adds query
+origin tracing to your logs.</li>
+<li>
+<a href="https://github.com/smartinez87/exception_notification/tree/master">Exception Notifier</a>
+Provides a mailer object and a default set of templates for sending email
+notifications when errors occur in a Rails application.</li>
+<li>
+<a href="https://github.com/charliesome/better_errors">Better Errors</a> Replaces the
+standard Rails error page with a new one containing more contextual information,
+like source code and variable inspection.</li>
+<li>
+<a href="https://github.com/dejan/rails_panel">RailsPanel</a> Chrome extension for Rails
+development that will end your tailing of development.log. Have all information
+about your Rails app requests in the browser — in the Developer Tools panel.
+Provides insight to db/rendering/total times, parameter list, rendered views and
+more.</li>
+<li>
+<a href="https://github.com/pry/pry">Pry</a> An IRB alternative and runtime developer console.</li>
+</ul>
+<h3 id="references"><a class="anchorlink" href="#references">7 References</a></h3>
+<ul>
+<li><a href="https://github.com/deivid-rodriguez/byebug">byebug Homepage</a></li>
+<li><a href="https://github.com/rails/web-console">web-console Homepage</a></li>
+</ul>
+
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          Please contribute if you see any typos or factual errors.
+          To get started, you can read our <a href="https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation">documentation contributions</a> section.
+        </p>
+        <p>
+          You may also find incomplete content or stuff that is not up to date.
+          Please do add any missing documentation for master. Make sure to check
+          <a href="https://edgeguides.rubyonrails.org">Edge Guides</a> first to verify
+          if the issues are already fixed or not on the master branch.
+          Check the <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome on the <a href="https://groups.google.com/forum/#!forum/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+</body>
+</html>
