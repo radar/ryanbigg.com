@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Active Job Basics — Ruby on Rails Guides</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/default.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/rails-guides.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" data-turbolinks-track="reload">
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <script src="javascripts/prism.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/turbolinks.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/guides.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/responsive-tables.js" data-turbolinks-track="reload"></script>
+  <meta property="og:title" content="Active Job Basics — Ruby on Rails Guides" />
+  <meta name="description" content="Active Job BasicsThis guide provides you with all you need to get started in creating, enqueuing and executing background jobs.After reading this guide, you will know: How to create jobs. How to enqueue jobs. How to run jobs in the background. How to send emails from your application asynchronously." />
+  <meta property="og:description" content="Active Job BasicsThis guide provides you with all you need to get started in creating, enqueuing and executing background jobs.After reading this guide, you will know: How to create jobs. How to enqueue jobs. How to run jobs in the background. How to send emails from your application asynchronously." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Ruby on Rails Guides" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/4223" />
+  <meta property="og:type" content="website" />
+</head>
+<body class="guide">
+  <div>
+    <img src="images/edge_badge.png" alt="edge-badge" id="edge-badge" />
+  </div>
+  <div id="topNav">
+    <div class="wrapper">
+      <strong class="more-info-label">More at <a href="https://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <span class="red-button more-info-button">
+        More Ruby on Rails
+      </span>
+      <ul class="more-info-links s-hidden">
+        <li class="more-info"><a href="https://weblog.rubyonrails.org/">Blog</a></li>
+        <li class="more-info"><a href="https://guides.rubyonrails.org/">Guides</a></li>
+        <li class="more-info"><a href="https://api.rubyonrails.org/">API</a></li>
+        <li class="more-info"><a href="https://stackoverflow.com/questions/tagged/ruby-on-rails">Ask for help</a></li>
+        <li class="more-info"><a href="https://github.com/rails/rails">Contribute on GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a class="nav-item" href="index.html">Home</a></li>
+        <li class="guides-index guides-index-large">
+          <a href="index.html" id="guidesMenu" class="guides-index-item nav-item">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+            <dl class="guides-section-container">
+                <div class="guides-section">
+                  <dt>Start Here</dt>
+                  <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Models</dt>
+                  <dd><a href="active_record_basics.html">Active Record Basics</a></dd>
+                  <dd><a href="active_record_migrations.html">Active Record Migrations</a></dd>
+                  <dd><a href="active_record_validations.html">Active Record Validations</a></dd>
+                  <dd><a href="active_record_callbacks.html">Active Record Callbacks</a></dd>
+                  <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                  <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Views</dt>
+                  <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                  <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Controllers</dt>
+                  <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                  <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Other Components</dt>
+                  <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                  <dd><a href="action_mailer_basics.html">Action Mailer Basics</a></dd>
+                  <dd><a href="active_job_basics.html">Active Job Basics</a></dd>
+                  <dd><a href="active_storage_overview.html">Active Storage Overview</a></dd>
+                  <dd><a href="action_cable_overview.html">Action Cable Overview</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Digging Deeper</dt>
+                  <dd><a href="i18n.html">Rails Internationalization (I18n) API</a></dd>
+                  <dd><a href="testing.html">Testing Rails Applications</a></dd>
+                  <dd><a href="security.html">Securing Rails Applications</a></dd>
+                  <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                  <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                  <dd><a href="command_line.html">The Rails Command Line</a></dd>
+                  <dd><a href="asset_pipeline.html">The Asset Pipeline</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</a></dd>
+                  <dd><a href="caching_with_rails.html">Caching with Rails: An Overview</a></dd>
+                  <dd><a href="api_app.html">Using Rails for API-only Applications</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Extending Rails</dt>
+                  <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                  <dd><a href="generators.html">Creating and Customizing Rails Generators &amp; Templates</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Contributions</dt>
+                  <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                  <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                  <dd><a href="ruby_on_rails_guides_guidelines.html">Guides Guidelines</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Policies</dt>
+                  <dd><a href="maintenance_policy.html">Maintenance Policy</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Release Notes</dt>
+                  <dd><a href="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</a></dd>
+                  <dd><a href="6_0_release_notes.html">Version 6.0 - August 2019</a></dd>
+                  <dd><a href="5_2_release_notes.html">Version 5.2 - April 2018</a></dd>
+                  <dd><a href="5_1_release_notes.html">Version 5.1 - April 2017</a></dd>
+                  <dd><a href="5_0_release_notes.html">Version 5.0 - June 2016</a></dd>
+                  <dd><a href="4_2_release_notes.html">Version 4.2 - December 2014</a></dd>
+                  <dd><a href="4_1_release_notes.html">Version 4.1 - April 2014</a></dd>
+                  <dd><a href="4_0_release_notes.html">Version 4.0 - June 2013</a></dd>
+                  <dd><a href="3_2_release_notes.html">Version 3.2 - January 2012</a></dd>
+                  <dd><a href="3_1_release_notes.html">Version 3.1 - August 2011</a></dd>
+                  <dd><a href="3_0_release_notes.html">Version 3.0 - August 2010</a></dd>
+                  <dd><a href="2_3_release_notes.html">Version 2.3 - March 2009</a></dd>
+                  <dd><a href="2_2_release_notes.html">Version 2.2 - November 2008</a></dd>
+                </div>
+            </dl>
+          </div>
+        </li>
+        <li><a class="nav-item" href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li class="guides-index guides-index-small">
+          <select class="guides-index-item nav-item">
+            <option value="index.html">Guides Index</option>
+              <optgroup label="Start Here">
+                  <option value="getting_started.html">Getting Started with Rails</option>
+              </optgroup>
+              <optgroup label="Models">
+                  <option value="active_record_basics.html">Active Record Basics</option>
+                  <option value="active_record_migrations.html">Active Record Migrations</option>
+                  <option value="active_record_validations.html">Active Record Validations</option>
+                  <option value="active_record_callbacks.html">Active Record Callbacks</option>
+                  <option value="association_basics.html">Active Record Associations</option>
+                  <option value="active_record_querying.html">Active Record Query Interface</option>
+              </optgroup>
+              <optgroup label="Views">
+                  <option value="layouts_and_rendering.html">Layouts and Rendering in Rails</option>
+                  <option value="form_helpers.html">Action View Form Helpers</option>
+              </optgroup>
+              <optgroup label="Controllers">
+                  <option value="action_controller_overview.html">Action Controller Overview</option>
+                  <option value="routing.html">Rails Routing from the Outside In</option>
+              </optgroup>
+              <optgroup label="Other Components">
+                  <option value="active_support_core_extensions.html">Active Support Core Extensions</option>
+                  <option value="action_mailer_basics.html">Action Mailer Basics</option>
+                  <option value="active_job_basics.html">Active Job Basics</option>
+                  <option value="active_storage_overview.html">Active Storage Overview</option>
+                  <option value="action_cable_overview.html">Action Cable Overview</option>
+              </optgroup>
+              <optgroup label="Digging Deeper">
+                  <option value="i18n.html">Rails Internationalization (I18n) API</option>
+                  <option value="testing.html">Testing Rails Applications</option>
+                  <option value="security.html">Securing Rails Applications</option>
+                  <option value="debugging_rails_applications.html">Debugging Rails Applications</option>
+                  <option value="configuring.html">Configuring Rails Applications</option>
+                  <option value="command_line.html">The Rails Command Line</option>
+                  <option value="asset_pipeline.html">The Asset Pipeline</option>
+                  <option value="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</option>
+                  <option value="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</option>
+                  <option value="caching_with_rails.html">Caching with Rails: An Overview</option>
+                  <option value="api_app.html">Using Rails for API-only Applications</option>
+              </optgroup>
+              <optgroup label="Extending Rails">
+                  <option value="rails_on_rack.html">Rails on Rack</option>
+                  <option value="generators.html">Creating and Customizing Rails Generators &amp; Templates</option>
+              </optgroup>
+              <optgroup label="Contributions">
+                  <option value="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</option>
+                  <option value="api_documentation_guidelines.html">API Documentation Guidelines</option>
+                  <option value="ruby_on_rails_guides_guidelines.html">Guides Guidelines</option>
+              </optgroup>
+              <optgroup label="Policies">
+                  <option value="maintenance_policy.html">Maintenance Policy</option>
+              </optgroup>
+              <optgroup label="Release Notes">
+                  <option value="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</option>
+                  <option value="6_0_release_notes.html">Version 6.0 - August 2019</option>
+                  <option value="5_2_release_notes.html">Version 5.2 - April 2018</option>
+                  <option value="5_1_release_notes.html">Version 5.1 - April 2017</option>
+                  <option value="5_0_release_notes.html">Version 5.0 - June 2016</option>
+                  <option value="4_2_release_notes.html">Version 4.2 - December 2014</option>
+                  <option value="4_1_release_notes.html">Version 4.1 - April 2014</option>
+                  <option value="4_0_release_notes.html">Version 4.0 - June 2013</option>
+                  <option value="3_2_release_notes.html">Version 3.2 - January 2012</option>
+                  <option value="3_1_release_notes.html">Version 3.1 - August 2011</option>
+                  <option value="3_0_release_notes.html">Version 3.0 - August 2010</option>
+                  <option value="2_3_release_notes.html">Version 2.3 - March 2009</option>
+                  <option value="2_2_release_notes.html">Version 2.2 - November 2008</option>
+              </optgroup>
+          </select>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Active Job Basics</h2><p>This guide provides you with all you need to get started in creating,
+enqueuing and executing background jobs.</p><p>After reading this guide, you will know:</p>
+<ul>
+<li>How to create jobs.</li>
+<li>How to enqueue jobs.</li>
+<li>How to run jobs in the background.</li>
+<li>How to send emails from your application asynchronously.</li>
+</ul>
+
+
+                <div id="subCol">
+            <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+            <ol class="chapters">
+<li><a href="#what-is-active-job-questionmark">What is Active Job?</a></li>
+<li><a href="#the-purpose-of-active-job">The Purpose of Active Job</a></li>
+<li>
+<a href="#creating-a-job">Creating a Job</a>
+
+<ul>
+<li><a href="#create-the-job">Create the Job</a></li>
+<li><a href="#enqueue-the-job">Enqueue the Job</a></li>
+</ul>
+</li>
+<li>
+<a href="#job-execution">Job Execution</a>
+
+<ul>
+<li><a href="#backends">Backends</a></li>
+<li><a href="#setting-the-backend">Setting the Backend</a></li>
+<li><a href="#starting-the-backend">Starting the Backend</a></li>
+</ul>
+</li>
+<li><a href="#queues">Queues</a></li>
+<li>
+<a href="#callbacks">Callbacks</a>
+
+<ul>
+<li><a href="#available-callbacks">Available callbacks</a></li>
+</ul>
+</li>
+<li><a href="#action-mailer">Action Mailer</a></li>
+<li><a href="#internationalization">Internationalization</a></li>
+<li>
+<a href="#supported-types-for-arguments">Supported types for arguments</a>
+
+<ul>
+<li><a href="#globalid">GlobalID</a></li>
+<li><a href="#serializers">Serializers</a></li>
+</ul>
+</li>
+<li>
+<a href="#exceptions">Exceptions</a>
+
+<ul>
+<li><a href="#retrying-or-discarding-failed-jobs">Retrying or Discarding failed jobs</a></li>
+<li><a href="#deserialization">Deserialization</a></li>
+</ul>
+</li>
+<li><a href="#job-testing">Job Testing</a></li>
+</ol>
+
+          </div>
+
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="what-is-active-job-questionmark"><a class="anchorlink" href="#what-is-active-job-questionmark">1 What is Active Job?</a></h3><p>Active Job is a framework for declaring jobs and making them run on a variety
+of queuing backends. These jobs can be everything from regularly scheduled
+clean-ups, to billing charges, to mailings. Anything that can be chopped up
+into small units of work and run in parallel, really.</p><h3 id="the-purpose-of-active-job"><a class="anchorlink" href="#the-purpose-of-active-job">2 The Purpose of Active Job</a></h3><p>The main point is to ensure that all Rails apps will have a job infrastructure
+in place. We can then have framework features and other gems build on top of that,
+without having to worry about API differences between various job runners such as
+Delayed Job and Resque. Picking your queuing backend becomes more of an operational
+concern, then. And you'll be able to switch between them without having to rewrite
+your jobs.</p><div class="note"><p>Rails by default comes with an asynchronous queuing implementation that
+runs jobs with an in-process thread pool. Jobs will run asynchronously, but any
+jobs in the queue will be dropped upon restart.</p></div><h3 id="creating-a-job"><a class="anchorlink" href="#creating-a-job">3 Creating a Job</a></h3><p>This section will provide a step-by-step guide to creating a job and enqueuing it.</p><h4 id="create-the-job"><a class="anchorlink" href="#create-the-job">3.1 Create the Job</a></h4><p>Active Job provides a Rails generator to create jobs. The following will create a
+job in <code>app/jobs</code> (with an attached test case under <code>test/jobs</code>):</p><div class="code_container">
+<pre><code class="language-shell-session">$ bin/rails generate job guests_cleanup
+invoke  test_unit
+create    test/jobs/guests_cleanup_job_test.rb
+create  app/jobs/guests_cleanup_job.rb
+</code></pre>
+</div>
+<p>You can also create a job that will run on a specific queue:</p><div class="code_container">
+<pre><code class="language-shell-session">$ bin/rails generate job guests_cleanup --queue urgent
+</code></pre>
+</div>
+<p>If you don't want to use a generator, you could create your own file inside of
+<code>app/jobs</code>, just make sure that it inherits from <code>ApplicationJob</code>.</p><p>Here's what a job looks like:</p><div class="code_container">
+<pre><code class="language-ruby">class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :default
+
+  def perform(*guests)
+    # Do something later
+  end
+end
+</code></pre>
+</div>
+<p>Note that you can define <code>perform</code> with as many arguments as you want.</p><h4 id="enqueue-the-job"><a class="anchorlink" href="#enqueue-the-job">3.2 Enqueue the Job</a></h4><p>Enqueue a job like so:</p><div class="code_container">
+<pre><code class="language-ruby"># Enqueue a job to be performed as soon as the queuing system is
+# free.
+GuestsCleanupJob.perform_later guest
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-ruby"># Enqueue a job to be performed tomorrow at noon.
+GuestsCleanupJob.set(wait_until: Date.tomorrow.noon).perform_later(guest)
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-ruby"># Enqueue a job to be performed 1 week from now.
+GuestsCleanupJob.set(wait: 1.week).perform_later(guest)
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-ruby"># `perform_now` and `perform_later` will call `perform` under the hood so
+# you can pass as many arguments as defined in the latter.
+GuestsCleanupJob.perform_later(guest1, guest2, filter: 'some_filter')
+</code></pre>
+</div>
+<p>That's it!</p><h3 id="job-execution"><a class="anchorlink" href="#job-execution">4 Job Execution</a></h3><p>For enqueuing and executing jobs in production you need to set up a queuing backend,
+that is to say you need to decide for a 3rd-party queuing library that Rails should use.
+Rails itself only provides an in-process queuing system, which only keeps the jobs in RAM.
+If the process crashes or the machine is reset, then all outstanding jobs are lost with the
+default async backend. This may be fine for smaller apps or non-critical jobs, but most
+production apps will need to pick a persistent backend.</p><h4 id="backends"><a class="anchorlink" href="#backends">4.1 Backends</a></h4><p>Active Job has built-in adapters for multiple queuing backends (Sidekiq,
+Resque, Delayed Job, and others). To get an up-to-date list of the adapters
+see the API Documentation for <a href="https://edgeapi.rubyonrails.org/classes/ActiveJob/QueueAdapters.html">ActiveJob::QueueAdapters</a>.</p><h4 id="setting-the-backend"><a class="anchorlink" href="#setting-the-backend">4.2 Setting the Backend</a></h4><p>You can easily set your queuing backend:</p><div class="code_container">
+<pre><code class="language-ruby"># config/application.rb
+module YourApp
+  class Application &lt; Rails::Application
+    # Be sure to have the adapter's gem in your Gemfile
+    # and follow the adapter's specific installation
+    # and deployment instructions.
+    config.active_job.queue_adapter = :sidekiq
+  end
+end
+</code></pre>
+</div>
+<p>You can also configure your backend on a per job basis.</p><div class="code_container">
+<pre><code class="language-ruby">class GuestsCleanupJob &lt; ApplicationJob
+  self.queue_adapter = :resque
+  #....
+end
+
+# Now your job will use `resque` as its backend queue adapter overriding what
+# was configured in `config.active_job.queue_adapter`.
+</code></pre>
+</div>
+<h4 id="starting-the-backend"><a class="anchorlink" href="#starting-the-backend">4.3 Starting the Backend</a></h4><p>Since jobs run in parallel to your Rails application, most queuing libraries
+require that you start a library-specific queuing service (in addition to
+starting your Rails app) for the job processing to work. Refer to library
+documentation for instructions on starting your queue backend.</p><p>Here is a noncomprehensive list of documentation:</p>
+<ul>
+<li><a href="https://github.com/mperham/sidekiq/wiki/Active-Job">Sidekiq</a></li>
+<li><a href="https://github.com/resque/resque/wiki/ActiveJob">Resque</a></li>
+<li><a href="https://github.com/jondot/sneakers/wiki/How-To:-Rails-Background-Jobs-with-ActiveJob">Sneakers</a></li>
+<li><a href="https://github.com/brandonhilkert/sucker_punch#active-job">Sucker Punch</a></li>
+<li><a href="https://github.com/QueueClassic/queue_classic#active-job">Queue Classic</a></li>
+<li><a href="https://github.com/collectiveidea/delayed_job#active-job">Delayed Job</a></li>
+</ul>
+<h3 id="queues"><a class="anchorlink" href="#queues">5 Queues</a></h3><p>Most of the adapters support multiple queues. With Active Job you can schedule
+the job to run on a specific queue:</p><div class="code_container">
+<pre><code class="language-ruby">class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :low_priority
+  #....
+end
+</code></pre>
+</div>
+<p>You can prefix the queue name for all your jobs using
+<code>config.active_job.queue_name_prefix</code> in <code>application.rb</code>:</p><div class="code_container">
+<pre><code class="language-ruby"># config/application.rb
+module YourApp
+  class Application &lt; Rails::Application
+    config.active_job.queue_name_prefix = Rails.env
+  end
+end
+
+# app/jobs/guests_cleanup_job.rb
+class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :low_priority
+  #....
+end
+
+# Now your job will run on queue production_low_priority on your
+# production environment and on staging_low_priority
+# on your staging environment
+</code></pre>
+</div>
+<p>You can also configure the prefix on a per job basis.</p><div class="code_container">
+<pre><code class="language-ruby">class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :low_priority
+  self.queue_name_prefix = nil
+  #....
+end
+
+# Now your job's queue won't be prefixed, overriding what
+# was configured in `config.active_job.queue_name_prefix`.
+</code></pre>
+</div>
+<p>The default queue name prefix delimiter is '_'.  This can be changed by setting
+<code>config.active_job.queue_name_delimiter</code> in <code>application.rb</code>:</p><div class="code_container">
+<pre><code class="language-ruby"># config/application.rb
+module YourApp
+  class Application &lt; Rails::Application
+    config.active_job.queue_name_prefix = Rails.env
+    config.active_job.queue_name_delimiter = '.'
+  end
+end
+
+# app/jobs/guests_cleanup_job.rb
+class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :low_priority
+  #....
+end
+
+# Now your job will run on queue production.low_priority on your
+# production environment and on staging.low_priority
+# on your staging environment
+</code></pre>
+</div>
+<p>If you want more control on what queue a job will be run you can pass a <code>:queue</code>
+option to <code>#set</code>:</p><div class="code_container">
+<pre><code class="language-ruby">MyJob.set(queue: :another_queue).perform_later(record)
+</code></pre>
+</div>
+<p>To control the queue from the job level you can pass a block to <code>#queue_as</code>. The
+block will be executed in the job context (so you can access <code>self.arguments</code>)
+and you must return the queue name:</p><div class="code_container">
+<pre><code class="language-ruby">class ProcessVideoJob &lt; ApplicationJob
+  queue_as do
+    video = self.arguments.first
+    if video.owner.premium?
+      :premium_videojobs
+    else
+      :videojobs
+    end
+  end
+
+  def perform(video)
+    # Do process video
+  end
+end
+
+ProcessVideoJob.perform_later(Video.last)
+</code></pre>
+</div>
+<div class="note"><p>Make sure your queuing backend "listens" on your queue name. For some
+backends you need to specify the queues to listen to.</p></div><h3 id="callbacks"><a class="anchorlink" href="#callbacks">6 Callbacks</a></h3><p>Active Job provides hooks to trigger logic during the life cycle of a job. Like
+other callbacks in Rails, you can implement the callbacks as ordinary methods
+and use a macro-style class method to register them as callbacks:</p><div class="code_container">
+<pre><code class="language-ruby">class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :default
+
+  around_perform :around_cleanup
+
+  def perform
+    # Do something later
+  end
+
+  private
+    def around_cleanup
+      # Do something before perform
+      yield
+      # Do something after perform
+    end
+end
+</code></pre>
+</div>
+<p>The macro-style class methods can also receive a block. Consider using this
+style if the code inside your block is so short that it fits in a single line.
+For example, you could send metrics for every job enqueued:</p><div class="code_container">
+<pre><code class="language-ruby">class ApplicationJob &lt; ActiveJob::Base
+  before_enqueue { |job| $statsd.increment "#{job.class.name.underscore}.enqueue" }
+end
+</code></pre>
+</div>
+<h4 id="available-callbacks"><a class="anchorlink" href="#available-callbacks">6.1 Available callbacks</a></h4>
+<ul>
+<li><code>before_enqueue</code></li>
+<li><code>around_enqueue</code></li>
+<li><code>after_enqueue</code></li>
+<li><code>before_perform</code></li>
+<li><code>around_perform</code></li>
+<li><code>after_perform</code></li>
+</ul>
+<h3 id="action-mailer"><a class="anchorlink" href="#action-mailer">7 Action Mailer</a></h3><p>One of the most common jobs in a modern web application is sending emails outside
+of the request-response cycle, so the user doesn't have to wait on it. Active Job
+is integrated with Action Mailer so you can easily send emails asynchronously:</p><div class="code_container">
+<pre><code class="language-ruby"># If you want to send the email now use #deliver_now
+UserMailer.welcome(@user).deliver_now
+
+# If you want to send the email through Active Job use #deliver_later
+UserMailer.welcome(@user).deliver_later
+</code></pre>
+</div>
+<div class="note"><p>Using the asynchronous queue from a Rake task (for example, to
+send an email using <code>.deliver_later</code>) will generally not work because Rake will
+likely end, causing the in-process thread pool to be deleted, before any/all
+of the <code>.deliver_later</code> emails are processed. To avoid this problem, use
+<code>.deliver_now</code> or run a persistent queue in development.</p></div><h3 id="internationalization"><a class="anchorlink" href="#internationalization">8 Internationalization</a></h3><p>Each job uses the <code>I18n.locale</code> set when the job was created. Useful if you send
+emails asynchronously:</p><div class="code_container">
+<pre><code class="language-ruby">I18n.locale = :eo
+
+UserMailer.welcome(@user).deliver_later # Email will be localized to Esperanto.
+</code></pre>
+</div>
+<h3 id="supported-types-for-arguments"><a class="anchorlink" href="#supported-types-for-arguments">9 Supported types for arguments</a></h3><p>ActiveJob supports the following types of arguments by default:</p>
+<ul>
+<li>Basic types (<code>NilClass</code>, <code>String</code>, <code>Integer</code>, <code>Float</code>, <code>BigDecimal</code>, <code>TrueClass</code>, <code>FalseClass</code>)</li>
+<li><code>Symbol</code></li>
+<li><code>Date</code></li>
+<li><code>Time</code></li>
+<li><code>DateTime</code></li>
+<li><code>ActiveSupport::TimeWithZone</code></li>
+<li><code>ActiveSupport::Duration</code></li>
+<li>
+<code>Hash</code> (Keys should be of <code>String</code> or <code>Symbol</code> type)</li>
+<li><code>ActiveSupport::HashWithIndifferentAccess</code></li>
+<li><code>Array</code></li>
+<li><code>Module</code></li>
+<li><code>Class</code></li>
+</ul>
+<h4 id="globalid"><a class="anchorlink" href="#globalid">9.1 GlobalID</a></h4><p>Active Job supports GlobalID for parameters. This makes it possible to pass live
+Active Record objects to your job instead of class/id pairs, which you then have
+to manually deserialize. Before, jobs would look like this:</p><div class="code_container">
+<pre><code class="language-ruby">class TrashableCleanupJob &lt; ApplicationJob
+  def perform(trashable_class, trashable_id, depth)
+    trashable = trashable_class.constantize.find(trashable_id)
+    trashable.cleanup(depth)
+  end
+end
+</code></pre>
+</div>
+<p>Now you can simply do:</p><div class="code_container">
+<pre><code class="language-ruby">class TrashableCleanupJob &lt; ApplicationJob
+  def perform(trashable, depth)
+    trashable.cleanup(depth)
+  end
+end
+</code></pre>
+</div>
+<p>This works with any class that mixes in <code>GlobalID::Identification</code>, which
+by default has been mixed into Active Record classes.</p><h4 id="serializers"><a class="anchorlink" href="#serializers">9.2 Serializers</a></h4><p>You can extend the list of supported argument types. You just need to define your own serializer:</p><div class="code_container">
+<pre><code class="language-ruby">class MoneySerializer &lt; ActiveJob::Serializers::ObjectSerializer
+  # Checks if an argument should be serialized by this serializer.
+  def serialize?(argument)
+    argument.is_a? Money
+  end
+
+  # Converts an object to a simpler representative using supported object types.
+  # The recommended representative is a Hash with a specific key. Keys can be of basic types only.
+  # You should call `super` to add the custom serializer type to the hash.
+  def serialize(money)
+    super(
+      "amount" =&gt; money.amount,
+      "currency" =&gt; money.currency
+    )
+  end
+
+  # Converts serialized value into a proper object.
+  def deserialize(hash)
+    Money.new(hash["amount"], hash["currency"])
+  end
+end
+</code></pre>
+</div>
+<p>and add this serializer to the list:</p><div class="code_container">
+<pre><code class="language-ruby">Rails.application.config.active_job.custom_serializers &lt;&lt; MoneySerializer
+</code></pre>
+</div>
+<h3 id="exceptions"><a class="anchorlink" href="#exceptions">10 Exceptions</a></h3><p>Active Job provides a way to catch exceptions raised during the execution of the
+job:</p><div class="code_container">
+<pre><code class="language-ruby">class GuestsCleanupJob &lt; ApplicationJob
+  queue_as :default
+
+  rescue_from(ActiveRecord::RecordNotFound) do |exception|
+    # Do something with the exception
+  end
+
+  def perform
+    # Do something later
+  end
+end
+</code></pre>
+</div>
+<p>If the exception is not rescued within the job, e.g. as shown above, then the job is referred to as "failed".</p><h4 id="retrying-or-discarding-failed-jobs"><a class="anchorlink" href="#retrying-or-discarding-failed-jobs">10.1 Retrying or Discarding failed jobs</a></h4><p>A failed job will not be retried, unless configured otherwise.</p><p>It's also possible to retry or discard a job if an exception is raised during execution.
+For example:</p><div class="code_container">
+<pre><code class="language-ruby">class RemoteServiceJob &lt; ApplicationJob
+  retry_on CustomAppException # defaults to 3s wait, 5 attempts
+
+  discard_on ActiveJob::DeserializationError
+
+  def perform(*args)
+    # Might raise CustomAppException or ActiveJob::DeserializationError
+  end
+end
+</code></pre>
+</div>
+<p>To get more details see the API Documentation for <a href="https://edgeapi.rubyonrails.org/classes/ActiveJob/Exceptions/ClassMethods.html">ActiveJob::Exceptions</a>.</p><h4 id="deserialization"><a class="anchorlink" href="#deserialization">10.2 Deserialization</a></h4><p>GlobalID allows serializing full Active Record objects passed to <code>#perform</code>.</p><p>If a passed record is deleted after the job is enqueued but before the <code>#perform</code>
+method is called Active Job will raise an <code>ActiveJob::DeserializationError</code>
+exception.</p><h3 id="job-testing"><a class="anchorlink" href="#job-testing">11 Job Testing</a></h3><p>You can find detailed instructions on how to test your jobs in the
+<a href="testing.html#testing-jobs">testing guide</a>.</p>
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          Please contribute if you see any typos or factual errors.
+          To get started, you can read our <a href="https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation">documentation contributions</a> section.
+        </p>
+        <p>
+          You may also find incomplete content or stuff that is not up to date.
+          Please do add any missing documentation for master. Make sure to check
+          <a href="https://edgeguides.rubyonrails.org">Edge Guides</a> first to verify
+          if the issues are already fixed or not on the master branch.
+          Check the <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome on the <a href="https://groups.google.com/forum/#!forum/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+</body>
+</html>

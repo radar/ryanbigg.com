@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Working with JavaScript in Rails — Ruby on Rails Guides</title>
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/default.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/prism/rails-guides.css" data-turbolinks-track="reload">
+  <link rel="stylesheet" type="text/css" href="stylesheets/fixes.css" data-turbolinks-track="reload">
+  <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <script src="javascripts/prism.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/turbolinks.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/guides.js" data-turbolinks-track="reload"></script>
+  <script src="javascripts/responsive-tables.js" data-turbolinks-track="reload"></script>
+  <meta property="og:title" content="Working with JavaScript in Rails — Ruby on Rails Guides" />
+  <meta name="description" content="Working with JavaScript in RailsThis guide covers the built-in Ajax/JavaScript functionality of Rails (and more); it will enable you to create rich and dynamic Ajax applications with ease!After reading this guide, you will know: The basics of Ajax. Unobtrusive JavaScript. How Rails&#39; built-in helpers assist you. How to handle Ajax on the server side. The Turbolinks gem. How to include your Cross-Site Request Forgery token in request headers" />
+  <meta property="og:description" content="Working with JavaScript in RailsThis guide covers the built-in Ajax/JavaScript functionality of Rails (and more); it will enable you to create rich and dynamic Ajax applications with ease!After reading this guide, you will know: The basics of Ajax. Unobtrusive JavaScript. How Rails&#39; built-in helpers assist you. How to handle Ajax on the server side. The Turbolinks gem. How to include your Cross-Site Request Forgery token in request headers" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Ruby on Rails Guides" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/4223" />
+  <meta property="og:type" content="website" />
+</head>
+<body class="guide">
+  <div>
+    <img src="images/edge_badge.png" alt="edge-badge" id="edge-badge" />
+  </div>
+  <div id="topNav">
+    <div class="wrapper">
+      <strong class="more-info-label">More at <a href="https://rubyonrails.org/">rubyonrails.org:</a> </strong>
+      <span class="red-button more-info-button">
+        More Ruby on Rails
+      </span>
+      <ul class="more-info-links s-hidden">
+        <li class="more-info"><a href="https://weblog.rubyonrails.org/">Blog</a></li>
+        <li class="more-info"><a href="https://guides.rubyonrails.org/">Guides</a></li>
+        <li class="more-info"><a href="https://api.rubyonrails.org/">API</a></li>
+        <li class="more-info"><a href="https://stackoverflow.com/questions/tagged/ruby-on-rails">Ask for help</a></li>
+        <li class="more-info"><a href="https://github.com/rails/rails">Contribute on GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div id="header">
+    <div class="wrapper clearfix">
+      <h1><a href="index.html" title="Return to home page">Guides.rubyonrails.org</a></h1>
+      <ul class="nav">
+        <li><a class="nav-item" href="index.html">Home</a></li>
+        <li class="guides-index guides-index-large">
+          <a href="index.html" id="guidesMenu" class="guides-index-item nav-item">Guides Index</a>
+          <div id="guides" class="clearfix" style="display: none;">
+            <hr />
+            <dl class="guides-section-container">
+                <div class="guides-section">
+                  <dt>Start Here</dt>
+                  <dd><a href="getting_started.html">Getting Started with Rails</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Models</dt>
+                  <dd><a href="active_record_basics.html">Active Record Basics</a></dd>
+                  <dd><a href="active_record_migrations.html">Active Record Migrations</a></dd>
+                  <dd><a href="active_record_validations.html">Active Record Validations</a></dd>
+                  <dd><a href="active_record_callbacks.html">Active Record Callbacks</a></dd>
+                  <dd><a href="association_basics.html">Active Record Associations</a></dd>
+                  <dd><a href="active_record_querying.html">Active Record Query Interface</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Views</dt>
+                  <dd><a href="layouts_and_rendering.html">Layouts and Rendering in Rails</a></dd>
+                  <dd><a href="form_helpers.html">Action View Form Helpers</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Controllers</dt>
+                  <dd><a href="action_controller_overview.html">Action Controller Overview</a></dd>
+                  <dd><a href="routing.html">Rails Routing from the Outside In</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Other Components</dt>
+                  <dd><a href="active_support_core_extensions.html">Active Support Core Extensions</a></dd>
+                  <dd><a href="action_mailer_basics.html">Action Mailer Basics</a></dd>
+                  <dd><a href="active_job_basics.html">Active Job Basics</a></dd>
+                  <dd><a href="active_storage_overview.html">Active Storage Overview</a></dd>
+                  <dd><a href="action_cable_overview.html">Action Cable Overview</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Digging Deeper</dt>
+                  <dd><a href="i18n.html">Rails Internationalization (I18n) API</a></dd>
+                  <dd><a href="testing.html">Testing Rails Applications</a></dd>
+                  <dd><a href="security.html">Securing Rails Applications</a></dd>
+                  <dd><a href="debugging_rails_applications.html">Debugging Rails Applications</a></dd>
+                  <dd><a href="configuring.html">Configuring Rails Applications</a></dd>
+                  <dd><a href="command_line.html">The Rails Command Line</a></dd>
+                  <dd><a href="asset_pipeline.html">The Asset Pipeline</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</a></dd>
+                  <dd><a href="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</a></dd>
+                  <dd><a href="caching_with_rails.html">Caching with Rails: An Overview</a></dd>
+                  <dd><a href="api_app.html">Using Rails for API-only Applications</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Extending Rails</dt>
+                  <dd><a href="rails_on_rack.html">Rails on Rack</a></dd>
+                  <dd><a href="generators.html">Creating and Customizing Rails Generators &amp; Templates</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Contributions</dt>
+                  <dd><a href="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</a></dd>
+                  <dd><a href="api_documentation_guidelines.html">API Documentation Guidelines</a></dd>
+                  <dd><a href="ruby_on_rails_guides_guidelines.html">Guides Guidelines</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Policies</dt>
+                  <dd><a href="maintenance_policy.html">Maintenance Policy</a></dd>
+                </div>
+                <div class="guides-section">
+                  <dt>Release Notes</dt>
+                  <dd><a href="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</a></dd>
+                  <dd><a href="6_0_release_notes.html">Version 6.0 - August 2019</a></dd>
+                  <dd><a href="5_2_release_notes.html">Version 5.2 - April 2018</a></dd>
+                  <dd><a href="5_1_release_notes.html">Version 5.1 - April 2017</a></dd>
+                  <dd><a href="5_0_release_notes.html">Version 5.0 - June 2016</a></dd>
+                  <dd><a href="4_2_release_notes.html">Version 4.2 - December 2014</a></dd>
+                  <dd><a href="4_1_release_notes.html">Version 4.1 - April 2014</a></dd>
+                  <dd><a href="4_0_release_notes.html">Version 4.0 - June 2013</a></dd>
+                  <dd><a href="3_2_release_notes.html">Version 3.2 - January 2012</a></dd>
+                  <dd><a href="3_1_release_notes.html">Version 3.1 - August 2011</a></dd>
+                  <dd><a href="3_0_release_notes.html">Version 3.0 - August 2010</a></dd>
+                  <dd><a href="2_3_release_notes.html">Version 2.3 - March 2009</a></dd>
+                  <dd><a href="2_2_release_notes.html">Version 2.2 - November 2008</a></dd>
+                </div>
+            </dl>
+          </div>
+        </li>
+        <li><a class="nav-item" href="contributing_to_ruby_on_rails.html">Contribute</a></li>
+        <li class="guides-index guides-index-small">
+          <select class="guides-index-item nav-item">
+            <option value="index.html">Guides Index</option>
+              <optgroup label="Start Here">
+                  <option value="getting_started.html">Getting Started with Rails</option>
+              </optgroup>
+              <optgroup label="Models">
+                  <option value="active_record_basics.html">Active Record Basics</option>
+                  <option value="active_record_migrations.html">Active Record Migrations</option>
+                  <option value="active_record_validations.html">Active Record Validations</option>
+                  <option value="active_record_callbacks.html">Active Record Callbacks</option>
+                  <option value="association_basics.html">Active Record Associations</option>
+                  <option value="active_record_querying.html">Active Record Query Interface</option>
+              </optgroup>
+              <optgroup label="Views">
+                  <option value="layouts_and_rendering.html">Layouts and Rendering in Rails</option>
+                  <option value="form_helpers.html">Action View Form Helpers</option>
+              </optgroup>
+              <optgroup label="Controllers">
+                  <option value="action_controller_overview.html">Action Controller Overview</option>
+                  <option value="routing.html">Rails Routing from the Outside In</option>
+              </optgroup>
+              <optgroup label="Other Components">
+                  <option value="active_support_core_extensions.html">Active Support Core Extensions</option>
+                  <option value="action_mailer_basics.html">Action Mailer Basics</option>
+                  <option value="active_job_basics.html">Active Job Basics</option>
+                  <option value="active_storage_overview.html">Active Storage Overview</option>
+                  <option value="action_cable_overview.html">Action Cable Overview</option>
+              </optgroup>
+              <optgroup label="Digging Deeper">
+                  <option value="i18n.html">Rails Internationalization (I18n) API</option>
+                  <option value="testing.html">Testing Rails Applications</option>
+                  <option value="security.html">Securing Rails Applications</option>
+                  <option value="debugging_rails_applications.html">Debugging Rails Applications</option>
+                  <option value="configuring.html">Configuring Rails Applications</option>
+                  <option value="command_line.html">The Rails Command Line</option>
+                  <option value="asset_pipeline.html">The Asset Pipeline</option>
+                  <option value="autoloading_and_reloading_constants.html">Autoloading and Reloading Constants (Zeitwerk Mode)</option>
+                  <option value="autoloading_and_reloading_constants_classic_mode.html">Autoloading and Reloading Constants (Classic Mode)</option>
+                  <option value="caching_with_rails.html">Caching with Rails: An Overview</option>
+                  <option value="api_app.html">Using Rails for API-only Applications</option>
+              </optgroup>
+              <optgroup label="Extending Rails">
+                  <option value="rails_on_rack.html">Rails on Rack</option>
+                  <option value="generators.html">Creating and Customizing Rails Generators &amp; Templates</option>
+              </optgroup>
+              <optgroup label="Contributions">
+                  <option value="contributing_to_ruby_on_rails.html">Contributing to Ruby on Rails</option>
+                  <option value="api_documentation_guidelines.html">API Documentation Guidelines</option>
+                  <option value="ruby_on_rails_guides_guidelines.html">Guides Guidelines</option>
+              </optgroup>
+              <optgroup label="Policies">
+                  <option value="maintenance_policy.html">Maintenance Policy</option>
+              </optgroup>
+              <optgroup label="Release Notes">
+                  <option value="upgrading_ruby_on_rails.html">Upgrading Ruby on Rails</option>
+                  <option value="6_0_release_notes.html">Version 6.0 - August 2019</option>
+                  <option value="5_2_release_notes.html">Version 5.2 - April 2018</option>
+                  <option value="5_1_release_notes.html">Version 5.1 - April 2017</option>
+                  <option value="5_0_release_notes.html">Version 5.0 - June 2016</option>
+                  <option value="4_2_release_notes.html">Version 4.2 - December 2014</option>
+                  <option value="4_1_release_notes.html">Version 4.1 - April 2014</option>
+                  <option value="4_0_release_notes.html">Version 4.0 - June 2013</option>
+                  <option value="3_2_release_notes.html">Version 3.2 - January 2012</option>
+                  <option value="3_1_release_notes.html">Version 3.1 - August 2011</option>
+                  <option value="3_0_release_notes.html">Version 3.0 - August 2010</option>
+                  <option value="2_3_release_notes.html">Version 2.3 - March 2009</option>
+                  <option value="2_2_release_notes.html">Version 2.2 - November 2008</option>
+              </optgroup>
+          </select>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <hr class="hide" />
+
+  <div id="feature">
+    <div class="wrapper">
+      <h2>Working with JavaScript in Rails</h2><p>This guide covers the built-in Ajax/JavaScript functionality of Rails (and
+more); it will enable you to create rich and dynamic Ajax applications with
+ease!</p><p>After reading this guide, you will know:</p>
+<ul>
+<li>The basics of Ajax.</li>
+<li>Unobtrusive JavaScript.</li>
+<li>How Rails&#39; built-in helpers assist you.</li>
+<li>How to handle Ajax on the server side.</li>
+<li>The Turbolinks gem.</li>
+<li>How to include your Cross-Site Request Forgery token in request headers</li>
+</ul>
+
+
+                <div id="subCol">
+            <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+            <ol class="chapters">
+<li><a href="#an-introduction-to-ajax">An Introduction to Ajax</a></li>
+<li><a href="#unobtrusive-javascript">Unobtrusive JavaScript</a></li>
+<li>
+<a href="#built-in-helpers">Built-in Helpers</a>
+
+<ul>
+<li><a href="#remote-elements">Remote Elements</a></li>
+<li><a href="#customize-remote-elements">Customize Remote Elements</a></li>
+<li><a href="#confirmations">Confirmations</a></li>
+<li><a href="#automatic-disabling">Automatic disabling</a></li>
+<li><a href="#rails-ujs-event-handlers">Rails-ujs event handlers</a></li>
+<li><a href="#stoppable-events">Stoppable events</a></li>
+</ul>
+</li>
+<li>
+<a href="#server-side-concerns">Server-Side Concerns</a>
+
+<ul>
+<li><a href="#a-simple-example">A Simple Example</a></li>
+</ul>
+</li>
+<li>
+<a href="#turbolinks">Turbolinks</a>
+
+<ul>
+<li><a href="#how-turbolinks-works">How Turbolinks Works</a></li>
+<li><a href="#page-change-events">Page Change Events</a></li>
+</ul>
+</li>
+<li><a href="#cross-site-request-forgery-csrf-token-in-ajax">Cross-Site Request Forgery (CSRF) token in Ajax</a></li>
+<li><a href="#other-resources">Other Resources</a></li>
+</ol>
+
+          </div>
+
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+        <h3 id="an-introduction-to-ajax"><a class="anchorlink" href="#an-introduction-to-ajax">1 An Introduction to Ajax</a></h3><p>In order to understand Ajax, you must first understand what a web browser does
+normally.</p><p>When you type <code>http://localhost:3000</code> into your browser's address bar and hit
+'Go', the browser (your 'client') makes a request to the server. It parses the
+response, then fetches all associated assets, like JavaScript files,
+stylesheets and images. It then assembles the page. If you click a link, it
+does the same process: fetch the page, fetch the assets, put it all together,
+show you the results. This is called the 'request response cycle'.</p><p>JavaScript can also make requests to the server, and parse the response. It
+also has the ability to update information on the page. Combining these two
+powers, a JavaScript writer can make a web page that can update just parts of
+itself, without needing to get the full page data from the server. This is a
+powerful technique that we call Ajax.</p><p>Rails ships with CoffeeScript by default, and so the rest of the examples
+in this guide will be in CoffeeScript. All of these lessons, of course, apply
+to vanilla JavaScript as well.</p><p>As an example, here's some CoffeeScript code that makes an Ajax request using
+the jQuery library:</p><div class="code_container">
+<pre><code class="language-plain">$.ajax(url: "/test").done (html) -&gt;
+  $("#results").append html
+</code></pre>
+</div>
+<p>This code fetches data from "/test", and then appends the result to the <code>div</code>
+with an id of <code>results</code>.</p><p>Rails provides quite a bit of built-in support for building web pages with this
+technique. You rarely have to write this code yourself. The rest of this guide
+will show you how Rails can help you write websites in this way, but it's
+all built on top of this fairly simple technique.</p><h3 id="unobtrusive-javascript"><a class="anchorlink" href="#unobtrusive-javascript">2 Unobtrusive JavaScript</a></h3><p>Rails uses a technique called "Unobtrusive JavaScript" to handle attaching
+JavaScript to the DOM. This is generally considered to be a best-practice
+within the frontend community, but you may occasionally read tutorials that
+demonstrate other ways.</p><p>Here's the simplest way to write JavaScript. You may see it referred to as
+'inline JavaScript':</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="#" onclick="this.style.backgroundColor='#990000'"&gt;Paint it red&lt;/a&gt;
+</code></pre>
+</div>
+<p>When clicked, the link background will become red. Here's the problem: what
+happens when we have lots of JavaScript we want to execute on a click?</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="#" onclick="this.style.backgroundColor='#009900';this.style.color='#FFFFFF';"&gt;Paint it green&lt;/a&gt;
+</code></pre>
+</div>
+<p>Awkward, right? We could pull the function definition out of the click handler,
+and turn it into CoffeeScript:</p><div class="code_container">
+<pre><code class="language-plain">@paintIt = (element, backgroundColor, textColor) -&gt;
+  element.style.backgroundColor = backgroundColor
+  if textColor?
+    element.style.color = textColor
+</code></pre>
+</div>
+<p>And then on our page:</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="#" onclick="paintIt(this, '#990000')"&gt;Paint it red&lt;/a&gt;
+</code></pre>
+</div>
+<p>That's a little bit better, but what about multiple links that have the same
+effect?</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="#" onclick="paintIt(this, '#990000')"&gt;Paint it red&lt;/a&gt;
+&lt;a href="#" onclick="paintIt(this, '#009900', '#FFFFFF')"&gt;Paint it green&lt;/a&gt;
+&lt;a href="#" onclick="paintIt(this, '#000099', '#FFFFFF')"&gt;Paint it blue&lt;/a&gt;
+</code></pre>
+</div>
+<p>Not very DRY, eh? We can fix this by using events instead. We'll add a <code>data-*</code>
+attribute to our link, and then bind a handler to the click event of every link
+that has that attribute:</p><div class="code_container">
+<pre><code class="language-plain">@paintIt = (element, backgroundColor, textColor) -&gt;
+  element.style.backgroundColor = backgroundColor
+  if textColor?
+    element.style.color = textColor
+
+$ -&gt;
+  $("a[data-background-color]").click (e) -&gt;
+    e.preventDefault()
+
+    backgroundColor = $(this).data("background-color")
+    textColor = $(this).data("text-color")
+    paintIt(this, backgroundColor, textColor)
+</code></pre>
+</div>
+<div class="code_container">
+<pre><code class="language-xml">&lt;a href="#" data-background-color="#990000"&gt;Paint it red&lt;/a&gt;
+&lt;a href="#" data-background-color="#009900" data-text-color="#FFFFFF"&gt;Paint it green&lt;/a&gt;
+&lt;a href="#" data-background-color="#000099" data-text-color="#FFFFFF"&gt;Paint it blue&lt;/a&gt;
+</code></pre>
+</div>
+<p>We call this 'unobtrusive' JavaScript because we're no longer mixing our
+JavaScript into our HTML. We've properly separated our concerns, making future
+change easy. We can easily add behavior to any link by adding the data
+attribute. We can run all of our JavaScript through a minimizer and
+concatenator. We can serve our entire JavaScript bundle on every page, which
+means that it'll get downloaded on the first page load and then be cached on
+every page after that. Lots of little benefits really add up.</p><p>The Rails team strongly encourages you to write your CoffeeScript (and
+JavaScript) in this style, and you can expect that many libraries will also
+follow this pattern.</p><h3 id="built-in-helpers"><a class="anchorlink" href="#built-in-helpers">3 Built-in Helpers</a></h3><h4 id="remote-elements"><a class="anchorlink" href="#remote-elements">3.1 Remote Elements</a></h4><p>Rails provides a bunch of view helper methods written in Ruby to assist you
+in generating HTML. Sometimes, you want to add a little Ajax to those elements,
+and Rails has got your back in those cases.</p><p>Because of Unobtrusive JavaScript, the Rails "Ajax helpers" are actually in two
+parts: the JavaScript half and the Ruby half.</p><p>Unless you have disabled the Asset Pipeline,
+<a href="https://github.com/rails/rails/tree/master/actionview/app/assets/javascripts">rails-ujs</a>
+provides the JavaScript half, and the regular Ruby view helpers add appropriate
+tags to your DOM.</p><p>You can read below about the different events that are fired dealing with
+remote elements inside your application.</p><h5 id="form-with"><a class="anchorlink" href="#form-with">3.1.1 form_with</a></h5><p><a href="https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/FormHelper.html#method-i-form_with"><code>form_with</code></a>
+is a helper that assists with writing forms. By default, <code>form_with</code> assumes that
+your form will be using Ajax. You can opt out of this behavior by
+passing the <code>:local</code> option <code>form_with</code>.</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= form_with model: @article do |form| %&gt;
+  ...
+&lt;% end %&gt;
+</code></pre>
+</div>
+<p>This will generate the following HTML:</p><div class="code_container">
+<pre><code class="language-xml">&lt;form action="/articles" accept-charset="UTF-8" method="post" data-remote="true"&gt;
+  ...
+&lt;/form&gt;
+</code></pre>
+</div>
+<p>Note the <code>data-remote="true"</code>. Now, the form will be submitted by Ajax rather
+than by the browser's normal submit mechanism.</p><p>You probably don't want to just sit there with a filled out <code>&lt;form&gt;</code>, though.
+You probably want to do something upon a successful submission. To do that,
+bind to the <code>ajax:success</code> event. On failure, use <code>ajax:error</code>. Check it out:</p><div class="code_container">
+<pre><code class="language-plain">$(document).ready -&gt;
+  $("#new_article").on("ajax:success", (event) -&gt;
+    [data, status, xhr] = event.detail
+    $("#new_article").append xhr.responseText
+  ).on "ajax:error", (event) -&gt;
+    $("#new_article").append "&lt;p&gt;ERROR&lt;/p&gt;"
+</code></pre>
+</div>
+<p>Obviously, you'll want to be a bit more sophisticated than that, but it's a
+start.</p><div class="note"><p>As of Rails 5.1 and the new <code>rails-ujs</code>, the parameters <code>data, status, xhr</code>
+have been bundled into <code>event.detail</code>. For information about the previously used
+<code>jquery-ujs</code> in Rails 5 and earlier, read the <a href="https://github.com/rails/jquery-ujs/wiki/ajax"><code>jquery-ujs</code> wiki</a>.</p></div><h5 id="link-to"><a class="anchorlink" href="#link-to">3.1.2 link_to</a></h5><p><a href="https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/UrlHelper.html#method-i-link_to"><code>link_to</code></a>
+is a helper that assists with generating links. It has a <code>:remote</code> option you
+can use like this:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= link_to "an article", @article, remote: true %&gt;
+</code></pre>
+</div>
+<p>which generates</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="/articles/1" data-remote="true"&gt;an article&lt;/a&gt;
+</code></pre>
+</div>
+<p>You can bind to the same Ajax events as <code>form_with</code>. Here's an example. Let's
+assume that we have a list of articles that can be deleted with just one
+click. We would generate some HTML like this:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= link_to "Delete article", @article, remote: true, method: :delete %&gt;
+</code></pre>
+</div>
+<p>and write some CoffeeScript like this:</p><div class="code_container">
+<pre><code class="language-plain">$ -&gt;
+  $("a[data-remote]").on "ajax:success", (event) -&gt;
+    alert "The article was deleted."
+</code></pre>
+</div>
+<h5 id="button-to"><a class="anchorlink" href="#button-to">3.1.3 button_to</a></h5><p><a href="https://edgeapi.rubyonrails.org/classes/ActionView/Helpers/UrlHelper.html#method-i-button_to"><code>button_to</code></a> is a helper that helps you create buttons. It has a <code>:remote</code> option that you can call like this:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= button_to "An article", @article, remote: true %&gt;
+</code></pre>
+</div>
+<p>this generates</p><div class="code_container">
+<pre><code class="language-xml">&lt;form action="/articles/1" class="button_to" data-remote="true" method="post"&gt;
+  &lt;input type="submit" value="An article" /&gt;
+&lt;/form&gt;
+</code></pre>
+</div>
+<p>Since it's just a <code>&lt;form&gt;</code>, all of the information on <code>form_with</code> also applies.</p><h4 id="customize-remote-elements"><a class="anchorlink" href="#customize-remote-elements">3.2 Customize Remote Elements</a></h4><p>It is possible to customize the behavior of elements with a <code>data-remote</code>
+attribute without writing a line of JavaScript. You can specify extra <code>data-</code>
+attributes to accomplish this.</p><h5 id="data-method"><a class="anchorlink" href="#data-method">3.2.1 <code>data-method</code></a></h5><p>Activating hyperlinks always results in an HTTP GET request. However, if your
+application is <a href="https://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a>,
+some links are in fact actions that change data on the server, and must be
+performed with non-GET requests. This attribute allows marking up such links
+with an explicit method such as "post", "put" or "delete".</p><p>The way it works is that, when the link is activated, it constructs a hidden form
+in the document with the "action" attribute corresponding to "href" value of the
+link, and the method corresponding to <code>data-method</code> value, and submits that form.</p><div class="note"><p>Because submitting forms with HTTP methods other than GET and POST isn't
+widely supported across browsers, all other HTTP methods are actually sent over
+POST with the intended method indicated in the <code>_method</code> parameter. Rails
+automatically detects and compensates for this.</p></div><h5 id="data-url-and-data-params"><a class="anchorlink" href="#data-url-and-data-params">3.2.2 <code>data-url</code> and <code>data-params</code></a></h5><p>Certain elements of your page aren't actually referring to any URL, but you may want
+them to trigger Ajax calls. Specifying the <code>data-url</code> attribute along with
+the <code>data-remote</code> one will trigger an Ajax call to the given URL. You can also
+specify extra parameters through the <code>data-params</code> attribute.</p><p>This can be useful to trigger an action on check-boxes for instance:</p><div class="code_container">
+<pre><code class="language-xml">&lt;input type="checkbox" data-remote="true"
+    data-url="/update" data-params="id=10" data-method="put"&gt;
+</code></pre>
+</div>
+<h5 id="data-type"><a class="anchorlink" href="#data-type">3.2.3 <code>data-type</code></a></h5><p>It is also possible to define the Ajax <code>dataType</code> explicitly while performing
+requests for <code>data-remote</code> elements, by way of the <code>data-type</code> attribute.</p><h4 id="confirmations"><a class="anchorlink" href="#confirmations">3.3 Confirmations</a></h4><p>You can ask for an extra confirmation of the user by adding a <code>data-confirm</code>
+attribute on links and forms. The user will be presented a JavaScript <code>confirm()</code>
+dialog containing the attribute's text. If the user chooses to cancel, the action
+doesn't take place.</p><p>Adding this attribute on links will trigger the dialog on click, and adding it
+on forms will trigger it on submit. For example:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= link_to "Dangerous zone", dangerous_zone_path,
+  data: { confirm: 'Are you sure?' } %&gt;
+</code></pre>
+</div>
+<p>This generates:</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="..." data-confirm="Are you sure?"&gt;Dangerous zone&lt;/a&gt;
+</code></pre>
+</div>
+<p>The attribute is also allowed on form submit buttons. This allows you to customize
+the warning message depending on the button which was activated. In this case,
+you should <strong>not</strong> have <code>data-confirm</code> on the form itself.</p><p>The default confirmation uses a JavaScript confirm dialog, but you can customize
+this by listening to the <code>confirm</code> event, which is fired just before the confirmation
+window appears to the user. To cancel this default confirmation, have the confirm
+handler to return <code>false</code>.</p><h4 id="automatic-disabling"><a class="anchorlink" href="#automatic-disabling">3.4 Automatic disabling</a></h4><p>It is also possible to automatically disable an input while the form is submitting
+by using the <code>data-disable-with</code> attribute. This is to prevent accidental
+double-clicks from the user, which could result in duplicate HTTP requests that
+the backend may not detect as such. The value of the attribute is the text that will
+become the new value of the button in its disabled state.</p><p>This also works for links with <code>data-method</code> attribute.</p><p>For example:</p><div class="code_container">
+<pre><code class="language-erb">&lt;%= form_with model: @article.new do |form| %&gt;
+  &lt;%= form.submit data: { disable_with: "Saving..." } %&gt;
+&lt;%= end %&gt;
+</code></pre>
+</div>
+<p>This generates a form with:</p><div class="code_container">
+<pre><code class="language-xml">&lt;input data-disable-with="Saving..." type="submit"&gt;
+</code></pre>
+</div>
+<h4 id="rails-ujs-event-handlers"><a class="anchorlink" href="#rails-ujs-event-handlers">3.5 Rails-ujs event handlers</a></h4><p>Rails 5.1 introduced rails-ujs and dropped jQuery as a dependency.
+As a result the Unobtrusive JavaScript (UJS) driver has been rewritten to operate without jQuery.
+These introductions cause small changes to <code>custom events</code> fired during the request:</p><div class="note"><p>Signature of calls to UJS's event handlers has changed.
+Unlike the version with jQuery, all custom events return only one parameter: <code>event</code>.
+In this parameter, there is an additional attribute <code>detail</code> which contains an array of extra parameters.</p></div>
+<table>
+<thead>
+<tr>
+<th>Event name</th>
+<th>Extra parameters (event.detail)</th>
+<th>Fired</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ajax:before</code></td>
+<td></td>
+<td>Before the whole ajax business.</td>
+</tr>
+<tr>
+<td><code>ajax:beforeSend</code></td>
+<td>[xhr, options]</td>
+<td>Before the request is sent.</td>
+</tr>
+<tr>
+<td><code>ajax:send</code></td>
+<td>[xhr]</td>
+<td>When the request is sent.</td>
+</tr>
+<tr>
+<td><code>ajax:stopped</code></td>
+<td></td>
+<td>When the request is stopped.</td>
+</tr>
+<tr>
+<td><code>ajax:success</code></td>
+<td>[response, status, xhr]</td>
+<td>After completion, if the response was a success.</td>
+</tr>
+<tr>
+<td><code>ajax:error</code></td>
+<td>[response, status, xhr]</td>
+<td>After completion, if the response was an error.</td>
+</tr>
+<tr>
+<td><code>ajax:complete</code></td>
+<td>[xhr, status]</td>
+<td>After the request has been completed, no matter the outcome.</td>
+</tr>
+</tbody>
+</table>
+<p>Example usage:</p><div class="code_container">
+<pre><code class="language-xml">document.body.addEventListener('ajax:success', function(event) {
+  var detail = event.detail;
+  var data = detail[0], status = detail[1], xhr = detail[2];
+})
+</code></pre>
+</div>
+<div class="note"><p>As of Rails 5.1 and the new <code>rails-ujs</code>, the parameters <code>data, status, xhr</code>
+have been bundled into <code>event.detail</code>. For information about the previously used
+<code>jquery-ujs</code> in Rails 5 and earlier, read the <a href="https://github.com/rails/jquery-ujs/wiki/ajax"><code>jquery-ujs</code> wiki</a>.</p></div><h4 id="stoppable-events"><a class="anchorlink" href="#stoppable-events">3.6 Stoppable events</a></h4><p>You can stop execution of the Ajax request by running <code>event.preventDefault()</code>
+from the handlers methods <code>ajax:before</code> or <code>ajax:beforeSend</code>.
+The <code>ajax:before</code> event can manipulate form data before serialization and the
+<code>ajax:beforeSend</code> event is useful for adding custom request headers.</p><p>If you stop the <code>ajax:aborted:file</code> event, the default behavior of allowing the
+browser to submit the form via normal means (i.e. non-Ajax submission) will be
+canceled and the form will not be submitted at all. This is useful for
+implementing your own Ajax file upload workaround.</p><p>Note, you should use <code>return false</code> to prevent event for <code>jquery-ujs</code> and
+<code>e.preventDefault()</code> for <code>rails-ujs</code></p><h3 id="server-side-concerns"><a class="anchorlink" href="#server-side-concerns">4 Server-Side Concerns</a></h3><p>Ajax isn't just client-side, you also need to do some work on the server
+side to support it. Often, people like their Ajax requests to return JSON
+rather than HTML. Let's discuss what it takes to make that happen.</p><h4 id="a-simple-example"><a class="anchorlink" href="#a-simple-example">4.1 A Simple Example</a></h4><p>Imagine you have a series of users that you would like to display and provide a
+form on that same page to create a new user. The index action of your
+controller looks like this:</p><div class="code_container">
+<pre><code class="language-ruby">class UsersController &lt; ApplicationController
+  def index
+    @users = User.all
+    @user = User.new
+  end
+  # ...
+</code></pre>
+</div>
+<p>The index view (<code>app/views/users/index.html.erb</code>) contains:</p><div class="code_container">
+<pre><code class="language-erb">&lt;b&gt;Users&lt;/b&gt;
+
+&lt;ul id="users"&gt;
+&lt;%= render @users %&gt;
+&lt;/ul&gt;
+
+&lt;br&gt;
+
+&lt;%= form_with model: @user do |form| %&gt;
+  &lt;%= form.label :name %&gt;&lt;br&gt;
+  &lt;%= form.text_field :name %&gt;
+  &lt;%= form.submit %&gt;
+&lt;% end %&gt;
+</code></pre>
+</div>
+<p>The <code>app/views/users/_user.html.erb</code> partial contains the following:</p><div class="code_container">
+<pre><code class="language-erb">&lt;li&gt;&lt;%= user.name %&gt;&lt;/li&gt;
+</code></pre>
+</div>
+<p>The top portion of the index page displays the users. The bottom portion
+provides a form to create a new user.</p><p>The bottom form will call the <code>create</code> action on the <code>UsersController</code>. Because
+the form's remote option is set to true, the request will be posted to the
+<code>UsersController</code> as an Ajax request, looking for JavaScript. In order to
+serve that request, the <code>create</code> action of your controller would look like
+this:</p><div class="code_container">
+<pre><code class="language-ruby">  # app/controllers/users_controller.rb
+  # ......
+  def create
+    @user = User.new(params[:user])
+
+    respond_to do |format|
+      if @user.save
+        format.html { redirect_to @user, notice: 'User was successfully created.' }
+        format.js
+        format.json { render json: @user, status: :created, location: @user }
+      else
+        format.html { render action: "new" }
+        format.json { render json: @user.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+</code></pre>
+</div>
+<p>Notice the <code>format.js</code> in the <code>respond_to</code> block: that allows the controller to
+respond to your Ajax request. You then have a corresponding
+<code>app/views/users/create.js.erb</code> view file that generates the actual JavaScript
+code that will be sent and executed on the client side.</p><div class="code_container">
+<pre><code class="language-erb">$("&lt;%= escape_javascript(render @user) %&gt;").appendTo("#users");
+</code></pre>
+</div>
+<h3 id="turbolinks"><a class="anchorlink" href="#turbolinks">5 Turbolinks</a></h3><p>Rails ships with the <a href="https://github.com/turbolinks/turbolinks">Turbolinks library</a>,
+which uses Ajax to speed up page rendering in most applications.</p><h4 id="how-turbolinks-works"><a class="anchorlink" href="#how-turbolinks-works">5.1 How Turbolinks Works</a></h4><p>Turbolinks attaches a click handler to all <code>&lt;a&gt;</code> tags on the page. If your browser
+supports
+<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Manipulating_the_browser_history#The_pushState%28%29_method">PushState</a>,
+Turbolinks will make an Ajax request for the page, parse the response, and
+replace the entire <code>&lt;body&gt;</code> of the page with the <code>&lt;body&gt;</code> of the response. It
+will then use PushState to change the URL to the correct one, preserving
+refresh semantics and giving you pretty URLs.</p><p>If you want to disable Turbolinks for certain links, add a <code>data-turbolinks="false"</code>
+attribute to the tag:</p><div class="code_container">
+<pre><code class="language-xml">&lt;a href="..." data-turbolinks="false"&gt;No turbolinks here&lt;/a&gt;.
+</code></pre>
+</div>
+<h4 id="page-change-events"><a class="anchorlink" href="#page-change-events">5.2 Page Change Events</a></h4><p>When writing CoffeeScript, you'll often want to do some sort of processing upon
+page load. With jQuery, you'd write something like this:</p><div class="code_container">
+<pre><code class="language-plain">$(document).ready -&gt;
+  alert "page has loaded!"
+</code></pre>
+</div>
+<p>However, because Turbolinks overrides the normal page loading process, the
+event that this relies upon will not be fired. If you have code that looks like
+this, you must change your code to do this instead:</p><div class="code_container">
+<pre><code class="language-plain">$(document).on "turbolinks:load", -&gt;
+  alert "page has loaded!"
+</code></pre>
+</div>
+<p>For more details, including other events you can bind to, check out <a href="https://github.com/turbolinks/turbolinks/blob/master/README.md">the
+Turbolinks
+README</a>.</p><h3 id="cross-site-request-forgery-csrf-token-in-ajax"><a class="anchorlink" href="#cross-site-request-forgery-csrf-token-in-ajax">6 Cross-Site Request Forgery (CSRF) token in Ajax</a></h3><p>When using another library to make Ajax calls, it is necessary to add
+the security token as a default header for Ajax calls in your library. To get
+the token:</p><div class="code_container">
+<pre><code class="language-plain">var token = document.getElementsByName('csrf-token')[0].content
+</code></pre>
+</div>
+<p>You can then submit this token as a <code>X-CSRF-Token</code> header for your
+Ajax request. You do not need to add a CSRF token for GET requests,
+only non-GET ones.</p><p>You can read more about about Cross-Site Request Forgery in <a href="https://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf">Security</a></p><h3 id="other-resources"><a class="anchorlink" href="#other-resources">7 Other Resources</a></h3><p>Here are some helpful links to help you learn even more:</p>
+<ul>
+<li><a href="https://github.com/rails/jquery-ujs/wiki">jquery-ujs wiki</a></li>
+<li><a href="https://github.com/rails/jquery-ujs/wiki/External-articles">jquery-ujs list of external articles</a></li>
+<li><a href="http://www.alfajango.com/blog/rails-3-remote-links-and-forms/">Rails 3 Remote Links and Forms: A Definitive Guide</a></li>
+<li><a href="http://railscasts.com/episodes/205-unobtrusive-javascript">Railscasts: Unobtrusive JavaScript</a></li>
+<li><a href="http://railscasts.com/episodes/390-turbolinks">Railscasts: Turbolinks</a></li>
+</ul>
+
+
+        <h3>Feedback</h3>
+        <p>
+          You're encouraged to help improve the quality of this guide.
+        </p>
+        <p>
+          Please contribute if you see any typos or factual errors.
+          To get started, you can read our <a href="https://edgeguides.rubyonrails.org/contributing_to_ruby_on_rails.html#contributing-to-the-rails-documentation">documentation contributions</a> section.
+        </p>
+        <p>
+          You may also find incomplete content or stuff that is not up to date.
+          Please do add any missing documentation for master. Make sure to check
+          <a href="https://edgeguides.rubyonrails.org">Edge Guides</a> first to verify
+          if the issues are already fixed or not on the master branch.
+          Check the <a href="ruby_on_rails_guides_guidelines.html">Ruby on Rails Guides Guidelines</a>
+          for style and conventions.
+        </p>
+        <p>
+          If for whatever reason you spot something to fix but cannot patch it yourself, please
+          <a href="https://github.com/rails/rails/issues">open an issue</a>.
+        </p>
+        <p>And last but not least, any kind of discussion regarding Ruby on Rails
+          documentation is very welcome on the <a href="https://groups.google.com/forum/#!forum/rubyonrails-docs">rubyonrails-docs mailing list</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+  <div id="footer">
+    <div class="wrapper">
+      <p>This work is licensed under a <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International</a> License</p>
+<p>"Rails", "Ruby on Rails", and the Rails logo are trademarks of David Heinemeier Hansson. All rights reserved.</p>
+
+    </div>
+  </div>
+</body>
+</html>
