@@ -1256,8 +1256,8 @@ end
 </code></pre></div></div>
 <p>This route will now match <code>DELETE /articles/:id</code> requests and send them to the <code>destroy</code> action in <code>ArticlesController</code>. Let's add this action now in the <code>ArticlesController</code>:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">destroy</span>
-  <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
-  <span class="vi">@article</span><span class="p">.</span><span class="nf">destroy</span>
+  <span class="n">article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
+  <span class="n">article</span><span class="p">.</span><span class="nf">destroy</span>
 
   <span class="n">redirect_to</span> <span class="n">articles_path</span>
 <span class="k">end</span>
@@ -1302,8 +1302,8 @@ end
   <span class="k">end</span>
 
   <span class="k">def</span> <span class="nf">destroy</span>
-    <span class="vi">@article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
-    <span class="vi">@article</span><span class="p">.</span><span class="nf">destroy</span>
+    <span class="n">article</span> <span class="o">=</span> <span class="no">Article</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="ss">:id</span><span class="p">])</span>
+    <span class="n">article</span><span class="p">.</span><span class="nf">destroy</span>
 
     <span class="n">redirect_to</span> <span class="s1">'/'</span>
   <span class="k">end</span>
