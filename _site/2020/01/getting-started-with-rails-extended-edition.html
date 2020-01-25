@@ -650,7 +650,7 @@ Article Create (0.4ms)  INSERT INTO "articles" ("title", "body", "created_at", "
 <p>This place to create new articles will be <code>/articles/new</code>, and the route for this has <em>very</em> intentionally been placed above the route for the <code>show</code> action. The reason for this is because routes in a Rails application are matched top-to-bottom. If we had <code>/articles/:id</code> first, that route would match <code>/articles/new</code>, and so if we went to <code>/articles/new</code>, the <code>show</code> action would serve that request, not the <code>new</code> action. And so for this reason, we put the <code>new</code> route <em>above</em> the <code>show</code> action.</p>
 <p>This <code>/articles/new</code> route will send the request to the <code>new</code> action within the <code>ArticlesController</code>, which we'll see in a minute. We've added the <code>:as</code> option here, as we will be using the <code>new_article_path</code> helper in a little while to provide a way to navigate to this form.</p>
 <p>If we were to attempt to go to this route now, would see an error for the first time:</p>
-<p><img src="images/getting_started/unknown_action_new_for_articles.png" alt="Unknown action new for ArticlesController!" /></p>
+<p><img src="/images/getting_started/unknown_action_new_for_articles.png" alt="Unknown action new for ArticlesController!" /></p>
 <p>This error indicates that Rails cannot find the <code>new</code> action inside the
 <code>ArticlesController</code>. No worries, we will need to define this action.</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">ArticlesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
@@ -669,7 +669,7 @@ Article Create (0.4ms)  INSERT INTO "articles" ("title", "body", "created_at", "
 <p>We can put the <code>new</code> action under <code>show</code> in the controller, because the order of methods in classes doesn't matter in Ruby.</p>
 <p>With the <code>new</code> method defined in <code>ArticlesController</code>, if you refresh
 <a href="http://localhost:3000/articles/new">http://localhost:3000/articles/new</a> you'll see another error:</p>
-<p><img src="images/getting_started/template_is_missing_articles_new.png" alt="Template is missing for articles/new" /></p>
+<p><img src="/images/getting_started/template_is_missing_articles_new.png" alt="Template is missing for articles/new" /></p>
 <p>You're getting this error now because Rails expects empty actions like this one to have views associated with them to display their information. With no view available, Rails will raise an exception.</p>
 <p>Let's look at the full error message again:</p>
 <blockquote>

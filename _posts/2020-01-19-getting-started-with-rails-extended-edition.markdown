@@ -796,7 +796,7 @@ This `/articles/new` route will send the request to the `new` action within the 
 
 If we were to attempt to go to this route now, would see an error for the first time:
 
-![Unknown action new for ArticlesController!](images/getting_started/unknown_action_new_for_articles.png)
+![Unknown action new for ArticlesController!](/images/getting_started/unknown_action_new_for_articles.png)
 
 This error indicates that Rails cannot find the `new` action inside the
 `ArticlesController`. No worries, we will need to define this action.
@@ -821,7 +821,7 @@ We can put the `new` action under `show` in the controller, because the order of
 With the `new` method defined in `ArticlesController`, if you refresh
 <http://localhost:3000/articles/new> you'll see another error:
 
-![Template is missing for articles/new](images/getting_started/template_is_missing_articles_new.png)
+![Template is missing for articles/new](/images/getting_started/template_is_missing_articles_new.png)
 
 You're getting this error now because Rails expects empty actions like this one to have views associated with them to display their information. With no view available, Rails will raise an exception.
 
