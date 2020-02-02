@@ -1415,8 +1415,8 @@ end
 </div>
 <p>This route will now match <code>DELETE /articles/:id</code> requests and send them to the <code>destroy</code> action in <code>ArticlesController</code>. Let's add this action now in the <code>ArticlesController</code>:</p><div class="code_container">
 <pre><code class="language-ruby">def destroy
-  @article = Article.find(params[:id])
-  @article.destroy
+  article = Article.find(params[:id])
+  article.destroy
 
   redirect_to articles_path
 end

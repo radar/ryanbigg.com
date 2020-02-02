@@ -1,22 +1,27 @@
 ---
 wordpress_id: RB-1580556354
 layout: post
-title: Getting Started with ROM and Dry
-published: false
+title: "ROM + Dry Showcase: Part 1"
 ---
 
 The [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) sets of gems have come out in the last couple of years. These gems allow an alternative take on building a Ruby application, separate from Rails or Sinatra, or anything else like that.
 
-In this _series_ of blog posts, I am going to show you how to build a simple application using these sets of gems. This application will retrieve data from a database, and present it through a JSON API.
+In this _series_ of blog posts, I am going to show you how to build a simple application that I'm calling "Bix" using some of these gems. By the end of this series, the application will:
 
-This part will cover how to get started and will use these gems:
+* Part 1 (you are here) - Interact with a database using ROM
+* Part 2 - Have an automated way of loading the application's dependencies
+* Part 3 - Have validation and transaction classes
+* Part 4 - Have a router and a series of actions
+
+This part will cover how to get started with talking to a database and will use these gems:
 
 * rom, [rom-sql](https://rom-rb.org/5.0/learn/sql/) + pg -- We'll use these to connect to a database
-* [dry-system](https://rom-rb.org/5.0/learn/sql/) -- We'll use this to load our application's dependencies
 * `dotenv` -- a gem that helps load `.env` files that contain environment variables
 * `rake` -- For running Rake tasks, like migrations!
 
-In this part, we will build a small Ruby application that talks to a PostgreSQL database.
+In this part, we will setup a small Ruby application that talks to a PostgreSQL database, by using the `rom`, `rom-sql` and `pg` gems. At the end of this guide, we will be able to insert and retrieve data from the database.
+
+If you'd like to see the code for this application, it's at [github.com/radar/bix], and each part of this series has its own branch.
 
 ## A word on setup costs
 
@@ -40,8 +45,6 @@ source 'https://rubygems.org'
 gem 'rom'
 gem 'rom-sql'
 gem 'pg'
-
-gem 'dry-system'
 
 gem 'dotenv'
 gem 'rake'
@@ -90,7 +93,7 @@ namespace :db do
   task :setup do
     ROM::SQL::RakeSupport.env = ROM.container(:sql, ENV['DATABASE_URL']) do |config|
       config.gateways[:default].use_logger(Logger.new($stdout))
-    end`
+    end
   end
 end
 ```
@@ -348,7 +351,9 @@ module Bix
 end
 ```
 
-The `commands` class method defines built in commands that we can use on our repository. This one tells ROM that we want a method called `create` that will let us create new records. The `use :timestamps` at the end tells ROM that we want `create` to set `created_at` and `updated_at` when our records are created.
+The `commands` class method defines built-in commands that we can use on our repository. ROM comes with three: `:create`, `:update` and `:delete`.
+
+ This one tells ROM that we want a method called `create` that will let us create new records. The `use :timestamps` at the end tells ROM that we want `create` to set `created_at` and `updated_at` when our records are created.
 
 The `all` method here calls the `users` relation, and the `to_a` will run a query to fetch all of the users.
 
@@ -363,23 +368,70 @@ user_repo.all
 => [#<ROM::Struct::User id=1 first_name="Ryan" last_name="Bigg" ...>]
 ```
 
-Hooray! We have now been able to add a
+Hooray! We have now been able to add a record and retrieve it. We have now set up quite a few components for our application:
 
+* `config/environment.rb` - Contains a `ROM.container` that defines how to connect to our database
+* `lib/bix/relations/users.rb` - Defines a class that can contain query logic for our `users` table
+* `lib/bix/repositories/user.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.
 
+ROM gives us a few pieces that fit nicely together and we've built a simple application from them.
 
-
-
-
-
-
-
+Now what happens if we want to add a custom method on to the objects returned by our database? Let's say, a `full_name` method that would let us combine a user's `first_name` and `last_name` attributes. Currently these are `ROM::Struct::User` objects, returned from ROM. There isn't a place to define these methods in our application yet. So let's create one!
 
 ### Entities
 
+To be able to define custom methods like `full_name` for users, we're going to need a class. For this, ROM has a feature called _entities_. These are simple classes that can be considered as super-powered structs. Let's build a new one by creating it in a new directory called `lib/bix/entities`, and calling it `user.rb`:
 
+```ruby
+module Bix
+  class User < ROM::Struct
+    def full_name
+      "#{first_name} #{last_name}"
+    end
+  end
+end
+```
 
+Ignoring [the falsehoods programmers believe about names](https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/), this method will combine a user's `first_name` and `last_name` attributes.
 
+To use this class though, we need to configure the repository further over in `lib/bix/repos/user.rb`:
 
+```ruby
+module Bix
+  module Repos
+    class User < ROM::Repository[:users]
+      struct_namespace Bix
 
+      ...
+    end
+  end
+end
+```
 
-### Dry System
+This `struct_namespace` method tells the repository that when it builds structs, it can use the `Bix` namespace for those structs. The class name will be the singularised version of the relation specified in the `ROM::Repository` class inheritance: `Bix::User`.
+
+Let's go back into `bin/console` and try this out:
+
+```ruby
+user_repo = Bix::Repos::User.new(Bix::Container)
+user_repo.all.first.full_name
+# => "Ryan Bigg"
+```
+
+Great! We're now able to have a class that contains custom Ruby logic for the data that is returned from the database.
+
+### Summary
+
+In this first part of the ROM + Dry showcase, we've seen how to setup a small application that can talk to a database.
+
+We have created files that allow us to bootstrap our application's environment -- `config/boot.rb` and `config/environment.rb`, as well as another file that lets us load a console to play around with our application -- `bin/console`.
+
+In the `lib` directory, we have setup three directories:
+
+* `entities` - Classes that represent specific data types returned from our database.
+* `relations` - Classes that can contain custom methods for querying the database
+* `repos` - Classes that provide a place for defining a public API between relations and our application code
+
+This separation of concerns across our application will make it easier to work with in the long run.
+
+In the next part of this guide, we'll look at how we can tidy up our application's code by using two extra gems: `dry-system` and `dry-auto_inject`.
