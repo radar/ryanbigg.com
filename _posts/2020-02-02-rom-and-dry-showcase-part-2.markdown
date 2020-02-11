@@ -20,7 +20,7 @@ When we're done here, we'll have a class that encapsulates all the actions of cr
 
 We'll call this class a _transaction_, as it will contain all the logic for performing a particular _transaction_ with our system; the transaction of creating a new user.
 
-Lastly, we'll re-visit `dry-auto_inject` and demonstrate how we can use that gem to inject a dependency when we're testing out this new transaction class. This dependency will mean that we can test our transaction class in complete isolation from a database. This is useful because if we can isolate our code from the database we then don't have to worry about keeping the database clean between tests.
+If you'd like to see the code for this application, it's at [github.com/radar/bix](https://github.com/radar/bix), and each part of this series has its own branch.
 
 Let's begin!
 

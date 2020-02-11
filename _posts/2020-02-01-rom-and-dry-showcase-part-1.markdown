@@ -9,7 +9,7 @@ The [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) sets of gems
 In this _series_ of blog posts, I am going to show you how to build a simple application that I'm calling "Bix" using some of these gems. By the end of this series, the application will:
 
 * Part 1 (you are here) - Interact with a database using ROM
-* Part 2 - Have validation and transaction classes
+* [Part 2 - Have validation and transaction classes](/2020/02/rom-and-dry-showcase-part-2)
 * Part 3 - Test our application with RSpec
 * Part 4 - Have a router and a series of actions
 
@@ -22,7 +22,7 @@ This part will cover how to start building out an application's architecture. We
 
 In this part, we will setup a small Ruby application that talks to a PostgreSQL database, by using the `dry-system`, `rom`, `rom-sql` and `pg` gems. At the end of this guide, we will be able to insert and retrieve data from the database.
 
-If you'd like to see the code for this application, it's at [github.com/radar/bix](github.com/radar/bix), and each part of this series has its own branch.
+If you'd like to see the code for this application, it's at [github.com/radar/bix](https://github.com/radar/bix), and each part of this series has its own branch.
 
 ## A word on setup costs
 

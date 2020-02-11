@@ -50,7 +50,7 @@
 <li>If they are present, the user data is persisted to the database</li>
 </ol>
 <p>We'll call this class a <em>transaction</em>, as it will contain all the logic for performing a particular <em>transaction</em> with our system; the transaction of creating a new user.</p>
-<p>Lastly, we'll re-visit <code>dry-auto_inject</code> and demonstrate how we can use that gem to inject a dependency when we're testing out this new transaction class. This dependency will mean that we can test our transaction class in complete isolation from a database. This is useful because if we can isolate our code from the database we then don't have to worry about keeping the database clean between tests.</p>
+<p>If you'd like to see the code for this application, it's at <a href="https://github.com/radar/bix">github.com/radar/bix</a>, and each part of this series has its own branch.</p>
 <p>Let's begin!</p>
 <h2 id="adding-validations">Adding validations</h2>
 <p>Validations are a key part of any application. We need to make sure that before data is stored in our database that it is valid. In our currently very small application, we so far have just one type of data: users. Still, in this tiny application it doesn't really make much sense to create users that don't have a name. In this section we're going to add a class that will validate a particular input for user data is valid.</p>
