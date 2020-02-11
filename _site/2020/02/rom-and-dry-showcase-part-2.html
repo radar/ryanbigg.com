@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
   <meta charset="UTF-8">
-  <title>ROM and Dry Showcase: Part 2 - Ryan Bigg</title>
+  <title>ROM + Dry Showcase: Part 2 - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
@@ -34,93 +34,289 @@
         <div class='content-inner'>
           <article>
             <div class='center'>
-              <a href="/2020/02/rom-and-dry-showcase-part-2"><h2>ROM and Dry Showcase: Part 2</h2></a>
+              <a href="/2020/02/rom-and-dry-showcase-part-2"><h2>ROM + Dry Showcase: Part 2</h2></a>
               <small>02 Feb 2020</small>
             </div>
-            <p>This is the 2nd of a 4 part series. You <a href="/2020/02/rom-and-dry-showcase-part-1">can read Part 1 here</a>.</p>
-<p>In Part 1, we built an application called Bix and made it so that the application could talk to a database. We did this by using some gems from the ROM suite of gems, namely <code>rom</code> and <code>rom-sql</code>.</p>
-<p>In this part, we're going to look at how we can tidy up our code by using two additional gems, this time from the Dry suite of gems: <code>dry-system</code> and <code>dry-auto_inject</code>.</p>
-<p>You might be wondering: what code did we write in the last part that needs tidying up? I should definitely answer that. In Bix's <code>config/environment.rb</code>, we have this code:</p>
-<pre><code>require_relative &quot;../lib/bix/repos/user&quot;
-require_relative &quot;../lib/bix/relations/users&quot;
-require_relative &quot;../lib/bix/entities/user&quot;
-</code></pre>
-<p>These three lines are innocuous now, but imagine if we had <a href="https://github.com/spree/spree/tree/2fb3015201a1c1b4ea1f96d43afde4cef6dd2fdb/core/app/models/spree">as many tables as Spree</a>. Then there would be 3 lines for each of those and this <code>config/environment.rb</code> file would get very long, very quickly. We can tidy that up, thankfully, by using <code>dry-system</code>.</p>
-<p>Next, when we've been using <code>bin/console</code> we've had to type this absolute beast of a line:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Container</span><span class="p">)</span>
+            <p>This is the 2nd part of a 4 part series.</p>
+<ul>
+<li>Part 1: <a href="/2020/02/rom-and-dry-showcase-part-1">Application + Database setup</a></li>
+</ul>
+<p>In this part, we're going to look at how to add data validation to our application. Our application currently has a way of creating users, but there's nothing preventing those users being created without their <code>first_name</code> or <code>last_name</code> set. In this part, we'll add some code to validate that both of these fields are set. We're going to add this code by using a gem called <code>dry-validation</code>.</p>
+<p>When we've added this code, it's going to sit apart from the repositories and relations that we've built already, and we will need a way of connecting these pieces. The way that we will connect these pieces is through the <code>dry-monads</code> gem.</p>
+<p>When we're done here, we'll have a class that encapsulates all the actions of creating a user:</p>
+<ol>
+<li>Validates <code>first_name</code> and <code>last_name</code> are present</li>
+<li>If they aren't present, returns an error.</li>
+<li>If they are present, the user data is persisted to the database</li>
+</ol>
+<p>We'll call this class a <em>transaction</em>, as it will contain all the logic for performing a particular <em>transaction</em> with our system; the transaction of creating a new user.</p>
+<p>Lastly, we'll re-visit <code>dry-auto_inject</code> and demonstrate how we can use that gem to inject a dependency when we're testing out this new transaction class. This dependency will mean that we can test our transaction class in complete isolation from a database. This is useful because if we can isolate our code from the database we then don't have to worry about keeping the database clean between tests.</p>
+<p>Let's begin!</p>
+<h2 id="adding-validations">Adding validations</h2>
+<p>Validations are a key part of any application. We need to make sure that before data is stored in our database that it is valid. In our currently very small application, we so far have just one type of data: users. Still, in this tiny application it doesn't really make much sense to create users that don't have a name. In this section we're going to add a class that will validate a particular input for user data is valid.</p>
+<p>To start with, we'll need to add the <code>dry-validation</code> gem to our <code>Gemfile</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'dry-validation'</span><span class="p">,</span> <span class="s1">'~&gt; 1.4'</span>
 </code></pre></div></div>
-<p>What if we were able to get rid of that <code>Bix::Container</code> part? Well, we can do that with <code>dry-auto_inject</code> and this guide will show you how.</p>
-<h2 id="drying-our-system">DRYing our system</h2>
-<p>I like <code>dry-system</code> because when we use this gem, it epitomises the &quot;DRY&quot; principle: Don't Repeat Yourself. We're currently on our way to <em>definitely</em> repeating ourself over in <code>config/environment.rb</code> if we add another table!</p>
-<p>Let's work on fixing this by adding the <code>dry-system</code> to the <code>Gemfile</code>:</p>
-<pre><code>gem 'dry-system'
-</code></pre>
-<p>Next, we'll run <code>bundle install</code> to install this gem.</p>
-<p>Then we'll go to <code>config/environment.rb</code> and start DRYing things up:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s2">"boot"</span>
-
-<span class="nb">require</span> <span class="s2">"dry/system/container"</span>
-
-<span class="nb">require</span> <span class="s2">"rom"</span>
-<span class="nb">require</span> <span class="s2">"rom-sql"</span>
-
-<span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Dry</span><span class="o">::</span><span class="no">System</span><span class="o">::</span><span class="no">Container</span>
-    <span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-      <span class="n">config</span><span class="p">.</span><span class="nf">root</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">expand_path</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
-      <span class="n">config</span><span class="p">.</span><span class="nf">auto_register</span> <span class="o">=</span> <span class="s1">'lib'</span>
-      <span class="n">config</span><span class="p">.</span><span class="nf">default_namespace</span> <span class="o">=</span> <span class="s1">'bix'</span>
-    <span class="k">end</span>
-
-    <span class="n">load_paths!</span><span class="p">(</span><span class="s1">'lib'</span><span class="p">)</span>
+<p>Next up, we'll need to install the gem:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle <span class="nb">install</span>
+</code></pre></div></div>
+<p>We'll need to require this gem somewhere too, so that it is loaded in our application. To load this gem and other gems that we'll add in the future, we'll create a new file at <code>system/boot/core.rb</code>.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">boot</span><span class="p">(</span><span class="ss">:core</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">init</span> <span class="k">do</span>
+    <span class="nb">require</span> <span class="s2">"dry-validation"</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This file now looks a lot simpler, and that is probably because we removed <em>nearly everything</em>. We'll find a new home for a lot that code shortly, but first let's talk about what we've done here.</p>
-<p>We've defined a <code>Bix::Application</code> container and we've configured this container to specify that the root path for our application is one directory up from the <code>config</code> directory, that we want to &quot;auto register&quot; everything in <code>lib</code>, and that the default namespace is <code>bix</code>. Finally, there's a <code>load_paths!</code> thing at the end of this file.</p>
-<p>Let's go through each of these things in turn. When we setup the <code>root</code> of our application and <code>auto_register</code> things, the <code>dry-system</code> gem will require all of the files under the <code>lib</code> directory automatically for us. This means that we will not need to require our entities, relations or repositories from now and into the future.</p>
-<p>When we define our application's configuration with <code>dry-system</code>, it will not automatically set to requiring everything in our application on boot. Instead, the application waits for us to call <code>finalize!</code> before it will do that. So let's open <code>bin/console</code> and change the file to this:</p>
-<pre><code>#!/usr/bin/env ruby
-
-require_relative '../config/environment'
-
-Bix::Application.finalize!
-
-require 'irb'
-IRB.start
+<p>This new file will include any sort of setup logic that we will need for the <em>core</em> part of our application. This is going to be everything that we'll need when running the plain Ruby code for our application. We have a <code>db.rb</code> and <code>persistence.rb</code> file in this same directory that contains logic for anything we want to do with a database. n the last part of this guide, we'll add a fourth file in this directory called <code>web.rb</code> and that file will contain setup logic for anything to do with handling web requests.</p>
+<p>The <code>dry-validation</code> gem allows us to create classes to encapsulate validation logic, and this gem uses another dry-rb gem under the hood called <a href="https://dry-rb.org/gems/dry-schema/1.4"><code>dry-schema</code></a></p>
+<p>These classes are called <em>contracts</em>. We'll create our first contract at <code>lib/bix/contracts/users/create.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Contracts</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">Create</span> <span class="o">&lt;</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Validation</span><span class="o">::</span><span class="no">Contract</span>
+        <span class="n">params</span> <span class="k">do</span>
+          <span class="n">required</span><span class="p">(</span><span class="ss">:first_name</span><span class="p">).</span><span class="nf">filled</span><span class="p">(</span><span class="ss">:string</span><span class="p">)</span>
+          <span class="n">required</span><span class="p">(</span><span class="ss">:last_name</span><span class="p">).</span><span class="nf">filled</span><span class="p">(</span><span class="ss">:string</span><span class="p">)</span>
+          <span class="n">optional</span><span class="p">(</span><span class="ss">:age</span><span class="p">).</span><span class="nf">filled</span><span class="p">(</span><span class="ss">:integer</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This class defines a contract that says that when we're creating users, there has to be at least two parameters -- <code>first_name</code> and <code>last_name</code>, and they both have to be <code>filled</code> (present) strings. This contract also says that an <code>age</code> parameter is optional, but when it's specified it's an integer. Let's try using this contract now in <code>bin/console</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">({})</span>
+</code></pre></div></div>
+<p>To use this contract, we need to initialize a new object from the class and then use the <code>call</code> method on that new object. The argument that we pass it are the parameters for the contract, which in this case is just an empty Hash.</p>
+<p>When we call this contract, we see the validation errors returned:</p>
+<pre><code>=&gt; #&lt;Dry::Validation::Result{} errors={:first_name=&gt;[&quot;is missing&quot;], :last_name=&gt;[&quot;is missing&quot;]}&gt;
 </code></pre>
-<p>This will now trigger our application to be loaded when <code>bin/console</code> starts up. Let's give it a shot now by running <code>bin/console</code> and then putting in this code:</p>
-<pre><code>&gt;&gt; Bix::Repos::User
-Bix::Repos::User
-</code></pre>
-<p>Our application has loaded <code>lib/bix/repos/user.rb</code> automatically for us!</p>
-<p>Unfortunately, because we deleted <code>Bix::Container</code>, this class will no longer work:</p>
-<pre><code>Bix::Repos::User.new(Bix::Container)
-NameError (uninitialized constant Bix::Container)
-</code></pre>
-<p>Let's now work on restoring that constant by using another part of <code>dry-system</code> called <em>dependencies</em>.</p>
-<h2 id="booting-the-persistence-dependency">Booting the persistence dependency</h2>
-<p>We've deleted <code>Bix::Container</code> out of <code>config/environment.rb</code>, perhaps a little too eagerly. Our <code>Bix::Repos::User</code> class can no longer fetch users!</p>
-<p>To fix this up, we can create what <code>dry-system</code> refers to as a <em>dependency</em> -- a part of our application that can be compartmentalised and booted up separately to the main application.</p>
-<p>The code for these go into a new folder called <code>system/boot</code>, and we're going to call this new file <code>system/boot/persistence.rb</code>. Into this file, we're going to put this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">boot</span><span class="p">(</span><span class="ss">:persistence</span><span class="p">)</span> <span class="k">do</span>
+<p>The returned object is a <code>Result</code> object, and with that result object we can determine if the validation was successful by calling the <code>success?</code> method:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">result</span><span class="p">.</span><span class="nf">success?</span>
+<span class="c1"># =&gt; false</span>
+</code></pre></div></div>
+<p>If we wanted to display these error messages (for example, as feedback to a user) we could call:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">result</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">to_h</span>
+<span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:first_name</span><span class="o">=&gt;</span><span class="p">[</span><span class="s2">"is missing"</span><span class="p">],</span> <span class="ss">:last_name</span><span class="o">=&gt;</span><span class="p">[</span><span class="s2">"is missing"</span><span class="p">]}</span>
+</code></pre></div></div>
+<p>Let's look at what happens when we pass valid data, but with a twist: all of our values are strings. This is the kind of data you would get from a form submission through a web application:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="s2">"32"</span><span class="p">)</span>
+<span class="o">=&gt;</span> <span class="c1">#&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"Bigg", :age=&gt;32} errors={}&gt;</span>
+<span class="n">result</span><span class="p">.</span><span class="nf">success?</span>
+<span class="c1"># =&gt; true</span>
+</code></pre></div></div>
+<p>Great, our contract is correctly validating input! What's interesting to note here is that the <code>age</code> parameter is being correctly typecast from a String to an Integer. This is because we have defined that field to be an <code>integer</code> in our contract:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Contracts</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">Create</span> <span class="o">&lt;</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Validation</span><span class="o">::</span><span class="no">Contract</span>
+        <span class="n">params</span> <span class="k">do</span>
+          <span class="n">required</span><span class="p">(</span><span class="ss">:first_name</span><span class="p">).</span><span class="nf">filled</span><span class="p">(</span><span class="ss">:string</span><span class="p">)</span>
+          <span class="n">required</span><span class="p">(</span><span class="ss">:last_name</span><span class="p">).</span><span class="nf">filled</span><span class="p">(</span><span class="ss">:string</span><span class="p">)</span>
+          <span class="n">optional</span><span class="p">(</span><span class="ss">:age</span><span class="p">).</span><span class="nf">filled</span><span class="p">(</span><span class="ss">:integer</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>If we pass data from a form submission through our contract before we work through it, the data will have all the correct types and we don't need to coerce that data when we're working with -- dry-validation has done that for us. After this point, our data will always be in the correct type.</p>
+<p>Another thing to note with our new contract is that it will only return the specified fields. Extra fields will be ignored:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="s2">"32"</span><span class="p">,</span> <span class="ss">admin: </span><span class="kp">true</span><span class="p">)</span>
+<span class="c1"># =&gt; #&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"Bigg", :age=&gt;32} errors={}&gt;</span>
+</code></pre></div></div>
+<p>The <code>admin</code> field doesn't appear here at all, even though we've specified it as an input to this contract.</p>
+<p>So in summary, here's what we're given by using a <code>dry-validation</code> contract:</p>
+<ul>
+<li>Validations to ensure fields meet certain criteria</li>
+<li>Automatic type coercion of fields into their correct types</li>
+<li>Automatic limiting of input to just the fields we have specified</li>
+</ul>
+<h2 id="intro-to-dry-monads">Intro to Dry Monads</h2>
+<p>Now that we have a way to create user records (the <code>Bix::Repos::User</code>) and a way to validate that data before it gets into the database <code>(Bix::Contracts::Users::Create</code>), we can combine them to ensure data is valid before it reaches out database.</p>
+<p>To do this combination, we could write a class like this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateUser</span>
+  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+    <span class="n">create_contract</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">create_contract</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="p">.</span><span class="nf">success?</span>
+      <span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span>
+      <span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="n">result</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>From the start, this class doesn't look so bad. But if we added one more <code>if</code> condition or perhaps some code to send a &quot;successful sign up&quot; email to a user, this class would get longer and more complex.</p>
+<p>To avoid that kind of complexity, the <code>dry-rb</code> suite of gems provides another gem called <code>dry-monads</code>. Among <a href="https://dry-rb.org/gems/dry-monads/1.3/getting-started/">other things</a>, this <code>dry-monads</code> gem provides us with a feature called &quot;Do Notation&quot;. This feature will allow us to write our <code>CreateUser</code> class in a much cleaner way that will also allow for extensibility later on -- if we want that.</p>
+<p>Let's add this gem to our <code>Gemfile</code> now:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'dry-monads'</span><span class="p">,</span> <span class="s1">'~&gt; 1.3'</span>
+</code></pre></div></div>
+<p>And we'll run <code>bundle install</code> to install it.</p>
+<p>Next up, we will need to require this gem in <code>system/boot/core.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">boot</span><span class="p">(</span><span class="ss">:core</span><span class="p">)</span> <span class="k">do</span>
   <span class="n">init</span> <span class="k">do</span>
-    <span class="nb">require</span> <span class="s2">"rom"</span>
-    <span class="nb">require</span> <span class="s2">"rom-sql"</span>
+    <span class="nb">require</span> <span class="s2">"dry-validation"</span>
+    <span class="nb">require</span> <span class="s2">"dry/monads"</span>
+    <span class="nb">require</span> <span class="s2">"dry/monads/do"</span>
   <span class="k">end</span>
 
   <span class="n">start</span> <span class="k">do</span>
-    <span class="n">container</span> <span class="o">=</span> <span class="no">ROM</span><span class="p">.</span><span class="nf">container</span><span class="p">(</span><span class="ss">:sql</span><span class="p">,</span> <span class="no">Sequel</span><span class="p">.</span><span class="nf">connect</span><span class="p">(</span><span class="no">ENV</span><span class="p">[</span><span class="s1">'DATABASE_URL'</span><span class="p">]))</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-      <span class="n">config</span><span class="p">.</span><span class="nf">auto_registration</span><span class="p">(</span><span class="no">File</span><span class="p">.</span><span class="nf">expand_path</span><span class="p">(</span><span class="s2">"lib/bix"</span><span class="p">))</span>
-    <span class="k">end</span>
-    <span class="n">register</span><span class="p">(</span><span class="ss">:container</span><span class="p">,</span> <span class="n">container</span><span class="p">)</span>
+    <span class="no">Dry</span><span class="o">::</span><span class="no">Validation</span><span class="p">.</span><span class="nf">load_extensions</span><span class="p">(</span><span class="ss">:monads</span><span class="p">)</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>When we have the <code>require</code> for <code>rom</code> and <code>rom-sql</code> here, we can move them out of <code>config/environment.rb</code>. I suggest you do that now, leaving that file relatively clean:</p>
+<p>We've changed <code>core.rb</code> here to require <code>dry/monads</code> and <code>dry/monads/do</code>. The second file will give us access to Dry Monad's <em>Do Notation</em> feature. We've added a <code>start</code> block here, which will run when our application is finalized. This will add an extra <code>to_monad</code> method to our validation results. We'll see this used in a short while.</p>
+<p>Before we get there, we need to talk about two things. One is called the <em>Result Monad</em>, and the other is the <em>Do Notation</em>.</p>
+<h3 id="result-monad">Result Monad</h3>
+<p>The Result Monad is a type of object that can represent whether an action has succeeded or failed. Where it comes in handy is when you have a chain of actions that you might want to stop if one of those things goes wrong. For instance, in the above code when the user is invalid, we want the code to not persist the user to the database.</p>
+<p>To do this with <code>dry-monads</code>, we would return one of two types of the result monad, a <code>Success</code> or <code>Failure</code>. Here's a flowchart showing what would go on when we use a Result monad:</p>
+<p><img src="/images/rom/dry-monads.png" alt="Result monad diagram" /></p>
+<p>Here we have a &quot;Create User&quot; action that has two steps: a &quot;Validate User&quot; and a &quot;Persist User&quot; step. When our &quot;Create User&quot; action receives some parameters, it passes them to the &quot;Validate User&quot; step. When this step runs, there can be one of two results: success or failure.</p>
+<p>When the validation succeeds, that step returns a <code>Success</code> result monad which will contain the validated (and type-casted!) parameters.</p>
+<p>If the validation fails, the step returns a <code>Failure</code> result monad. This monad contains the validation errors.</p>
+<p>When our code sees a <code>Failure</code> Result Monad returned, it will not execute the remaining steps. In the above diagram, the validation of a user <em>must</em> succeed before persistence happens. Just like in the earlier code we wrote too.</p>
+<h3 id="do-notation">Do Notation</h3>
+<p>The Result Monad is used in conjunction with that other feature of <code>dry-monads</code> I mentioned earlier: Do Notation. Let's take the above <code>CreateUser</code> class and re-write it using <code>dry-monads</code>' Do Notation. We'll put this class at <code>lib/bix/transactions/users/create.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Transactions</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">CreateUser</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="o">::</span><span class="no">Do</span><span class="p">.</span><span class="nf">for</span><span class="p">(</span><span class="ss">:call</span><span class="p">)</span>
+
+
+        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+          <span class="n">values</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">validate</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+          <span class="n">user</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">persist</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+          <span class="no">Success</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">end</span>
+
+        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+          <span class="n">create_contract</span> <span class="o">=</span> <span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+          <span class="n">create_contract</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">).</span><span class="nf">to_monad</span>
+        <span class="k">end</span>
+
+        <span class="k">def</span> <span class="nf">persist</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+          <span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span>
+          <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This code is a bit longer than the code we had previously. However, it comes with a few benefits. The first of these is that each step is clearly split out into its own method.</p>
+<aside>
+  <header>The <code>call</code> dumping ground anti-pattern</header>
+  <p>
+    No longer are we just throwing <em>everything</em> into the <code>call</code> function.
+  </p>
+  <p>
+    This is a common trap for developers who adopt this kind of <em>transaction</em> (or "service") pattern. They split out a class from a controller, and then dump everything into the <code>call</code> method! The code is no cleaner when you've done this, it has simply been swept under the proverbial rug.
+  </p>
+  <p>
+    A much better approach is a call method that delegates to <em>other</em> methods.
+</aside>
+<p>The <code>call</code> method here is responsible for ordering the steps of our transaction. It takes our initial <code>input</code> for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the <code>validate</code> method:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+  <span class="n">create_contract</span> <span class="o">=</span> <span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+  <span class="n">create_contract</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">).</span><span class="nf">to_monad</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>In this method, we use our contract that we built earlier. When we call this contract, it will return a <code>Dry::Validation::Result</code> object. To use this in conjunction with <code>dry-monads</code>' Do Notation, we need to convert this object to a Result Monad. We do this by calling <code>to_monad</code> on the result.</p>
+<p>If the validation succeeds, we'll get back a <code>Success(validated_input)</code> result monad, otherwise a <code>Failure(validation_result)</code> result monad will be returned.</p>
+<p>If it fails at this point, the transaction will stop and return the validation failure.</p>
+<p>If it succeeds however, the transaction to the next step: <code>create_user</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+  <span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span>
+  <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This step takes a <code>result</code> argument, which will be the <code>validated_input</code> returned from our validation step. We then initialise a new repo, and use that to create a user, taking the <code>result.values</code>. These values will be the validated and type-casted values from the validation's result.</p>
+<p>Let's try using this class now in <code>bin/console</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">32</span><span class="p">)</span>
+<span class="c1"># =&gt; Success(#&lt;Bix::User id=4 first_name="Ryan" last_name="Bigg" age=32 ...&gt;)</span>
+</code></pre></div></div>
+<p>When we use this transaction, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a <code>Success</code> result monad.</p>
+<p>Let's see what happens if the validation fails in this transaction:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">""</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">32</span><span class="p">)</span>
+<span class="c1"># =&gt; Failure(#&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"", :age=&gt;32} errors={:last_name=&gt;["must be filled"]}&gt;)</span>
+</code></pre></div></div>
+<p>This time, we get back a <code>Failure</code> result monad, which is wrapping our <code>Dry::Validation::Result</code>. This will mean that the persistence won't happen at all.</p>
+<p>Our transaction class so far has only two methods, but <em>could</em> be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they've signed up?</p>
+<p>Or what if we had a transaction class that handled account signup, where both an account <em>and</em> a user had to be created? A flowchart for that transaction class would look like this:</p>
+<p><img src="/images/rom/dry-monads-complex.png" alt="More complex transaction diagram" /></p>
+<p>A transaction class is a great way of grouping together all these steps into small, discrete methods.</p>
+<h2 id="handling-success-or-failure">Handling success or failure</h2>
+<p>Let's now think about how we would actually use this <code>CreateUser</code> transaction class in a real context, something a bit more specialised than a simple <code>bin/console</code> session. For this section, we'll create a new file at the root of the Bix application, called <code>transaction_test.rb</code>. In this file, we'll put this content:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s2">"config/application"</span>
+
+<span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">finalize!</span>
+
+<span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
+
+<span class="n">input</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+  <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+  <span class="ss">age: </span><span class="mi">32</span>
+<span class="p">}</span>
+
+<span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="k">case</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+<span class="k">when</span> <span class="no">Success</span>
+  <span class="nb">puts</span> <span class="s2">"User created successfully!"</span>
+<span class="k">when</span> <span class="no">Failure</span><span class="p">(</span><span class="no">Dry</span><span class="o">::</span><span class="no">Validation</span><span class="o">::</span><span class="no">Result</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"User creation failed:"</span>
+  <span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">failure</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">to_h</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This file starts out the same way as <code>bin/console</code>: we require <code>config/application.rb</code> and then &quot;finalize&quot; our application. This finalization step will load all the application's files and start all of the application's dependencies.</p>
+<p>Next up, we include <code>Dry::Monads[:result]</code>. This gives us access to the <code>Success</code> and <code>Failure</code> result monad classes that we use at the end of this file.</p>
+<p>Once we've set everything up, we define an input hash for our transaction, and the transaction itself. When we call the transaction, we can use a <code>case</code> to match on the outcome of the transaction. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a <code>Dry::Validation::Result</code> failure), we output the validation error messages.</p>
+<p>Here we've seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it. In Part 4 of this guide, we'll re-visit how to use this transaction in a different context.</p>
+<h2 id="automatically-injecting-dependencies">Automatically injecting dependencies</h2>
+<p>Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let's re-visit our transaction's code:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Transactions</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">CreateUser</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="o">::</span><span class="no">Do</span><span class="p">.</span><span class="nf">for</span><span class="p">(</span><span class="ss">:call</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+          <span class="n">values</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+          <span class="n">user</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">persist</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+          <span class="no">Success</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">end</span>
+
+        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+          <span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+          <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">).</span><span class="nf">to_monad</span>
+        <span class="k">end</span>
+
+        <span class="k">def</span> <span class="nf">persist</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+          <span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span><span class="p">.</span><span class="nf">new</span>
+          <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This code looks pretty clean as it stands. But there's one extra thing we can do to make it even tidier, and that thing is to use <code>dry-auto_inject</code>'s import feature. When we define things like the <code>CreateUser</code> contract or the <code>UserRepo</code> within our application, these classes are automatically registered with <code>Bix::Application</code>, because we've directed the application to <code>auto_register</code> things in <code>lib</code>. This happened over in <code>config/application.rb</code>:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s2">"boot"</span>
 
 <span class="nb">require</span> <span class="s2">"dry/system/container"</span>
+<span class="nb">require</span> <span class="s2">"dry/auto_inject"</span>
 
 <span class="k">module</span> <span class="nn">Bix</span>
   <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Dry</span><span class="o">::</span><span class="no">System</span><span class="o">::</span><span class="no">Container</span>
@@ -133,83 +329,39 @@ NameError (uninitialized constant Bix::Container)
 
     <span class="n">load_paths!</span><span class="p">(</span><span class="s1">'lib'</span><span class="p">)</span>
   <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>Files defined in <code>system/boot</code> define dependencies for our application. This <code>persistence.rb</code> is the first of two dependencies that we'll create for our application in this series. The second one will be one called <code>web.rb</code>, and that will contain code for booting web... things.</p>
-<p>This code in <code>system/boot/persistence.rb</code> defines a <code>dry-system</code> dependency called <code>:persistence</code>. This dependency initializes by requiring the cruicial <code>rom</code> and <code>rom-sql</code> gems. Then when this dependency starts up properly (during the application's finalization), it will create a new <code>ROM.container</code> object, and register it as <code>:container</code>.</p>
-<p>But register it, <em>where</em>? I'm glad you asked!</p>
-<p>Let's try restarting <code>bin/console</code> and running this code:</p>
-<pre><code>Bix::Application[&quot;container&quot;]
-# =&gt; #&lt;ROM::Container ...&gt;
-</code></pre>
-<p>Aha! That <code>register</code> call has made our database's container available as <code>Bix::Application[&quot;database&quot;]</code>. You might be slightly horrified to find out that this is <em>even more typing</em> required for initialising a repository. It is now:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s2">"database"</span><span class="p">])</span>
-</code></pre></div></div>
-<p>But before it was:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Container</span><span class="p">)</span>
-</code></pre></div></div>
-<p>Well, this seems like a bad thing... but it is only because we've done half the job here.</p>
-<p>We've cleaned up our <code>config/environment.rb</code> code by adding in <code>dry-system</code> and it's related configuration, and that's nice now. But you might remember that I talked about a <em>second</em> gem at the start of this post. And that's what we're missing. Now we need to talk about <code>dry-auto_inject</code>.</p>
-<h3 id="dry-auto-inject">Dry Auto Inject</h3>
-<p>The <code>dry-auto_inject</code> gem provides <em>dependency injection</em> into classes. Oh great your eyes have glazed over. Okay I'll put it another way: it will allow us to write:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span>
-</code></pre></div></div>
-<p>Instead of:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s2">"database"</span><span class="p">])</span>
-</code></pre></div></div>
-<p>The <em>dependency</em> of the <em>database</em> will be <em>auto(matically) injected</em> into the <code>Bix::Repos::User</code> class.</p>
-<p>Let's get started by adding the <code>dry-auto_inject</code> gem into our <code>Gemfile</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s1">'dry-auto_inject'</span>
-</code></pre></div></div>
-<p>Then we'll run <code>bundle install</code> to install this gem.</p>
-<p>Next up we'll add two lines to <code>config/environment.rb</code>. The first one is to require this gem:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"dry/auto_inject"</span>
-</code></pre></div></div>
-<p>The second is designed to provide another constant</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Dry</span><span class="o">::</span><span class="no">System</span><span class="o">::</span><span class="no">Container</span>
-    <span class="c1"># ...</span>
-  <span class="k">end</span>
 
   <span class="no">Import</span> <span class="o">=</span> <span class="no">Dry</span><span class="o">::</span><span class="no">AutoInject</span><span class="p">(</span><span class="no">Application</span><span class="p">)</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This <code>Import</code> constant will allow us to import (or <em>inject</em>) anything registered with our application into other parts. Let's see this in action now by adding this line to <code>lib/repos/user.rb</code>:</p>
+<p>We saw earlier that we could refer to the ROM container with the syntax <code>include Import[&quot;container&quot;]</code> within our <code>UserRepo</code> class. Well, we can do the same thing with our contract and repository in this transaction class too.</p>
+<p>Here's how we'll do it. At the top of the class, we'll put these two <code>include</code> lines:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">module</span> <span class="nn">Repos</span>
-    <span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ROM</span><span class="o">::</span><span class="no">Repository</span><span class="p">[</span><span class="ss">:users</span><span class="p">]</span>
-      <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"container"</span><span class="p">]</span>
+  <span class="k">module</span> <span class="nn">Transactions</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">CreateUser</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="o">::</span><span class="no">Do</span><span class="p">.</span><span class="nf">for</span><span class="p">(</span><span class="ss">:call</span><span class="p">)</span>
 
-      <span class="o">...</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+        <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"contracts.users.create_user"</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"repos.user_repo"</span><span class="p">]</span>
+<span class="o">...</span>
+</code></pre></div></div>
+<p>By using <code>include</code> like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our <code>validate</code> and <code>persist</code> methods in this transaction to this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+  <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">).</span><span class="nf">to_monad</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">persist</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+  <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This line will use the <code>Import</code> constant to inject the <code>container</code> dependency into this class. This works by passing in a <code>container</code> keyword argument to <code>initialize</code> for this class.</p>
-<p>Let's try initializing a repository again in <code>bin/console</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span>
-<span class="c1"># =&gt; #&lt;Bix::Repos::User struct_namespace=Bix auto_struct=true&gt;</span>
-<span class="n">user_repo</span><span class="p">.</span><span class="nf">all</span><span class="p">.</span><span class="nf">first</span><span class="p">.</span><span class="nf">full_name</span>
-<span class="c1"># =&gt; "Ryan Bigg"</span>
-</code></pre></div></div>
-<p>Everything seems to be working correctly!</p>
-<h3 id="the-application-container">The Application container</h3>
-<p>It's worth mentioning here (briefly) that all of our application's dependencies have been registered with <code>dry-system</code>, not just the database. So if we really wanted to, we could initialize a user repository like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s2">"repos.user"</span><span class="p">]</span>
-</code></pre></div></div>
-<p>This is a side-effect of the <code>auto_register</code> setting in <code>config/environment.rb</code>. Also worth noting in this section is the <code>default_namespace</code> setting in that same file. It's currently set to <code>'bix</code> and it means that we can initialize our repository with:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s2">"repos.user"</span><span class="p">]</span>
-</code></pre></div></div>
-<p>If we did not have this setting, we would need to initialize it with:</p>
-<pre><code>Bix::Application[&quot;bix.repos.user&quot;]
-</code></pre>
-<p>The <code>default_namespace</code> setting is just there to reduce what we have to type when referencing things registered in our application's container.</p>
+<p>That's a lot cleaner, isn't it? We're now able to refer to the contract as simply <code>create_user</code>, and the repository as <code>user_repo</code>, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this transaction has, right at the top of the class. We don't need to scan through the class to figure out what they are anymore.</p>
+<p>If this transaction class went on to use other classes from our application, we could import them with very little effort, thanks to the <code>dry-system</code> and <code>dry-auto_inject</code> gems.</p>
 <h2 id="summary">Summary</h2>
-<p>By using two gems -- <code>dry-system</code> and <code>dry-auto_inject</code> -- we have been able to drastically clear up our application's code.</p>
-<p>Most of the cleaning happened in <code>config/environment.rb</code>, thanks to <code>dry-system</code>. This gem alows us to automatically require all the files that our application has in <code>lib</code>, and have them registered with <code>Bix::Application</code> so that we can reference them easily.</p>
-<p>The <code>dry-system</code> gem has also provided us a way of taking out our database configuration into a separate file, by way of <code>system/boot/persistence.rb</code>.</p>
-<p>Finally, we used <code>dry-auto_inject</code> to inject the database's configuration (the ROM container object) into the <code>Bix::Repos::User</code> class. This has allowed for shorter code to initialize our repository.</p>
-<p>In the next part, we're going to look at how to use more dry-rb gems to add validations to our application, and we'll see another benefit of <code>dry-auto_inject</code> demonstrated.</p>
+<p>In this 2nd part of the ROM and Dry showcase, we have used the <code>dry-validation</code> gem to add a  <em>contract</em> to our application. A contract is a class that contains validation logic. It's a way of saying that incoming data must meet some criteria before our application can use it.</p>
+<p>In the second half of this guide, we used <code>dry-monads</code> to define a <em>transaction</em> class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: <code>validate</code> and <code>persist</code>. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.</p>
+<p>In the final part of this guide, we used <code>dry-auto_inject</code> once more to automatically inject the repository and contract into our transaction class, allowing us to tidy up the code very slightly, but still noticeably.</p>
+<p>In the next part, we're going to look at how we can test the parts of the application that we've built so far by using the RSpec testing framework. We'll also see <em>another</em> advantage of <code>dry-auto_inject</code> in this part.</p>
 
           </article>
         </div>

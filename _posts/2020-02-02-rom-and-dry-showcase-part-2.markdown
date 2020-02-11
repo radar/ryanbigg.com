@@ -1,135 +1,403 @@
 ---
-wordpress_id: RB-1580636206
+wordpress_id: RB-1580704900
 layout: post
-title: "ROM and Dry Showcase: Part 2"
+title: "ROM + Dry Showcase: Part 2"
 ---
 
-This is the 2nd of a 4 part series. You [can read Part 1 here](/2020/02/rom-and-dry-showcase-part-1).
+This is the 2nd part of a 4 part series.
 
-In Part 1, we built an application called Bix and made it so that the application could talk to a database. We did this by using some gems from the ROM suite of gems, namely `rom` and `rom-sql`.
+* Part 1: [Application + Database setup](/2020/02/rom-and-dry-showcase-part-1)
 
-In this part, we're going to look at how we can tidy up our code by using two additional gems, this time from the Dry suite of gems: `dry-system` and `dry-auto_inject`.
+In this part, we're going to look at how to add data validation to our application. Our application currently has a way of creating users, but there's nothing preventing those users being created without their `first_name` or `last_name` set. In this part, we'll add some code to validate that both of these fields are set. We're going to add this code by using a gem called `dry-validation`.
 
-You might be wondering: what code did we write in the last part that needs tidying up? I should definitely answer that. In Bix's `config/environment.rb`, we have this code:
+When we've added this code, it's going to sit apart from the repositories and relations that we've built already, and we will need a way of connecting these pieces. The way that we will connect these pieces is through the `dry-monads` gem.
 
-```
-require_relative "../lib/bix/repos/user"
-require_relative "../lib/bix/relations/users"
-require_relative "../lib/bix/entities/user"
-```
+When we're done here, we'll have a class that encapsulates all the actions of creating a user:
 
-These three lines are innocuous now, but imagine if we had [as many tables as Spree](https://github.com/spree/spree/tree/2fb3015201a1c1b4ea1f96d43afde4cef6dd2fdb/core/app/models/spree). Then there would be 3 lines for each of those and this `config/environment.rb` file would get very long, very quickly. We can tidy that up, thankfully, by using `dry-system`.
+1. Validates `first_name` and `last_name` are present
+2. If they aren't present, returns an error.
+3. If they are present, the user data is persisted to the database
 
-Next, when we've been using `bin/console` we've had to type this absolute beast of a line:
+We'll call this class a _transaction_, as it will contain all the logic for performing a particular _transaction_ with our system; the transaction of creating a new user.
 
-```ruby
-Bix::Repos::User.new(Bix::Container)
-```
+Lastly, we'll re-visit `dry-auto_inject` and demonstrate how we can use that gem to inject a dependency when we're testing out this new transaction class. This dependency will mean that we can test our transaction class in complete isolation from a database. This is useful because if we can isolate our code from the database we then don't have to worry about keeping the database clean between tests.
 
-What if we were able to get rid of that `Bix::Container` part? Well, we can do that with `dry-auto_inject` and this guide will show you how.
+Let's begin!
 
-## DRYing our system
+## Adding validations
 
-I like `dry-system` because when we use this gem, it epitomises the "DRY" principle: Don't Repeat Yourself. We're currently on our way to _definitely_ repeating ourself over in `config/environment.rb` if we add another table!
+Validations are a key part of any application. We need to make sure that before data is stored in our database that it is valid. In our currently very small application, we so far have just one type of data: users. Still, in this tiny application it doesn't really make much sense to create users that don't have a name. In this section we're going to add a class that will validate a particular input for user data is valid.
 
-Let's work on fixing this by adding the `dry-system` to the `Gemfile`:
-
-```
-gem 'dry-system'
-```
-
-Next, we'll run `bundle install` to install this gem.
-
-Then we'll go to `config/environment.rb` and start DRYing things up:
+To start with, we'll need to add the `dry-validation` gem to our `Gemfile`:
 
 ```ruby
-require_relative "boot"
+gem 'dry-validation', '~> 1.4'
+```
 
-require "dry/system/container"
+Next up, we'll need to install the gem:
 
-require "rom"
-require "rom-sql"
+```bash
+bundle install
+```
 
-module Bix
-  class Application < Dry::System::Container
-    configure do |config|
-      config.root = File.expand_path('.')
-      config.auto_register = 'lib'
-      config.default_namespace = 'bix'
-    end
+We'll need to require this gem somewhere too, so that it is loaded in our application. To load this gem and other gems that we'll add in the future, we'll create a new file at `system/boot/core.rb`.
 
-    load_paths!('lib')
+```ruby
+Bix::Application.boot(:core) do
+  init do
+    require "dry-validation"
   end
 end
 ```
 
-This file now looks a lot simpler, and that is probably because we removed _nearly everything_. We'll find a new home for a lot that code shortly, but first let's talk about what we've done here.
+This new file will include any sort of setup logic that we will need for the _core_ part of our application. This is going to be everything that we'll need when running the plain Ruby code for our application. We have a `db.rb` and `persistence.rb` file in this same directory that contains logic for anything we want to do with a database. n the last part of this guide, we'll add a fourth file in this directory called `web.rb` and that file will contain setup logic for anything to do with handling web requests.
 
-We've defined a `Bix::Application` container and we've configured this container to specify that the root path for our application is one directory up from the `config` directory, that we want to "auto register" everything in `lib`, and that the default namespace is `bix`. Finally, there's a `load_paths!` thing at the end of this file.
+The `dry-validation` gem allows us to create classes to encapsulate validation logic, and this gem uses another dry-rb gem under the hood called [`dry-schema`](https://dry-rb.org/gems/dry-schema/1.4)
 
-Let's go through each of these things in turn. When we setup the `root` of our application and `auto_register` things, the `dry-system` gem will require all of the files under the `lib` directory automatically for us. This means that we will not need to require our entities, relations or repositories from now and into the future.
-
-When we define our application's configuration with `dry-system`, it will not automatically set to requiring everything in our application on boot. Instead, the application waits for us to call `finalize!` before it will do that. So let's open `bin/console` and change the file to this:
-
-```
-#!/usr/bin/env ruby
-
-require_relative '../config/environment'
-
-Bix::Application.finalize!
-
-require 'irb'
-IRB.start
-```
-
-This will now trigger our application to be loaded when `bin/console` starts up. Let's give it a shot now by running `bin/console` and then putting in this code:
-
-```
->> Bix::Repos::User
-Bix::Repos::User
-```
-
-Our application has loaded `lib/bix/repos/user.rb` automatically for us!
-
-Unfortunately, because we deleted `Bix::Container`, this class will no longer work:
-
-```
-Bix::Repos::User.new(Bix::Container)
-NameError (uninitialized constant Bix::Container)
-```
-
-Let's now work on restoring that constant by using another part of `dry-system` called _dependencies_.
-
-## Booting the persistence dependency
-
-We've deleted `Bix::Container` out of `config/environment.rb`, perhaps a little too eagerly. Our `Bix::Repos::User` class can no longer fetch users!
-
-To fix this up, we can create what `dry-system` refers to as a _dependency_ -- a part of our application that can be compartmentalised and booted up separately to the main application.
-
-The code for these go into a new folder called `system/boot`, and we're going to call this new file `system/boot/persistence.rb`. Into this file, we're going to put this:
+ These classes are called _contracts_. We'll create our first contract at `lib/bix/contracts/users/create.rb`:
 
 ```ruby
-Bix::Application.boot(:persistence) do
+module Bix
+  module Contracts
+    module Users
+      class Create < Dry::Validation::Contract
+        params do
+          required(:first_name).filled(:string)
+          required(:last_name).filled(:string)
+          optional(:age).filled(:integer)
+        end
+      end
+    end
+  end
+end
+```
+
+This class defines a contract that says that when we're creating users, there has to be at least two parameters -- `first_name` and `last_name`, and they both have to be `filled` (present) strings. This contract also says that an `age` parameter is optional, but when it's specified it's an integer. Let's try using this contract now in `bin/console`:
+
+```ruby
+create_user = Bix::Contracts::Users::Create.new
+result = create_user.call({})
+```
+
+To use this contract, we need to initialize a new object from the class and then use the `call` method on that new object. The argument that we pass it are the parameters for the contract, which in this case is just an empty Hash.
+
+When we call this contract, we see the validation errors returned:
+
+```
+=> #<Dry::Validation::Result{} errors={:first_name=>["is missing"], :last_name=>["is missing"]}>
+```
+
+The returned object is a `Result` object, and with that result object we can determine if the validation was successful by calling the `success?` method:
+
+```ruby
+result.success?
+# => false
+```
+
+If we wanted to display these error messages (for example, as feedback to a user) we could call:
+
+```ruby
+result.errors.to_h
+=> {:first_name=>["is missing"], :last_name=>["is missing"]}
+```
+
+Let's look at what happens when we pass valid data, but with a twist: all of our values are strings. This is the kind of data you would get from a form submission through a web application:
+
+```ruby
+create_user = Bix::Contracts::Users::Create.new
+result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: "32")
+=> #<Dry::Validation::Result{:first_name=>"Ryan", :last_name=>"Bigg", :age=>32} errors={}>
+result.success?
+# => true
+```
+
+Great, our contract is correctly validating input! What's interesting to note here is that the `age` parameter is being correctly typecast from a String to an Integer. This is because we have defined that field to be an `integer` in our contract:
+
+```ruby
+module Bix
+  module Contracts
+    module Users
+      class Create < Dry::Validation::Contract
+        params do
+          required(:first_name).filled(:string)
+          required(:last_name).filled(:string)
+          optional(:age).filled(:integer)
+        end
+      end
+    end
+  end
+end
+```
+
+If we pass data from a form submission through our contract before we work through it, the data will have all the correct types and we don't need to coerce that data when we're working with -- dry-validation has done that for us. After this point, our data will always be in the correct type.
+
+Another thing to note with our new contract is that it will only return the specified fields. Extra fields will be ignored:
+
+```ruby
+create_user = Bix::Contracts::Users::Create.new
+result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: "32", admin: true)
+# => #<Dry::Validation::Result{:first_name=>"Ryan", :last_name=>"Bigg", :age=>32} errors={}>
+```
+
+The `admin` field doesn't appear here at all, even though we've specified it as an input to this contract.
+
+So in summary, here's what we're given by using a `dry-validation` contract:
+
+* Validations to ensure fields meet certain criteria
+* Automatic type coercion of fields into their correct types
+* Automatic limiting of input to just the fields we have specified
+
+## Intro to Dry Monads
+
+Now that we have a way to create user records (the `Bix::Repos::User`) and a way to validate that data before it gets into the database `(Bix::Contracts::Users::Create`), we can combine them to ensure data is valid before it reaches out database.
+
+To do this combination, we could write a class like this:
+
+```ruby
+class CreateUser
+  def call(input)
+    create_contract = Bix::Contracts::Users::Create.new
+    result = create_contract.call(input)
+    if result.success?
+      user_repo = Bix::Repos::User.new
+      user_repo.create(input)
+    else
+      result
+    end
+  end
+end
+```
+
+From the start, this class doesn't look so bad. But if we added one more `if` condition or perhaps some code to send a "successful sign up" email to a user, this class would get longer and more complex.
+
+To avoid that kind of complexity, the `dry-rb` suite of gems provides another gem called `dry-monads`. Among [other things](https://dry-rb.org/gems/dry-monads/1.3/getting-started/), this `dry-monads` gem provides us with a feature called "Do Notation". This feature will allow us to write our `CreateUser` class in a much cleaner way that will also allow for extensibility later on -- if we want that.
+
+Let's add this gem to our `Gemfile` now:
+
+```ruby
+gem 'dry-monads', '~> 1.3'
+```
+
+And we'll run `bundle install` to install it.
+
+Next up, we will need to require this gem in `system/boot/core.rb`:
+
+```ruby
+Bix::Application.boot(:core) do
   init do
-    require "rom"
-    require "rom-sql"
+    require "dry-validation"
+    require "dry/monads"
+    require "dry/monads/do"
   end
 
   start do
-    container = ROM.container(:sql, Sequel.connect(ENV['DATABASE_URL'])) do |config|
-      config.auto_registration(File.expand_path("lib/bix"))
-    end
-    register(:container, container)
+    Dry::Validation.load_extensions(:monads)
   end
 end
 ```
 
-When we have the `require` for `rom` and `rom-sql` here, we can move them out of `config/environment.rb`. I suggest you do that now, leaving that file relatively clean:
+We've changed `core.rb` here to require `dry/monads` and `dry/monads/do`. The second file will give us access to Dry Monad's _Do Notation_ feature. We've added a `start` block here, which will run when our application is finalized. This will add an extra `to_monad` method to our validation results. We'll see this used in a short while.
+
+Before we get there, we need to talk about two things. One is called the _Result Monad_, and the other is the _Do Notation_.
+
+### Result Monad
+
+The Result Monad is a type of object that can represent whether an action has succeeded or failed. Where it comes in handy is when you have a chain of actions that you might want to stop if one of those things goes wrong. For instance, in the above code when the user is invalid, we want the code to not persist the user to the database.
+
+To do this with `dry-monads`, we would return one of two types of the result monad, a `Success` or `Failure`. Here's a flowchart showing what would go on when we use a Result monad:
+
+![Result monad diagram](/images/rom/dry-monads.png)
+
+Here we have a "Create User" action that has two steps: a "Validate User" and a "Persist User" step. When our "Create User" action receives some parameters, it passes them to the "Validate User" step. When this step runs, there can be one of two results: success or failure.
+
+When the validation succeeds, that step returns a `Success` result monad which will contain the validated (and type-casted!) parameters.
+
+If the validation fails, the step returns a `Failure` result monad. This monad contains the validation errors.
+
+When our code sees a `Failure` Result Monad returned, it will not execute the remaining steps. In the above diagram, the validation of a user _must_ succeed before persistence happens. Just like in the earlier code we wrote too.
+
+### Do Notation
+
+The Result Monad is used in conjunction with that other feature of `dry-monads` I mentioned earlier: Do Notation. Let's take the above `CreateUser` class and re-write it using `dry-monads`' Do Notation. We'll put this class at `lib/bix/transactions/users/create.rb`:
+
+```ruby
+module Bix
+  module Transactions
+    module Users
+      class CreateUser
+        include Dry::Monads[:result]
+        include Dry::Monads::Do.for(:call)
+
+
+        def call(input)
+          values = yield validate(input)
+          user = yield persist(values)
+
+          Success(user)
+        end
+
+        def validate(input)
+          create_contract = Contracts::Users::Create.new
+          create_contract.call(input).to_monad
+        end
+
+        def persist(result)
+          user_repo = Bix::Repos::User.new
+          Success(user_repo.create(result.values))
+        end
+      end
+    end
+  end
+end
+```
+
+This code is a bit longer than the code we had previously. However, it comes with a few benefits. The first of these is that each step is clearly split out into its own method.
+
+<aside>
+  <header>The <code>call</code> dumping ground anti-pattern</header>
+
+  <p>
+    No longer are we just throwing <em>everything</em> into the <code>call</code> function.
+  </p>
+
+  <p>
+    This is a common trap for developers who adopt this kind of <em>transaction</em> (or "service") pattern. They split out a class from a controller, and then dump everything into the <code>call</code> method! The code is no cleaner when you've done this, it has simply been swept under the proverbial rug.
+  </p>
+
+  <p>
+    A much better approach is a call method that delegates to <em>other</em> methods.
+</aside>
+
+The `call` method here is responsible for ordering the steps of our transaction. It takes our initial `input` for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the `validate` method:
+
+```ruby
+def validate(input)
+  create_contract = Contracts::Users::Create.new
+  create_contract.call(input).to_monad
+end
+```
+
+In this method, we use our contract that we built earlier. When we call this contract, it will return a `Dry::Validation::Result` object. To use this in conjunction with `dry-monads`' Do Notation, we need to convert this object to a Result Monad. We do this by calling `to_monad` on the result.
+
+If the validation succeeds, we'll get back a `Success(validated_input)` result monad, otherwise a `Failure(validation_result)` result monad will be returned.
+
+If it fails at this point, the transaction will stop and return the validation failure.
+
+If it succeeds however, the transaction to the next step: `create_user`:
+
+```ruby
+def create_user(result)
+  user_repo = Bix::Repos::User.new
+  Success(user_repo.create(result.values))
+end
+```
+
+This step takes a `result` argument, which will be the `validated_input` returned from our validation step. We then initialise a new repo, and use that to create a user, taking the `result.values`. These values will be the validated and type-casted values from the validation's result.
+
+Let's try using this class now in `bin/console`:
+
+```ruby
+create_user = Bix::Transactions::Users::CreateUser.new
+result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: 32)
+# => Success(#<Bix::User id=4 first_name="Ryan" last_name="Bigg" age=32 ...>)
+```
+
+When we use this transaction, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a `Success` result monad.
+
+Let's see what happens if the validation fails in this transaction:
+
+```ruby
+create_user = Bix::Transactions::Users::CreateUser.new
+result = create_user.call(first_name: "Ryan", last_name: "", age: 32)
+# => Failure(#<Dry::Validation::Result{:first_name=>"Ryan", :last_name=>"", :age=>32} errors={:last_name=>["must be filled"]}>)
+```
+
+This time, we get back a `Failure` result monad, which is wrapping our `Dry::Validation::Result`. This will mean that the persistence won't happen at all.
+
+Our transaction class so far has only two methods, but _could_ be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they've signed up?
+
+Or what if we had a transaction class that handled account signup, where both an account _and_ a user had to be created? A flowchart for that transaction class would look like this:
+
+![More complex transaction diagram](/images/rom/dry-monads-complex.png)
+
+A transaction class is a great way of grouping together all these steps into small, discrete methods.
+
+## Handling success or failure
+
+Let's now think about how we would actually use this `CreateUser` transaction class in a real context, something a bit more specialised than a simple `bin/console` session. For this section, we'll create a new file at the root of the Bix application, called `transaction_test.rb`. In this file, we'll put this content:
+
+```ruby
+require_relative "config/application"
+
+Bix::Application.finalize!
+
+include Dry::Monads[:result]
+
+input = {
+  first_name: "Ryan",
+  last_name: "Bigg",
+  age: 32
+}
+
+create_user = Bix::Transactions::Users::CreateUser.new
+case create_user.call(input)
+when Success
+  puts "User created successfully!"
+when Failure(Dry::Validation::Result)
+  puts "User creation failed:"
+  puts result.failure.errors.to_h
+end
+```
+
+This file starts out the same way as `bin/console`: we require `config/application.rb` and then "finalize" our application. This finalization step will load all the application's files and start all of the application's dependencies.
+
+Next up, we include `Dry::Monads[:result]`. This gives us access to the `Success` and `Failure` result monad classes that we use at the end of this file.
+
+Once we've set everything up, we define an input hash for our transaction, and the transaction itself. When we call the transaction, we can use a `case` to match on the outcome of the transaction. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a `Dry::Validation::Result` failure), we output the validation error messages.
+
+Here we've seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it. In Part 4 of this guide, we'll re-visit how to use this transaction in a different context.
+
+## Automatically injecting dependencies
+
+Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let's re-visit our transaction's code:
+
+```ruby
+module Bix
+  module Transactions
+    module Users
+      class CreateUser
+        include Dry::Monads[:result]
+        include Dry::Monads::Do.for(:call)
+
+        def call(params)
+          values = yield validate(params)
+          user = yield persist(values)
+
+          Success(user)
+        end
+
+        def validate(params)
+          create_user = Bix::Contracts::Users::CreateUser.new
+          create_user.call(params).to_monad
+        end
+
+        def persist(result)
+          user_repo = Bix::Repos::UserRepo.new
+          Success(user_repo.create(result.values))
+        end
+      end
+    end
+  end
+end
+```
+
+This code looks pretty clean as it stands. But there's one extra thing we can do to make it even tidier, and that thing is to use `dry-auto_inject`'s import feature. When we define things like the `CreateUser` contract or the `UserRepo` within our application, these classes are automatically registered with `Bix::Application`, because we've directed the application to `auto_register` things in `lib`. This happened over in `config/application.rb`:
 
 ```ruby
 require_relative "boot"
 
 require "dry/system/container"
+require "dry/auto_inject"
 
 module Bix
   class Application < Dry::System::Container
@@ -142,137 +410,50 @@ module Bix
 
     load_paths!('lib')
   end
-end
-```
-
-Files defined in `system/boot` define dependencies for our application. This `persistence.rb` is the first of two dependencies that we'll create for our application in this series. The second one will be one called `web.rb`, and that will contain code for booting web... things.
-
-This code in `system/boot/persistence.rb` defines a `dry-system` dependency called `:persistence`. This dependency initializes by requiring the cruicial `rom` and `rom-sql` gems. Then when this dependency starts up properly (during the application's finalization), it will create a new `ROM.container` object, and register it as `:container`.
-
-But register it, _where_? I'm glad you asked!
-
-Let's try restarting `bin/console` and running this code:
-
-```
-Bix::Application["container"]
-# => #<ROM::Container ...>
-```
-
-Aha! That `register` call has made our database's container available as `Bix::Application["database"]`. You might be slightly horrified to find out that this is _even more typing_ required for initialising a repository. It is now:
-
-```ruby
-Bix::Repos::User.new(Bix::Application["database"])
-```
-
-But before it was:
-
-```ruby
-Bix::Repos::User.new(Bix::Container)
-```
-
-Well, this seems like a bad thing... but it is only because we've done half the job here.
-
-We've cleaned up our `config/environment.rb` code by adding in `dry-system` and it's related configuration, and that's nice now. But you might remember that I talked about a _second_ gem at the start of this post. And that's what we're missing. Now we need to talk about `dry-auto_inject`.
-
-### Dry Auto Inject
-
-The `dry-auto_inject` gem provides _dependency injection_ into classes. Oh great your eyes have glazed over. Okay I'll put it another way: it will allow us to write:
-
-```ruby
-Bix::Repos::User.new
-```
-
-Instead of:
-
-```ruby
-Bix::Repos::User.new(Bix::Application["database"])
-```
-
-The _dependency_ of the _database_ will be _auto(matically) injected_ into the `Bix::Repos::User` class.
-
-Let's get started by adding the `dry-auto_inject` gem into our `Gemfile`:
-
-```ruby
-gem 'dry-auto_inject'
-```
-
-Then we'll run `bundle install` to install this gem.
-
-Next up we'll add two lines to `config/environment.rb`. The first one is to require this gem:
-
-```ruby
-require "dry/auto_inject"
-```
-
-The second is designed to provide another constant
-
-```ruby
-module Bix
-  class Application < Dry::System::Container
-    # ...
-  end
 
   Import = Dry::AutoInject(Application)
 end
 ```
 
-This `Import` constant will allow us to import (or _inject_) anything registered with our application into other parts. Let's see this in action now by adding this line to `lib/repos/user.rb`:
+We saw earlier that we could refer to the ROM container with the syntax `include Import["container"]` within our `UserRepo` class. Well, we can do the same thing with our contract and repository in this transaction class too.
+
+Here's how we'll do it. At the top of the class, we'll put these two `include` lines:
 
 ```ruby
 module Bix
-  module Repos
-    class User < ROM::Repository[:users]
-      include Import["container"]
+  module Transactions
+    module Users
+      class CreateUser
+        include Dry::Monads[:result]
+        include Dry::Monads::Do.for(:call)
 
-      ...
-    end
-  end
+        include Import["contracts.users.create_user"]
+        include Import["repos.user_repo"]
+...
+```
+
+By using `include` like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our `validate` and `persist` methods in this transaction to this:
+
+```ruby
+def validate(params)
+  create_user.call(params).to_monad
+end
+
+def persist(result)
+  Success(user_repo.create(result.values))
 end
 ```
 
-This line will use the `Import` constant to inject the `container` dependency into this class. This works by passing in a `container` keyword argument to `initialize` for this class.
+That's a lot cleaner, isn't it? We're now able to refer to the contract as simply `create_user`, and the repository as `user_repo`, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this transaction has, right at the top of the class. We don't need to scan through the class to figure out what they are anymore.
 
-Let's try initializing a repository again in `bin/console`:
-
-```ruby
-user_repo = Bix::Repos::User.new
-# => #<Bix::Repos::User struct_namespace=Bix auto_struct=true>
-user_repo.all.first.full_name
-# => "Ryan Bigg"
-```
-
-Everything seems to be working correctly!
-
-### The Application container
-
-It's worth mentioning here (briefly) that all of our application's dependencies have been registered with `dry-system`, not just the database. So if we really wanted to, we could initialize a user repository like this:
-
-```ruby
-Bix::Application["repos.user"]
-```
-
-This is a side-effect of the `auto_register` setting in `config/environment.rb`. Also worth noting in this section is the `default_namespace` setting in that same file. It's currently set to `'bix` and it means that we can initialize our repository with:
-
-```ruby
-Bix::Application["repos.user"]
-```
-
-If we did not have this setting, we would need to initialize it with:
-
-```
-Bix::Application["bix.repos.user"]
-```
-
-The `default_namespace` setting is just there to reduce what we have to type when referencing things registered in our application's container.
+If this transaction class went on to use other classes from our application, we could import them with very little effort, thanks to the `dry-system` and `dry-auto_inject` gems.
 
 ## Summary
 
-By using two gems -- `dry-system` and `dry-auto_inject` -- we have been able to drastically clear up our application's code.
+In this 2nd part of the ROM and Dry showcase, we have used the `dry-validation` gem to add a  _contract_ to our application. A contract is a class that contains validation logic. It's a way of saying that incoming data must meet some criteria before our application can use it.
 
-Most of the cleaning happened in `config/environment.rb`, thanks to `dry-system`. This gem alows us to automatically require all the files that our application has in `lib`, and have them registered with `Bix::Application` so that we can reference them easily.
+In the second half of this guide, we used `dry-monads` to define a _transaction_ class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: `validate` and `persist`. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.
 
-The `dry-system` gem has also provided us a way of taking out our database configuration into a separate file, by way of `system/boot/persistence.rb`.
+In the final part of this guide, we used `dry-auto_inject` once more to automatically inject the repository and contract into our transaction class, allowing us to tidy up the code very slightly, but still noticeably.
 
-Finally, we used `dry-auto_inject` to inject the database's configuration (the ROM container object) into the `Bix::Repos::User` class. This has allowed for shorter code to initialize our repository.
-
-In the next part, we're going to look at how to use more dry-rb gems to add validations to our application, and we'll see another benefit of `dry-auto_inject` demonstrated.
+In the next part, we're going to look at how we can test the parts of the application that we've built so far by using the RSpec testing framework. We'll also see _another_ advantage of `dry-auto_inject` in this part.
