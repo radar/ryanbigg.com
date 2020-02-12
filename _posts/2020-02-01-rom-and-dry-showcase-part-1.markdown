@@ -121,7 +121,7 @@ Bix::Application.boot(:db) do
     require "rom"
     require "rom-sql"
 
-    register('db.connection', Sequel.connect(ENV['DATABASE_URL']))
+    register('db.config', ROM::Configuration.new(:sql, ENV['DATABASE_URL']))
   end
 end
 ```
@@ -142,7 +142,7 @@ require 'rom/sql/rake_task'
 namespace :db do
   task :setup do
     Bix::Application.start(:db)
-    ROM::SQL::RakeSupport.env = ROM.container(:sql, Bix::Application['db.connection']) do |config|
+    ROM::SQL::RakeSupport.env = ROM.container(Bix::Application['db.config']) do |config|
       config.gateways[:default].use_logger(Logger.new($stdout))
     end
   end
