@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1580704900
 layout: post
-title: "ROM + Dry Showcase: Part 2"
+title: "ROM + Dry Showcase: Part 2 - Validations & Transactions"
 ---
 
 This is the 2nd part of a 4 part series.

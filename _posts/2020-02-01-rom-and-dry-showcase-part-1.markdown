@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1580556354
 layout: post
-title: "ROM + Dry Showcase: Part 1"
+title: "ROM + Dry Showcase: Part 1 - Application + Database setup"
 ---
 
 The [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) sets of gems have come out in the last couple of years. These gems allow an alternative take on building a Ruby application, separate from Rails or Sinatra, or anything else like that.
