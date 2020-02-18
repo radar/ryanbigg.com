@@ -4,13 +4,338 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2020-02-16T16:07:04+11:00</updated>
+ <updated>2020-02-19T09:05:28+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>ROM + Dry Showcase: Part 3 - Testing</title>
+   <link href="http://ryanbigg.com/2020/02/rom-and-dry-showcase-part-3"/>
+   <updated>2020-02-03T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2020/02/rom-and-dry-showcase-part-3</id>
+   <content type="html"><![CDATA[<p>This is the 3rd part of a 4 part series.</p>
+<ul>
+<li>Part 1: <a href="/2020/02/rom-and-dry-showcase-part-1">Application + Database setup</a></li>
+<li>Part 2: <a href="/2020/02/rom-and-dry-showcase-part-1">Validations + Transactions</a></li>
+</ul>
+<p>In this 3rd part, we're going to look at how we can test the application that we've built so far. In particular, we'll test three classes:</p>
+<ul>
+<li>The contract -- to ensure it validates input correctly</li>
+<li>The repository -- to ensure we can insert data into our database correctly and that we could find data once it is inserted</li>
+<li>The transaction -- to ensure that we can process the whole transaction correctly</li>
+</ul>
+<p>When we get up to the transaction part, we'll see how we can use one more feature of <code>dry-auto_inject</code> to stub out the repository dependency in this particular test. Why would we want to stub out this dependency? Because we already have tests that make sure that our repository works! We don't need to test it again a second time in the transaction class.</p>
+<p>Let's get started!</p>
+<h2 id="adding-rspec">Adding RSpec</h2>
+<p>First things first! We will need to set up the RSpec testing framework, and a gem called <code>database_cleaner-sequel</code>. The database cleaner gem will ensure that our database is kept pristine across the different tests in our application. If we have data &quot;leaking&quot; across tests, that data may influence the outcome of other tests.</p>
+<p>Let's add these gems to our <code>Gemfile</code> now:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">group</span> <span class="ss">:test</span> <span class="k">do</span>
+  <span class="n">gem</span> <span class="s1">'rspec'</span>
+  <span class="n">gem</span> <span class="s1">'database_cleaner-sequel'</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>We've put these gems in a &quot;test&quot; group, as we will not want them installed when we deploy to production.</p>
+<p>Then we'll install these gems locally with <code>bundle install</code>.</p>
+<p>Next up, we can initialize RSpec by running:</p>
+<pre><code>bundle exec rspec --init
+</code></pre>
+<p>This will create us a <code>spec</code> directory with a file called <code>spec_helper.rb</code> in it. Here's that file with the comments removed <em>and</em> with the database cleaner configuration added:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">RSpec</span><span class="p">.</span><span class="nf">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="p">.</span><span class="nf">expect_with</span> <span class="ss">:rspec</span> <span class="k">do</span> <span class="o">|</span><span class="n">expectations</span><span class="o">|</span>
+    <span class="n">expectations</span><span class="p">.</span><span class="nf">include_chain_clauses_in_custom_matcher_descriptions</span> <span class="o">=</span> <span class="kp">true</span>
+  <span class="k">end</span>
+
+  <span class="n">config</span><span class="p">.</span><span class="nf">mock_with</span> <span class="ss">:rspec</span> <span class="k">do</span> <span class="o">|</span><span class="n">mocks</span><span class="o">|</span>
+    <span class="n">mocks</span><span class="p">.</span><span class="nf">verify_partial_doubles</span> <span class="o">=</span> <span class="kp">true</span>
+  <span class="k">end</span>
+
+  <span class="n">config</span><span class="p">.</span><span class="nf">shared_context_metadata_behavior</span> <span class="o">=</span> <span class="ss">:apply_to_host_groups</span>
+
+  <span class="n">config</span><span class="p">.</span><span class="nf">before</span> <span class="k">do</span>
+    <span class="no">DatabaseCleaner</span><span class="p">.</span><span class="nf">clean</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="nb">require_relative</span> <span class="s1">'../config/application'</span>
+<span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">finalize!</span>
+
+<span class="nb">require</span> <span class="s1">'database_cleaner/sequel'</span>
+<span class="no">DatabaseCleaner</span><span class="p">.</span><span class="nf">strategy</span> <span class="o">=</span> <span class="ss">:truncation</span>
+</code></pre></div></div>
+<p>At the bottom of this file, I've also added two lines to require <code>config/application.rb</code> and to finalize our application. This will ensure that by
+the time the tests run everything for our application has been loaded.</p>
+<p>At the bottom of the <code>configure</code> block, we clean the database to ensure that each and every test starts out with a completely empty database. How that database gets cleaned is defined by the final two lines in this file: it's a <code>truncation</code> strategy meaning that each table in our database will be truncated before the test runs.</p>
+<p>That's all the setup that we'll need to do here. Let's write our first couple of tests for the contract.</p>
+<h2 id="testing-the-contract">Testing the contract</h2>
+<p>When we go to test a contract, we want to be sure that both the valid <em>and</em> invalid paths are covered effectively. Let's start off with the invalid paths first and we'll finish with the valid one. We'll create a new file in <code>spec/contracts/users/create_user_spec.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'spec_helper'</span>
+
+<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
+  <span class="n">context</span> <span class="s2">"requires first_name"</span> <span class="k">do</span>
+    <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">{</span>
+        <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+        <span class="ss">age: </span><span class="mi">32</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+
+    <span class="n">let</span><span class="p">(</span><span class="ss">:result</span><span class="p">)</span> <span class="p">{</span> <span class="n">subject</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="n">it</span> <span class="s2">"is invalid"</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_failure</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">errors</span><span class="p">[</span><span class="ss">:first_name</span><span class="p">]).</span><span class="nf">to</span> <span class="kp">include</span><span class="p">(</span><span class="s2">"is missing"</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="n">context</span> <span class="s2">"requires last_name"</span> <span class="k">do</span>
+    <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">{</span>
+        <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+        <span class="ss">age: </span><span class="mi">32</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+
+    <span class="n">let</span><span class="p">(</span><span class="ss">:result</span><span class="p">)</span> <span class="p">{</span> <span class="n">subject</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="n">it</span> <span class="s2">"is invalid"</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_failure</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">errors</span><span class="p">[</span><span class="ss">:last_name</span><span class="p">]).</span><span class="nf">to</span> <span class="kp">include</span><span class="p">(</span><span class="s2">"is missing"</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>In both of these tests, we're setting up some invalid input for the contract. And also in both of these tests, we're asserting that the contract shows us an error indicating either the <code>first_name</code> or <code>last_name</code> fields are missing.</p>
+<p>We can run this test with <code>bundle exec rspec</code>. When we do this, we'll see that the contract is working as intended:</p>
+<pre><code>2 examples, 0 failures
+</code></pre>
+<p>This is good to see, and will now provide us with a safety net. If someone was to delete one of the lines from the contract <em>perhaps accidentally</em>, then our tests would catch that.</p>
+<p>Let's add another test for the happy path, the path of successful validation, to this file too:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
+  <span class="n">context</span> <span class="s2">"given valid parameters"</span> <span class="k">do</span>
+    <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">{</span>
+        <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+        <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+        <span class="ss">age: </span><span class="mi">32</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+
+    <span class="n">let</span><span class="p">(</span><span class="ss">:result</span><span class="p">)</span> <span class="p">{</span> <span class="n">subject</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="n">it</span> <span class="s2">"is valid"</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_success</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="o">...</span>
+</code></pre></div></div>
+<p>In this test, we provide all the correct values for the input and therefore our contract should be successful. Let's run the tests again and see:</p>
+<pre><code>3 examples, 0 failures
+</code></pre>
+<p>Great!</p>
+<p>We're able to test our contract just like a standard Ruby class. We initialize the contract, and then depending on the input it is given, the contract with either succeed or fail.</p>
+<h2 id="testing-the-repository">Testing the repository</h2>
+<p>To test the repository, we can take the same kind of path. For this repository's tests, we need to assert that the <code>create</code> method for <code>Bix::Repos::UserRepo</code> does a few things. What things? Well, let's look at our code for the repository:</p>
+<pre><code>module Bix
+  module Repos
+    class UserRepo &lt; ROM::Repository[:users]
+      include Import[&quot;container&quot;]
+
+      struct_namespace Bix
+
+      commands :create,
+        use: :timestamps,
+        plugins_options: {
+          timestamps: {
+            timestamps: %i(created_at updated_at)
+          }
+        }
+
+      def all
+        users.to_a
+      end
+    end
+  end
+end
+</code></pre>
+<p>The repository has a <code>create</code> method and with this method we need to make sure:</p>
+<ul>
+<li>The method returns a <code>Bix::User</code> object -- because <code>struct_namespace</code> has configured the repository to use the <code>Bix</code> namespace for all structs.</li>
+<li>That the <code>Bix::User</code> object returned has an <code>id</code> attribute -- this ID is automatically set by the database</li>
+<li>That both <code>created_at</code> and <code>updated_at</code> are set automatically -- based on how we've configured the command at the top of the repository.</li>
+</ul>
+<p>The repository also has an <code>all</code> method, and just to be thorough we can add a simple test for this method to assert that <code>Bix::User</code> objects are returned.</p>
+<p>Let's add the tests for the <code>create</code> method first. We'll create a new file at <code>spec/repos/user_repo_spec.rb</code> for these tests:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"spec_helper"</span>
+
+<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span> <span class="k">do</span>
+  <span class="n">context</span> <span class="s2">"#create"</span> <span class="k">do</span>
+    <span class="n">it</span> <span class="s2">"creates a user"</span> <span class="k">do</span>
+      <span class="n">user</span> <span class="o">=</span> <span class="n">subject</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span>
+        <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+        <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+        <span class="ss">age: </span><span class="mi">32</span><span class="p">,</span>
+      <span class="p">)</span>
+
+      <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_a</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">User</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">).</span><span class="nf">not_to</span> <span class="n">be_nil</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">first_name</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"Ryan"</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">last_name</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"Bigg"</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">created_at</span><span class="p">).</span><span class="nf">not_to</span> <span class="n">be_nil</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="nf">updated_at</span><span class="p">).</span><span class="nf">not_to</span> <span class="n">be_nil</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This test asserts that when we call <code>create</code> on our repository that it will return a <code>Bix::User</code> object and that the object has values for <code>id</code>, <code>first_name</code>, <code>last_name</code>, <code>created_at</code> and <code>updated_at</code>.</p>
+<p>If we run this test with <code>bundle exec rspec</code>, we'll see that it passes:</p>
+<pre><code>4 examples, 0 failures
+</code></pre>
+<p>Good! We've now asserted that at least the <code>struct_namespace</code> and <code>commands</code> methods from our repository are working as they should. If a mistake was to be made, like accidentally removing the <code>struct_namespace</code> method from the repository, our test would break:</p>
+<pre><code>  1) Bix::Repos::UserRepo#create creates a user
+     Failure/Error: expect(user).to be_a(Bix::User)
+       expected #&lt;ROM::Struct::User ...&gt; to be a kind of Bix::User
+</code></pre>
+<p>The issue with this repository returning a <code>ROM::Struct::User</code> object instead of a <code>Bix::User</code> object is that the <code>ROM::Struct::User</code> objects will not have access to any of <code>Bix::User</code>'s methods, like <code>full_name</code>. If we had this mistake in our application, and we tried using <code>User#full_name</code> then our application would break. This demonstrates why it's important to have tested that <code>struct_namespace</code> is working.</p>
+<p>Let's add another quick test to our repository to test <code>all</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">context</span> <span class="s2">"#all"</span> <span class="k">do</span>
+  <span class="n">before</span> <span class="k">do</span>
+    <span class="n">subject</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">32</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">"returns all users"</span> <span class="k">do</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="n">subject</span><span class="p">.</span><span class="nf">all</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">users</span><span class="p">.</span><span class="nf">count</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">users</span><span class="p">.</span><span class="nf">first</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_a</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">User</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This test uses <code>create</code> to setup a user in our database, and then asserts that when we call <code>all</code> we get a user back.</p>
+<p>If we run this test, we'll see that it's already working:</p>
+<pre><code>5 examples, 0 failures
+</code></pre>
+<p>This means that our <code>all</code> method now has some test coverage. If this method was to break <em>somehow</em>, then our test would indicate that the method was faulty and then we wwould know to fix it.</p>
+<h2 id="testing-the-transaction">Testing the transaction</h2>
+<p>So far, our testing of contracts and repositories has been very straightforward Ruby class tests. We have relied on <code>subject</code> from RSpec which is a method that behaves like this:</p>
+<pre><code>def subject
+  &lt;described class&gt;.new
+end
+</code></pre>
+<p>Now we're going to look at how to test a transaction, and here's where things are going to get more interesting. Rather than relying on RSpec's own <code>subject</code>, we're going to define our own. And when we define our own, we're going to use a feature of <code>dry_auto-inject</code>, called <em>dependency injection</em>. This feature will allow us to inject a stubbed repository into our transaction, so that we don't have to hit the database for our transaction's test.</p>
+<p>Not hitting the database means that we will save time on this test: there's no need to make a request to a system outside of our Ruby code, and that'll also mean that <code>database_cleaner</code> will not need to clean anything from the database. Ultimately, by injecting the repository dependency into our application's transactions when we're testing them means that we can have fast transcation tests.</p>
+<p>Let's look at how to do this by creating a new file at <code>spec/transactions/users/create_user_spec.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'spec_helper'</span>
+
+<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:user_repo</span><span class="p">)</span> <span class="p">{</span> <span class="n">double</span><span class="p">(</span><span class="s2">"UserRepo"</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">{</span> <span class="no">Bix</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">id: </span><span class="mi">1</span><span class="p">,</span> <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">described_class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">user_repo: </span><span class="n">user_repo</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">context</span> <span class="s2">"with valid input"</span> <span class="k">do</span>
+    <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">{</span>
+        <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+        <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+        <span class="ss">age: </span><span class="mi">32</span><span class="p">,</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">"creates a user"</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user_repo</span><span class="p">).</span><span class="nf">to</span> <span class="n">receive</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span> <span class="p">{</span> <span class="n">user</span> <span class="p">}</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">subject</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_success</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">success</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>In this test, we define our own <code>subject</code> block, which will override RSpec's default. We inject the <code>user_repo</code> dependency into the transaction object by passing a <code>user_repo</code> key in the <code>new</code> method. This works because <code>dry-auto_inject</code> re-defines <code>initialize</code> for classes when we use this syntax:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kp">include</span> <span class="no">Import</span><span class="p">[</span>
+  <span class="s2">"contracts.users.create_user"</span><span class="p">,</span>
+  <span class="s2">"repos.user_repo"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+<p>By default, <code>dry-auto_inject</code> will load the contract class <code>Bix::Contracts::Users::CreateUser</code>, as well as the repo class <code>Bix::Repos::UserRepo</code> and provide them to the class through the <code>create_user</code> and <code>user_repo</code> methods automatically. The keys that we provide to <code>Import[]</code> here match the keys that are automatically defined by <code>dry-system</code> when it automatically registers the components for our application.</p>
+<p>If we want to swap in something else for either the contract or the repository, we can do that by passing in a key matching the name (either <code>create_user</code> or <code>user_repo</code>) when we initialize this class. Just like we do in our test!</p>
+<p>If we wanted to do this ourselves, without any sort of dry gem magic, it would look like this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">attr_reader</span> <span class="ss">:user_repo</span><span class="p">,</span> <span class="ss">:create_user</span>
+
+<span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span>
+  <span class="ss">user_repo: </span><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span><span class="p">.</span><span class="nf">new</span><span class="p">,</span>
+  <span class="ss">create_user: </span><span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="p">)</span>
+  <span class="vi">@user_repo</span> <span class="o">=</span> <span class="n">user_repo</span>
+  <span class="vi">@create_user</span> <span class="o">=</span> <span class="n">create_user</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>As we can see, by using <code>dry-auto_inject</code> along with <code>dry-system</code> we get to save a lot of typing.</p>
+<p>Let's look at that test again:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'spec_helper'</span>
+
+<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:user_repo</span><span class="p">)</span> <span class="p">{</span> <span class="n">double</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">{</span> <span class="no">Bix</span><span class="o">::</span><span class="no">User</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">id: </span><span class="mi">1</span><span class="p">,</span> <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">subject</span> <span class="p">{</span> <span class="n">described_class</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">user_repo: </span><span class="n">user_repo</span><span class="p">)</span> <span class="p">}</span>
+
+  <span class="n">context</span> <span class="s2">"with valid input"</span> <span class="k">do</span>
+    <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
+      <span class="p">{</span>
+        <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+        <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+        <span class="ss">age: </span><span class="mi">32</span><span class="p">,</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+
+    <span class="n">it</span> <span class="s2">"creates a user"</span> <span class="k">do</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">user_repo</span><span class="p">).</span><span class="nf">to</span> <span class="n">receive</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span> <span class="p">{</span> <span class="n">user</span> <span class="p">}</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">subject</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_success</span>
+      <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">success</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>The test asserts that when we use <code>subject.call</code> that the repository receives the <code>create</code> method once. We've stubbed this method to return a <code>Bix::User</code> object, and that's what we'll see when we call <code>result.success</code> at the end of the test.</p>
+<p>Let's run this test and we'll see how it goes:</p>
+<pre><code>6 examples, 0 failures
+</code></pre>
+<p>Success! We're able to test our transaction without it hitting the database at all. This means that our transaction test is isolated from the database, leading to it being quick. While we only have one transaction test <em>now</em>, as this application grows and we add further transaction tests this quickness will quickly pile-up to a big benefit.</p>
+<p>There's also another benefit of this isolation: if we had database constraints then we would have to cater for those in this test.  Imagine for instance that when we created users that they had to be associated with a &quot;Group&quot; and that Groups had to be associated with an &quot;Account&quot;. In a normal application to test such a thing, we would need to create three separate objects our database: an account, a group, and a user.</p>
+<p>For one test, it won't matter too much. But if accounts, groups and users are the <em>core</em> of our application, it would quickly stack up to lots of database calls. By stubbing out the user repository dependency while testing this transaction, we have isolated that test from any database concern. A better place to test that sort of database concern would be in the repository test, anyway.</p>
+<p>To finish up, let's add one more test for what happens when this transaction fails due to invalid input:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">context</span> <span class="s2">"with invalid input"</span> <span class="k">do</span>
+  <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
+    <span class="p">{</span>
+      <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+      <span class="ss">age: </span><span class="mi">32</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="n">it</span> <span class="s2">"does not create a user"</span> <span class="k">do</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">user_repo</span><span class="p">).</span><span class="nf">not_to</span> <span class="n">receive</span><span class="p">(</span><span class="ss">:create</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">subject</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">).</span><span class="nf">to</span> <span class="n">be_failure</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">failure</span><span class="p">.</span><span class="nf">errors</span><span class="p">[</span><span class="ss">:first_name</span><span class="p">]).</span><span class="nf">to</span> <span class="kp">include</span><span class="p">(</span><span class="s2">"is missing"</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This <code>input</code> is missing a <code>first_name</code> key, and so our transaction should fail. This means that the <code>user_repo</code> should <em>never</em> receive a <code>create</code> method, because our transaction will only call that if the <code>validate</code> step passes. When the validation fails, we would expect the result from this transaction to be a failure, and that failure to contain errors indicating what went wrong.</p>
+<p>When we run this test with <code>bundle exec rspec</code>, we'll see it pass:</p>
+<pre><code>7 examples, 0 failures
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p>In this 3rd part of the ROM and Dry showcase, we've seen how easy it is to add tests to our application to ensure that the individual parts of the application are working.</p>
+<p>We saw that in order to test a contract and a repository, we can initialize either class and call the methods we want to test. There's nothing particularly special that we've had to do to test these classes; we treat them like the plain Ruby classes they are.</p>
+<p>When testing the transaction, we've chosen to isolate those tests from the database by injecting a stubbed <code>UserRepo</code> object in place of the real thing. This isolation will mean that our tests will not have to concern themselves with setting up database state -- for instance, if we had foreign key constraints -- and over time it will mean that our transaction tests will be lightning fast.</p>
+<p>In the next part of this series, we'll add the final piece of our application to our stack: a way to make HTTP requests. And we'll <em>definitely</em> be adding tests for this too!</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>ROM + Dry Showcase: Part 2 - Validations &amp; Transactions</title>
@@ -3968,169 +4293,6 @@ D, [2018-06-15T08:44:49.977091 #11587] DEBUG -- : MONGODB | localhost:27017 | mu
 <p>I then went through the remainder of this file and reduced the runtime from 1 minute and 15 seconds to 18 seconds.</p>
 <h2 id="theres-more-to-do">There's more to do</h2>
 <p>Taking almost a full minute off our build time doesn't sound like much, but it's a 16th of the build time saved. There's plenty more cases like this in our application that we could fix and reduce the build time further. This would let developers get faster feedback on their builds, making the whole development cycle more efficient.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review</title>
-   <link href="http://ryanbigg.com/2018/03/on-writing-software-well-2-a-review"/>
-   <updated>2018-03-15T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2018/03/on-writing-software-well-2-a-review</id>
-   <content type="html"><![CDATA[<p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2018_05_10/56193">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
-<p>A few people have asked for my opinions on DHH's recent video series. And others have bemoaned the lack of a critical take on the videos. So here's a critical take involving my opinions on <a href="https://www.youtube.com/watch?v=m1jOWu7woKM">DHH's 2nd video</a>) in the series.</p>
-<p>Why not start with <a href="https://www.youtube.com/watch?v=H5i1gdwe1Ls">Video #1 in the series</a>? Because it was great! Code comments that explain why things are the way they are... those are incredibly useful to people new / unfamiliar with parts of a codebase. His points were well made and I find nothing worth commenting on. (Pun intended)</p>
-<p>Video #2 though has the word &quot;callbacks&quot; in it and so I'm intrigued to hear what DHH has to say about it.</p>
-<p>So here's some &quot;real-time&quot; opinions that I wrote down while watching this video for a <em>third</em> time. If you like this sort of thing, let me know in the comments below.</p>
-<h2 id="initial-reactions">Initial reactions</h2>
-<ul>
-<li>Ew callbacks. I've been bitten enough times by these -- mainly cases where callbacks are happening when I do not expect them to. Things like where I might call <code>create</code> on a model in a unit test and that causes some <em>other</em> behaviour via callback that isn't relevant to the test. I'd prefer to be explicit in these cases to save surprises.</li>
-<li>I've heard mention that these talks might include Rails concerns (modules being included to add behaviour to classes), so I'd suggest you stop right here, get out your favourite drink of choice and take a drink whenever you see a concern used in the Rails app.</li>
-</ul>
-<h2 id="quotside-effectsquot">1:35 - &quot;Side effects&quot;</h2>
-<ul>
-<li>&quot;Side effects .. has gotten also a bit of a bad reputation, especially in functional programming&quot; -- Yeah, because <em>random magical shit</em> happening when you call a method isn't easily predictable. Having the code be explicit about what it's doing makes it easier to understand it <em>now</em> and <em>later</em>. The later part is what I think DHH is missing here.</li>
-</ul>
-<h2 id="messages-controller">2:13 - Messages Controller</h2>
-<ul>
-<li><code>@bucket.record</code> takes <em>far</em> too many arguments. What is it doing with them all? And P.S. do you even newline your key / value pairs?</li>
-</ul>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vi">@bucket</span><span class="p">.</span><span class="nf">record</span><span class="p">(</span><span class="n">new_message</span><span class="p">,</span>
-  <span class="ss">parent: </span><span class="vi">@parent_recording</span><span class="p">,</span>
-  <span class="ss">status: </span><span class="n">status_param</span><span class="p">,</span>
-  <span class="ss">subscribers: </span><span class="n">find_subscribers</span><span class="p">,</span>
-  <span class="ss">category: </span><span class="n">find_category</span>
-<span class="p">)</span>
-</code></pre></div></div>
-<p>I think that this reads a little better -- and the Git diff would be neater if a new key was added and removed. It <em>feels</em> like <code>category</code> <em>might</em> one be of those things that was added recently and just chucked onto the end here.</p>
-<p>TBH a little surprised here that he's using <code>@parent_recording</code> which is setup as a  <code>before_action</code>,  but <code>find_subscribers</code> and <code>find_category</code> aren't. They're called explicitly here. I'd expect some sort of consistency... but maybe there's a reason for that? The methods are folded at the bottom of the controller so I can't get a good idea of what those are doing to really judge whether or not it's a good choice.</p>
-<h2 id="codementioncode-model">4:15 - <code>Mention</code> model</h2>
-<ul>
-<li>This model is pretty neat. I cringe a little (PTSD, I guess) on the sight of the <code>after_create</code> and <code>after_commit</code> uses.</li>
-<li>Interesting that the model doesn't inherit from <code>ApplicationModel</code>. Probably a legacy app thing.</li>
-<li>Neat use of <code>casecmp</code> in <code>callsign_matches?</code>.</li>
-<li>The <code>unless</code> in <code>after_commit :deliver</code> irks me a little, but maybe it's due to me preferring to keep all the logic inside of methods? I'd write it like this:</li>
-</ul>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">deliver</span>
- <span class="k">return</span> <span class="k">unless</span> <span class="n">mentioner</span> <span class="o">==</span> <span class="n">mentioned</span>
-
-<span class="o">...</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<h2 id="coderecordingmentionscode-concern">5:55 - <code>Recording::Mentions</code> concern</h2>
-<p><em>DRINK</em> -- there's a concern here. [bad joke about it being &quot;concerning&quot;]</p>
-<h3 id="callbacks">Callbacks</h3>
-<ul>
-<li>Okay, so this is using more callbacks. I feel like <code>remember_to_eavesdrop</code> could be something set &quot;further up&quot; in the chain, probably in the controller. The controller itself could check to see if these things have changed, and then from there choose to send out the mentions.</li>
-</ul>
-<h3 id="current-attributes">Current Attributes</h3>
-<p>The other thing is <code>Current</code> -- used in <code>eavesdrop_for_mentions</code> down the bottom of the code view here.</p>
-<p>I already <a href="https://ryanbigg.com/2017/06/current-considered-harmful">wrote about CurrentAttributes at length</a>. Global variables magically being available <em>everywhere</em> in the application. Where is <code>Current.user</code> set? How can I be sure it's set to a value here?</p>
-<h3 id="abstracting-out-the-logic-for-triggering-the-job">Abstracting out the logic for triggering the job</h3>
-<p>This whole eavesdropping thing <em>feels</em> like it could be wrapped in some other logic (in a controller, perhaps). It's practically begging for it. Basecamp probably doesn't want to be persisting Messages to the database in its tests and having this job code run <em>every single time</em>, but that's exactly what's going to happen here. It'd probably slow down the tests due to these side-effects.</p>
-<p>It would be better abstracted out to a &quot;service object&quot; which creates the recording and then triggers this <code>EavesdroppingJob</code>. Bonus thing there is that you can pass <code>current_user</code> from the controller and hey look I just got rid of the <code>CurrentAttributes</code> global variable thing.</p>
-<p>An idea of what that might look like:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Mention</span>
-  <span class="k">class</span> <span class="nc">EavesdropForMentions</span>
-    <span class="nb">attr_reader</span> <span class="ss">:recording</span><span class="p">,</span> <span class="ss">:params</span><span class="p">,</span> <span class="n">user</span>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">recording</span><span class="p">:,</span> <span class="n">params</span><span class="p">:,</span> <span class="ss">user: </span><span class="p">)</span>
-      <span class="vi">@recording</span> <span class="o">=</span> <span class="n">recording</span>
-      <span class="vi">@params</span> <span class="o">=</span> <span class="n">params</span>
-      <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
-    <span class="k">end</span>
-
-    <span class="k">def</span> <span class="nf">run</span>
-      <span class="k">return</span> <span class="k">unless</span> <span class="n">eavesdropping?</span>
-
-      <span class="no">Mention</span><span class="o">::</span><span class="no">EavesdroppingJob</span><span class="p">.</span><span class="nf">perform_later</span> <span class="n">recording</span><span class="p">,</span> <span class="ss">mentioner: </span><span class="n">user</span>
-    <span class="k">end</span>
-
-    <span class="kp">private</span>
-
-    <span class="k">def</span> <span class="nf">eavesdropping?</span>
-      <span class="p">(</span><span class="n">active_or_archived_recordable_changed?</span> <span class="o">||</span> <span class="n">draft_became_active?</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
-      <span class="o">!</span><span class="no">Mention</span><span class="o">::</span><span class="no">Eavesdropper</span><span class="p">.</span><span class="nf">suppressed?</span> <span class="o">&amp;&amp;</span>
-      <span class="n">recording</span><span class="p">.</span><span class="nf">has_mentions?</span>
-    <span class="k">end</span>
-
-    <span class="k">def</span> <span class="nf">active_or_archived_recordable_changed?</span>
-      <span class="c1"># code here to check change using recordable + params</span>
-    <span class="k">end</span>
-
-    <span class="k">def</span> <span class="nf">draft_became_active?</span>
-      <span class="c1"># code here to check change using recordable + params</span>
-    <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>I don't have the big Basecamp app to play with, so i don't know for certain if this code will or won't work. What I do know is that it neatly encapsulates <em>potentially</em> performing the <code>Mention::EavesdroppingJob</code> later and avoids the issue where saving a <code>Recording</code> in <em>any</em> context might queue up a job as a side-effect.  My approach here decouples those two things, allowing them to happen independently.</p>
-<p>Essentially, it accomplishes the same thing in (probably) as many lines, but disconnecting it from the saving of the model is the big win in my mind.</p>
-<h3 id="callback-suppression">Callback suppression</h3>
-<p>Yay more global state appearing out of the blue (<code>Mention::Eavesdropper.suppressed?</code>). What could possibly go wrong? How can I track down easily where this might be toggled in the codepath that leads to this method? This looks like it would make debugging hard.</p>
-<p>DHH himself says (at ~11mins) he thinks that there might be situations where you don't want callbacks to happen. Okay, great. So make it so that it can be an optional part of your code (as above), rather than this spooky-action-at-a-distance <code>Mention::Eavesdropper.suppressed?</code>.</p>
-<p>Re-organising the code to <em>optionally</em> trigger this eavesdropping behaviour would lead to a lower cognitive overhead for working with this code.</p>
-<h3 id="codehasmentionscode"><code>has_mentions?</code></h3>
-<p>Special mention (ha) of <code>has_mentions?</code> at the bottom of this module which does seem to at least abstract the behaviour of checking if something has mentions.</p>
-<h2 id="codementioneavesdroppingjobcode">13:23 - <code>Mention::EavesdroppingJob</code></h2>
-<p>It feels a lot like <code>Current.set</code> here is a cheap way of passing account through to <code>mention::Eavesdropper</code> and its associated things. I am not sure why this is wrapped this way, given that the account would be accessible in the <code>Eavesdropper</code> class -- assuming it's setup like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Mention</span>
-  <span class="k">class</span> <span class="nc">Eavesdropper</span>
-    <span class="nb">attr_reader</span> <span class="ss">:recording</span>
-
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">recording</span><span class="p">)</span>
-      <span class="vi">@recording</span> <span class="o">=</span> <span class="n">recording</span>
-    <span class="k">end</span>
-
-    <span class="o">...</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>But at least, this <code>Eavesdropper</code> class is abstracted away and isn't a concern. There feels to me like concerns are used as a bit of a &quot;golden hammer&quot; in this application.</p>
-<h2 id="run-through-of-all-the-parts">13:45 - run-through of all the parts</h2>
-<p>DHH jumps straight from the controller to the <code>Recording::Mentions</code> concern here. (DRINK)</p>
-<p>My initial thought here was: how is someone unfamiliar with this application supposed to know that the <code>Recording::Mentions</code> concern is where to look for this eavesdropping behaviour if they were to go about debugging it?</p>
-<p>This is spooky-action-at-a-distance and it's the kind of code that I might've written a few years ago and felt very smart <em>at the time</em>, but then months later when I've gone back to visit it I've asked myself: &quot;wtf was past-Ryan taking?&quot;</p>
-<p>DHH says around the 14:10 mark that &quot;there's a fair amount of indirection here but it provides a very clear path of reading what's going on in the method&quot;. Out of anything else in this video, this is the #1 thing that I disagree with the <em>most</em>. The path is completely ambiguous to my &quot;untrained&quot; eye -- I am unfamiliar with this application.</p>
-<p>It is &quot;clever code&quot; and that is dangerous because future-you will come back and look at the code in a few months time and wonder how it all fit together again.</p>
-<h2 id="codementioneavesdroppercode">14:20 - <code>Mention::Eavesdropper</code></h2>
-<p>And now we get to a class which actually has an idea of what the Single Responsibility Principle is.</p>
-<p>(Interestingly, DHH can't navigate his own code at the ~14:30 mark)</p>
-<p>I've already talked about CurrentAttributes before, so what I'll do here is just sigh longingly, wishing wistfully for the death of global state in any and all applications.</p>
-<p>&quot;Globals is not something that you should just litter over your application&quot; -- MY MAN! This is what you're doing here. &quot;Passing around this stuff isn't helpful&quot;. Ok, here's the #2 thing I disagree with. When passing things around, you gain an inkling for <em>where</em> the thing came from and if you followed the chain high enough you might find where it was originally defined. This <code>Current.person</code> mumbojumbo hides all of that for no real good reason.</p>
-<p>Not sure I can state my thoughts clearer than this: <em>DEATH TO GLOBAL STATE.</em></p>
-<h2 id="codementionscannercode">16:24 - <code>Mention::Scanner</code></h2>
-<p>Ok so that <code>Mention::Scanner</code> approach looks pretty good. It's great that this code wasn't just thrown into <code>Eavesdropper</code> because it was <em>somewhat</em> related. It's a separate concern, and moving that logic into <code>Mention::Scanner</code> is a good approach.</p>
-<h2 id="codementioncode-codeaftercommitcode-hook">18:10 - <code>Mention</code> <code>after_commit</code> hook</h2>
-<p>I still feel strongly that this could just be a method call in the controller after the <code>@bucket.record</code> is called.</p>
-<h2 id="codeprojectcopiercode--suppression">19:20 - <code>ProjectCopier</code> + suppression</h2>
-<p>The suppression chain underneath <code>suppress_events_and_deliveries</code> wouldn't be necessary if this code previously opted-in explicitly to making these &quot;events&quot; and &quot;deliveries&quot;. It <em>still</em> feels like a poor work around for something that could be tidied up with half an hour's worth of effort.</p>
-<p>And at the ~20:10 mark, DHH can't find where the suppressible behaviour is brought in. This thing where the code is hard-to-navigate  is a massive code smell. Again: if the &quot;callbacks&quot; were explicit rather than implicit, the suppression wouldn't be needed. The overall code footprint would be smaller, more explicit, and therefore easier to understand. The code does A, B, and C. No magic.</p>
-<h2 id="wrap-up">20:39 - Wrap Up</h2>
-<p>&quot;I hope it's clear&quot; -- it isn't. I've been doing this Rails stuff for <em>10 years</em> now and if I saw this code in a codebase I would look into ways of making this more explicit to make it easier to work with.</p>
-<p>As I've said previously: this code feels like &quot;clever code&quot;. &quot;Look at me using all these cool Ruby features! I am so smart!&quot;. Well, yeah. You are smart.</p>
-<p>But then in several months time of this thing chugging along working perfectly, you'll encounter a bug, look at the code and wonder how the hell it all fit together. There is far too much magic here.</p>
-<p>But I guess that's The Rails Way™.</p>
-<hr />
-<p>20:46: &quot;take all this logic and jam it into, what? The controller? A service object?&quot; -- No. A transaction object (see my example back at 5:55) that created the recording AND explicitly triggered the mention scanner + deliveries.</p>
-<p>Another approach would be to use <a href="http://dry-rb.org/gems/dry-transaction/">dry-transaction</a>. This gem provides a very neat DSL for setting up such a thing. I'd imagine it would go like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateRecording</span>
-
-<span class="n">step</span> <span class="ss">:create</span>
-<span class="n">step</span> <span class="ss">:scan_for_mentions</span>
-<span class="n">step</span> <span class="ss">:deliver_notifications</span>
-
-<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="ss">bucket: </span><span class="n">bucket</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-  <span class="c1"># @bucket.record code goes here</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">scan_for_mentions</span>
-  <span class="c1"># MentionScanner goes here</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">deliver_notifications</span>
-  <span class="c1"># Delivery code goes here</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>It'll all be wrapped up neatly in the one class. <em>This</em> is where it should go. Not a controller. Not a service object. But a transaction object, that clearly delineates the steps involved in the transaction. There's no magic here. The steps are run in the order they are specified in. And it's possible to abort the transaction at each step.</p>
-<p>This is my preferred approach. Callbacks and their implicitness have caused so much harm in previous codebases that I would never reach for them again. Transaction objects with explicit orders of operations are what I will be doing instead.</p>
 ]]></content>
  </entry>
  
