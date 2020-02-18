@@ -10,7 +10,7 @@ In this _series_ of blog posts, I am going to show you how to build a simple app
 
 * Part 1 (you are here) - Interact with a database using ROM
 * [Part 2 - Have validation and transaction classes](/2020/02/rom-and-dry-showcase-part-2)
-* Part 3 - Test our application with RSpec
+* [Part 3 - Test our application with RSpec](/2020/02/rom-and-dry-showcase-part-3)
 * Part 4 - Have a router and a series of actions
 
 This part will cover how to start building out an application's architecture. We'll also work on having this application speak to a database. For this, we'll use the following gems:
