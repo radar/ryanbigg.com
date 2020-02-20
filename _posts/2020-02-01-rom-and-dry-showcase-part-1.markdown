@@ -11,7 +11,7 @@ In this _series_ of blog posts, I am going to show you how to build a simple app
 * Part 1 (you are here) - Interact with a database using ROM
 * [Part 2 - Have validation and transaction classes](/2020/02/rom-and-dry-showcase-part-2)
 * [Part 3 - Test our application with RSpec](/2020/02/rom-and-dry-showcase-part-3)
-* Part 4 - Have a router and a series of actions
+* [Part 4 - Have a router and a series of actions](/2020/02/rom-and-dry-showcase-part-4)
 
 This part will cover how to start building out an application's architecture. We'll also work on having this application speak to a database. For this, we'll use the following gems:
 
@@ -32,7 +32,9 @@ However, Rails leads you into an application architecture that paints you into a
 
 The setup of ROM and dry-rb things _is_ harder, but leads you ultimately into a better designed application with clearer lines drawn between the classes' responsibilties.
 
-It might help to think of it like this: setup cost is a cost that you pay _once_, whereas ease-of-application-maintenance is a cost _every single day_.
+It might help to think of it in the way my friend Bo Jeanes put it:
+
+> Setup cost is a cost that you pay _once_, whereas ease-of-application-maintenance is a cost that you pay  _every single day_.
 
 So in the long run, this will be better. I promise.
 
@@ -151,7 +153,7 @@ end
 
 This file loads the `config/application.rb` file that we created earlier and that will make it possible to require the other two files we use here.
 
-In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called `db:setup`. This configuration starts the system-level dependency `:db` by calling `start` on `Bix::Application`. This will run the code inside the `init` block defined within `system/boot/db.rb`. This `init` block registers a `db.connection` with our application, and we can retrive that value by using `Bix::Application['db.connection']` here.
+In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called `db:setup`. This configuration starts the system-level dependency `:db` by calling `start` on `Bix::Application`. This will run the code inside the `init` block defined within `system/boot/db.rb`. This `init` block registers a `db.config` with our application, and we can retrive that value by using `Bix::Application['db.config']` here.
 
 Inside this configuration, we configure something called the _default gateway_, which is the simply the default database connection that ROM has been configured with. We _could_ configure multiple gateways, but we're only going to be using the one in this series. On this gateway, we tell it to use a new `Logger` instance, which will log SQL output for our Rake tasks.
 
@@ -275,7 +277,7 @@ bin/console
 When we're in this console, we can use our repository:
 
 ```
->> Bix::Repos::User.new(Bix::Application['container'])
+>> Bix::Repos::UserRepo.new(Bix::Application['container'])
 ```
 
 This code will tell our user repository to connect to the database specified by the configuration contained within `Bix::Application['container']`. But unfortunately for us, another key part of configuration is missing and so we're going to see an error when we run this code:
@@ -363,12 +365,13 @@ However, we will need to register relations with our application's database cont
 ```ruby
 Bix::Application.boot(:persistence) do |app|
   start do
-    container = ROM.container(:sql, app['db.connection']) do |config|
-      config.auto_registration(app.root + "lib/bix")
-    end
-    register('container', container)
+    config = app['db.config']
+    config.auto_registration(app.root + "lib/bix")
+
+    register('container', ROM.container(app['db.config']))
   end
 end
+
 ```
 
 This file will now automatically register this relation under `lib/bix`, and any other ROM things we add in later. This means that our `User` repository will be able to find the `Users` relation.
@@ -376,7 +379,7 @@ This file will now automatically register this relation under `lib/bix`, and any
 Let's run `bin/console` again and try working with our repository again:
 
 ```
->> user_repo = Bix::Repos::User.new(Bix::Application['container'])
+>> user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
 >> user_repo.all
 NoMethodError (undefined method `all' for #<Bix::Repos::User struct_namespace=ROM::Struct auto_struct=true>)
 ```
@@ -412,7 +415,7 @@ The `all` method here calls the `users` relation, and the `to_a` will run a quer
 With both of these things in place, let's now create and retrieve a user from the database through `bin/console`:
 
 ```
-user_repo = Bix::Repos::User.new(Bix::Application['container'])
+user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
 user_repo.create(first_name: "Ryan", last_name: "Bigg", age: 32)
 => #<ROM::Struct::User id=1 first_name="Ryan" last_name="Bigg" age=32 ...>
 
@@ -427,7 +430,7 @@ Hooray! We have now been able to add a record and retrieve it. We have now set u
 * `system/boot/db.rb` - Specifies how our application connects to a database
 * `system/boot/persistence.rb` - Defines a ROM container that defines how the ROM pieces of our application connect to and interact with our database
 * `lib/bix/relations/users.rb` - Defines a class that can contain query logic for our `users` table
-* `lib/bix/repositories/user.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.
+* `lib/bix/repos/user_repo.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.
 
 ROM and Dry separate our application into small, clearly defined pieces with individual responsibilities. While this setup cost feels large _now_, it's a cost that we're only going to be paying once; Setup cost is one-time, maintenance cost is forever.
 
@@ -468,7 +471,7 @@ This `struct_namespace` method tells the repository that when it builds structs,
 Let's go back into `bin/console` and try this out:
 
 ```ruby
-user_repo = Bix::Repos::User.new(Bix::Application['container'])
+user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
 user_repo.all.first.full_name
 # => "Ryan Bigg"
 ```
@@ -480,13 +483,13 @@ Great! We're now able to have a class that contains custom Ruby logic for the da
 When we initialize our repository, we have to use some really long code to do that:
 
 ```ruby
-user_repo = Bix::Repos::User.new(Bix::Application['container'])
+user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
 ```
 
 What if we were able to do this instead?
 
 ```ruby
-user_repo = Bix::Repos::User.new
+user_repo = Bix::Repos::UserRepo.new
 ```
 
 Wouldn't that be much nicer?
@@ -538,7 +541,7 @@ This line will use the `Import` constant to inject the `container` dependency in
 Let's try initializing a repository again in `bin/console`:
 
 ```ruby
-user_repo = Bix::Repos::User.new
+user_repo = Bix::Repos::UserRepo.new
 # => #<Bix::Repos::User struct_namespace=Bix auto_struct=true>
 user_repo.all.first.full_name
 # => "Ryan Bigg"
