@@ -5,7 +5,7 @@ title: "ROM + Dry Showcase: Part 3 - Testing"
 published: true
 ---
 
-This is the 3rd part of a 4 part series.
+This is the 3rd part of a 4 part series covering the [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) suites of gems.
 
 * Part 1: [Application + Database setup](/2020/02/rom-and-dry-showcase-part-1)
 * Part 2: [Validations + Transactions](/2020/02/rom-and-dry-showcase-part-2)

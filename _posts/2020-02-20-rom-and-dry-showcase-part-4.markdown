@@ -2,9 +2,10 @@
 wordpress_id: RB-1582157866
 layout: post
 title: "ROM and Dry Showcase: Part 4"
+published: false
 ---
 
-This is the 4th (and final) part of a 4 part series.
+This is the 4th (and final) part of a 4 part series covering the [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) suites of gems.
 
 * Part 1: [Application + Database setup](/2020/02/rom-and-dry-showcase-part-1)
 * Part 2: [Validations + Transactions](/2020/02/rom-and-dry-showcase-part-2)
@@ -70,10 +71,7 @@ require "rack/test"
 
 module RequestHelpers
   def app
-    Rack::Builder.new do
-      use Hanami::Middleware::BodyParser, :json
-      run Bix::Web::Router
-    end
+    Bix::Web.app
   end
 
   def post_json(path, data)
@@ -162,13 +160,10 @@ When we attempt to run these tests, we'll see that we're missing a part of our a
 
 ```
   1) /users POST / with valid input succeeds
-     Failure/Error: Bix::Web::Router
+     Failure/Error: Bix::Web.app
 
-     NameError:
-       uninitialized constant Bix::Web
-     # ./spec/web_helper.rb:6:in `app'
-     # ./spec/web_helper.rb:10:in `post_json'
-     # ./spec/requests/users_spec.rb:15:in `block (4 levels) in <top (required)>'
+     NoMethodError:
+       undefined method `app' for Bix::Web:Module
 ```
 
 Oh right! We need to setup this Web thing!
@@ -186,7 +181,30 @@ Bix::Application.boot(:web) do |app|
 end
 ```
 
-This two lines will require the hanami gems that we're going to be using here. Where we'll use these gems is in a couple of files. The first is the router itself, which we'll put at `lib/bix/web/router.rb`:
+This two lines will require the hanami gems that we're going to be using here. Where we'll use these gems is in a couple of files.
+
+The first is a file called `lib/bix/web/application.rb`. This is where we'll define the different Rack pieces for our application:
+
+```ruby
+require "hanami/middleware/body_parser"
+
+module Bix
+  module Web
+    def self.app
+      Rack::Builder.new do
+        use Hanami::Middleware::BodyParser, :json
+        run Bix::Web::Router
+      end
+    end
+  end
+end
+```
+
+This file is defines the `Bix::Web.app` method that our test is looking for! This method returns a `Rack::Builder` object, which is to say it returns a _Rack application_.
+
+This Rack application uses a single piece of middleware: `Hanami::Middleware::BodyParser`. This middleware is used to take in any JSON request body, and to transform it into parameters for our actions.
+
+The `run` line at the of the builder's block directs Rack to the application that will be serving our requests. Let's build this part now in `lib/bix/web/router.rb`:
 
 ```ruby
 module Bix
@@ -266,6 +284,7 @@ module Bix
             case create_user.call(params.to_h)
             in Success(result)
               self.body = result.to_h.to_json
+              self.status = 200
             in Failure(result)
               self.body = { errors: result.errors.to_h }.to_json
               self.status = 422
@@ -289,3 +308,154 @@ This should be exactly what our test is expecting. Let's run them again and find
 ```
 2 examples, 0 failures
 ```
+
+Good! Our tests for our router are now passing. But this only means that our router is working, not that we can serve HTTP requests yet! We need one final piece for that to work.
+
+## Racking up the server
+
+To run our HTTP server, we'll use a gem called `puma`. Let's add that gem to the `Gemfile` now:
+
+```
+gem "puma"
+```
+
+And we'll run `bundle install` to install it.
+
+To run the Puma server, we can use the command by the same name:
+
+```
+puma
+```
+
+When we do this, we get an error:
+
+```
+Puma starting in single mode...
+* Version 3.12.1 (ruby 2.7.0-p0), codename: Llamas in Pajamas
+* Min threads: 0, max threads: 16
+* Environment: development
+ERROR: No application configured, nothing to run
+```
+
+This is because Puma hasn't been told what to run yet. The good thing for us is that Puma will look for a special file to know what to run. That file is called `config.ru`. Let's create that file now:
+
+```ruby
+require_relative "config/application"
+
+Bix::Application.finalize!
+
+run Bix::Web.app
+```
+
+This file looks a lot like `bin/console`:
+
+```ruby
+#!/usr/bin/env ruby
+
+require_relative '../config/application'
+
+Bix::Application.finalize!
+
+require 'irb'
+IRB.start
+```
+
+The difference is that we're starting a server, instead of starting a console session.
+
+Let's try `puma` again:
+
+```
+Puma starting in single mode...
+* Version 3.12.1 (ruby 2.7.0-p0), codename: Llamas in Pajamas
+* Min threads: 0, max threads: 16
+* Environment: development
+* Listening on tcp://0.0.0.0:9292
+```
+
+Great! We now have a HTTP server listening on port 9292.
+
+To test this out, we can do one of two things. If you have the marvellous [httpie](http://httpie.org) installed, you can run this command:
+
+```
+http --json post http://localhost:9292/users first_name=Ryan last_name=Bigg
+```
+
+Otherwise, if you're using `curl`, it's a little more verbose:
+
+```
+curl --request 'POST' \
+-i \
+--header 'Content-Type: application/json' \
+--data '{"first_name":"Ryan"}' \
+'http://localhost:9292/users'
+```
+
+(Use HTTPie!)
+
+Either way, what we'll see returned here is a validation error message indicating that our input was not quite complete:
+
+```
+HTTP/1.1 422 Unprocessable Entity
+Content-Length: 39
+Content-Type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "last_name": [
+            "is missing"
+        ]
+    }
+}
+```
+
+Note here that the HTTP status is 422 as well.
+
+Great, so that means the _failure_ case for our action is now working as we wished it would.
+
+Let's see if we can test out the success case too with this `http` call:
+
+```
+http --json post http://localhost:9292/users first_name=Ryan last_name=Bigg
+```
+
+Or this `curl` one:
+
+```
+curl --request 'POST' \
+-i \
+--header 'Content-Type: application/json' \
+--data '{"first_name":"Ryan", "last_name": "Bigg"}' \
+'http://localhost:9292/users'
+```
+
+Now we will see a successful response:
+
+```
+HTTP/1.1 200 OK
+Content-Length: 140
+Content-Type: application/json; charset=utf-8
+
+{
+    "age": null,
+    "created_at": "[timestamp]",
+    "first_name": "Ryan",
+    "id": 6,
+    "last_name": "Bigg",
+     "updated_at": "[timestamp]"
+}
+
+```
+
+And that's all now working!
+
+## Summary
+
+In this fourth and final part of the ROM and Dry showcase, we barely looked at either Rom or Dry! Instead, we looked at some pieces of the Hanami web framework.
+
+The Hanami web framework is a great alternative to the Rails framework that [I've loved for a few years](https://ryanbigg.com/2018/03/my-thoughts-on-hanami). What's been great about Hanami in this series is that we were able to opt-in to using Hanami's `hanami-router` and `hanami-controller` gems without having to opt-in to absolutely everything else from Hanami too.
+
+These gems, along with the `puma` and `rack` gems, have allowed us to build a HTTP interface to our application. Our application is now capable of receiving and responding to HTTP requests.
+
+I hope that this series has given you a great demonstration of what the rom-rb, dry-rb and Hanami gems are capable of. I strongly believe that these are viable, new-age alternatives to Rails for building modern Ruby applications.
+
+I hope you continue to explore what these gems can offer and how you can approach building better, easier to maintain applications with them.
