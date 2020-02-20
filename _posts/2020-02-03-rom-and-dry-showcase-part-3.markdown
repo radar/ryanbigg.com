@@ -8,7 +8,7 @@ published: true
 This is the 3rd part of a 4 part series.
 
 * Part 1: [Application + Database setup](/2020/02/rom-and-dry-showcase-part-1)
-* Part 2: [Validations + Transactions](/2020/02/rom-and-dry-showcase-part-1)
+* Part 2: [Validations + Transactions](/2020/02/rom-and-dry-showcase-part-2)
 
 In this 3rd part, we're going to look at how we can test the application that we've built so far. In particular, we'll test three classes:
 
