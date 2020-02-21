@@ -160,28 +160,28 @@ the time the tests run everything for our application has been loaded.</p>
 <p>We're able to test our contract just like a standard Ruby class. We initialize the contract, and then depending on the input it is given, the contract with either succeed or fail.</p>
 <h2 id="testing-the-repository">Testing the repository</h2>
 <p>To test the repository, we can take the same kind of path. For this repository's tests, we need to assert that the <code>create</code> method for <code>Bix::Repos::UserRepo</code> does a few things. What things? Well, let's look at our code for the repository:</p>
-<pre><code>module Bix
-  module Repos
-    class UserRepo &lt; ROM::Repository[:users]
-      include Import[&quot;container&quot;]
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Repos</span>
+    <span class="k">class</span> <span class="nc">UserRepo</span> <span class="o">&lt;</span> <span class="no">ROM</span><span class="o">::</span><span class="no">Repository</span><span class="p">[</span><span class="ss">:users</span><span class="p">]</span>
+      <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"container"</span><span class="p">]</span>
 
-      struct_namespace Bix
+      <span class="n">struct_namespace</span> <span class="no">Bix</span>
 
-      commands :create,
-        use: :timestamps,
-        plugins_options: {
-          timestamps: {
-            timestamps: %i(created_at updated_at)
-          }
-        }
+      <span class="n">commands</span> <span class="ss">:create</span><span class="p">,</span>
+        <span class="ss">use: :timestamps</span><span class="p">,</span>
+        <span class="ss">plugins_options: </span><span class="p">{</span>
+          <span class="ss">timestamps: </span><span class="p">{</span>
+            <span class="ss">timestamps: </span><span class="sx">%i(created_at updated_at)</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
 
-      def all
-        users.to_a
-      end
-    end
-  end
-end
-</code></pre>
+      <span class="k">def</span> <span class="nf">all</span>
+        <span class="n">users</span><span class="p">.</span><span class="nf">to_a</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
 <p>The repository has a <code>create</code> method and with this method we need to make sure:</p>
 <ul>
 <li>The method returns a <code>Bix::User</code> object -- because <code>struct_namespace</code> has configured the repository to use the <code>Bix</code> namespace for all structs.</li>

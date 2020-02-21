@@ -2,7 +2,6 @@
 wordpress_id: RB-1582157866
 layout: post
 title: "ROM and Dry Showcase: Part 4"
-published: false
 ---
 
 This is the 4th (and final) part of a 4 part series covering the [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) suites of gems.
@@ -137,7 +136,6 @@ RSpec.describe "/users" do
     context "with invalid input" do
       let(:input) do
         {
-          first_name: "Ryan",
           last_name: "Bigg",
           age: 32,
         }

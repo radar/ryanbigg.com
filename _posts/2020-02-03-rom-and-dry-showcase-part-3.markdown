@@ -166,7 +166,7 @@ We're able to test our contract just like a standard Ruby class. We initialize t
 
 To test the repository, we can take the same kind of path. For this repository's tests, we need to assert that the `create` method for `Bix::Repos::UserRepo` does a few things. What things? Well, let's look at our code for the repository:
 
-```
+```ruby
 module Bix
   module Repos
     class UserRepo < ROM::Repository[:users]
