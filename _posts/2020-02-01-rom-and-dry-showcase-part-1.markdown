@@ -45,6 +45,8 @@ To get started, we'll create an empty directory for our application. I've called
 ```
 source 'https://rubygems.org'
 
+ruby '2.7.0'
+
 gem 'dry-system'
 gem 'rom'
 gem 'rom-sql'
