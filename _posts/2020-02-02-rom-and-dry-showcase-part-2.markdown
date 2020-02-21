@@ -54,13 +54,13 @@ This new file will include any sort of setup logic that we will need for the _co
 
 The `dry-validation` gem allows us to create classes to encapsulate validation logic, and this gem uses another dry-rb gem under the hood called [`dry-schema`](https://dry-rb.org/gems/dry-schema/1.4)
 
- These classes are called _contracts_. We'll create our first contract at `lib/bix/contracts/users/create.rb`:
+ These classes are called _contracts_. We'll create our first contract at `lib/bix/contracts/users/create_user.rb`:
 
 ```ruby
 module Bix
   module Contracts
     module Users
-      class Create < Dry::Validation::Contract
+      class CreateUser < Dry::Validation::Contract
         params do
           required(:first_name).filled(:string)
           required(:last_name).filled(:string)
@@ -117,7 +117,7 @@ Great, our contract is correctly validating input! What's interesting to note he
 module Bix
   module Contracts
     module Users
-      class Create < Dry::Validation::Contract
+      class CreateUser < Dry::Validation::Contract
         params do
           required(:first_name).filled(:string)
           required(:last_name).filled(:string)
@@ -218,7 +218,7 @@ When our code sees a `Failure` Result Monad returned, it will not execute the re
 
 ### Do Notation
 
-The Result Monad is used in conjunction with that other feature of `dry-monads` I mentioned earlier: Do Notation. Let's take the above `CreateUser` class and re-write it using `dry-monads`' Do Notation. We'll put this class at `lib/bix/transactions/users/create.rb`:
+The Result Monad is used in conjunction with that other feature of `dry-monads` I mentioned earlier: Do Notation. Let's take the above `CreateUser` class and re-write it using `dry-monads`' Do Notation. We'll put this class at `lib/bix/transactions/users/create_user.rb`:
 
 ```ruby
 module Bix
@@ -242,7 +242,7 @@ module Bix
         end
 
         def persist(result)
-          user_repo = Bix::Repos::User.new
+          user_repo = Bix::Repos::UserRepo.new
           Success(user_repo.create(result.values))
         end
       end
@@ -287,7 +287,7 @@ If it succeeds however, the transaction to the next step: `create_user`:
 
 ```ruby
 def create_user(result)
-  user_repo = Bix::Repos::User.new
+  user_repo = Bix::Repos::UserRepo.new
   Success(user_repo.create(result.values))
 end
 ```
@@ -355,7 +355,9 @@ Next up, we include `Dry::Monads[:result]`. This gives us access to the `Success
 
 Once we've set everything up, we define an input hash for our transaction, and the transaction itself. When we call the transaction, we can use a `case` to match on the outcome of the transaction. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a `Dry::Validation::Result` failure), we output the validation error messages.
 
-Here we've seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it. In Part 4 of this guide, we'll re-visit how to use this transaction in a different context.
+Here we've seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it.
+
+In Part 4 of this guide, we'll re-visit how to use this transaction in a different context.
 
 ## Automatically injecting dependencies
 
@@ -445,6 +447,12 @@ end
 ```
 
 That's a lot cleaner, isn't it? We're now able to refer to the contract as simply `create_user`, and the repository as `user_repo`, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this transaction has, right at the top of the class. We don't need to scan through the class to figure out what they are anymore.
+
+To make sure that things are working again, let's try running `ruby transaction_test.rb` again. If the `input` hash at the top of this file contains valid input, then we should see the successful message still:
+
+```
+User created successfully!
+```
 
 If this transaction class went on to use other classes from our application, we could import them with very little effort, thanks to the `dry-system` and `dry-auto_inject` gems.
 
