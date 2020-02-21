@@ -30,7 +30,7 @@ In these guides, you may get a sense that the setup of rom-rb and dry-rb librari
 
 However, Rails leads you into an application architecture that paints you into a corner, for reasons I explained in [my "Exploding Rails" talk in 2018](https://www.youtube.com/watch?v=04Kq_9scT1E).
 
-The setup of ROM and dry-rb things _is_ harder, but leads you ultimately into a better designed application with clearer lines drawn between the classes' responsibilties.
+The setup of ROM and dry-rb things _is_ harder, but leads you ultimately into a better designed application with clearer lines drawn between the classes' responsibilities.
 
 It might help to think of it in the way my friend Bo Jeanes put it:
 
@@ -132,9 +132,9 @@ end
 
 This `system/boot` directory is where we put system-level dependencies when using `dry-system`. This new file that we've created configures how our application defines its database connection.
 
-To connect to the database, we need to use the `rom` and `rom-sql` gems. On the final line of `init`, we register a database connection to be used. This will pull the `DATABASE_URL` variable from the environment, which by default will load the one specified in `.env.development`.
+To connect to the database, we need to use the `rom` and `rom-sql` gems. On the final line of `init`, we register a database configuration to be used. This will pull the `DATABASE_URL` variable from the environment, which by default will load the one specified in `.env.development`.
 
-Now that we have our database connection defined and our database itself created, we will need to create tables in that database. If this was a Rails app, we would use migrations to do such a thing. Fortunately for us, ROM "borrowed" that idea and so we can use migrations with ROM too.
+Now that we have our database configuration defined and our database itself created, we will need to create tables in that database. If this was a Rails app, we would use migrations to do such a thing. Fortunately for us, ROM "borrowed" that idea and so we can use migrations with ROM too.
 
 To create migrations with ROM, we will need to create another file to define the Rake tasks, called `Rakefile`:
 
@@ -155,7 +155,11 @@ end
 
 This file loads the `config/application.rb` file that we created earlier and that will make it possible to require the other two files we use here.
 
+<<<<<<< HEAD
 In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called `db:setup`. This configuration starts the system-level dependency `:db` by calling `start` on `Bix::Application`. This will run the code inside the `init` block defined within `system/boot/db.rb`. This `init` block registers a `db.config` with our application, and we can retrive that value by using `Bix::Application['db.config']` here.
+=======
+In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called `db:setup`. This configuration starts the system-level dependency `:db` by calling `start` on `Bix::Application`. This will run the code inside the `init` block defined within `system/boot/db.rb`. This `init` block registers a `db.config` with our application, and we can retrieve that value by using `Bix::Application['db.config']` here.
+>>>>>>> some code, typos and consistency fixes
 
 Inside this configuration, we configure something called the _default gateway_, which is the simply the default database connection that ROM has been configured with. We _could_ configure multiple gateways, but we're only going to be using the one in this series. On this gateway, we tell it to use a new `Logger` instance, which will log SQL output for our Rake tasks.
 
@@ -221,12 +225,12 @@ Then the migration has been successfully applied.
 
 In order to get data into and out of database tables with ROM, we need to create something called a _repository_. A repository is a class that is used to define a clear API between your database and your application.
 
-To create one of these, we'll create a new file inside a new directory structure at `lib/bix/repos/user_repo.rb`:
+To create one of these, we'll create a new file inside a new directory structure at `lib/bix/repos/user.rb`:
 
 ```ruby
 module Bix
   module Repos
-    class UserRepo < ROM::Repository[:users]
+    class User < ROM::Repository[:users]
 
     end
   end
@@ -238,12 +242,12 @@ To use this class (and others that we will create later on), we'll need to creat
 ```ruby
 Bix::Application.boot(:persistence) do |app|
   start do
-    register('container', ROM.container(:sql, app['db.connection']))
+    register('container', ROM.container(:sql, app['db.config'].gateways[:default].connection))
   end
 end
 ```
 
-This file uses the `rom` gem to define a database configuration container and registers it with our application under the `container` key.
+This file uses the `rom` gem to define a database connection container and registers it with our application under the `container` key.
 
 Next up, we'll create a new file over at `bin/console` with this in it:
 
@@ -258,7 +262,7 @@ require 'irb'
 IRB.start
 ```
 
-This file will load our application's `config/application.rb` file. When this file is loaded, all the files in `lib` will be required. This includes our new `lib/bix/repos/user_repo.rb` file.
+This file will load our application's `config/application.rb` file. When this file is loaded, all the files in `lib` will be required. This includes our new `lib/bix/repos/user.rb` file.
 
 We call `Bix::Application.finalize!` here to start our application and all of its dependencies, this includes the two system-level dependencies specified in `system/boot`.
 
@@ -367,10 +371,17 @@ However, we will need to register relations with our application's database cont
 ```ruby
 Bix::Application.boot(:persistence) do |app|
   start do
+<<<<<<< HEAD
     config = app['db.config']
     config.auto_registration(app.root + "lib/bix")
 
     register('container', ROM.container(app['db.config']))
+=======
+    container = ROM.container(:sql, app['db.config'].gateways[:default].connection) do |config|
+      config.auto_registration(app.root + "lib/bix")
+    end
+    register('container', container)
+>>>>>>> some code, typos and consistency fixes
   end
 end
 
@@ -386,12 +397,12 @@ Let's run `bin/console` again and try working with our repository again:
 NoMethodError (undefined method `all' for #<Bix::Repos::User struct_namespace=ROM::Struct auto_struct=true>)
 ```
 
-Oops! Repositores are intentionally bare-bones in ROM; they do not come with very many methods at all. Let's exit the console and then we'll define some methods on our repository. While we're here, we'll add a method for finding all the users, and one for creating users. Let's open `lib/bix/repos/user_repo.rb` and add these methods:
+Oops! Repositories are intentionally bare-bones in ROM; they do not come with very many methods at all. Let's exit the console and then we'll define some methods on our repository. While we're here, we'll add a method for finding all the users, and one for creating users. Let's open `lib/bix/repos/user.rb` and add these methods:
 
 ```ruby
 module Bix
   module Repos
-    class UserRepo < ROM::Repository[:users]
+    class User < ROM::Repository[:users]
       commands :create,
         use: :timestamps,
         plugins_options: {
@@ -432,7 +443,11 @@ Hooray! We have now been able to add a record and retrieve it. We have now set u
 * `system/boot/db.rb` - Specifies how our application connects to a database
 * `system/boot/persistence.rb` - Defines a ROM container that defines how the ROM pieces of our application connect to and interact with our database
 * `lib/bix/relations/users.rb` - Defines a class that can contain query logic for our `users` table
+<<<<<<< HEAD
 * `lib/bix/repos/user_repo.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.
+=======
+* `lib/bix/repos/user.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the database.
+>>>>>>> some code, typos and consistency fixes
 
 ROM and Dry separate our application into small, clearly defined pieces with individual responsibilities. While this setup cost feels large _now_, it's a cost that we're only going to be paying once; Setup cost is one-time, maintenance cost is forever.
 
@@ -454,12 +469,12 @@ end
 
 Ignoring [the falsehoods programmers believe about names](https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/), this method will combine a user's `first_name` and `last_name` attributes.
 
-To use this class though, we need to configure the repository further over in `lib/bix/repos/user_repo.rb`:
+To use this class though, we need to configure the repository further over in `lib/bix/repos/user.rb`:
 
 ```ruby
 module Bix
   module Repos
-    class UserRepo < ROM::Repository[:users]
+    class User < ROM::Repository[:users]
       struct_namespace Bix
 
       ...
@@ -524,12 +539,12 @@ module Bix
 end
 ```
 
-This `Import` constant will allow us to import (or _inject_) anything registered with our application into other parts. Let's see this in action now by adding this line to `lib/repos/user_repo.rb`:
+This `Import` constant will allow us to import (or _inject_) anything registered with our application into other parts. Let's see this in action now by adding this line to `lib/repos/user.rb`:
 
 ```ruby
 module Bix
   module Repos
-    class UserRepo < ROM::Repository[:users]
+    class User < ROM::Repository[:users]
       include Import["container"]
 
       ...
