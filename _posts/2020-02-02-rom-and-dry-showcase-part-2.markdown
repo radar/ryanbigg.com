@@ -75,7 +75,7 @@ end
 This class defines a contract that says that when we're creating users, there has to be at least two parameters -- `first_name` and `last_name`, and they both have to be `filled` (present) strings. This contract also says that an `age` parameter is optional, but when it's specified it's an integer. Let's try using this contract now in `bin/console`:
 
 ```ruby
-create_user = Bix::Contracts::Users::Create.new
+create_user = Bix::Contracts::Users::CreateUser.new
 result = create_user.call({})
 ```
 
@@ -104,7 +104,7 @@ result.errors.to_h
 Let's look at what happens when we pass valid data, but with a twist: all of our values are strings. This is the kind of data you would get from a form submission through a web application:
 
 ```ruby
-create_user = Bix::Contracts::Users::Create.new
+create_user = Bix::Contracts::Users::CreateUser.new
 result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: "32")
 => #<Dry::Validation::Result{:first_name=>"Ryan", :last_name=>"Bigg", :age=>32} errors={}>
 result.success?
@@ -134,7 +134,7 @@ If we pass data from a form submission through our contract before we work throu
 Another thing to note with our new contract is that it will only return the specified fields. Extra fields will be ignored:
 
 ```ruby
-create_user = Bix::Contracts::Users::Create.new
+create_user = Bix::Contracts::Users::CreateUser.new
 result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: "32", admin: true)
 # => #<Dry::Validation::Result{:first_name=>"Ryan", :last_name=>"Bigg", :age=>32} errors={}>
 ```
@@ -149,7 +149,7 @@ So in summary, here's what we're given by using a `dry-validation` contract:
 
 ## Intro to Dry Monads
 
-Now that we have a way to create user records (the `Bix::Repos::User`) and a way to validate that data before it gets into the database `(Bix::Contracts::Users::Create`), we can combine them to ensure data is valid before it reaches out database.
+Now that we have a way to create user records (the `Bix::Repos::UserRepo`) and a way to validate that data before it gets into the database `(Bix::Contracts::Users::CreateUser`), we can combine them to ensure data is valid before it reaches out database.
 
 To do this combination, we could write a class like this:
 
@@ -272,7 +272,7 @@ The `call` method here is responsible for ordering the steps of our transaction.
 
 ```ruby
 def validate(input)
-  create_contract = Contracts::Users::Create.new
+  create_contract = Contracts::Users::CreateUser.new
   create_contract.call(input).to_monad
 end
 ```
@@ -345,7 +345,7 @@ when Success
   puts "User created successfully!"
 when Failure(Dry::Validation::Result)
   puts "User creation failed:"
-  puts result.failure.errors.to_h
+  puts result.failure.errors.to_h # TODO variable result is not defined
 end
 ```
 
