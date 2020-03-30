@@ -238,7 +238,7 @@ To use this class (and others that we will create later on), we'll need to creat
 ```ruby
 Bix::Application.boot(:persistence) do |app|
   start do
-    register('container', ROM.container(:sql, app['db.connection']))
+    register('container', ROM.container(app['db.config']))
   end
 end
 ```
