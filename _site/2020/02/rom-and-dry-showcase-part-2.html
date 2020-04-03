@@ -85,7 +85,7 @@
 <span class="k">end</span>
 </code></pre></div></div>
 <p>This class defines a contract that says that when we're creating users, there has to be at least two parameters -- <code>first_name</code> and <code>last_name</code>, and they both have to be <code>filled</code> (present) strings. This contract also says that an <code>age</code> parameter is optional, but when it's specified it's an integer. Let's try using this contract now in <code>bin/console</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">({})</span>
 </code></pre></div></div>
 <p>To use this contract, we need to initialize a new object from the class and then use the <code>call</code> method on that new object. The argument that we pass it are the parameters for the contract, which in this case is just an empty Hash.</p>
@@ -101,7 +101,7 @@
 <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:first_name</span><span class="o">=&gt;</span><span class="p">[</span><span class="s2">"is missing"</span><span class="p">],</span> <span class="ss">:last_name</span><span class="o">=&gt;</span><span class="p">[</span><span class="s2">"is missing"</span><span class="p">]}</span>
 </code></pre></div></div>
 <p>Let's look at what happens when we pass valid data, but with a twist: all of our values are strings. This is the kind of data you would get from a form submission through a web application:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="s2">"32"</span><span class="p">)</span>
 <span class="o">=&gt;</span> <span class="c1">#&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"Bigg", :age=&gt;32} errors={}&gt;</span>
 <span class="n">result</span><span class="p">.</span><span class="nf">success?</span>
@@ -124,7 +124,7 @@
 </code></pre></div></div>
 <p>If we pass data from a form submission through our contract before we work through it, the data will have all the correct types and we don't need to coerce that data when we're working with -- dry-validation has done that for us. After this point, our data will always be in the correct type.</p>
 <p>Another thing to note with our new contract is that it will only return the specified fields. Extra fields will be ignored:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="s2">"32"</span><span class="p">,</span> <span class="ss">admin: </span><span class="kp">true</span><span class="p">)</span>
 <span class="c1"># =&gt; #&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"Bigg", :age=&gt;32} errors={}&gt;</span>
 </code></pre></div></div>
@@ -136,7 +136,7 @@
 <li>Automatic limiting of input to just the fields we have specified</li>
 </ul>
 <h2 id="intro-to-dry-monads">Intro to Dry Monads</h2>
-<p>Now that we have a way to create user records (the <code>Bix::Repos::User</code>) and a way to validate that data before it gets into the database <code>(Bix::Contracts::Users::Create</code>), we can combine them to ensure data is valid before it reaches out database.</p>
+<p>Now that we have a way to create user records (the <code>Bix::Repos::UserRepo</code>) and a way to validate that data before it gets into the database <code>(Bix::Contracts::Users::CreateUser</code>), we can combine them to ensure data is valid before it reaches out database.</p>
 <p>To do this combination, we could write a class like this:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateUser</span>
   <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
@@ -225,7 +225,7 @@
 </aside>
 <p>The <code>call</code> method here is responsible for ordering the steps of our transaction. It takes our initial <code>input</code> for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the <code>validate</code> method:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
-  <span class="n">create_contract</span> <span class="o">=</span> <span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span><span class="p">.</span><span class="nf">new</span>
+  <span class="n">create_contract</span> <span class="o">=</span> <span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
   <span class="n">create_contract</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">).</span><span class="nf">to_monad</span>
 <span class="k">end</span>
 </code></pre></div></div>
@@ -275,7 +275,7 @@
   <span class="nb">puts</span> <span class="s2">"User created successfully!"</span>
 <span class="k">when</span> <span class="no">Failure</span><span class="p">(</span><span class="no">Dry</span><span class="o">::</span><span class="no">Validation</span><span class="o">::</span><span class="no">Result</span><span class="p">)</span>
   <span class="nb">puts</span> <span class="s2">"User creation failed:"</span>
-  <span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">failure</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">to_h</span>
+  <span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">failure</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">to_h</span> <span class="c1"># TODO variable result is not defined</span>
 <span class="k">end</span>
 </code></pre></div></div>
 <p>This file starts out the same way as <code>bin/console</code>: we require <code>config/application.rb</code> and then &quot;finalize&quot; our application. This finalization step will load all the application's files and start all of the application's dependencies.</p>
