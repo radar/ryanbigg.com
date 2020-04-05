@@ -36,346 +36,95 @@
             
 
 <div class='center title'>
-  <a href="/2020/02/rom-and-dry-showcase-part-4"><h2>ROM and Dry Showcase: Part 4</h2></a>
-  <small>20 Feb 2020</small><br>
+  <a href="/2020/04/the-stand-down"><h2>The Stand Down</h2></a>
+  <small>06 Apr 2020</small><br>
 </div>
 
-<p>This is the 4th (and final) part of a 4 part series covering the <a href="https://rom-rb.org/">rom-rb</a> and <a href="https://dry-rb.org/">dry-rb</a> suites of gems.</p>
-<ul>
-<li>Part 1: <a href="/2020/02/rom-and-dry-showcase-part-1">Application + Database setup</a></li>
-<li>Part 2: <a href="/2020/02/rom-and-dry-showcase-part-2">Validations + Transactions</a></li>
-<li>Part 3: <a href="/2020/02/rom-and-dry-showcase-part-3">Testing</a></li>
-</ul>
-<p>In this last part, we're going to make it so that our application can receive and respond to HTTP requests.</p>
-<p>So far, we've been seeing how to use gems either from the <code>dry-rb</code> suite of gems, or the <code>rom-rb</code> suite of gems. In this part though, we're going to be using a gem from a <em>different</em> suite, a suite called Hanami.</p>
-<p>Hanami is first and foremost a web framework. It has routes, controllers, actions, views and models. Just like your <em>other</em> favourite web framework -- Rails. But the big difference between Hanami and Rails is that with Hanami we can pick and choose the parts of the framework that we want to use.</p>
-<p>Hanami is a <em>modular</em> web framework, and if all we want to use is the router, controllers and actions, then we can. In this part of this showcase, we're going to look at how we can use two gems from Hanami called <code>hanami-router</code> and <code>hanami-controller</code>. These gems will provide us with the features our application needs to receive and respond to HTTP requests.</p>
-<p>Our application will take a request to <code>POST /users</code> with a JSON body shaped like this:</p>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ryan"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bigg"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-<p>And the <em>response</em> will indicate if the request was successful or not. If it was successful, we will see a JSON response:</p>
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"first_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ryan"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"last_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bigg"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"age"</span><span class="p">:</span><span class="w"> </span><span class="mi">32</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-<p>Let's go!</p>
-<h2 id="installing-the-hanami-gems">Installing the Hanami gems</h2>
-<p>Let's add these gems to our Gemfile:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s2">"hanami-controller"</span><span class="p">,</span> <span class="s2">"~&gt; 1.3"</span>
-<span class="n">gem</span> <span class="s2">"hanami-router"</span><span class="p">,</span> <span class="s2">"~&gt; 1.3"</span>
-</code></pre></div></div>
-<p>To install these gems, we can run <code>bundle install</code>.</p>
-<p>In order to make sure that whatever we build with this application is performing correctly, we'll add a third gem called <code>rack-test</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gem</span> <span class="s2">"rack-test"</span>
-</code></pre></div></div>
-<p>We're going to be using this gem to test our application in conjunction with RSpec. You might be thinking: why <code>rack-test</code>? That's because the part of our application that will recieve and respond to HTTP requests will be a <em>Rack</em> application! Just like every other Ruby web framework out there.</p>
-<h2 id="setting-up-the-test-environment">Setting up the test environment</h2>
-<p>Before we can write our any code, we need to write tests for it. It'll make sure that our application is working correctly! But before we can write tests, there's a bit of setup we need to do first. We're going to create a new file called <code>spec/web_helper.rb</code>. This file will setup how our tests can speak to our Rack application:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"spec_helper"</span>
-<span class="nb">require</span> <span class="s2">"rack/test"</span>
-
-<span class="k">module</span> <span class="nn">RequestHelpers</span>
-  <span class="k">def</span> <span class="nf">app</span>
-    <span class="no">Bix</span><span class="o">::</span><span class="no">Web</span><span class="p">.</span><span class="nf">app</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">post_json</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-    <span class="n">post</span> <span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">.</span><span class="nf">to_json</span><span class="p">,</span> <span class="s2">"CONTENT_TYPE"</span> <span class="o">=&gt;</span> <span class="s2">"application/json"</span>
-  <span class="k">end</span>
-
-  <span class="k">def</span> <span class="nf">parsed_body</span>
-    <span class="no">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="n">last_response</span><span class="p">.</span><span class="nf">body</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="no">RSpec</span><span class="p">.</span><span class="nf">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-  <span class="n">config</span><span class="p">.</span><span class="nf">define_derived_metadata</span><span class="p">(</span><span class="ss">file_path: </span><span class="sr">%r{/spec/requests/}</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">metadata</span><span class="o">|</span>
-    <span class="n">metadata</span><span class="p">[</span><span class="ss">:request</span><span class="p">]</span> <span class="o">=</span> <span class="kp">true</span>
-  <span class="k">end</span>
-
-  <span class="n">config</span><span class="p">.</span><span class="nf">include</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Test</span><span class="o">::</span><span class="no">Methods</span><span class="p">,</span> <span class="ss">request: </span><span class="kp">true</span>
-  <span class="n">config</span><span class="p">.</span><span class="nf">include</span> <span class="no">RequestHelpers</span><span class="p">,</span> <span class="ss">request: </span><span class="kp">true</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>We set the <code>web</code> metadata flag on any tests that will go in <code>spec/requests</code>. This allows us to specify that the <code>Rack::Test::Methods</code> and <code>RequestHelpers</code> modules are included <em>only</em> into tests under that particular directory.</p>
-<p>The <code>Rack::Test::Methods</code> module will include methods that we can use to make requests to our app, like <code>get</code>, <code>post</code> and so on.</p>
-<p>The <code>RequestHelpers</code> module defines one method so far, called <code>app</code>. This <code>app</code> method is what the <code>rack-test</code> gem uses to know what application to talk to when we use those <code>get</code> / <code>post</code> / etc. methods.</p>
-<p>We've defined the <code>app</code> value here to be a small Rack application that compiles a few parts. The first is <code>Hanami::Middleware::BodyParser</code>. This is a piece of middleware, that will convert our JSON input into parameters that our controller can access. The second part is <code>Bix::Web::Router</code>, which will be the main Ruby entrypoint for our application. That doesn't exist right now, but we'll create it in a moment. We'll see both of these parts again a little later on again.</p>
-<p>The <code>post_json</code> method in <code>RequestHelpers</code> will allow us to make a <code>POST</code> request to our application and to send through JSON data with that request. Remember: the web part of application here is going to take JSON as input during a request, <em>and</em> it will also return JSON in a response. The <code>parsed_body</code> method will give us a Ruby hash of the response's body, and we can use this later on to assert the returned data is what we expect.</p>
-<p>Before we create our router and all of the other parts, let's write a couple of simple tests to make sure it will behave as we wish.</p>
-<h2 id="writing-our-first-test">Writing our first test</h2>
-<p>Currently, our application has a single transaction for creating users. We're going to use this transaction very soon, using it when a request to <code>POST /users</code> is made. We're going to add two tets now. These two tests will ensure that the application behaves correctly for valid and invalid input to <code>POST /users</code>. Let's add these new tests to <code>spec/requests/users_spec.rb</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"web_helper"</span>
-
-<span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="s2">"/users"</span> <span class="k">do</span>
-  <span class="n">context</span> <span class="s2">"POST /"</span> <span class="k">do</span>
-    <span class="n">context</span> <span class="s2">"with valid input"</span> <span class="k">do</span>
-      <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
-        <span class="p">{</span>
-          <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
-          <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
-          <span class="ss">age: </span><span class="mi">32</span><span class="p">,</span>
-        <span class="p">}</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">"succeeds"</span> <span class="k">do</span>
-        <span class="n">post_json</span> <span class="s2">"/users"</span><span class="p">,</span> <span class="n">input</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">last_response</span><span class="p">.</span><span class="nf">status</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">parsed_body</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]).</span><span class="nf">not_to</span> <span class="n">be_nil</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">"first_name"</span><span class="p">]).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"Ryan"</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">"last_name"</span><span class="p">]).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="s2">"Bigg"</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">"age"</span><span class="p">]).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-
-    <span class="n">context</span> <span class="s2">"with invalid input"</span> <span class="k">do</span>
-      <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
-        <span class="p">{</span>
-          <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
-          <span class="ss">age: </span><span class="mi">32</span><span class="p">,</span>
-        <span class="p">}</span>
-      <span class="k">end</span>
-
-      <span class="n">it</span> <span class="s2">"returns an error"</span> <span class="k">do</span>
-        <span class="n">post_json</span> <span class="s2">"/users"</span><span class="p">,</span> <span class="n">input</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">last_response</span><span class="p">.</span><span class="nf">status</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">422</span><span class="p">)</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">parsed_body</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">user</span><span class="p">[</span><span class="s2">"errors"</span><span class="p">][</span><span class="s2">"first_name"</span><span class="p">]).</span><span class="nf">to</span> <span class="kp">include</span><span class="p">(</span><span class="s2">"is missing"</span><span class="p">)</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>These tests should look pretty familiar! They are essentially the same tests for our transaction, just with rack-test methods being the primary difference.</p>
-<p>When we attempt to run these tests, we'll see that we're missing a part of our application:</p>
-<pre><code>  1) /users POST / with valid input succeeds
-     Failure/Error: Bix::Web.app
-
-     NoMethodError:
-       undefined method `app' for Bix::Web:Module
-</code></pre>
-<p>Oh right! We need to setup this Web thing!</p>
-<h2 id="building-the-web-component">Building the Web component</h2>
-<p>To setup this web part of our application, we're going to add a new file to <code>system/boot</code>, called <code>web.rb</code>. In this file, we'll need to require all the gems that we'll be using for the web part of our application:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">boot</span><span class="p">(</span><span class="ss">:web</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">app</span><span class="o">|</span>
-  <span class="n">init</span> <span class="k">do</span>
-    <span class="nb">require</span> <span class="s2">"hanami-router"</span>
-    <span class="nb">require</span> <span class="s2">"hanami-controller"</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>This two lines will require the hanami gems that we're going to be using here. Where we'll use these gems is in a couple of files.</p>
-<p>The first is a file called <code>lib/bix/web/application.rb</code>. This is where we'll define the different Rack pieces for our application:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"hanami/middleware/body_parser"</span>
-
-<span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">module</span> <span class="nn">Web</span>
-    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">app</span>
-      <span class="no">Rack</span><span class="o">::</span><span class="no">Builder</span><span class="p">.</span><span class="nf">new</span> <span class="k">do</span>
-        <span class="n">use</span> <span class="no">Hanami</span><span class="o">::</span><span class="no">Middleware</span><span class="o">::</span><span class="no">BodyParser</span><span class="p">,</span> <span class="ss">:json</span>
-        <span class="n">run</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Web</span><span class="o">::</span><span class="no">Router</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>This file is defines the <code>Bix::Web.app</code> method that our test is looking for! This method returns a <code>Rack::Builder</code> object, which is to say it returns a <em>Rack application</em>.</p>
-<p>This Rack application uses a single piece of middleware: <code>Hanami::Middleware::BodyParser</code>. This middleware is used to take in any JSON request body, and to transform it into parameters for our actions.</p>
-<p>The <code>run</code> line at the of the builder's block directs Rack to the application that will be serving our requests. Let's build this part now in <code>lib/bix/web/router.rb</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">module</span> <span class="nn">Web</span>
-    <span class="no">Router</span> <span class="o">=</span> <span class="no">Hanami</span><span class="o">::</span><span class="no">Router</span><span class="p">.</span><span class="nf">new</span> <span class="k">do</span>
-      <span class="n">post</span> <span class="s2">"/users"</span><span class="p">,</span> <span class="ss">to: </span><span class="no">Controllers</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">Create</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>This file allows us to define routes for the web side of our application. This route defines a <code>POST /users</code> request to go to <code>Controllers::Users::Create</code>. What is this mythical constant? It's going to be the action that serves this request.</p>
-<p>In this application, we're going to put actions inside their own classes. This will keep the code for each action more clearly isolated from other actions.</p>
-<p>We'll define this action inside <code>lib/bix/web/controllers/users/create.rb</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">module</span> <span class="nn">Web</span>
-    <span class="k">module</span> <span class="nn">Controllers</span>
-      <span class="k">module</span> <span class="nn">Users</span>
-        <span class="k">class</span> <span class="nc">Create</span>
-          <span class="kp">include</span> <span class="no">Hanami</span><span class="o">::</span><span class="no">Action</span>
-
-          <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-            <span class="nb">self</span><span class="p">.</span><span class="nf">body</span> <span class="o">=</span> <span class="s2">"{}"</span>
-          <span class="k">end</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>This action class includes the <code>Hanami::Action</code> module from the <code>hanami-controller</code> gem. This gives us access to a number of helpful methods, but the only one of these we're using now is <code>self.body=</code>, which we're using to set the response body to an empty JSON hash. What's also worth mentioning here is that due to us not specifying a status, this action will return a <code>200</code> status.</p>
-<p>With our router and controller now setup correctly, let's switch back to looking at our tests.</p>
-<h2 id="running-our-tests">Running our tests</h2>
-<p>When we run these tests with <code>bundle exec rspec spec/requests</code> we'll see they're both failing:</p>
-<pre><code>  1) /users POST / with valid input succeeds
-     Failure/Error: expect(user[&quot;id&quot;]).not_to be_nil
-
-       expected: not nil
-            got: nil
-     # ./spec/requests/users_spec.rb:18:in `block (4 levels) in &lt;top (required)&gt;'
-
-  2) /users POST / with invalid input returns an error
-    Failure/Error: expect(last_response.status).to eq(422)
-
-      expected: 422
-          got: 200
-
-      (compared using ==)
-    # ./spec/requests/users_spec.rb:36:in `block (4 levels) in &lt;top (required)&gt;'
-</code></pre>
-<p>This is happening because all our action returns is an empty JSON body. Let's work on changing this.</p>
-<p>We'll change the action to use the transaction class:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
-  <span class="k">module</span> <span class="nn">Web</span>
-    <span class="k">module</span> <span class="nn">Controllers</span>
-      <span class="k">module</span> <span class="nn">Users</span>
-        <span class="k">class</span> <span class="nc">Create</span>
-          <span class="kp">include</span> <span class="no">Hanami</span><span class="o">::</span><span class="no">Action</span>
-          <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"transactions.users.create_user"</span><span class="p">]</span>
-          <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
-
-          <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-            <span class="k">case</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">.</span><span class="nf">to_h</span><span class="p">)</span>
-            <span class="k">in</span> <span class="no">Success</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-              <span class="nb">self</span><span class="p">.</span><span class="nf">body</span> <span class="o">=</span> <span class="n">result</span><span class="p">.</span><span class="nf">to_h</span><span class="p">.</span><span class="nf">to_json</span>
-              <span class="nb">self</span><span class="p">.</span><span class="nf">status</span> <span class="o">=</span> <span class="mi">200</span>
-            <span class="k">in</span> <span class="no">Failure</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-              <span class="nb">self</span><span class="p">.</span><span class="nf">body</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">errors: </span><span class="n">result</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">to_h</span> <span class="p">}.</span><span class="nf">to_json</span>
-              <span class="nb">self</span><span class="p">.</span><span class="nf">status</span> <span class="o">=</span> <span class="mi">422</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>At the top of this controller action, we import the <code>create_user</code> transaction by using the <code>Import</code> constant that we made a few parts ago -- this is from <code>dry-auto_inject</code>.</p>
-<p>Then we include <code>Dry::Moands[:result]</code> -- this gives us access to the <code>Success</code> and <code>Failure</code> methods we use inside the action.</p>
-<p>Inside the action itself, we call the transaction and then use Ruby 2.7's new pattern matching to decide what to do. In the case of a successful transaction, we return the body of the result. If it fails, we return the errors and set the status to 422.</p>
-<p>This should be exactly what our test is expecting. Let's run them again and find out:</p>
-<pre><code>2 examples, 0 failures
-</code></pre>
-<p>Good! Our tests for our router are now passing. But this only means that our router is working, not that we can serve HTTP requests yet! We need one final piece for that to work.</p>
-<h2 id="racking-up-the-server">Racking up the server</h2>
-<p>To run our HTTP server, we'll use a gem called <code>puma</code>. Let's add that gem to the <code>Gemfile</code> now:</p>
-<pre><code>gem &quot;puma&quot;
-</code></pre>
-<p>And we'll run <code>bundle install</code> to install it.</p>
-<p>To run the Puma server, we can use the command by the same name:</p>
-<pre><code>puma
-</code></pre>
-<p>When we do this, we get an error:</p>
-<pre><code>Puma starting in single mode...
-* Version 3.12.1 (ruby 2.7.0-p0), codename: Llamas in Pajamas
-* Min threads: 0, max threads: 16
-* Environment: development
-ERROR: No application configured, nothing to run
-</code></pre>
-<p>This is because Puma hasn't been told what to run yet. The good thing for us is that Puma will look for a special file to know what to run. That file is called <code>config.ru</code>. Let's create that file now:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s2">"config/application"</span>
-
-<span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">finalize!</span>
-
-<span class="n">run</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Web</span><span class="p">.</span><span class="nf">app</span>
-</code></pre></div></div>
-<p>This file looks a lot like <code>bin/console</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env ruby</span>
-
-<span class="nb">require_relative</span> <span class="s1">'../config/application'</span>
-
-<span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">finalize!</span>
-
-<span class="nb">require</span> <span class="s1">'irb'</span>
-<span class="no">IRB</span><span class="p">.</span><span class="nf">start</span>
-</code></pre></div></div>
-<p>The difference is that we're starting a server, instead of starting a console session.</p>
-<p>Let's try <code>puma</code> again:</p>
-<pre><code>Puma starting in single mode...
-* Version 3.12.1 (ruby 2.7.0-p0), codename: Llamas in Pajamas
-* Min threads: 0, max threads: 16
-* Environment: development
-* Listening on tcp://0.0.0.0:9292
-</code></pre>
-<p>Great! We now have a HTTP server listening on port 9292.</p>
-<p>To test this out, we can do one of two things. If you have the marvellous <a href="http://httpie.org">httpie</a> installed, you can run this command:</p>
-<pre><code>http --json post http://localhost:9292/users first_name=Ryan last_name=Bigg
-</code></pre>
-<p>Otherwise, if you're using <code>curl</code>, it's a little more verbose:</p>
-<pre><code>curl --request 'POST' \
--i \
---header 'Content-Type: application/json' \
---data '{&quot;first_name&quot;:&quot;Ryan&quot;}' \
-'http://localhost:9292/users'
-</code></pre>
-<p>(Use HTTPie!)</p>
-<p>Either way, what we'll see returned here is a validation error message indicating that our input was not quite complete:</p>
-<pre><code>HTTP/1.1 422 Unprocessable Entity
-Content-Length: 39
-Content-Type: application/json; charset=utf-8
-
-{
-    &quot;errors&quot;: {
-        &quot;last_name&quot;: [
-            &quot;is missing&quot;
-        ]
-    }
-}
-</code></pre>
-<p>Note here that the HTTP status is 422 as well.</p>
-<p>Great, so that means the <em>failure</em> case for our action is now working as we wished it would.</p>
-<p>Let's see if we can test out the success case too with this <code>http</code> call:</p>
-<pre><code>http --json post http://localhost:9292/users first_name=Ryan last_name=Bigg
-</code></pre>
-<p>Or this <code>curl</code> one:</p>
-<pre><code>curl --request 'POST' \
--i \
---header 'Content-Type: application/json' \
---data '{&quot;first_name&quot;:&quot;Ryan&quot;, &quot;last_name&quot;: &quot;Bigg&quot;}' \
-'http://localhost:9292/users'
-</code></pre>
-<p>Now we will see a successful response:</p>
-<pre><code>HTTP/1.1 200 OK
-Content-Length: 140
-Content-Type: application/json; charset=utf-8
-
-{
-    &quot;age&quot;: null,
-    &quot;created_at&quot;: &quot;[timestamp]&quot;,
-    &quot;first_name&quot;: &quot;Ryan&quot;,
-    &quot;id&quot;: 6,
-    &quot;last_name&quot;: &quot;Bigg&quot;,
-     &quot;updated_at&quot;: &quot;[timestamp]&quot;
-}
-
-</code></pre>
-<p>And that's all now working!</p>
-<h2 id="summary">Summary</h2>
-<p>In this fourth and final part of the ROM and Dry showcase, we barely looked at either Rom or Dry! Instead, we looked at some pieces of the Hanami web framework.</p>
-<p>The Hanami web framework is a great alternative to the Rails framework that <a href="https://ryanbigg.com/2018/03/my-thoughts-on-hanami">I've loved for a few years</a>. What's been great about Hanami in this series is that we were able to opt-in to using Hanami's <code>hanami-router</code> and <code>hanami-controller</code> gems without having to opt-in to absolutely everything else from Hanami too.</p>
-<p>These gems, along with the <code>puma</code> and <code>rack</code> gems, have allowed us to build a HTTP interface to our application. Our application is now capable of receiving and responding to HTTP requests.</p>
-<p>I hope that this series has given you a great demonstration of what the rom-rb, dry-rb and Hanami gems are capable of. I strongly believe that these are viable, new-age alternatives to Rails for building modern Ruby applications.</p>
-<p>I hope you continue to explore what these gems can offer and how you can approach building better, easier to maintain applications with them.</p>
+<p>On this Friday just gone (3rd of April), I was told that I would be stood down at Coder Academy. I knew this was a possibility, because at the start of the week Coder Academy's parent company had announced they were standing down 235 (yes, two-hundred-and-thirty-five) staff. I was told at the start of the week &quot;don't worry, it's not academic staff&quot; and then by the end of the week, oops it was academic staff too. Shit happens, hey?</p>
+<p>I'm mad and sad about it. Mad-sad? Is that a thing?</p>
+<p>If you want to know what a stand down notice looks like, here's the text of the one I received with my comments inline.</p>
+<blockquote>
+<p>As we have advised you, current circumstances around the global COVID-19 pandemic emergency have resulted in RedHill’s inability to offer you gainful employment at the current time. The purpose of this letter is to confirm that due to these circumstances which are beyond our control, you are being stood down from 6 April 2020.</p>
+</blockquote>
+<p>A 0 day notice period is a real shitty thing to do. My work colleagues and the students I was teaching were a big part of my human interaction every week (thanks COVID!) and I've been disconnected basically immediately, without any warning.</p>
+<p>The time between me receiving my phone call and being cut off from Slack and GitHub was 13 minutes. During that time, I was talking with my wife about the phone call and trying not to scream in frustration.</p>
+<p>A week's notice would've been good. To, well, you know, proverbially pack my things and say my goodbyes.</p>
+<blockquote>
+<p>We anticipate that the stand down will apply for a period of 3 months, but that timeframe may change pending the company’s ongoing review of pandemic circumstances.</p>
+</blockquote>
+<blockquote>
+<p>The type of work that you currently perform is not required to be undertaken, or to be undertaken to the same extent, during the stand down period. Unfortunately, there are no opportunities for you to be redeployed to another role at RedHill.</p>
+</blockquote>
+<blockquote>
+<p>You will remain an employee of RedHill during the stand down period, but you will not be required to perform any work and you will not receive any wages.</p>
+</blockquote>
+<p>I'll &quot;remain an employee&quot; but I'll not be working or receiving any wages? Mates. Did you even look up the dictionary definition of the word &quot;employee&quot;? Probably not. Here it is:</p>
+<blockquote>
+<p>a person employed for wages or salary, especially at non-executive level.</p>
+</blockquote>
+<p>So no wages and no work, means no, I am not remaining an employee. Idiots.</p>
+<blockquote>
+<p>Your stand down is in accordance with the Fair Work Act 2009.</p>
+</blockquote>
+<p>Great, I'll just read through that whole Act now myself because, ya know, <em>I've got some pretty large amounts of free time now</em>. For those interested, relevant section is <a href="http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/fwa2009114/s524.html">this one</a>.</p>
+<blockquote>
+<p>During the stand down period, you:
+• will be permitted to draw down on your annual leave...</p>
+</blockquote>
+<p>Yay, all 7 days of it.</p>
+<blockquote>
+<p>...and long service leave entitlements</p>
+</blockquote>
+<p>Pretty sure I have 0 of these given I worked at the company for a grand total of four months.</p>
+<blockquote>
+<p>• may be eligible for government assistance programs, and RedHill will provide any necessary documentation or information to assist you to access any of those entitlements;</p>
+</blockquote>
+<p>Read: &quot;Have you heard about that dole thing? You should look into it.&quot;</p>
+<blockquote>
+<p>• will be permitted to seek and obtain other work during the stand down period without being in breach of your employment agreement;</p>
+</blockquote>
+<p>Oh thank you! So gracious of you master.</p>
+<blockquote>
+<p>• will continue to accrue leave entitlements (including annual leave, long service leave, and personal/carers leave) as if you remained at work for the time that you are being stood down; and</p>
+</blockquote>
+<p>Accruing leave entitlements? Woo hoo. I'd rather you just, you know, kept paying me as per the Job Keeper thing that the AU government is passing. $1500 a fortnight is better than fuck all a fortnight.</p>
+<blockquote>
+<p>• will continue to have access to RedHill’s EAP support.</p>
+</blockquote>
+<p>That's great, but you've shut me out of all your systems where that information about the EAP was kept. So... how exactly am I supposed to access that?</p>
+<blockquote>
+<p>Any applications for annual leave or long service leave during your stand down should continue to be applied for via RedHill’s Employment Hero human resources system.</p>
+</blockquote>
+<p>So to take any leave... from my stand down position... where I'm not working or even <em>required</em> to work... I still need to lodge it in the HR system, that I no longer have access to? Greeeeeeat.</p>
+<blockquote>
+<p>At the end of the stand down period, you will return to your role and your employment agreement will continue.</p>
+</blockquote>
+<p>Yes, this is an actual real sentence from the document. Reader, I shit you not. They're so gracious that they're going to hold a spot open for me. Which <em>might</em> open after 3 months. Or not. So I'll just be here <em>waiting by the phone</em> for my call to come back.</p>
+<p>Or you know, I'll find a new job in the industry rather than being bored shitless at home for months on end. That's probably a better option.</p>
+<blockquote>
+<p>RedHill will closely monitor the progress of the COVID-19 pandemic emergency, and it will update you with any changes regarding your stand down via telephone, email and the Employment Hero human resources system.</p>
+</blockquote>
+<p>...</p>
+<blockquote>
+<p>On behalf of RedHill’s directors and management, I thank you for your valued contributions at RedHill. I assure you that we will be fighting hard and taking all steps necessary to navigate the business through this crisis so that it may resume normal business operations in due course.</p>
+<p>Please stay safe and well, and remember that you remain an important member of our RedHill community.</p>
+</blockquote>
+<p>But not important enough to keep me employed, right?</p>
+<hr />
+<p>The letter reads as dispassionate HR and legalese jargon.</p>
+<p>Do you reckon they realise that they're sending this letter out to real, live humans who have feelings? Who might've wanted time to say their goodbyes? 13 minutes between receiving a phone call and being cut off is <em>utterly brutal</em>. Yeah it's great and all that the process was <em>streamlined as fuck</em> and you got all 235 stand downs done in a week and hip hip hooray the budget numbers look less red.</p>
+<p>But fuck me. Some care and compassion in these pandemic times would go a shitload of a long way.</p>
+<p>The letter says that I can come back to my job once this whole COVID thing blows over? Why would I want to come back to a job or a workplace that's done the HR equivalent of roundhouse kicking me in the face?</p>
+<p>How you let people go <em>matters</em>. More than ever in these times. We need to stick together; to be kind to one another. This letter is not kind. It is dispassionate and, in these times, that is worse than outright hatred.</p>
+<p>I won't be returning to RedHill Education. I would sooner write another book for Manning.</p>
 
 
 <div id='archive'>
   <h2>In case you missed it...</h2>
   <ul>
     
+      <li><a href="/2020/02/rom-and-dry-showcase-part-4">ROM and Dry Showcase: Part 4</a><br><div>20 Feb 2020</div></li>
+  
       <li><a href="/2020/02/rom-and-dry-showcase-part-3">ROM + Dry Showcase: Part 3 - Testing</a><br><div>03 Feb 2020</div></li>
   
       <li><a href="/2020/02/rom-and-dry-showcase-part-2">ROM + Dry Showcase: Part 2 - Validations & Transactions</a><br><div>02 Feb 2020</div></li>
@@ -393,8 +142,6 @@ Content-Type: application/json; charset=utf-8
       <li><a href="/2019/08/can-apple-please-design-a-laptop-that-has-a-functional-keyboard-for-the-love-of-all-that-is-precious">The 2018 MacBook Pro Keyboard Drives Me Crazy</a><br><div>29 Aug 2019</div></li>
   
       <li><a href="/2019/07/culture-amp-junior-engineering-program-discontinued">Culture Amp Junior Engineering Program Discontinued</a><br><div>16 Jul 2019</div></li>
-  
-      <li><a href="/2019/03/ruby-trickery">Ruby Trickery</a><br><div>05 Mar 2019</div></li>
   
   </ul>
   <center><a href='/blogography.html'>The Last 100 Posts</a></center>
