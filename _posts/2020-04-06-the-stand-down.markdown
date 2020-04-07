@@ -2,97 +2,58 @@
 wordpress_id: RB-1586124880
 layout: post
 title: The Stand Down
+published: true
 ---
 
-On this Friday just gone (3rd of April), I was told that I would be stood down at Coder Academy. I knew this was a possibility, because at the start of the week, an email went out from Coder Academy's parent company that announced they were standing down some staff. [The Guardian reported that the number would be [235 staff](https://www.theguardian.com/australia-news/live/2020/mar/30/coronavirus-update-live-australia-news-nsw-qld-victoria-scott-morrison-press-conference-covid-19-restrictions-public-gatherings-cruise-lockdown-app-latest-updates?page=with:block-5e8138d38f0878a2a48aca93#block-5e8138d38f0878a2a48aca93).
+Two weeks ago, I was moved from a teaching position into a "curriculum development" position at Coder Academy. Instead of facing students and teaching them directly, I was to work with my teacher's assistant on improving curriculum for _all of Coder Academy_. I absolutely love writing, and so this was an amazing opportunity to apply my craft.
 
-I was told at the start of the week "don't worry, it's not academic staff". They let some of the admin staff go, or reduced their hours. Some people went from working 5 days a week to only working two. Then, by the end of the week, oops it was academic staff too. Shit happens, hey.
+We set to work on updating curriculum for all Coder Academy's bootcamps, revising content a week or two ahead of where they were all at.
 
-The email arrived in my inbox at 9:50am on Monday morning. Then I got a phone call from RedHill's head of HR, Ruby at about 3pm on Friday. It was almost an entire business week of waiting and anxiety. 13 minutes later, I was locked out of Coder's GitHub and Slack accounts. My direct boss, Sally, did not know this phone call was going to happen. The call came from Ruby instead.
+At the start of the week last week, an email went out from Coder Academy's parent company that announced they were standing down some staff. This was at 9:50am on Monday morning. This email did not mention how many staff it was, but [The Guardian helpfully reported that the number would be 235 staff](https://www.theguardian.com/australia-news/live/2020/mar/30/coronavirus-update-live-australia-news-nsw-qld-victoria-scott-morrison-press-conference-covid-19-restrictions-public-gatherings-cruise-lockdown-app-latest-updates?page=with:block-5e8138d38f0878a2a48aca93#block-5e8138d38f0878a2a48aca93).
 
-I'm mad and sad about it. Mad-sad? Is that a thing? Maybe grief is the word I'm looking for.
+I was told that Monday that "don't worry, it's not academic staff", meaning I would not be affected. They let some of the admin staff go, or reduced their hours. Some people went from working 5 days a week to only working two.
 
-After the phone call, another email came through which contained a form letter for a stand down notice. If you want to know what a stand down notice looks like, here's the text of the one I received with my comments inline.
+I didn't receive word at all if I still had my job or not until Friday. On Friday, at about 3pm, I received a phone call not from my Coder Academy manager, but from the head of HR at RedHill: Ruby Biscuit. She told me that I would be stood down immediately.
 
-> As we have advised you, current circumstances around the global COVID-19 pandemic emergency have resulted in RedHill’s inability to offer you gainful employment at the current time. The purpose of this letter is to confirm that due to these circumstances which are beyond our control, you are being stood down from 6 April 2020.
+It was almost an entire business week of waiting and anxiety. I still tried working through it and, surprisingly, got a lot done.
 
-A 0 day notice period is a real shitty thing to do. My work colleagues and the students I was teaching were a big part of my human interaction every week (thanks COVID!) and I've been disconnected basically immediately, without any warning.
+13 minutes after that phone call, I was locked out of Coder's GitHub and Slack accounts. My direct bosses did not know this phone call was going to happen. The call came from Ruby instead.
 
-The time between me receiving my phone call and being cut off from Slack and GitHub was 13 minutes. During that time, I was talking with my wife about the phone call and trying not to scream in frustration.
+---
 
-A week's notice would've been good. To, well, you know, proverbially pack my things and say my goodbyes.
+Then there was a standard "Stand Down" form letter. It's brutal. An older version of this post contained the text, but I'll save you the brutality here.
 
-> We anticipate that the stand down will apply for a period of 3 months, but that timeframe may change pending the company’s ongoing review of pandemic circumstances.
+The letter says that I can come back to my job once this whole COVID thing blows over. That's all well-and-good, but to be honest I will likely have another job by then.
 
-> The type of work that you currently perform is not required to be undertaken, or to be undertaken to the same extent, during the stand down period. Unfortunately, there are no opportunities for you to be redeployed to another role at RedHill.
-
-> You will remain an employee of RedHill during the stand down period, but you will not be required to perform any work and you will not receive any wages.
-
-I'll "remain an employee" but I'll not be working or receiving any wages? Mates. Did you even look up the dictionary definition of the word "employee"? Probably not. Here it is:
+The letter also says that I remain an employee, but the dictionary definition of "employee" is:
 
 > a person employed for wages or salary, especially at non-executive level.
 
-So no wages and no work, means no, I am not remaining an employee. Idiots.
+And I am not getting wages or a salary, nor am I being required to do any work. So I am not sure how this still makes me an employee.
 
-> Your stand down is in accordance with the Fair Work Act 2009.
+The letter says that I can draw down on my annual leave entitlements, but there are only 7 days of those. So I get a week and a half of runway before my money dries up.
 
-Great, I'll just read through that whole Act now myself because, ya know, _I've got some pretty large amounts of free time now_. For those interested, relevant section is [this one](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/fwa2009114/s524.html).
+The letter goes on to say that I should look into government benefits, but neglects to mention if RedHill has applied for the [JobKeeper program](https://www.business.gov.au/risk-management/emergency-management/coronavirus-information-and-support-for-business/jobkeeper-payment), or even if I would qualify for it. Doing my own research, yes I probably would. Do I know if they've applied for the program? Nope.
 
-> During the stand down period, you:
-> • will be permitted to draw down on your annual leave...
+The letter at one point says:
 
-Yay, all 7 days of it.
+> We anticipate that the stand down will apply for a period of 3 months, but that timeframe may change pending the company’s ongoing review of pandemic circumstances.
 
-> ...and long service leave entitlements
-
-Pretty sure I have 0 of these given I worked at the company for a grand total of four months.
-
-> • may be eligible for government assistance programs, and RedHill will provide any necessary documentation or information to assist you to access any of those entitlements;
-
-Read: "Have you heard about that dole thing? You should look into it."
-
-> • will be permitted to seek and obtain other work during the stand down period without being in breach of your employment agreement;
-
-Oh thank you! So gracious of you master.
-
-> • will continue to accrue leave entitlements (including annual leave, long service leave, and personal/carers leave) as if you remained at work for the time that you are being stood down; and
-
-Accruing leave entitlements? Woo hoo. I'd rather you just, you know, kept paying me as per the Job Keeper thing that the AU government is passing. \$1500 a fortnight is better than fuck all a fortnight.
-
-> • will continue to have access to RedHill’s EAP support.
-
-That's great, but you've shut me out of all your systems where that information about the EAP was kept. So... how exactly am I supposed to access that?
-
-> Any applications for annual leave or long service leave during your stand down should continue to be applied for via RedHill’s Employment Hero human resources system.
-
-So to take any leave... from my stand down position... where I'm not working or even _required_ to work... I still need to lodge it in the HR system, that I no longer have access to? Greeeeeeat.
+And later:
 
 > At the end of the stand down period, you will return to your role and your employment agreement will continue.
 
-Yes, this is an actual real sentence from the document. Reader, I shit you not. They're so gracious that they're going to hold a spot open for me. Which _might_ open after 3 months. Or not. So I'll just be here _waiting by the phone_ for my call to come back.
-
-Or you know, I'll find a new job in the industry rather than being bored shitless at home for months on end. That's probably a better option.
-
-> RedHill will closely monitor the progress of the COVID-19 pandemic emergency, and it will update you with any changes regarding your stand down via telephone, email and the Employment Hero human resources system.
-
-...
-
-> On behalf of RedHill’s directors and management, I thank you for your valued contributions at RedHill. I assure you that we will be fighting hard and taking all steps necessary to navigate the business through this crisis so that it may resume normal business operations in due course.
->
-> Please stay safe and well, and remember that you remain an important member of our RedHill community.
-
-But not important enough to keep me employed, right?
+But does not take into account my contract was due to run out on the 7th of July.
 
 ---
 
-The letter reads as dispassionate HR and legalese jargon.
+How you let people go _matters_. More than ever in these COVID-19 times. We need to stick together; to be kind to one another. This letter and process is devoid of feeling and it threw me for a big loop. 13 minutes from phone call to cut off from my colleagues is too harsh. Especially when I did nothing wrong other than be in the wrong team.
 
-Do you reckon they realise that they're sending this letter out to real, live humans who have feelings? Who might've wanted time to say their goodbyes? 13 minutes between receiving a phone call and being cut off is _utterly brutal_. Yeah it's great and all that the process was _streamlined as fuck_ and you got all 235 stand downs done in a week and hip hip hooray the budget numbers look less red.
+Two simple ways they could've improved this process are:
 
-But fuck me. Some care and compassion in these pandemic times would go a shitload of a long way.
+- **Let people know _immediately_ on Monday morning if they had their job or not**. The anxiety I had throughout the week would've been reduced massively.
+- **Given me a week's notice** (as per the contract I signed when I joined). I would've liked to have (proverbially) packed my desk and (not proverbially) said my goodbyes. As it stands now, I have LinkedIn / Whatsapp / insert-26-other-chat-programs here messages to do that. It would've also allowed me to hand over any work or knowledge that I had to other people.
 
-The letter says that I can come back to my job once this whole COVID thing blows over? Why would I want to come back to a job or a workplace that's done the HR equivalent of roundhouse kicking me in the face?
+Just these two things would've been a big help and really helped me transition out of there. Instead, I and many, many others have been cast out like detritus.
 
-How you let people go _matters_. More than ever in these times. We need to stick together; to be kind to one another. This letter is not kind. It is dispassionate and, in these times, that is worse than outright hatred.
-
-I won't be returning to RedHill Education. I would sooner write another book for Manning.
+Anyway, I'm now looking for a new job. Go to [my /work page](https://ryanbigg.com/work) to see what I'm interested in doing. I'm (obviously) available immediately.
