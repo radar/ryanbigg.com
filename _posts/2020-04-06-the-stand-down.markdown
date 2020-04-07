@@ -54,6 +54,6 @@ Two simple ways they could've improved this process are:
 - **Let people know _immediately_ on Monday morning if they had their job or not**. The anxiety I had throughout the week would've been reduced massively.
 - **Given me a week's notice** (as per the contract I signed when I joined). I would've liked to have (proverbially) packed my desk and (not proverbially) said my goodbyes. As it stands now, I have LinkedIn / Whatsapp / insert-26-other-chat-programs here messages to do that. It would've also allowed me to hand over any work or knowledge that I had to other people.
 
-Just these two things would've been a big help and really helped me transition out of there. Instead, I and many, many others have been cast out like detritus.
+Just these two things would've been a big help and really helped me transition out of there. Instead, I and many, many others have been cast out like detritus. It really hurts.
 
 Anyway, I'm now looking for a new job. Go to [my /work page](https://ryanbigg.com/work) to see what I'm interested in doing. I'm (obviously) available immediately.
