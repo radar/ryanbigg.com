@@ -43,7 +43,7 @@ And later:
 
 > At the end of the stand down period, you will return to your role and your employment agreement will continue.
 
-But does not take into account my contract was due to run out on the 7th of July.
+But does not take into account my contract was due to run out on the 7th of July. The stand down came into effect on the 6th of April, Monday of this week. If it's indeed _exactly_ 3 months, it means that I would return to work on the 6th of July only for my contract to then run out on the 7th.
 
 ---
 
