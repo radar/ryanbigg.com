@@ -2,7 +2,7 @@
 wordpress_id: RB-1586124880
 layout: post
 title: The Stand Down
-published: false
+published: true
 ---
 
 Two weeks ago, I was moved from a teaching position into a "curriculum development" position at Coder Academy. Instead of facing students and teaching them directly, I was to work with my teacher's assistant on improving curriculum for _all of Coder Academy_. I absolutely love writing, and so this was an amazing opportunity to apply my craft.
