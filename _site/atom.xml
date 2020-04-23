@@ -4,13 +4,103 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2020-04-09T09:09:33+10:00</updated>
+ <updated>2020-04-23T11:01:01+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>How to tidy up Git Pull Requests</title>
+   <link href="http://ryanbigg.com/2020/04/how-to-tidy-up-git-pull-requests"/>
+   <updated>2020-04-23T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2020/04/how-to-tidy-up-git-pull-requests</id>
+   <content type="html"><![CDATA[<p><strong>This post will cover how to break up a commit on a Git branch into two separate commits all from the terminal.</strong></p>
+<p>Sometimes, developers can get carried away when they make commits. For instance, take <a href="https://github.com/radar/twist-v2/commit/19a513a6ae33ed0de3fb8ce426e7c7ec99449f0d">this commit</a> from yours truly. It <em>claims</em> to be fixing a particular issue, but there's <em>a lot</em> of code there to fix that issue. Is all of it really necessary?</p>
+<p>I'll save you the spelunking: just the <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code> files are the only things required to fix this issue. This commit <em>really</em> should've just been changes to those two files. The storybook changes should've been in a <em>separate</em> commit.</p>
+<p>But the work has been done! Isn't it now set in stone? No, this is Git! We can rewrite history.</p>
+<p>So let's pretend like this commit <em>hasn't been committed to master yet</em>. I can do this by checking out a new branch to the commit before that one:</p>
+<pre><code class="language-plain">>git checkout 19a513a6~1 -b tidy-up-git-example
+</code></pre>
+<p>Here, <code>~1</code> means &quot;1 before&quot;. You could put any number here. You can see what this branch looks like <a href="https://github.com/radar/twist-v2/tree/tidy-up-git-example">on GitHub</a>. The latest commit will be <code>bb36d9b</code>, &quot;Add back image missing&quot;.</p>
+<p>We now want to apply that <code>19a513a6</code> commit, the one that fixes Issue #22, to this branch. To do this, we'll open a pull request against this <code>tidy-up-git-example</code> branch.</p>
+<p>First, we need to switch to a new branch:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git switch -c fix/issue-22
+</code></pre></div></div>
+<p><code>switch</code> is a recent sub-command of Git, and <a href="https://github.blog/2019-08-16-highlights-from-git-2-23/">was added in 2.23.0</a>. You can think of it behaving like <code>checkout</code>.</p>
+<p>We'll now bring in that commit to this branch, applying it on top of the current history with <code>cherry-pick</code>:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git cherry-pick 19a513a6
+</code></pre></div></div>
+<p>When we run <code>git log --oneline</code>, we'll see this:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f20de41 (HEAD -&gt; fix/issue-22) Fixes #22
+bb36d9b (origin/tidy-up-git-example) Add back image missing
+</code></pre></div></div>
+<p>This shows us that the top-most / latest commit is that one we just cherry picked, and that the next most recent commit is the latest from the <code>origin/tidy-up-git-example</code> branch.</p>
+<p>Next, you'll need to push this branch up to GitHub:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push origin fix/issue-22
+</code></pre></div></div>
+<p>If you don't have permission to push to this repository (and most of you won't!), you'll need to fork it on GitHub first, then:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote add your-username git@github.com:your-username/twist-v2.git
+git push your-username fix/issue-22
+</code></pre></div></div>
+<p>When this branch has been pushed to GitHub, you should now be able to create a pull request from that branch. You can do this by going to <a href="https://github.com/your-username/twist-v2/pull/new/fix/issue-22">https://github.com/your-username/twist-v2/pull/new/fix/issue-22</a>. On this page, under &quot;Open a pull request&quot; you'll see two dropdowns: one for a &quot;base&quot; branch and one for &quot;compare&quot; branch:</p>
+<p><img src="/images/tidy-up-github/base-and-compare.png" alt="Base &amp; Compare" /></p>
+<p>The base branch is the branch you will be applying your pull request to. The changes in your pull request come from the compare branch. The &quot;Able to merge&quot; here indicates that there are no conflicts between the branches, and so this PR would be mergeable onto the base branch without trouble.</p>
+<p>If we go ahead and create this PR now, we'll see this:</p>
+<p><img src="/images/tidy-up-github/big-diff.png" alt="Big Diff" /></p>
+<p>How many lines?! If I was reviewing a PR of this length I would make sure to grab at least <em>one</em> cup of coffee and have slept well the night before too. Does this PR need to be so <em>massive</em>? We answered that before: no.</p>
+<p>So we now have got ourselves a little bit stuck. We want to have the changes to fix Issue #22, but we also care about the storybook changes too. Let's now work on how we can separate these two into two separate PRs.</p>
+<h2 id="separating-out-issue-22">Separating out Issue #22</h2>
+<p>Let's start with just the CSS changes from <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code>. We want just these changes to be in the PR's commit. To do that, we need to <em>undo</em> and <em>redo</em> this commit.</p>
+<p>To <em>undo</em> a commit, we use a Git operation called a <em>soft reset</em>:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git reset --soft HEAD~1
+</code></pre></div></div>
+<p>You can think of this like the opposite of <code>git commit</code>; it resets the Git repository's state back to how it was right before <code>git commit</code> was run. All of changes from this commit will be staged for commit:</p>
+<p><img src="/images/tidy-up-github/staged-for-commit.png" alt="Staged for commit" /></p>
+<p>But our latest commit will show up as the one from <code>tidy-up-git-example</code>:</p>
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log --oneline
+</code></pre></div></div>
+<pre><code>bb36d9b (HEAD -&gt; fix/issue-22, origin/tidy-up-git-example) Add back image missing
+</code></pre>
+<p>Now that we're back to our pre-<code>git commit</code> stage, we need to go back one more step, back to before <code>git add</code> was run to stage these files. To do that, we need to run:</p>
+<pre><code>git reset HEAD
+</code></pre>
+<p>This command will unstage all the changes in our repository:</p>
+<p><img src="/images/tidy-up-github/unstaged-files.png" alt="Unstaged files" /></p>
+<p>Now we want to just add the changes from <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code>. We can do this with:</p>
+<pre><code>git add frontend/src/styles.css
+git add frontend/src/tailwind.css
+</code></pre>
+<p>(Or if we were wanting to pick-and-choose changes from these files, we could do <code>git add -p &lt;file&gt;</code> instead)</p>
+<p>This will stage these two files:</p>
+<p><img src="/images/tidy-up-github/two-staged-files.png" alt="Two staged files" /></p>
+<p>Next, we can commit these changes:</p>
+<pre><code>git commit -m &quot;Fixes #22&quot;
+</code></pre>
+<p>We've now re-written the history of the <code>fix/issue-22</code> branch. The latest commit on this branch, according to our local computer, is different to the latest one on GitHub. We need to tell GitHub that our history is correct, and we can do this with:</p>
+<pre><code>git push &lt;your username&gt; fix/issue-22 --force-with-lease
+</code></pre>
+<p>This option will force-push your changes to GitHub, updating GitHub with the simpler changes.</p>
+<p>If you refresh the GitHub pull request window, you'll now see a much, much smaller diff number:</p>
+<p><img src="/images/tidy-up-github/small-diff.png" alt="Small Diff" /></p>
+<p>Much better! Our PR is now just focussed on the small changes that we needed to make to fix Issue #22.</p>
+<p>We can then merge this PR to the branch, confident that the commit is small.</p>
+<h2 id="storybook">Storybook</h2>
+<p>Next up, we still need to pull in those storybook changes. Because we've reset and unstaged all the changes, those storybook changes will still be tracked as unstaged in our Git repository:</p>
+<p><img src="/images/tidy-up-github/unstaged-storybook-files.png" alt="Unstaged storybook files" /></p>
+<p>We can check out to a new branch for these changes, add these files, make a new commit and push these changes to GitHub:</p>
+<pre><code>git switch -c update-storybook
+git add .
+git commit -m &quot;Update Storybook + separate stories&quot;
+git push origin update-storybook
+</code></pre>
+<p>We can then go about creating a pull request for these changes if we like by going to <a href="https://github.com/your-username/twist-v2/pull/new/update-storybook">https://github.com/your-username/twist-v2/pull/new/update-storybook</a>. Remember to change the base branch here to <code>tidy-up-git-example</code>!</p>
+<p>Once the PR is created, we can choose to merge it to that base branch. The base branch will then have both sets of changes on it: one (small one) to fix Issue #22, and one (large one) to upgrade storybook.</p>
+<p>The storybook changes <em>could</em> probably be split out into smaller commits too, but I'll leave that one as an exercise to the reader.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>The Stand Down</title>
@@ -4423,55 +4513,6 @@ While the juniors were working on their teams they were paired up with a more se
 <p>We loved working with our first cohort of junior developers we would love the opportunity to work a second cohort of juniors for our next program.</p>
 <p>So if you're a junior developer who's keen to learn, go and apply for Culture Amp's second Junior Engineering Program:</p>
 <p><strong><a href="https://boards.greenhouse.io/cultureamp/jobs/1295735">Apply here for the Culture Amp Junior Engineering Program's second cohort</a></strong></p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Joy of Elixir - Progress Update</title>
-   <link href="http://ryanbigg.com/2018/08/joy-of-elixir-progress-update"/>
-   <updated>2018-08-22T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2018/08/joy-of-elixir-progress-update</id>
-   <content type="html"><![CDATA[<p>I started writing Joy of Elixir <a href="https://ryanbigg.com/2017/07/joy-of-elixir">near the end of July last year</a>. I wrote a large amount of the book in a relatively short time and I've been quietly updating it (slowly) ever since.</p>
-<p>I took time away from Joy of Elixir to publish <a href="http://leanpub.com/explodingrails">Exploding Rails</a> (which is doing very well!) and then took a little writing break to &quot;recover&quot;.</p>
-<p>Recently, I received an email from someone called Svetlana Rosemond. She said:</p>
-<blockquote>
-<p>Hello Ryan,</p>
-<p>I'm currently working my way through Joy of Elixir. Well done!</p>
-<p>When will you complete chapter 11? Working with Files. I'm interested to see how to read and write files with Elixir.</p>
-<p>Secondly, this isn't a problem with code, but I really like the way <a href="https://nostarch.com/pythoncrashcourse">Python Crash Course</a> was structured, and I think Joy of Elixir could be structured this way as well. It started with the basics and worked it's way up to intermediate topics. It might be good for chapter 1 to introduce what an Atom is and the basic types, and a chapter about if, case and cond. Also when working with files, it might be a good time to introduce try, catch, and rescue.</p>
-<p>I just think Python Crash Course did a great job in how to structured it's topics and I believe all beginner level textbooks should be structured this way, but that's just my opinion. :D.</p>
-</blockquote>
-<p>I wrote up a relatively long reply to this, and then got her permission to publish it here. So I'm going to use my email reply as a way of reporting the current status of Joy of Elixir, as well as my future plans for the book.</p>
-<p>Here's my reply:</p>
-<hr />
-<p>Hello Svetlana,</p>
-<p>I've been pretty busy and haven't dedicated time to Joy of Elixir recently. Well, until last night!</p>
-<p>Your email spurred me on. I took my notes from Chapter 11 and turned them into one section on reading a file.</p>
-<p>You can read it here: <a href="https://joyofelixir.com/11-files/">https://joyofelixir.com/11-files/</a>.</p>
-<p>I will try to get the remainder of the chapter done by the end of the week and it will cover:</p>
-<ul>
-<li>File.write/2</li>
-<li>File.rm/1</li>
-<li>case statements</li>
-<li>with statements</li>
-</ul>
-<p>I can't find a particular case (heh) for <code>cond</code> or <code>if</code> statements yet, so I'm going to leave them on the backburner for the time being. I will find a place for them by the end of the book.</p>
-<hr />
-<p>Regarding your feedback about <a href="https://nostarch.com/pythoncrashcourse">Python Crash Course</a>: I've read the first couple of chapters of this book and I couldn't find where exactly it listed all the basic types at once. From what I can see, it started out relatively simple with strings, variables, numbers and commenting (Chapter 2) and moved into lists (Chapter 3) in almost the same way Joy of Elixir does (Chapters 2 and 3 also).</p>
-<p>I disagree that Chapter 1 would be a good place to introduce atoms. At such an early point of this book, it doesn't make sense to cover all the different types of data that Elixir can represent. There's quite a few of them! I am trying my best to only introduce concepts when they're necessary in the book and in Chapter 1 it isn't useful to know what atoms are just yet.</p>
-<p>I should also mention that I haven't even covered commenting in the book either. I want to start covering this when we start building Elixir modules and putting functions in them. Comments are a super useful way to demonstrate how you can produce documentation with <code>mix docs</code>. That's where the true power of comments lies with Elixir: that Hex documentation. Oh, and doctests (just like in Python!) are super helpful as well: <a href="http://elixir-recipes.github.io/testing/doctests/">http://elixir-recipes.github.io/testing/doctests/</a>. So with commenting you can introduce: documentation and automated testing in one fell swoop.</p>
-<p>My aim for this book is to be something that someone with little to no programming experience could read and then use it to get a handle on at least one programming language. The chapters of the book are demonstrating what Elixir is capable of while gradually building a repertoire of skills. I think by Chapter 11 we've got a pretty formidable set of skills!</p>
-<p>There's currently 3 parts of the book, but there's also going to be a 4th part which involves a medium-sized project. During this part, I want to start the readers on building a new project with &quot;mix new&quot; and here I want to introduce concepts like:</p>
-<ul>
-<li>Modules</li>
-<li>Structs</li>
-<li>Functions with guard clauses</li>
-<li>Commenting + documentation</li>
-<li>Doctests</li>
-<li>Using external dependencies</li>
-</ul>
-<p>The project is going to be one that can read a CSV file full of people's data (name, age + gender) and transform its data into a list of maps [RB: now that I think more about it, probably structs instead of maps] and then do some data crunching on that. Can we find what the average age is in this dataset? What's the gender split as a percentage? Things like that.</p>
-<p>These are the last big concepts that I want to cover and I think once we've covered those we're going to have a pretty well-rounded idea of what Elixir is capable of.</p>
 ]]></content>
  </entry>
  

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
   <meta charset="UTF-8">
-  <title>Blog - Ryan Bigg</title>
+  <title>How to tidy up Git Pull Requests - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
@@ -33,14 +33,11 @@
       <div class='content'>
         <div class='content-inner'>
           <article>
-            
-
-<div class='center title'>
-  <a href="/2020/04/how-to-tidy-up-git-pull-requests"><h2>How to tidy up Git Pull Requests</h2></a>
-  <small>23 Apr 2020</small><br>
-</div>
-
-<p><strong>This post will cover how to break up a commit on a Git branch into two separate commits all from the terminal.</strong></p>
+            <div class='center'>
+              <a href="/2020/04/how-to-tidy-up-git-pull-requests"><h2>How to tidy up Git Pull Requests</h2></a>
+              <small>23 Apr 2020</small>
+            </div>
+            <p><strong>This post will cover how to break up a commit on a Git branch into two separate commits all from the terminal.</strong></p>
 <p>Sometimes, developers can get carried away when they make commits. For instance, take <a href="https://github.com/radar/twist-v2/commit/19a513a6ae33ed0de3fb8ce426e7c7ec99449f0d">this commit</a> from yours truly. It <em>claims</em> to be fixing a particular issue, but there's <em>a lot</em> of code there to fix that issue. Is all of it really necessary?</p>
 <p>I'll save you the spelunking: just the <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code> files are the only things required to fix this issue. This commit <em>really</em> should've just been changes to those two files. The storybook changes should've been in a <em>separate</em> commit.</p>
 <p>But the work has been done! Isn't it now set in stone? No, this is Git! We can rewrite history.</p>
@@ -122,35 +119,6 @@ git push origin update-storybook
 <p>We can then go about creating a pull request for these changes if we like by going to <a href="https://github.com/your-username/twist-v2/pull/new/update-storybook">https://github.com/your-username/twist-v2/pull/new/update-storybook</a>. Remember to change the base branch here to <code>tidy-up-git-example</code>!</p>
 <p>Once the PR is created, we can choose to merge it to that base branch. The base branch will then have both sets of changes on it: one (small one) to fix Issue #22, and one (large one) to upgrade storybook.</p>
 <p>The storybook changes <em>could</em> probably be split out into smaller commits too, but I'll leave that one as an exercise to the reader.</p>
-
-
-<div id='archive'>
-  <h2>In case you missed it...</h2>
-  <ul>
-    
-      <li><a href="/2020/04/the-stand-down">The Stand Down</a><br><div>06 Apr 2020</div></li>
-  
-      <li><a href="/2020/02/rom-and-dry-showcase-part-4">ROM and Dry Showcase: Part 4</a><br><div>20 Feb 2020</div></li>
-  
-      <li><a href="/2020/02/rom-and-dry-showcase-part-3">ROM + Dry Showcase: Part 3 - Testing</a><br><div>03 Feb 2020</div></li>
-  
-      <li><a href="/2020/02/rom-and-dry-showcase-part-2">ROM + Dry Showcase: Part 2 - Validations & Transactions</a><br><div>02 Feb 2020</div></li>
-  
-      <li><a href="/2020/02/rom-and-dry-showcase-part-1">ROM + Dry Showcase: Part 1 - Application + Database setup</a><br><div>01 Feb 2020</div></li>
-  
-      <li><a href="/2020/01/getting-started-with-rails-extended-edition">Getting Started with Rails: Extended Edition</a><br><div>19 Jan 2020</div></li>
-  
-      <li><a href="/2019/11/they-fixed-the-keyboard">They fixed the keyboard</a><br><div>28 Nov 2019</div></li>
-  
-      <li><a href="/2019/11/rough-edges">Rough Edges</a><br><div>18 Nov 2019</div></li>
-  
-      <li><a href="/2019/09/hiring-juniors-2019">RubyConf Indonesia Keynote - Transcript</a><br><div>19 Sep 2019</div></li>
-  
-      <li><a href="/2019/08/can-apple-please-design-a-laptop-that-has-a-functional-keyboard-for-the-love-of-all-that-is-precious">The 2018 MacBook Pro Keyboard Drives Me Crazy</a><br><div>29 Aug 2019</div></li>
-  
-  </ul>
-  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
-</div>
 
           </article>
         </div>
