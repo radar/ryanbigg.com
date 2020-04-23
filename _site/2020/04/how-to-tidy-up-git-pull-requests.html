@@ -42,12 +42,12 @@
 <p>I'll save you the spelunking: just the <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code> files are the only things required to fix this issue. This commit <em>really</em> should've just been changes to those two files. The storybook changes should've been in a <em>separate</em> commit.</p>
 <p>But the work has been done! Isn't it now set in stone? No, this is Git! We can rewrite history.</p>
 <p>So let's pretend like this commit <em>hasn't been committed to master yet</em>. I can do this by checking out a new branch to the commit before that one:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout 19a513a6~1 -b tidy-up-git-example
-</code></pre></div></div>
+<pre><code>git checkout 19a513a6~1 -b tidy-up-git-example
+</code></pre>
 <p>Here, <code>~1</code> means &quot;1 before&quot;. You could put any number here. You can see what this branch looks like <a href="https://github.com/radar/twist-v2/tree/tidy-up-git-example">on GitHub</a>. The latest commit will be <code>bb36d9b</code>, &quot;Add back image missing&quot;.</p>
 <p>We now want to apply that <code>19a513a6</code> commit, the one that fixes Issue #22, to this branch. To do this, we'll open a pull request against this <code>tidy-up-git-example</code> branch.</p>
 <p>First, we need to switch to a new branch:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git switch -c fix/issue-22
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git switch -c fix/issue-22
 </code></pre></div></div>
 <p><code>switch</code> is a recent sub-command of Git, and <a href="https://github.blog/2019-08-16-highlights-from-git-2-23/">was added in 2.23.0</a>. You can think of it behaving like <code>checkout</code>.</p>
 <p>We'll now bring in that commit to this branch, applying it on top of the current history with <code>cherry-pick</code>:</p>

@@ -14,7 +14,7 @@ But the work has been done! Isn't it now set in stone? No, this is Git! We can r
 
 So let's pretend like this commit _hasn't been committed to master yet_. I can do this by checking out a new branch to the commit before that one:
 
-```text
+```
 git checkout 19a513a6~1 -b tidy-up-git-example
 ```
 
@@ -24,7 +24,7 @@ We now want to apply that `19a513a6` commit, the one that fixes Issue #22, to th
 
 First, we need to switch to a new branch:
 
-```text
+```plaintext
 git switch -c fix/issue-22
 ```
 
