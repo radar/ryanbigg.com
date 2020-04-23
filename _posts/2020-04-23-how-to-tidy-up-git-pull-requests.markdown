@@ -14,7 +14,7 @@ But the work has been done! Isn't it now set in stone? No, this is Git! We can r
 
 So let's pretend like this commit _hasn't been committed to master yet_. I can do this by checking out a new branch to the commit before that one:
 
-```plain
+```text
 git checkout 19a513a6~1 -b tidy-up-git-example
 ```
 
