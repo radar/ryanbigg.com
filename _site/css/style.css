@@ -28,9 +28,11 @@ article img { margin-left: 5%; margin-right: 5%; max-height: 66vh; max-width: 90
 .title { margin-bottom: 2rem; }
 .title h2 { margin-bottom: 0.5rem; }
 
-#books .book { border-bottom: 2px solid #2aa863; }
-#books .book img { float: right; max-width: 200px; margin-left: 3rem; }
-#books .book blockquote { width: 66%; }
+#books .book { padding: 2rem; display: grid; grid-template-columns: 1fr; gap: 20px; border-bottom: 2px solid #2aa863; }
+@media (min-width: 900px) { #books .book { grid-template-columns: 2fr 1fr; } }
+#books .book h2 { margin: 0; margin-bottom: 0.5rem; }
+#books .book img { width: 250px; }
+@media (min-width: 900px) { #books .book img { width: 100%; } }
 
 blockquote { background: #effbf5; border-left: 8px solid #2aa863; font-size: 90%; padding: 0.66rem; }
 @media (prefers-color-scheme: dark) { blockquote { background: #114227; } }

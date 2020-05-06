@@ -101,17 +101,29 @@ article {
 
 #books {
   .book {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    @media (min-width: 900px) {
+      grid-template-columns: 2fr 1fr;
+    }
+    gap: 20px;
     border-bottom: 2px solid $primary-color;
 
-    img {
-      float: right;
-      max-width: 200px;
-      margin-left: 3rem;
+    h2 {
+      margin: 0;
+      margin-bottom: 0.5rem;
     }
 
-    blockquote {
-      width: 66%;
+    img {
+      width: 250px;
+
+      @media (min-width: 900px) {
+        width: 100%;
+      }
     }
+
+
   }
 }
 
