@@ -37,8 +37,8 @@
               <a href="/2014/10/ubuntu-ruby-ruby-install-chruby-and-you"><h2>Ubuntu, Ruby, ruby-install, chruby, Rails and You</h2></a>
               <small>05 Oct 2014</small>
             </div>
-            <p><strong>Last updated: October 9th 2019</strong></p>
-<p><strong>This beginner's guide will set your machine up with Ruby 2.6.5 using chruby+ruby-install and Rails 6.0.0 and is specifically written for a <em>development</em> environment on Ubuntu 19.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
+            <p><strong>Last updated: July 22nd 2020</strong></p>
+<p><strong>This beginner's guide will set your machine up with Ruby 2.7.1 using chruby+ruby-install and Rails 6.0.0 and is specifically written for a <em>development</em> environment on Ubuntu 19.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.</strong></p>
 <div class="warning">
   Under no circumstance should you install Ruby, Rubygems or any Ruby-related packages from apt-get. This system is out-dated and leads to major headaches. Avoid it for Ruby-related packages. We do Ruby, we know what's best. Trust us.
 </div>
@@ -46,7 +46,7 @@
 <ul>
 <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
 <li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.6.5</strong>: at the time of writing the newest current stable release of Ruby.</li>
+<li><strong>Ruby 2.7.1</strong>: at the time of writing the newest current stable release of Ruby.</li>
 <li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
 <li><strong>Rails 6.0.0</strong>: at the time of writing the newest current stable release of Rails.</li>
 </ul>
@@ -74,9 +74,9 @@ sudo make install
 </code></pre>
 <h3 id="ruby">Ruby</h3>
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<pre><code>ruby-install ruby 2.6.5
+<pre><code>ruby-install ruby 2.7.1
 </code></pre>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.6.5 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby's README</a> too, but I will reproduce them here:</p>
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.7.1 installed. In order to use this Ruby version, we'll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby's README</a> too, but I will reproduce them here:</p>
 <pre><code>wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
@@ -94,18 +94,18 @@ EOF
 </code></pre>
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 <p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it's working:</p>
-<pre><code>ruby-2.6.5
+<pre><code>ruby-2.7.1
 </code></pre>
 <p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<pre><code>ruby-2.6.5
+<pre><code>ruby-2.7.1
 </code></pre>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we're using, we can run <code>chruby ruby-2.6.5</code> for example -- assuming that we have Ruby 2.6.5 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we're using, we can run <code>chruby ruby-2.7.1</code> for example -- assuming that we have Ruby 2.7.1 installed first!</p>
 <p>Did this work? Let's find out by running <code>ruby -v</code>:</p>
-<pre><code>ruby 2.6.5p114 (2019-10-01 revision 67812) [x86_64-linux]
+<pre><code>ruby 2.7.1p114 (2019-10-01 revision 67812) [x86_64-linux]
 </code></pre>
 <h3 id="rails">Rails</h3>
 <p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty <code>sudo</code> to install things; we've got write-access! To install the Rails gem we'll run this command:</p>
-<pre><code>gem install rails -v 6.0.0 --no-rdoc --no-ri
+<pre><code>gem install rails -v 6.0.0 --no-document
 </code></pre>
 <p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 <h3 id="rails-pre-requisites">Rails pre-requisites</h3>

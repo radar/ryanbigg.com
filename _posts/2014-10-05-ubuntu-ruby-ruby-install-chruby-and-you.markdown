@@ -2,13 +2,13 @@
 wordpress_id: RB-358
 layout: post
 title: Ubuntu, Ruby, ruby-install, chruby, Rails and You
-ruby_version: 2.6.5
+ruby_version: 2.7.1
 rails_version: 6.0.0
 ruby_install_version: 0.7.0
 chruby_version: 0.3.9
 ---
 
-**Last updated: October 9th 2019**
+**Last updated: July 22nd 2020**
 
 
 **This beginner's guide will set your machine up with Ruby {{page.ruby_version}} using chruby+ruby-install and Rails {{page.rails_version}} and is specifically written for a _development_ environment on Ubuntu 19.04, but will probably work on many other operating systems, including older / newer versions of Ubuntu and Debian. YMMV.**
@@ -117,14 +117,14 @@ This file tells `chruby` which Ruby we want to use by default. To change the rub
 Did this work? Let's find out by running `ruby -v`:
 
 ```
-ruby 2.6.5p114 (2019-10-01 revision 67812) [x86_64-linux]
+ruby 2.7.1p114 (2019-10-01 revision 67812) [x86_64-linux]
 ```
 
 ### Rails
 
 Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty `sudo` to install things; we've got write-access! To install the Rails gem we'll run this command:
 
-    gem install rails -v {{page.rails_version}} --no-rdoc --no-ri
+    gem install rails -v {{page.rails_version}} --no-document
 
 This will install the `rails` gem and the multitude of gems that it and its dependencies depend on, including Bundler.
 
