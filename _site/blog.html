@@ -37,99 +37,110 @@
 
 <article>
   <div class='center'>
-    <a href="/2020/04/how-to-tidy-up-git-pull-requests">
-      <h2>How to tidy up Git Pull Requests</h2>
+    <a href="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging">
+      <h2>Selenium, Capybara, ChromeDriver: connection refused error debugging</h2>
     </a>
-    <small>23 Apr 2020</small>
+    <small>30 Aug 2020</small>
   </div>
-  <p><strong>This post will cover how to break up a commit on a Git branch into two separate commits all from the terminal.</strong></p>
-<p>Sometimes, developers can get carried away when they make commits. For instance, take <a href="https://github.com/radar/twist-v2/commit/19a513a6ae33ed0de3fb8ce426e7c7ec99449f0d">this commit</a> from yours truly. It <em>claims</em> to be fixing a particular issue, but there's <em>a lot</em> of code there to fix that issue. Is all of it really necessary?</p>
-<p>I'll save you the spelunking: just the <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code> files are the only things required to fix this issue. This commit <em>really</em> should've just been changes to those two files. The storybook changes should've been in a <em>separate</em> commit.</p>
-<p>But the work has been done! Isn't it now set in stone? No, this is Git! We can rewrite history.</p>
-<p>So let's pretend like this commit <em>hasn't been committed to master yet</em>. I can do this by checking out a new branch to the commit before that one:</p>
-<pre><code>git checkout 19a513a6~1 -b tidy-up-git-example
+  <p>A few days ago, we started seeing this exception happening for <em>some</em> of our Capybara feature tests:</p>
+<pre><code>1.1) Failure/Error: visit(sign_out_path)
+
+      Selenium::WebDriver::Error::UnknownError:
+        java.net.ConnectException: Connection refused (Connection refused)
+      # [remote server] org.openqa.selenium.remote.server.WebDriverServlet(WebDriverServlet.java):240:in `lambda$handle$0'
+      # [remote server] java.util.concurrent.Executors$RunnableAdapter(Executors.java):511:in `call'
+      # [remote server] java.util.concurrent.FutureTask(FutureTask.java):266:in `run'
+      # [remote server] java.util.concurrent.ThreadPoolExecutor(ThreadPoolExecutor.java):1149:in `runWorker'
+      # [remote server] java.util.concurrent.ThreadPoolExecutor$Worker(ThreadPoolExecutor.java):624:in `run'
+      # [remote server] java.lang.Thread(Thread.java):748:in `run'
+      # ./spec/support/pages/login.rb:5:in `login'
+      # ./spec/concepts/extraction/keyboard_shortcuts_spec.rb:84:in `block (2 levels) in &lt;main&gt;'
+      # ./spec/spec_helper.rb:69:in `block (2 levels) in &lt;main&gt;'
+      # ./spec/support/elasticsearch_spec_helper.rb:42:in `block (3 levels) in &lt;main&gt;'
+      # ./spec/support/elasticsearch_spec_helper.rb:38:in `block (2 levels) in &lt;main&gt;'
 </code></pre>
-<p>Here, <code>~1</code> means &quot;1 before&quot;. You could put any number here. You can see what this branch looks like <a href="https://github.com/radar/twist-v2/tree/tidy-up-git-example">on GitHub</a>. The latest commit will be <code>bb36d9b</code>, &quot;Add back image missing&quot;.</p>
-<p>We now want to apply that <code>19a513a6</code> commit, the one that fixes Issue #22, to this branch. To do this, we'll open a pull request against this <code>tidy-up-git-example</code> branch.</p>
-<p>First, we need to switch to a new branch:</p>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git switch -c fix/issue-22
-</code></pre></div></div>
-<p><code>switch</code> is a recent sub-command of Git, and <a href="https://github.blog/2019-08-16-highlights-from-git-2-23/">was added in 2.23.0</a>. You can think of it behaving like <code>checkout</code>.</p>
-<p>We'll now bring in that commit to this branch, applying it on top of the current history with <code>cherry-pick</code>:</p>
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git cherry-pick 19a513a6
-</code></pre></div></div>
-<p>When we run <code>git log --oneline</code>, we'll see this:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f20de41 (HEAD -&gt; fix/issue-22) Fixes #22
-bb36d9b (origin/tidy-up-git-example) Add back image missing
-</code></pre></div></div>
-<p>This shows us that the top-most / latest commit is that one we just cherry picked, and that the next most recent commit is the latest from the <code>origin/tidy-up-git-example</code> branch.</p>
-<p>Next, you'll need to push this branch up to GitHub:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push origin fix/issue-22
-</code></pre></div></div>
-<p>If you don't have permission to push to this repository (and most of you won't!), you'll need to fork it on GitHub first, then:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote add your-username git@github.com:your-username/twist-v2.git
-git push your-username fix/issue-22
-</code></pre></div></div>
-<p>When this branch has been pushed to GitHub, you should now be able to create a pull request from that branch. You can do this by going to <a href="https://github.com/your-username/twist-v2/pull/new/fix/issue-22">https://github.com/your-username/twist-v2/pull/new/fix/issue-22</a>. On this page, under &quot;Open a pull request&quot; you'll see two dropdowns: one for a &quot;base&quot; branch and one for &quot;compare&quot; branch:</p>
-<p><img src="/images/tidy-up-github/base-and-compare.png" alt="Base &amp; Compare" /></p>
-<p>The base branch is the branch you will be applying your pull request to. The changes in your pull request come from the compare branch. The &quot;Able to merge&quot; here indicates that there are no conflicts between the branches, and so this PR would be mergeable onto the base branch without trouble.</p>
-<p>If we go ahead and create this PR now, we'll see this:</p>
-<p><img src="/images/tidy-up-github/big-diff.png" alt="Big Diff" /></p>
-<p>How many lines?! If I was reviewing a PR of this length I would make sure to grab at least <em>one</em> cup of coffee and have slept well the night before too. Does this PR need to be so <em>massive</em>? We answered that before: no.</p>
-<p>So we now have got ourselves a little bit stuck. We want to have the changes to fix Issue #22, but we also care about the storybook changes too. Let's now work on how we can separate these two into two separate PRs.</p>
-<h2 id="separating-out-issue-22">Separating out Issue #22</h2>
-<p>Let's start with just the CSS changes from <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code>. We want just these changes to be in the PR's commit. To do that, we need to <em>undo</em> and <em>redo</em> this commit.</p>
-<p>To <em>undo</em> a commit, we use a Git operation called a <em>soft reset</em>:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git reset --soft HEAD~1
-</code></pre></div></div>
-<p>You can think of this like the opposite of <code>git commit</code>; it resets the Git repository's state back to how it was right before <code>git commit</code> was run. All of changes from this commit will be staged for commit:</p>
-<p><img src="/images/tidy-up-github/staged-for-commit.png" alt="Staged for commit" /></p>
-<p>But our latest commit will show up as the one from <code>tidy-up-git-example</code>:</p>
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log --oneline
-</code></pre></div></div>
-<pre><code>bb36d9b (HEAD -&gt; fix/issue-22, origin/tidy-up-git-example) Add back image missing
+<p>Connection refused, fine. But connection refused to <em>what</em>? This error message doesn't give us much to go on.</p>
+<p>Seemingly nothing that we changed had caused this issue -- it was one of those types of issues that just popped up spontaneously.</p>
+<p>It turns out that this is due to a bug within Google ChromeDriver <code>85.0.4183.83</code>. Here's the bug report for ChromeDriver: <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
+<h2 id="debugging-steps">Debugging steps</h2>
+<p>I was able to track it down to this issue by adding this line to the configuration for our tests:</p>
+<pre><code>Selenium::WebDriver.logger.level = Logger::DEBUG
 </code></pre>
-<p>Now that we're back to our pre-<code>git commit</code> stage, we need to go back one more step, back to before <code>git add</code> was run to stage these files. To do that, we need to run:</p>
-<pre><code>git reset HEAD
+<p>I knew of this trick by having to debug Selenium issues in the past -- it's a very helpful trick to get messages out of Selenium WebDriver that you wouldn't otherwise see.</p>
+<p>When I did this, I saw these messages come through:</p>
+<pre><code>2020-08-30 08:39:15 INFO Selenium &lt;- {&quot;value&quot;:{&quot;data&quot;:{&quot;text&quot;:&quot;{Alert text : &quot;},&quot;error&quot;:&quot;unexpected alert open&quot;,&quot;message&quot;:&quot;unexpected alert open: {Alert text : }\n  (Session info: chrome=85.0.4183.83)&quot;,&quot;stacktrace&quot;:&quot;0   chromedriver                        0x000000010a9261b9 chromedriver + 4911545\n1   chromedriver                        0x000000010a8c5e03 chromedriver + 4517379\n2   chromedriver                        0x000000010a533da6 chromedriver + 773542\n3   chromedriver                        0x000000010a4c4072 chromedriver + 315506\n4   chromedriver                        0x000000010a4b7c23 chromedriver + 265251\n5   chromedriver                        0x000000010a491720 chromedriver + 108320\n6   chromedriver                        0x000000010a492693 chromedriver + 112275\n7   chromedriver                        0x000000010a8eef72 chromedriver + 4685682\n8   chromedriver                        0x000000010a8fcb3a chromedriver + 4741946\n9   chromedriver                        0x000000010a8fc801 chromedriver + 4741121\n10  chromedriver                        0x000000010a8d225e chromedriver + 4567646\n11  chromedriver                        0x000000010a8fd061 chromedriver + 4743265\n12  chromedriver                        0x000000010a8e3d0a chromedriver + 4640010\n13  chromedriver                        0x000000010a9160ba chromedriver + 4845754\n14  chromedriver                        0x000000010a92c387 chromedriver + 4936583\n15  libsystem_pthread.dylib             0x00007fff67652109 _pthread_start + 148\n16  libsystem_pthread.dylib             0x00007fff6764db8b thread_start + 15\n&quot;}}
 </code></pre>
-<p>This command will unstage all the changes in our repository:</p>
-<p><img src="/images/tidy-up-github/unstaged-files.png" alt="Unstaged files" /></p>
-<p>Now we want to just add the changes from <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code>. We can do this with:</p>
-<pre><code>git add frontend/src/styles.css
-git add frontend/src/tailwind.css
+<p>Well that looks like a crash!</p>
+<p>An unexpected alert open? What does that mean?</p>
+<p>This lead me to look through the issue logs for Capybara first, as these were tests using Capybara. The final &quot;exit&quot; point from our code uses Capybara code. When I looked on Capybara's issue tracker I saw that there's an issue for this problem: <a href="https://github.com/teamcapybara/capybara/issues/2382">Capybara Issue #2382</a>. This then links to a Selenium issue: <a href="https://github.com/SeleniumHQ/selenium/issues/8638">Selenium Issue #8638</a>, which itself then links to <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
+<p>These are pretty good pieces of evidence that indicate it was a chromedriver issue. I then recalled that a colleague of mine, Luiz, mentioned that Chrome had updated a few days ago. An update of Chrome leads to an update in Chromedriver, and since it was Chromedriver that was breaking, I thought to check that.</p>
+<p>On the Capybara issue, there are some good steps to reproduce the issue with a minimal test case. I used this to lock Chromedriver to the more modern version:</p>
+<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.87'
 </code></pre>
-<p>(Or if we were wanting to pick-and-choose changes from these files, we could do <code>git add -p &lt;file&gt;</code> instead)</p>
-<p>This will stage these two files:</p>
-<p><img src="/images/tidy-up-github/two-staged-files.png" alt="Two staged files" /></p>
-<p>Next, we can commit these changes:</p>
-<pre><code>git commit -m &quot;Fixes #22&quot;
+<p>The issue reported on Capybara wasn't happening with that <code>.87</code> release, but it <em>does</em> happen with this:</p>
+<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.83'
 </code></pre>
-<p>We've now re-written the history of the <code>fix/issue-22</code> branch. The latest commit on this branch, according to our local computer, is different to the latest one on GitHub. We need to tell GitHub that our history is correct, and we can do this with:</p>
-<pre><code>git push &lt;your username&gt; fix/issue-22 --force-with-lease
-</code></pre>
-<p>This option will force-push your changes to GitHub, updating GitHub with the simpler changes.</p>
-<p>If you refresh the GitHub pull request window, you'll now see a much, much smaller diff number:</p>
-<p><img src="/images/tidy-up-github/small-diff.png" alt="Small Diff" /></p>
-<p>Much better! Our PR is now just focussed on the small changes that we needed to make to fix Issue #22.</p>
-<p>We can then merge this PR to the branch, confident that the commit is small.</p>
-<h2 id="storybook">Storybook</h2>
-<p>Next up, we still need to pull in those storybook changes. Because we've reset and unstaged all the changes, those storybook changes will still be tracked as unstaged in our Git repository:</p>
-<p><img src="/images/tidy-up-github/unstaged-storybook-files.png" alt="Unstaged storybook files" /></p>
-<p>We can check out to a new branch for these changes, add these files, make a new commit and push these changes to GitHub:</p>
-<pre><code>git switch -c update-storybook
-git add .
-git commit -m &quot;Update Storybook + separate stories&quot;
-git push origin update-storybook
-</code></pre>
-<p>We can then go about creating a pull request for these changes if we like by going to <a href="https://github.com/your-username/twist-v2/pull/new/update-storybook">https://github.com/your-username/twist-v2/pull/new/update-storybook</a>. Remember to change the base branch here to <code>tidy-up-git-example</code>!</p>
-<p>Once the PR is created, we can choose to merge it to that base branch. The base branch will then have both sets of changes on it: one (small one) to fix Issue #22, and one (large one) to upgrade storybook.</p>
-<p>The storybook changes <em>could</em> probably be split out into smaller commits too, but I'll leave that one as an exercise to the reader.</p>
+<p>So this then indicates that it's a particular version of Chromedriver that causes the issue.</p>
+<p>There are at least two ways to fix this issue.</p>
+<p>The first is to lock Chromedriver using <code>Webdrivers::Chromedriver.required_version</code> to a particular version. But that means we need to remember to update that.</p>
+<p>The second way is to dismiss the alert before finishing the test:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bundler/inline'</span>
+
+<span class="n">gemfile</span> <span class="k">do</span>
+  <span class="n">source</span> <span class="s1">'https://rubygems.org'</span>
+  <span class="n">gem</span> <span class="s1">'capybara'</span>
+  <span class="n">gem</span> <span class="s1">'puma'</span>
+  <span class="n">gem</span> <span class="s1">'selenium-webdriver'</span>
+  <span class="n">gem</span> <span class="s1">'webdrivers'</span>
+  <span class="n">gem</span> <span class="s1">'byebug'</span>
+  <span class="n">gem</span> <span class="s1">'pry'</span>
+<span class="k">end</span>
+
+<span class="nb">require</span> <span class="s1">'selenium-webdriver'</span>
+<span class="nb">require</span> <span class="s1">'capybara/dsl'</span>
+
+<span class="no">Webdrivers</span><span class="o">::</span><span class="no">Chromedriver</span><span class="p">.</span><span class="nf">required_version</span> <span class="o">=</span> <span class="s1">'85.0.4183.83'</span>
+<span class="no">Selenium</span><span class="o">::</span><span class="no">WebDriver</span><span class="p">.</span><span class="nf">logger</span><span class="p">.</span><span class="nf">level</span> <span class="o">=</span> <span class="no">Logger</span><span class="o">::</span><span class="no">DEBUG</span>
+
+<span class="n">html</span> <span class="o">=</span> <span class="o">&lt;&lt;~</span><span class="no">HTML</span><span class="sh">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;title&gt;Hello World&lt;/title&gt;
+    &lt;meta charset="utf-8"&gt;
+
+    &lt;script type="text/javascript"&gt;
+      window.addEventListener('beforeunload', (event) =&gt; {
+        event.preventDefault();
+        event.returnValue = '';
+      });
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;&lt;a href="https://google.com"&gt;Hello World&lt;/a&gt;&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</span><span class="no">HTML</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="nb">proc</span> <span class="p">{</span> <span class="o">|</span><span class="n">env</span><span class="o">|</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="s2">"text/html"</span> <span class="p">},</span> <span class="p">[</span><span class="n">html</span><span class="p">]</span> <span class="p">]</span> <span class="p">}</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">::</span><span class="no">Session</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">:selenium_chrome</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">visit</span> <span class="s1">'/'</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">click_on</span> <span class="s1">'Hello World'</span> <span class="c1"># interact with the page, to get Chrome to fire `beforeunload`</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">driver</span><span class="p">.</span><span class="nf">browser</span><span class="p">.</span><span class="nf">switch_to</span><span class="p">.</span><span class="nf">alert</span><span class="p">.</span><span class="nf">accept</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">visit</span> <span class="s1">'/'</span>
+</code></pre></div></div>
+<p>It's the third-to-last and second-to-last lines here that will work around the issue here -- we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.</p>
 
 </article>
 
 <div id='archive'>
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li><a href="/2020/04/how-to-tidy-up-git-pull-requests">How to tidy up Git Pull Requests</a><br>
+      <div>23 Apr 2020</div>
+    </li>
     
     <li><a href="/2020/04/the-stand-down">The Stand Down</a><br>
       <div>06 Apr 2020</div>
@@ -165,10 +176,6 @@ git push origin update-storybook
     
     <li><a href="/2019/09/hiring-juniors-2019">RubyConf Indonesia Keynote - Transcript</a><br>
       <div>19 Sep 2019</div>
-    </li>
-    
-    <li><a href="/2019/08/can-apple-please-design-a-laptop-that-has-a-functional-keyboard-for-the-love-of-all-that-is-precious">The 2018 MacBook Pro Keyboard Drives Me Crazy</a><br>
-      <div>29 Aug 2019</div>
     </li>
     
   </ul>

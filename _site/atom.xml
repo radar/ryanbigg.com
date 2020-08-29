@@ -4,13 +4,110 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2020-07-22T08:36:25+10:00</updated>
+ <updated>2020-08-30T08:56:20+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Selenium, Capybara, ChromeDriver: connection refused error debugging</title>
+   <link href="http://ryanbigg.com/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging"/>
+   <updated>2020-08-30T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging</id>
+   <content type="html"><![CDATA[<p>A few days ago, we started seeing this exception happening for <em>some</em> of our Capybara feature tests:</p>
+<pre><code>1.1) Failure/Error: visit(sign_out_path)
+
+      Selenium::WebDriver::Error::UnknownError:
+        java.net.ConnectException: Connection refused (Connection refused)
+      # [remote server] org.openqa.selenium.remote.server.WebDriverServlet(WebDriverServlet.java):240:in `lambda$handle$0'
+      # [remote server] java.util.concurrent.Executors$RunnableAdapter(Executors.java):511:in `call'
+      # [remote server] java.util.concurrent.FutureTask(FutureTask.java):266:in `run'
+      # [remote server] java.util.concurrent.ThreadPoolExecutor(ThreadPoolExecutor.java):1149:in `runWorker'
+      # [remote server] java.util.concurrent.ThreadPoolExecutor$Worker(ThreadPoolExecutor.java):624:in `run'
+      # [remote server] java.lang.Thread(Thread.java):748:in `run'
+      # ./spec/support/pages/login.rb:5:in `login'
+      # ./spec/concepts/extraction/keyboard_shortcuts_spec.rb:84:in `block (2 levels) in &lt;main&gt;'
+      # ./spec/spec_helper.rb:69:in `block (2 levels) in &lt;main&gt;'
+      # ./spec/support/elasticsearch_spec_helper.rb:42:in `block (3 levels) in &lt;main&gt;'
+      # ./spec/support/elasticsearch_spec_helper.rb:38:in `block (2 levels) in &lt;main&gt;'
+</code></pre>
+<p>Connection refused, fine. But connection refused to <em>what</em>? This error message doesn't give us much to go on.</p>
+<p>Seemingly nothing that we changed had caused this issue -- it was one of those types of issues that just popped up spontaneously.</p>
+<p>It turns out that this is due to a bug within Google ChromeDriver <code>85.0.4183.83</code>. Here's the bug report for ChromeDriver: <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
+<h2 id="debugging-steps">Debugging steps</h2>
+<p>I was able to track it down to this issue by adding this line to the configuration for our tests:</p>
+<pre><code>Selenium::WebDriver.logger.level = Logger::DEBUG
+</code></pre>
+<p>I knew of this trick by having to debug Selenium issues in the past -- it's a very helpful trick to get messages out of Selenium WebDriver that you wouldn't otherwise see.</p>
+<p>When I did this, I saw these messages come through:</p>
+<pre><code>2020-08-30 08:39:15 INFO Selenium &lt;- {&quot;value&quot;:{&quot;data&quot;:{&quot;text&quot;:&quot;{Alert text : &quot;},&quot;error&quot;:&quot;unexpected alert open&quot;,&quot;message&quot;:&quot;unexpected alert open: {Alert text : }\n  (Session info: chrome=85.0.4183.83)&quot;,&quot;stacktrace&quot;:&quot;0   chromedriver                        0x000000010a9261b9 chromedriver + 4911545\n1   chromedriver                        0x000000010a8c5e03 chromedriver + 4517379\n2   chromedriver                        0x000000010a533da6 chromedriver + 773542\n3   chromedriver                        0x000000010a4c4072 chromedriver + 315506\n4   chromedriver                        0x000000010a4b7c23 chromedriver + 265251\n5   chromedriver                        0x000000010a491720 chromedriver + 108320\n6   chromedriver                        0x000000010a492693 chromedriver + 112275\n7   chromedriver                        0x000000010a8eef72 chromedriver + 4685682\n8   chromedriver                        0x000000010a8fcb3a chromedriver + 4741946\n9   chromedriver                        0x000000010a8fc801 chromedriver + 4741121\n10  chromedriver                        0x000000010a8d225e chromedriver + 4567646\n11  chromedriver                        0x000000010a8fd061 chromedriver + 4743265\n12  chromedriver                        0x000000010a8e3d0a chromedriver + 4640010\n13  chromedriver                        0x000000010a9160ba chromedriver + 4845754\n14  chromedriver                        0x000000010a92c387 chromedriver + 4936583\n15  libsystem_pthread.dylib             0x00007fff67652109 _pthread_start + 148\n16  libsystem_pthread.dylib             0x00007fff6764db8b thread_start + 15\n&quot;}}
+</code></pre>
+<p>Well that looks like a crash!</p>
+<p>An unexpected alert open? What does that mean?</p>
+<p>This lead me to look through the issue logs for Capybara first, as these were tests using Capybara. The final &quot;exit&quot; point from our code uses Capybara code. When I looked on Capybara's issue tracker I saw that there's an issue for this problem: <a href="https://github.com/teamcapybara/capybara/issues/2382">Capybara Issue #2382</a>. This then links to a Selenium issue: <a href="https://github.com/SeleniumHQ/selenium/issues/8638">Selenium Issue #8638</a>, which itself then links to <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
+<p>These are pretty good pieces of evidence that indicate it was a chromedriver issue. I then recalled that a colleague of mine, Luiz, mentioned that Chrome had updated a few days ago. An update of Chrome leads to an update in Chromedriver, and since it was Chromedriver that was breaking, I thought to check that.</p>
+<p>On the Capybara issue, there are some good steps to reproduce the issue with a minimal test case. I used this to lock Chromedriver to the more modern version:</p>
+<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.87'
+</code></pre>
+<p>The issue reported on Capybara wasn't happening with that <code>.87</code> release, but it <em>does</em> happen with this:</p>
+<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.83'
+</code></pre>
+<p>So this then indicates that it's a particular version of Chromedriver that causes the issue.</p>
+<p>There are at least two ways to fix this issue.</p>
+<p>The first is to lock Chromedriver using <code>Webdrivers::Chromedriver.required_version</code> to a particular version. But that means we need to remember to update that.</p>
+<p>The second way is to dismiss the alert before finishing the test:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bundler/inline'</span>
+
+<span class="n">gemfile</span> <span class="k">do</span>
+  <span class="n">source</span> <span class="s1">'https://rubygems.org'</span>
+  <span class="n">gem</span> <span class="s1">'capybara'</span>
+  <span class="n">gem</span> <span class="s1">'puma'</span>
+  <span class="n">gem</span> <span class="s1">'selenium-webdriver'</span>
+  <span class="n">gem</span> <span class="s1">'webdrivers'</span>
+  <span class="n">gem</span> <span class="s1">'byebug'</span>
+  <span class="n">gem</span> <span class="s1">'pry'</span>
+<span class="k">end</span>
+
+<span class="nb">require</span> <span class="s1">'selenium-webdriver'</span>
+<span class="nb">require</span> <span class="s1">'capybara/dsl'</span>
+
+<span class="no">Webdrivers</span><span class="o">::</span><span class="no">Chromedriver</span><span class="p">.</span><span class="nf">required_version</span> <span class="o">=</span> <span class="s1">'85.0.4183.83'</span>
+<span class="no">Selenium</span><span class="o">::</span><span class="no">WebDriver</span><span class="p">.</span><span class="nf">logger</span><span class="p">.</span><span class="nf">level</span> <span class="o">=</span> <span class="no">Logger</span><span class="o">::</span><span class="no">DEBUG</span>
+
+<span class="n">html</span> <span class="o">=</span> <span class="o">&lt;&lt;~</span><span class="no">HTML</span><span class="sh">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;title&gt;Hello World&lt;/title&gt;
+    &lt;meta charset="utf-8"&gt;
+
+    &lt;script type="text/javascript"&gt;
+      window.addEventListener('beforeunload', (event) =&gt; {
+        event.preventDefault();
+        event.returnValue = '';
+      });
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;&lt;a href="https://google.com"&gt;Hello World&lt;/a&gt;&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</span><span class="no">HTML</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="nb">proc</span> <span class="p">{</span> <span class="o">|</span><span class="n">env</span><span class="o">|</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="s2">"text/html"</span> <span class="p">},</span> <span class="p">[</span><span class="n">html</span><span class="p">]</span> <span class="p">]</span> <span class="p">}</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">::</span><span class="no">Session</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">:selenium_chrome</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">visit</span> <span class="s1">'/'</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">click_on</span> <span class="s1">'Hello World'</span> <span class="c1"># interact with the page, to get Chrome to fire `beforeunload`</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">driver</span><span class="p">.</span><span class="nf">browser</span><span class="p">.</span><span class="nf">switch_to</span><span class="p">.</span><span class="nf">alert</span><span class="p">.</span><span class="nf">accept</span>
+<span class="n">session</span><span class="p">.</span><span class="nf">visit</span> <span class="s1">'/'</span>
+</code></pre></div></div>
+<p>It's the third-to-last and second-to-last lines here that will work around the issue here -- we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>How to tidy up Git Pull Requests</title>
@@ -4459,60 +4556,6 @@ methods that I'm not remembering right now that can do it too... it's generally 
 <p><em>Thanks to Rebecca Skinner, Kim Dowling, David Carlin and Jo Cranford for reviewing this post.</em></p>
 <hr />
 <p>In the next post, I'll cover how we brought these juniors into Culture Amp through our onboarding process.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Culture Amp Junior Engineering Program: Retrospective</title>
-   <link href="http://ryanbigg.com/2018/08/culture-amp-junior-engineering-program-retrospective"/>
-   <updated>2018-08-27T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2018/08/culture-amp-junior-engineering-program-retrospective</id>
-   <content type="html"><![CDATA[<p>This post is a short summary of the <a href="https://cultureamp.com">Culture Amp</a> Junior Engineering Program (JEP) that I ran from November last year until June this year.</p>
-<p>If you're keen to apply for the 2nd cohort then you can do that here:</p>
-<p><strong><a href="https://boards.greenhouse.io/cultureamp/jobs/1295735">Apply here for the Culture Amp Junior Engineering Program's second cohort</a></strong></p>
-<p>This post is the first in a series of four blog posts which will go into detail about how the last JEP operated, with the aim of giving potential future cohort applicants and the general public a taste of what a Culture Amp JEP looks like.</p>
-<h2 id="our-first-junior-engineering-program">Our first Junior Engineering Program</h2>
-<p>Culture Amp spun up our first Junior Engineering Program in November of 2017. It ran for 6 months, and we trained 10 junior engineers on the skills they needed to be confident and capable engineers who could work on a mixture of backend and frontend applications.</p>
-<p>We started this program because we think it is vital to provide a way into the programming community for newcomers. New people bring fresh ideas, and proper training ensures the longevity of our community and engineering practices by providing a steady stream of people ready to become the next generation of engineers.
-Training up junior engineers is also a great way for our more experienced engineers to practice their craft too. By explaining things to new people, our engineers get to practice understanding their own thoughts, code, and processes.</p>
-<p>At Culture Amp we want to provide an entry path for newcomers and we want our existing engineers to practice explaining and teaching their skills too. These are the two main reasons why we started the Culture Amp Junior Engineering Program.</p>
-<h2 id="recruitment">Recruitment</h2>
-<p>After opening applications for the first program, we were blown away by the quality (and quantity!) of the applications we received.</p>
-<p>We talked with most of the people who applied, gave them a junior-friendly coding test to work on, and if they passed that then we brought them in for a few more interviews too. It was a long process, but very worthwhile. We got some pretty amazing junior engineers out of it.</p>
-<p>We worked hard on making our interview process as fair as possible by providing a set list of questions for all interviews and by getting pairs of people to do some of the interview stages. The goal of this was to eliminate any personal or unconscious bias that might've happened otherwise. At each step of the process, we had some clear measures around what we were looking for too.</p>
-<h2 id="support-and-mentorship-for-junior-engineers">Support and mentorship for Junior Engineers</h2>
-<p>Hiring junior engineers is the easy part. After we hired them, the real work begun.</p>
-<p>One of our big goals during this program was to grow these engineers into people who were confident and capable within our company. But to do this, we needed to ensure that the juniors felt 100% supported during their time at Culture Amp. A junior who is supported well is one that will learn and grow well. We took a few different paths to support our juniors.</p>
-<p>Our program is designed to foster collaboration, so instead of hiring a single junior we hire a cohort of them at a time. This is designed to give junior developers the ability to grow and to share the pain and joy of being a junior developer at Culture Amp as one big cohort. Having other people to talk about shared experiences helps juniors work through any issues that might come up.</p>
-<p>We gave juniors extra support by pairing them up with a mentor who would provide them with career guidance and other assistance through 1-on-1 sessions weekly. These mentors would often work on goals with the juniors and check-in regularly about their progress. If the junior was ever unsure about something, they could reach out to their mentor for support.</p>
-<p>Juniors were also placed into real development teams and paired up with more senior developers who would then help out the junior by answering their questions, walking through unfamiliar code with them or helping them to understand the processes involved with working within the team.
-There isn't one single thing that we could do to help the juniors feel the most supported at Culture Amp.</p>
-<h2 id="program-outline">Program Outline</h2>
-<p>During the JEP, our junior engineers worked on a mixed schedule of training sessions and real-world work.
-Initially, we split the week up so that they spent two days with the program and three days working in their team. We realised that this didn't work so well, so switched to a 3 week cadence of 1 week JEP, 2 weeks working on a team. The team work was designed to give juniors some time to practice the real-world skills that they learned during the JEP. This 3-week schedule worked really well last time, and it’s what we’ll be doing next time too.</p>
-<h3 id="jep-weeks">JEP Weeks</h3>
-<p>During the JEP weeks, the juniors were given training sessions on different programming concepts. These sessions were facilitated Junior Engineering Program Lead, Ryan Bigg and occasionally, some guest lecturers too. The training sessions covered technologies like SQL, Ruby, Rails and JavaScript. We use these technologies (and a few more!) at Culture Amp daily, so that provided the juniors the practice that they needed to put their skills to the test.</p>
-<p>Juniors were often given homework to accomplish outside of these sessions which would be reviewed when the next JEP session happened. The juniors would discuss their solutions to the homework within the group and with the facilitator too. Out of this session would come some feedback that the junior could then learn from and apply to their future work. This feedback was a vital part about how we supported our juniors too.</p>
-<p>While we had in mind what we wanted to teach our juniors during these JEP weeks, we were not too rigorous about it. The course content was adjusted on-the-fly to match up with what the juniors wanted to work on. This kept the juniors interested and engaged in what they were learning.</p>
-<h3 id="team-weeks">Team Weeks</h3>
-<p>When the juniors were outside of the training sessions, they would practice their craft by working with teams to fix bugs and deliver features on our real-world applications. All of our juniors contributed to things that thousands of people use world-wide, which is a pretty incredible feat! This work ranges from things like the infrastructure that our servers run on, all the way up to entirely new features like our Effectiveness dashboard.
-While the juniors were working on their teams they were paired up with a more senior engineer who could help them out with whatever they needed to do. If the junior was comfortable with being left alone, then we would give them space to do whatever they needed to do as well. This practice worked well last time, and so we’ll be keeping it too.</p>
-<h2 id="feedback">Feedback</h2>
-<p>To finish up, I want to show you the feedback that we received from the last batch of juniors that went through this program:</p>
-<blockquote>
-<p>These lessons were invaluable to me as it gave me a chance to step back from my day to day work and take the time to understand the basics of several technologies which I was unfamiliar with.</p>
-</blockquote>
-<hr>
-<blockquote>
-<p>The Junior Engineering Program was a great way to kickstart my career in tech. It provided me with a unique opportunity to advance my skills as a developer, while contributing to exciting real world projects.</p>
-</blockquote>
-<hr>
-<blockquote>
-<p>The Culture Amp Junior Engineering Program is a great opportunity to get started on the engineering career and get a chance to learn the current standards and best practices from some of the best people in their areas of expertise. On top of that you also get the benefits of working for a culture first company that truly cares about your wellbeing.</p>
-</blockquote>
-<p>We loved working with our first cohort of junior developers we would love the opportunity to work a second cohort of juniors for our next program.</p>
-<p>So if you're a junior developer who's keen to learn, go and apply for Culture Amp's second Junior Engineering Program:</p>
-<p><strong><a href="https://boards.greenhouse.io/cultureamp/jobs/1295735">Apply here for the Culture Amp Junior Engineering Program's second cohort</a></strong></p>
 ]]></content>
  </entry>
  
