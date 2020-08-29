@@ -33,7 +33,7 @@ It turns out that this is due to a bug within Google ChromeDriver `85.0.4183.83`
 
 ## Debugging steps
 
-I was able to track it down to this issue by adding this line to the configuration for our tests:
+After quite a lot of playing around with our Docker container setup, building EC2 instances and testing things out there... I was able to track it down to this issue by adding this line to the configuration for our tests:
 
 ```
 Selenium::WebDriver.logger.level = Logger::DEBUG
