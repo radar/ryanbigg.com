@@ -56,9 +56,14 @@ article {
     padding: 3px 4px;
     border-radius: 2px;
     font-family: "Ubuntu Mono";
+    color: $primary-color;
 
     @media (prefers-color-scheme: dark) {
-      background: #343434;
+      background: #292929;
+    }
+
+    @media (prefers-color-scheme: light) {
+      color: darken($primary-color, 5%);
     }
   }
 
@@ -129,9 +134,10 @@ article {
 
 blockquote {
   background: lighten($primary-color, 55%);
+  border-radius: 10px;
 
   @media (prefers-color-scheme: dark) {
-    background: darken($primary-color, 25%);
+    background: #292929;
   }
 
   border-left: 8px solid $primary-color;
@@ -154,9 +160,6 @@ aside {
 
   header {
     font-size: 1.5rem;
-  }
-
-  code {
   }
 }
 

@@ -37,106 +37,33 @@
 
 <article>
   <div class='center'>
-    <a href="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging">
-      <h2>Selenium, Capybara, ChromeDriver: connection refused error debugging</h2>
+    <a href="/2020/08/squash-and-merge-considered-dangerous">
+      <h2>Squash and Merge considered dangerous</h2>
     </a>
-    <small>29 Aug 2020</small>
+    <small>31 Aug 2020</small>
   </div>
-  <p>A few days ago, we started seeing this exception happening for <em>some</em> of our Capybara feature tests:</p>
-<pre><code>1.1) Failure/Error: visit(sign_out_path)
-
-      Selenium::WebDriver::Error::UnknownError:
-        java.net.ConnectException: Connection refused (Connection refused)
-      # [remote server] org.openqa.selenium.remote.server.WebDriverServlet(WebDriverServlet.java):240:in `lambda$handle$0'
-      # [remote server] java.util.concurrent.Executors$RunnableAdapter(Executors.java):511:in `call'
-      # [remote server] java.util.concurrent.FutureTask(FutureTask.java):266:in `run'
-      # [remote server] java.util.concurrent.ThreadPoolExecutor(ThreadPoolExecutor.java):1149:in `runWorker'
-      # [remote server] java.util.concurrent.ThreadPoolExecutor$Worker(ThreadPoolExecutor.java):624:in `run'
-      # [remote server] java.lang.Thread(Thread.java):748:in `run'
-      # ./spec/support/pages/login.rb:5:in `login'
-      # ./spec/concepts/extraction/keyboard_shortcuts_spec.rb:84:in `block (2 levels) in &lt;main&gt;'
-      # ./spec/spec_helper.rb:69:in `block (2 levels) in &lt;main&gt;'
-      # ./spec/support/elasticsearch_spec_helper.rb:42:in `block (3 levels) in &lt;main&gt;'
-      # ./spec/support/elasticsearch_spec_helper.rb:38:in `block (2 levels) in &lt;main&gt;'
-</code></pre>
-<p>Connection refused, fine. But connection refused to <em>what</em>? This error message doesn't give us much to go on.</p>
-<p>Seemingly nothing that we changed had caused this issue -- it was one of those types of issues that just popped up spontaneously.</p>
-<p>It turns out that this is due to a bug within Google ChromeDriver <code>85.0.4183.83</code>. Here's the bug report for ChromeDriver: <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
-<h2 id="debugging-steps">Debugging steps</h2>
-<p>After quite a lot of playing around with our Docker container setup, building EC2 instances and testing things out there... I was able to track it down to this issue by adding this line to the configuration for our tests:</p>
-<pre><code>Selenium::WebDriver.logger.level = Logger::DEBUG
-</code></pre>
-<p>I knew of this trick by having to debug Selenium issues in the past -- it's a very helpful trick to get messages out of Selenium WebDriver that you wouldn't otherwise see.</p>
-<p>When I did this, I saw these messages come through:</p>
-<pre><code>2020-08-30 08:39:15 INFO Selenium &lt;- {&quot;value&quot;:{&quot;data&quot;:{&quot;text&quot;:&quot;{Alert text : &quot;},&quot;error&quot;:&quot;unexpected alert open&quot;,&quot;message&quot;:&quot;unexpected alert open: {Alert text : }\n  (Session info: chrome=85.0.4183.83)&quot;,&quot;stacktrace&quot;:&quot;0   chromedriver                        0x000000010a9261b9 chromedriver + 4911545\n1   chromedriver                        0x000000010a8c5e03 chromedriver + 4517379\n2   chromedriver                        0x000000010a533da6 chromedriver + 773542\n3   chromedriver                        0x000000010a4c4072 chromedriver + 315506\n4   chromedriver                        0x000000010a4b7c23 chromedriver + 265251\n5   chromedriver                        0x000000010a491720 chromedriver + 108320\n6   chromedriver                        0x000000010a492693 chromedriver + 112275\n7   chromedriver                        0x000000010a8eef72 chromedriver + 4685682\n8   chromedriver                        0x000000010a8fcb3a chromedriver + 4741946\n9   chromedriver                        0x000000010a8fc801 chromedriver + 4741121\n10  chromedriver                        0x000000010a8d225e chromedriver + 4567646\n11  chromedriver                        0x000000010a8fd061 chromedriver + 4743265\n12  chromedriver                        0x000000010a8e3d0a chromedriver + 4640010\n13  chromedriver                        0x000000010a9160ba chromedriver + 4845754\n14  chromedriver                        0x000000010a92c387 chromedriver + 4936583\n15  libsystem_pthread.dylib             0x00007fff67652109 _pthread_start + 148\n16  libsystem_pthread.dylib             0x00007fff6764db8b thread_start + 15\n&quot;}}
-</code></pre>
-<p>Well that looks like a crash!</p>
-<p>An unexpected alert open? What does that mean?</p>
-<p>This lead me to look through the issue logs for Capybara first, as these were tests using Capybara. The final &quot;exit&quot; point from our code uses Capybara code. When I looked on Capybara's issue tracker I saw that there's an issue for this problem: <a href="https://github.com/teamcapybara/capybara/issues/2382">Capybara Issue #2382</a>. This then links to a Selenium issue: <a href="https://github.com/SeleniumHQ/selenium/issues/8638">Selenium Issue #8638</a>, which itself then links to <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
-<p>These are pretty good pieces of evidence that indicate it was a chromedriver issue. I then recalled that a colleague of mine, Luiz, mentioned that Chrome had updated a few days ago. An update of Chrome leads to an update in Chromedriver, and since it was Chromedriver that was breaking, I thought to check that.</p>
-<p>On the Capybara issue, there are some good steps to reproduce the issue with a minimal test case. I used this to lock Chromedriver to the more modern version:</p>
-<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.87'
-</code></pre>
-<p>The issue reported on Capybara wasn't happening with that <code>.87</code> release, but it <em>does</em> happen with this:</p>
-<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.83'
-</code></pre>
-<p>So this then indicates that it's a particular version of Chromedriver that causes the issue.</p>
-<p>There are at least two ways to fix this issue.</p>
-<p>The first is to lock Chromedriver using <code>Webdrivers::Chromedriver.required_version</code> to a particular version. But that means we need to remember to update that.</p>
-<p>The second way is to dismiss the alert before finishing the test:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'bundler/inline'</span>
-
-<span class="n">gemfile</span> <span class="k">do</span>
-  <span class="n">source</span> <span class="s1">'https://rubygems.org'</span>
-  <span class="n">gem</span> <span class="s1">'capybara'</span>
-  <span class="n">gem</span> <span class="s1">'puma'</span>
-  <span class="n">gem</span> <span class="s1">'selenium-webdriver'</span>
-  <span class="n">gem</span> <span class="s1">'webdrivers'</span>
-  <span class="n">gem</span> <span class="s1">'byebug'</span>
-  <span class="n">gem</span> <span class="s1">'pry'</span>
-<span class="k">end</span>
-
-<span class="nb">require</span> <span class="s1">'selenium-webdriver'</span>
-<span class="nb">require</span> <span class="s1">'capybara/dsl'</span>
-
-<span class="no">Webdrivers</span><span class="o">::</span><span class="no">Chromedriver</span><span class="p">.</span><span class="nf">required_version</span> <span class="o">=</span> <span class="s1">'85.0.4183.83'</span>
-<span class="no">Selenium</span><span class="o">::</span><span class="no">WebDriver</span><span class="p">.</span><span class="nf">logger</span><span class="p">.</span><span class="nf">level</span> <span class="o">=</span> <span class="no">Logger</span><span class="o">::</span><span class="no">DEBUG</span>
-
-<span class="n">html</span> <span class="o">=</span> <span class="o">&lt;&lt;~</span><span class="no">HTML</span><span class="sh">
-&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-  &lt;head&gt;
-    &lt;title&gt;Hello World&lt;/title&gt;
-    &lt;meta charset="utf-8"&gt;
-
-    &lt;script type="text/javascript"&gt;
-      window.addEventListener('beforeunload', (event) =&gt; {
-        event.preventDefault();
-        event.returnValue = '';
-      });
-    &lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;h1&gt;&lt;a href="https://google.com"&gt;Hello World&lt;/a&gt;&lt;/h1&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-</span><span class="no">HTML</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="nb">proc</span> <span class="p">{</span> <span class="o">|</span><span class="n">env</span><span class="o">|</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="s2">"text/html"</span> <span class="p">},</span> <span class="p">[</span><span class="n">html</span><span class="p">]</span> <span class="p">]</span> <span class="p">}</span>
-
-<span class="n">session</span> <span class="o">=</span> <span class="no">Capybara</span><span class="o">::</span><span class="no">Session</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">:selenium_chrome</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
-<span class="n">session</span><span class="p">.</span><span class="nf">visit</span> <span class="s1">'/'</span>
-<span class="n">session</span><span class="p">.</span><span class="nf">click_on</span> <span class="s1">'Hello World'</span> <span class="c1"># interact with the page, to get Chrome to fire `beforeunload`</span>
-<span class="n">session</span><span class="p">.</span><span class="nf">driver</span><span class="p">.</span><span class="nf">browser</span><span class="p">.</span><span class="nf">switch_to</span><span class="p">.</span><span class="nf">alert</span><span class="p">.</span><span class="nf">accept</span>
-<span class="n">session</span><span class="p">.</span><span class="nf">visit</span> <span class="s1">'/'</span>
-</code></pre></div></div>
-<p>It's the third-to-last and second-to-last lines here that will work around the issue here -- we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.</p>
+  <p>On the Culture Amp Alumni Slack group today, this was posted:</p>
+<blockquote>
+<p>Anyone has position on squash-merge when you merge your PR into master?</p>
+</blockquote>
+<p>Here's my (amended, corrected and updated) reply:</p>
+<p>I don't like it.</p>
+<p>Imagine: you're working on a PR that lasts ~1 week. It's about 60 commits long. Of course your commits are atomic and their commit messages are beautifully written. We're all good developers, and we are perfect all the time.</p>
+<p>At about commit #33, you make a critical mistake. However, this mistake is not noticed until the PR gets alllllll the way through to production. Hundreds of users simultaneously experience your fuckup. Alarms start going off.</p>
+<p>However, it's your first-of-five days off. You're on some tropical island somewhere. Margarita in hand. That PR was a lot of work and you deserve a break!</p>
+<p>So then it's up to Rando Developer #2 to come along and attempt to figure out what went wrong. They git bisect and discover the ONE commit that contains your changes. This ONE commit that represents an entire week (or more's) work. And they have to trawl through two-and-a-half thousand lines written in at least four different languages to find that one, tiny, area, where you put <code>&gt;</code> when you should've put <code>&lt;</code>.</p>
+<p>But you could look at the branch, right? Just check it out! You mean the one that gets automatically deleted after you merged the PR? That branch? The branch that now only exists on this vacationing developer's computer? It's <em>gone</em>. Lucky for you, GitHub has a feature that lets you restore a branch after it has been deleted.</p>
+<p>Still, it would</p>
 
 </article>
 
 <div id='archive'>
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li><a href="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging">Selenium, Capybara, ChromeDriver: connection refused error debugging</a><br>
+      <div>29 Aug 2020</div>
+    </li>
     
     <li><a href="/2020/04/how-to-tidy-up-git-pull-requests">How to tidy up Git Pull Requests</a><br>
       <div>23 Apr 2020</div>
@@ -172,10 +99,6 @@
     
     <li><a href="/2019/11/rough-edges">Rough Edges</a><br>
       <div>18 Nov 2019</div>
-    </li>
-    
-    <li><a href="/2019/09/hiring-juniors-2019">RubyConf Indonesia Keynote - Transcript</a><br>
-      <div>19 Sep 2019</div>
     </li>
     
   </ul>
