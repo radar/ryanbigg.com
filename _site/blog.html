@@ -84,8 +84,9 @@
 <span class="k">def</span> <span class="nf">add_new_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
   <span class="n">within_tags</span> <span class="k">do</span>
     <span class="n">find</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nf">fill_in</span><span class="p">(</span><span class="ss">with: </span><span class="n">tag</span><span class="p">)</span>
-    <span class="n">find</span><span class="p">(</span><span class="s2">".tags__option"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">).</span><span class="nf">click</span>
   <span class="k">end</span>
+
+  <span class="n">find</span><span class="p">(</span><span class="s2">".tags__option"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">).</span><span class="nf">click</span>
 <span class="k">end</span>
 
 <span class="k">def</span> <span class="nf">remove_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
@@ -109,8 +110,9 @@
 <ol>
 <li><code>expect_selected_tag</code>: When the page loads, the Select element should contain a tag that is <em>already</em> assigned to the user.</li>
 <li><code>remove_tag</code>: Used to remove a tag that appears in the Select element.</li>
-<li><code>add_new_tag</code>: Used to add either a tag from the</li>
+<li><code>add_new_tag</code>: Used to add either a tag from the list of options, or to create a brand new tag.</li>
 </ol>
+<p>With these helpers, I can effectively test React Select within Capybara and Selenium.</p>
 
 </article>
 

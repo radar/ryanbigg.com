@@ -55,8 +55,9 @@ end
 def add_new_tag(tag)
   within_tags do
     find("input").fill_in(with: tag)
-    find(".tags__option", text: tag).click
   end
+
+  find(".tags__option", text: tag).click
 end
 
 def remove_tag(tag)
