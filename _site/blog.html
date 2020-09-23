@@ -37,23 +37,80 @@
 
 <article>
   <div class='center'>
-    <a href="/2020/08/squash-and-merge-considered-dangerous">
-      <h2>Squash and Merge considered dangerous</h2>
+    <a href="/2020/09/react-select-capybara-selenium">
+      <h2>React Select + Capybara + Selenium</h2>
     </a>
-    <small>31 Aug 2020</small>
+    <small>23 Sep 2020</small>
   </div>
-  <p>On the Culture Amp Alumni Slack group today, this was posted:</p>
-<blockquote>
-<p>Anyone has position on squash-merge when you merge your PR into master?</p>
-</blockquote>
-<p>Here's my (amended, corrected and updated) reply:</p>
-<p>I don't like it.</p>
-<p>Imagine: you're working on a PR that lasts ~1 week. It's about 60 commits long. Of course your commits are atomic and their commit messages are beautifully written. We're all good developers, and we are perfect all the time.</p>
-<p>At about commit #33, you make a critical mistake. However, this mistake is not noticed until the PR gets alllllll the way through to production. Hundreds of users simultaneously experience your fuckup. Alarms start going off.</p>
-<p>However, it's your first-of-five days off. You're on some tropical island somewhere. Margarita in hand. That PR was a lot of work and you deserve a break!</p>
-<p>So then it's up to Rando Developer #2 to come along and attempt to figure out what went wrong. They git bisect and discover the ONE commit that contains your changes. This ONE commit that represents an entire week (or more's) work. And they have to trawl through two-and-a-half thousand lines written in at least four different languages to find that one, tiny, area, where you put <code>&gt;</code> when you should've put <code>&lt;</code>.</p>
-<p>But you could look at the branch, right? Just check it out! You mean the one that gets automatically deleted after you merged the PR? That branch? The branch that now only exists on this vacationing developer's computer? It's <em>gone</em>. Lucky for you, GitHub has a feature that lets you restore a branch after it has been deleted.</p>
-<p>Still, it would</p>
+  <p>Today, I was adding a <a href="https://react-select.com/home">React Select</a> element to a page, and I really wanted to test it.</p>
+<p>This is, surprisingly, <a href="https://github.com/JedWatson/react-select/issues/856">not the first time I've attempted this</a>.</p>
+<p>Since 2016, React Select has undergone some changes, released a brand-new (and much better!) version. One of these big features is that it uses <a href="https://emotion.sh/docs/introduction">Emotion</a> for styling. A consequence of this is that React Select no longer has <code>.Select</code>, or <code>.Select-input</code> classes that you could use as selectors in the tests. Instead, it will generate hashed CSS selectors, like <code>css-2b097c-container</code> and <code>css-1rhbuit-multiValue</code>. These have the potential to change: if the underlying CSS changes, then the hash will change. So they are not reliable in tests.</p>
+<p>To fix this, I used another prop of <code>ReactSelect</code> called <code>classNamePrefix</code>:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">CreatableSelect</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-select/creatable</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// ...</span>
+
+<span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span> <span class="p">},</span>
+<span class="p">];</span>
+
+<span class="c1">// "tags" here comes from a prop on this component</span>
+<span class="kd">const</span> <span class="nx">selectedOptions</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">filter</span><span class="p">(({</span> <span class="nx">value</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">tags</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">value</span><span class="p">));</span>
+
+<span class="k">return</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nc">CreatableSelect</span>
+    <span class="na">options=</span><span class="si">{</span><span class="nx">options</span><span class="si">}</span>
+    <span class="na">defaultValue=</span><span class="si">{</span><span class="nx">selectedOptions</span><span class="si">}</span>
+    <span class="nt">isMulti</span>
+    <span class="na">classNamePrefix=</span><span class="s2">"tags"</span>
+  <span class="p">/&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+<p>This prop adds additional classes to the React Select component, such as <code>.tags__control</code> and <code>.tags__multi-value</code> -- values that <em>are</em> reliable and predictable!</p>
+<p>This means that in the Capybara test, I can now use these to interact with this React Select component, like this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">within_tags</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+  <span class="n">within</span><span class="p">(</span><span class="s2">".tags__control"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">expect_selected_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+  <span class="n">within_tags</span> <span class="k">do</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">).</span><span class="nf">to</span> <span class="n">have_selector</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">add_new_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+  <span class="n">within_tags</span> <span class="k">do</span>
+    <span class="n">find</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nf">fill_in</span><span class="p">(</span><span class="ss">with: </span><span class="n">tag</span><span class="p">)</span>
+    <span class="n">find</span><span class="p">(</span><span class="s2">".tags__option"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">).</span><span class="nf">click</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">remove_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+  <span class="n">within_tags</span> <span class="k">do</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">find</span><span class="p">(</span><span class="s2">".tags__multi-value__remove"</span><span class="p">).</span><span class="nf">click</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">scenario</span> <span class="s2">"Can update a User's tags"</span><span class="p">,</span> <span class="ss">js: </span><span class="kp">true</span> <span class="k">do</span>
+  <span class="n">visit</span> <span class="n">edit_admin_user_path</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+  <span class="n">expect_selected_tag</span><span class="p">(</span><span class="s2">"Existing tag"</span><span class="p">)</span>
+  <span class="n">remove_tag</span><span class="p">(</span><span class="s2">"HIU"</span><span class="p">)</span>
+  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Paid"</span><span class="p">)</span>
+  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Custom tag"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>I have the following helpers:</p>
+<ol>
+<li><code>expect_selected_tag</code>: When the page loads, the Select element should contain a tag that is <em>already</em> assigned to the user.</li>
+<li><code>remove_tag</code>: Used to remove a tag that appears in the Select element.</li>
+<li><code>add_new_tag</code>: Used to add either a tag from the</li>
+</ol>
 
 </article>
 
