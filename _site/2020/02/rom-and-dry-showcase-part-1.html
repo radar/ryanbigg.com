@@ -124,29 +124,14 @@ gem 'rake'
     <span class="nb">require</span> <span class="s2">"rom"</span>
     <span class="nb">require</span> <span class="s2">"rom-sql"</span>
 
-    <span class="n">register</span><span class="p">(</span><span class="s1">'db.config'</span><span class="p">,</span> <span class="no">ROM</span><span class="o">::</span><span class="no">Configuration</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">:sql</span><span class="p">,</span> <span class="no">ENV</span><span class="p">[</span><span class="s1">'DATABASE_URL'</span><span class="p">]))</span>
+    <span class="n">connection</span> <span class="o">=</span> <span class="no">Sequel</span><span class="p">.</span><span class="nf">connect</span><span class="p">(</span><span class="no">ENV</span><span class="p">[</span><span class="s1">'DATABASE_URL'</span><span class="p">],</span> <span class="ss">extensions: </span><span class="sx">%i[pg_timestamptz]</span><span class="p">)</span>
+    <span class="n">register</span><span class="p">(</span><span class="s1">'db.connection'</span><span class="p">,</span> <span class="n">connection</span><span class="p">)</span>
+    <span class="n">register</span><span class="p">(</span><span class="s1">'db.config'</span><span class="p">,</span> <span class="no">ROM</span><span class="o">::</span><span class="no">Configuration</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">:sql</span><span class="p">,</span> <span class="n">connection</span><span class="p">))</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
 <p>This <code>system/boot</code> directory is where we put system-level dependencies when using <code>dry-system</code>. This new file that we've created configures how our application defines its database connection.</p>
-<p>To connect to the database, we need to use the <code>rom</code> and <code>rom-sql</code> gems. On the final line of <code>init</code>, we register a database connection to be used. This will pull the <code>DATABASE_URL</code> variable from the environment, which by default will load the one specified in <code>.env.development</code>.</p>
-<p>Now that we have our database connection defined and our database itself created, we will need to create tables in that database. If this was a Rails app, we would use migrations to do such a thing. Fortunately for us, ROM &quot;borrowed&quot; that idea and so we can use migrations with ROM too.</p>
-<p>To create migrations with ROM, we will need to create another file to define the Rake tasks, called <code>Rakefile</code>:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s1">'config/application'</span>
-<span class="nb">require</span> <span class="s1">'rom-sql'</span>
-<span class="nb">require</span> <span class="s1">'rom/sql/rake_task'</span>
-
-<span class="n">namespace</span> <span class="ss">:db</span> <span class="k">do</span>
-  <span class="n">task</span> <span class="ss">:setup</span> <span class="k">do</span>
-    <span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">start</span><span class="p">(</span><span class="ss">:db</span><span class="p">)</span>
-    <span class="no">ROM</span><span class="o">::</span><span class="no">SQL</span><span class="o">::</span><span class="no">RakeSupport</span><span class="p">.</span><span class="nf">env</span> <span class="o">=</span> <span class="no">ROM</span><span class="p">.</span><span class="nf">container</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s1">'db.config'</span><span class="p">],</span> <span class="ss">extensions: </span><span class="sx">%i[pg_timestamptz]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-      <span class="n">config</span><span class="p">.</span><span class="nf">gateways</span><span class="p">[</span><span class="ss">:default</span><span class="p">].</span><span class="nf">use_logger</span><span class="p">(</span><span class="no">Logger</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vg">$stdout</span><span class="p">))</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>This file loads the <code>config/application.rb</code> file that we created earlier and that will make it possible to require the other two files we use here.</p>
-<p>In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called <code>db:setup</code>. This configuration starts the system-level dependency <code>:db</code> by calling <code>start</code> on <code>Bix::Application</code>. This will run the code inside the <code>init</code> block defined within <code>system/boot/db.rb</code>. This <code>init</code> block registers a <code>db.config</code> with our application, and we can retrieve that value by using <code>Bix::Application['db.config']</code> here.</p>
+<p>To connect to the database, we need to use the <code>rom</code> and <code>rom-sql</code> gems. These will automatically require the <code>Sequel</code> gem, and we build a database connection there using <code>Sequel.connect</code>.</p>
 <p>The <code>extensions</code> option passed here tells the underlying database gem, Sequel, to load an extension called <code>pg_timestamptz</code>. This extension will create <code>timestamp with time zone</code> columns in our database, rather than the default, which is <code>timestamp without time zone</code>. This means that times will be stored with time zone information in the database and this means when we retrieve them Ruby won't add the system's timezone on the end. To demonstrate what I mean here, compare these three lines:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="no">Time</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"2020-10-14 14:23:07.155221"</span><span class="p">)</span>
 <span class="o">=&gt;</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">14</span> <span class="mi">14</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mo">07</span><span class="o">.</span><span class="mi">155221</span> <span class="o">+</span><span class="mi">1100</span>
@@ -157,7 +142,23 @@ gem 'rake'
 </code></pre></div></div>
 <p>A time <em>without</em> a timezone will have the local system's timezone applied to the end. I'm in Melbourne and it's Daylight Savings Time, so my timezone is +1100.</p>
 <p>However, if the time comes back out of the database with a time zone (shown here to either be <code>UTC</code> or <code>+0100</code>), then the time will be parsed correctly!</p>
-<p>Inside this configuration, we configure something called the <em>default gateway</em>, which is the simply the default database connection that ROM has been configured with. We <em>could</em> configure multiple gateways, but we're only going to be using the one in this series. On this gateway, we tell it to use a new <code>Logger</code> instance, which will log SQL output for our Rake tasks.</p>
+<p>Now that we have our database connection defined and our database itself created, we will need to create tables in that database. If this was a Rails app, we would use migrations to do such a thing. Fortunately for us, ROM &quot;borrowed&quot; that idea and so we can use migrations with ROM too.</p>
+<p>To create migrations with ROM, we will need to create another file to define the Rake tasks, called <code>Rakefile</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s1">'config/application'</span>
+<span class="nb">require</span> <span class="s1">'rom-sql'</span>
+<span class="nb">require</span> <span class="s1">'rom/sql/rake_task'</span>
+
+<span class="n">namespace</span> <span class="ss">:db</span> <span class="k">do</span>
+  <span class="n">task</span> <span class="ss">:setup</span> <span class="k">do</span>
+    <span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">start</span><span class="p">(</span><span class="ss">:db</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s1">'db.config'</span><span class="p">]</span>
+    <span class="n">config</span><span class="p">.</span><span class="nf">gateways</span><span class="p">[</span><span class="ss">:default</span><span class="p">].</span><span class="nf">use_logger</span><span class="p">(</span><span class="no">Logger</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vg">$stdout</span><span class="p">))</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This file loads the <code>config/application.rb</code> file that we created earlier and that will make it possible to require the other two files we use here.</p>
+<p>In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called <code>db:setup</code>. This configuration starts the system-level dependency <code>:db</code> by calling <code>start</code> on <code>Bix::Application</code>. This will run the code inside the <code>init</code> block defined within <code>system/boot/db.rb</code>. This <code>init</code> block registers a <code>db.config</code> with our application, and we can retrieve that value by using <code>Bix::Application['db.config']</code> here. ROM will then use this value to talk to our database.</p>
+<p>Using this configuration, we configure something called the <em>default gateway</em>, which is the simply the default database connection that ROM has been configured with. We <em>could</em> configure multiple gateways, but we're only going to be using the one in this series. On this gateway, we tell it to use a new <code>Logger</code> instance, which will log SQL output for our Rake tasks.</p>
 <h3 id="migrations">Migrations</h3>
 <p>Like a lot of database frameworks, ROM also comes with <a href="https://rom-rb.org/5.0/learn/sql/migrations/">migrations</a>. We can use these to create the tables for our application.</p>
 <p>To generate a migration with ROM, we can run:</p>
