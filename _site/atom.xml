@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2020-09-23T12:16:48+10:00</updated>
+ <updated>2020-10-14T14:28:38+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -1349,7 +1349,7 @@ end
 <p>The setup of ROM and dry-rb things <em>is</em> harder, but leads you ultimately into a better designed application with clearer lines drawn between the classes' responsibilties.</p>
 <p>It might help to think of it in the way my friend Bo Jeanes put it:</p>
 <blockquote>
-<p>Setup cost is a cost that you pay <em>once</em>, whereas ease-of-application-maintenance is a cost that you pay  <em>every single day</em>.</p>
+<p>Setup cost is a cost that you pay <em>once</em>, whereas ease-of-application-maintenance is a cost that you pay <em>every single day</em>.</p>
 </blockquote>
 <p>So in the long run, this will be better. I promise.</p>
 <h2 id="installing-gems">Installing Gems</h2>
@@ -1428,19 +1428,31 @@ gem 'rake'
 <span class="n">namespace</span> <span class="ss">:db</span> <span class="k">do</span>
   <span class="n">task</span> <span class="ss">:setup</span> <span class="k">do</span>
     <span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">start</span><span class="p">(</span><span class="ss">:db</span><span class="p">)</span>
-    <span class="no">ROM</span><span class="o">::</span><span class="no">SQL</span><span class="o">::</span><span class="no">RakeSupport</span><span class="p">.</span><span class="nf">env</span> <span class="o">=</span> <span class="no">ROM</span><span class="p">.</span><span class="nf">container</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s1">'db.config'</span><span class="p">])</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+    <span class="no">ROM</span><span class="o">::</span><span class="no">SQL</span><span class="o">::</span><span class="no">RakeSupport</span><span class="p">.</span><span class="nf">env</span> <span class="o">=</span> <span class="no">ROM</span><span class="p">.</span><span class="nf">container</span><span class="p">(</span><span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">[</span><span class="s1">'db.config'</span><span class="p">],</span> <span class="ss">extensions: </span><span class="sx">%i[pg_timestamptz]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
       <span class="n">config</span><span class="p">.</span><span class="nf">gateways</span><span class="p">[</span><span class="ss">:default</span><span class="p">].</span><span class="nf">use_logger</span><span class="p">(</span><span class="no">Logger</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="vg">$stdout</span><span class="p">))</span>
     <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
 <p>This file loads the <code>config/application.rb</code> file that we created earlier and that will make it possible to require the other two files we use here.</p>
-<p>In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called <code>db:setup</code>. This configuration starts the system-level dependency <code>:db</code> by calling <code>start</code> on <code>Bix::Application</code>. This will run the code inside the <code>init</code> block defined within <code>system/boot/db.rb</code>. This <code>init</code> block registers a <code>db.config</code> with our application, and we can retrive that value by using <code>Bix::Application['db.config']</code> here.</p>
+<p>In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called <code>db:setup</code>. This configuration starts the system-level dependency <code>:db</code> by calling <code>start</code> on <code>Bix::Application</code>. This will run the code inside the <code>init</code> block defined within <code>system/boot/db.rb</code>. This <code>init</code> block registers a <code>db.config</code> with our application, and we can retrieve that value by using <code>Bix::Application['db.config']</code> here.</p>
+<p>The <code>extensions</code> option passed here tells the underlying database gem, Sequel, to load an extension called <code>pg_timestamptz</code>. This extension will create <code>timestamp with time zone</code> columns in our database, rather than the default, which is <code>timestamp without time zone</code>. This means that times will be stored with time zone information in the database and this means when we retrieve them Ruby won't add the system's timezone on the end. To demonstrate what I mean here, compare these three lines:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;</span> <span class="no">Time</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"2020-10-14 14:23:07.155221"</span><span class="p">)</span>
+<span class="o">=&gt;</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">14</span> <span class="mi">14</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mo">07</span><span class="o">.</span><span class="mi">155221</span> <span class="o">+</span><span class="mi">1100</span>
+<span class="o">&gt;&gt;</span> <span class="no">Time</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"2020-10-14 14:23:07.155221 UTC"</span><span class="p">)</span>
+<span class="o">=&gt;</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">14</span> <span class="mi">14</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mo">07</span><span class="o">.</span><span class="mi">155221</span> <span class="no">UTC</span>
+<span class="o">&gt;&gt;</span> <span class="no">Time</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"2020-10-14 14:23:07.155221 +0100"</span><span class="p">)</span>
+<span class="o">=&gt;</span> <span class="mi">2020</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="mi">14</span> <span class="mi">14</span><span class="p">:</span><span class="mi">23</span><span class="p">:</span><span class="mo">07</span><span class="o">.</span><span class="mi">155221</span> <span class="o">+</span><span class="mo">0100</span>
+</code></pre></div></div>
+<p>A time <em>without</em> a timezone will have the local system's timezone applied to the end. I'm in Melbourne and it's Daylight Savings Time, so my timezone is +1100.</p>
+<p>However, if the time comes back out of the database with a time zone (shown here to either be <code>UTC</code> or <code>+0100</code>), then the time will be parsed correctly!</p>
 <p>Inside this configuration, we configure something called the <em>default gateway</em>, which is the simply the default database connection that ROM has been configured with. We <em>could</em> configure multiple gateways, but we're only going to be using the one in this series. On this gateway, we tell it to use a new <code>Logger</code> instance, which will log SQL output for our Rake tasks.</p>
 <h3 id="migrations">Migrations</h3>
 <p>Like a lot of database frameworks, ROM also comes with <a href="https://rom-rb.org/5.0/learn/sql/migrations/">migrations</a>. We can use these to create the tables for our application.</p>
 <p>To generate a migration with ROM, we can run:</p>
-<pre><code>rake &quot;db:create_migration[create_users]&quot;
+<pre><code>
+rake &quot;db:create_migration[create_users]&quot;
+
 </code></pre>
 <p>This will create us a new file under <code>db/migrate</code> and it'll be almost empty:</p>
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># frozen_string_literal: true</span>
@@ -1461,8 +1473,8 @@ gem 'rake'
       <span class="n">column</span> <span class="ss">:last_name</span><span class="p">,</span> <span class="no">String</span>
       <span class="n">column</span> <span class="ss">:age</span><span class="p">,</span> <span class="no">Integer</span>
 
-      <span class="n">column</span> <span class="ss">:created_at</span><span class="p">,</span> <span class="no">DateTime</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
-      <span class="n">column</span> <span class="ss">:updated_at</span><span class="p">,</span> <span class="no">DateTime</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
+      <span class="n">column</span> <span class="ss">:created_at</span><span class="p">,</span> <span class="ss">:datetime_timezone</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
+      <span class="n">column</span> <span class="ss">:updated_at</span><span class="p">,</span> <span class="ss">:datetime_timezone</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
     <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span>

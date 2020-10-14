@@ -8,17 +8,17 @@ The [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) sets of gems
 
 In this _series_ of blog posts, I am going to show you how to build a simple application that I'm calling "Bix" using some of these gems. By the end of this series, the application will:
 
-* Part 1 (you are here) - Interact with a database using ROM
-* [Part 2 - Have validation and transaction classes](/2020/02/rom-and-dry-showcase-part-2)
-* [Part 3 - Test our application with RSpec](/2020/02/rom-and-dry-showcase-part-3)
-* [Part 4 - Have a router and a series of actions](/2020/02/rom-and-dry-showcase-part-4)
+- Part 1 (you are here) - Interact with a database using ROM
+- [Part 2 - Have validation and transaction classes](/2020/02/rom-and-dry-showcase-part-2)
+- [Part 3 - Test our application with RSpec](/2020/02/rom-and-dry-showcase-part-3)
+- [Part 4 - Have a router and a series of actions](/2020/02/rom-and-dry-showcase-part-4)
 
 This part will cover how to start building out an application's architecture. We'll also work on having this application speak to a database. For this, we'll use the following gems:
 
-* `dry-system` -- Used for loading an application's dependencies automatically
-* rom, [rom-sql](https://rom-rb.org/5.0/learn/sql/) + pg -- We'll use these to connect to a database
-* `dotenv` -- a gem that helps load `.env` files that contain environment variables
-* `rake` -- For running Rake tasks, like migrations!
+- `dry-system` -- Used for loading an application's dependencies automatically
+- rom, [rom-sql](https://rom-rb.org/5.0/learn/sql/) + pg -- We'll use these to connect to a database
+- `dotenv` -- a gem that helps load `.env` files that contain environment variables
+- `rake` -- For running Rake tasks, like migrations!
 
 In this part, we will setup a small Ruby application that talks to a PostgreSQL database, by using the `dry-system`, `rom`, `rom-sql` and `pg` gems. At the end of this guide, we will be able to insert and retrieve data from the database.
 
@@ -34,7 +34,7 @@ The setup of ROM and dry-rb things _is_ harder, but leads you ultimately into a 
 
 It might help to think of it in the way my friend Bo Jeanes put it:
 
-> Setup cost is a cost that you pay _once_, whereas ease-of-application-maintenance is a cost that you pay  _every single day_.
+> Setup cost is a cost that you pay _once_, whereas ease-of-application-maintenance is a cost that you pay _every single day_.
 
 So in the long run, this will be better. I promise.
 
@@ -78,7 +78,7 @@ The first line of code sets up an `APP_ENV` environment variable. Our applicatio
 
 The first block of code here will setup Bundler, which adds our gem dependencies' paths to the load path, so that we can require them when we need to. Note that `Bundler.setup` is different from `Bundler.require` (like in a Rails application) -- `Bundler.setup` only adds to the load path, and does not require everything at the beginning.
 
- The two args passed here to `Bundler.setup` tell Bundler to include all gems outside of a group, and all gems inside of a group named after whatever `APP_ENV` is set to, which is `development`.
+The two args passed here to `Bundler.setup` tell Bundler to include all gems outside of a group, and all gems inside of a group named after whatever `APP_ENV` is set to, which is `development`.
 
 The first one that we require is `dotenv`, and that is just so we can load the `.env` or `.env.{APP_ENV}` files. When we're working locally, we'll want to have a `.env.development` file that specifies our local database's URL. Let's create this file now: `.env.development`:
 
@@ -146,7 +146,7 @@ require 'rom/sql/rake_task'
 namespace :db do
   task :setup do
     Bix::Application.start(:db)
-    ROM::SQL::RakeSupport.env = ROM.container(Bix::Application['db.config']) do |config|
+    ROM::SQL::RakeSupport.env = ROM.container(Bix::Application['db.config'], extensions: %i[pg_timestamptz]) do |config|
       config.gateways[:default].use_logger(Logger.new($stdout))
     end
   end
@@ -155,7 +155,22 @@ end
 
 This file loads the `config/application.rb` file that we created earlier and that will make it possible to require the other two files we use here.
 
-In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called `db:setup`. This configuration starts the system-level dependency `:db` by calling `start` on `Bix::Application`. This will run the code inside the `init` block defined within `system/boot/db.rb`. This `init` block registers a `db.config` with our application, and we can retrive that value by using `Bix::Application['db.config']` here.
+In order to tell ROM's Rake tasks where our database lives, we're required to setup a Rake task of our own: one called `db:setup`. This configuration starts the system-level dependency `:db` by calling `start` on `Bix::Application`. This will run the code inside the `init` block defined within `system/boot/db.rb`. This `init` block registers a `db.config` with our application, and we can retrieve that value by using `Bix::Application['db.config']` here.
+
+The `extensions` option passed here tells the underlying database gem, Sequel, to load an extension called `pg_timestamptz`. This extension will create `timestamp with time zone` columns in our database, rather than the default, which is `timestamp without time zone`. This means that times will be stored with time zone information in the database and this means when we retrieve them Ruby won't add the system's timezone on the end. To demonstrate what I mean here, compare these three lines:
+
+```ruby
+>> Time.parse("2020-10-14 14:23:07.155221")
+=> 2020-10-14 14:23:07.155221 +1100
+>> Time.parse("2020-10-14 14:23:07.155221 UTC")
+=> 2020-10-14 14:23:07.155221 UTC
+>> Time.parse("2020-10-14 14:23:07.155221 +0100")
+=> 2020-10-14 14:23:07.155221 +0100
+```
+
+A time _without_ a timezone will have the local system's timezone applied to the end. I'm in Melbourne and it's Daylight Savings Time, so my timezone is +1100.
+
+However, if the time comes back out of the database with a time zone (shown here to either be `UTC` or `+0100`), then the time will be parsed correctly!
 
 Inside this configuration, we configure something called the _default gateway_, which is the simply the default database connection that ROM has been configured with. We _could_ configure multiple gateways, but we're only going to be using the one in this series. On this gateway, we tell it to use a new `Logger` instance, which will log SQL output for our Rake tasks.
 
@@ -166,7 +181,9 @@ Like a lot of database frameworks, ROM also comes with [migrations](https://rom-
 To generate a migration with ROM, we can run:
 
 ```
+
 rake "db:create_migration[create_users]"
+
 ```
 
 This will create us a new file under `db/migrate` and it'll be almost empty:
@@ -193,8 +210,8 @@ ROM::SQL.migration do
       column :last_name, String
       column :age, Integer
 
-      column :created_at, DateTime, null: false
-      column :updated_at, DateTime, null: false
+      column :created_at, :datetime_timezone, null: false
+      column :updated_at, :datetime_timezone, null: false
     end
   end
 end
@@ -410,7 +427,7 @@ end
 
 The `commands` class method defines built-in commands that we can use on our repository. ROM comes with three: `:create`, `:update` and `:delete`.
 
- This one tells ROM that we want a method called `create` that will let us create new records. The `use :timestamps` at the end tells ROM that we want `create` to set `created_at` and `updated_at` when our records are created.
+This one tells ROM that we want a method called `create` that will let us create new records. The `use :timestamps` at the end tells ROM that we want `create` to set `created_at` and `updated_at` when our records are created.
 
 The `all` method here calls the `users` relation, and the `to_a` will run a query to fetch all of the users.
 
@@ -427,12 +444,12 @@ user_repo.all
 
 Hooray! We have now been able to add a record and retrieve it. We have now set up quite a few components for our application:
 
-* `config/boot.rb` - Requires boot-level pieces of our application -- such as Bundler and `dotenv`
-* `config/application.rb` - Defines a Container for our application's configuration
-* `system/boot/db.rb` - Specifies how our application connects to a database
-* `system/boot/persistence.rb` - Defines a ROM container that defines how the ROM pieces of our application connect to and interact with our database
-* `lib/bix/relations/users.rb` - Defines a class that can contain query logic for our `users` table
-* `lib/bix/repos/user_repo.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.
+- `config/boot.rb` - Requires boot-level pieces of our application -- such as Bundler and `dotenv`
+- `config/application.rb` - Defines a Container for our application's configuration
+- `system/boot/db.rb` - Specifies how our application connects to a database
+- `system/boot/persistence.rb` - Defines a ROM container that defines how the ROM pieces of our application connect to and interact with our database
+- `lib/bix/relations/users.rb` - Defines a class that can contain query logic for our `users` table
+- `lib/bix/repos/user_repo.rb` - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.
 
 ROM and Dry separate our application into small, clearly defined pieces with individual responsibilities. While this setup cost feels large _now_, it's a cost that we're only going to be paying once; Setup cost is one-time, maintenance cost is forever.
 
@@ -559,9 +576,9 @@ We have created files that allow us to bootstrap our application's environment -
 
 In the `lib` directory, we have setup three directories:
 
-* `entities` - Classes that represent specific data types returned from our database.
-* `relations` - Classes that can contain custom methods for querying the database
-* `repos` - Classes that provide a place for defining a public API between relations and our application code
+- `entities` - Classes that represent specific data types returned from our database.
+- `relations` - Classes that can contain custom methods for querying the database
+- `repos` - Classes that provide a place for defining a public API between relations and our application code
 
 This separation of concerns across our application will make it easier to work with in the long run. One more time: the setup cost is paid _once_, the maintenance cost is paid _forever_.
 
