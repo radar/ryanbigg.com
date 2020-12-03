@@ -211,8 +211,8 @@ ROM::SQL.migration do
       column :last_name, String
       column :age, Integer
 
-      column :created_at, :datetime_timezone, null: false
-      column :updated_at, :datetime_timezone, null: false
+      column :created_at, :datetime, null: false
+      column :updated_at, :datetime, null: false
     end
   end
 end
