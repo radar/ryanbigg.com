@@ -1,0 +1,785 @@
+---
+wordpress_id: RB-1606960088
+layout: post
+title: Rails + GraphQL + TypeScript + React + Apollo
+---
+
+This is going to be a long post about how to setup a Rails application to serve a GraphQL API, that is then consumed using a combination of Apollo, React and TypeScript on the frontend. All within the same application.
+
+I believe this is a good choice of stack for a two main reasons:
+
+1. GraphQL provides a much cleaner query API than a REST API does -- especially because I can request only the data I want at any time.
+2. With TypeScript and another utility called `graphql-codegen`, I can ensure the types that are served by my API match exactly to the types used in my frontend at all times.
+
+For this post, all the code is written from the perspective of having just run the command to create a new Rails application:
+
+```
+rails new books
+```
+
+There's no fancy configuration here, just plain Rails.
+
+This guide is written in a way that should allow you to apply the same concepts to your existing applications if you have one of those you want to use.
+
+This guide is for **intermediate** Rails developers, and it will gloss over a few of the fundamental Rails concepts such as models, migrations, views, routes and controllers. I will assume you know those by now.
+
+What won't be glossed over is the GraphQL, TypeScript, React and Apollo setup. After all, that's why you're reading this post in the first place.
+
+## JavaScript? In my Rails app?
+
+For a long time there's been efforts to have one flavour or another of JavaScript be a part of Rails itself. It started out with Prototype.js, and moved onto jQuery, to now a situation where Rails does not thrust its opinion of a JavaScript framework into your application -- you're free to choose.
+
+There has been a modern push for Rails applications to integrate further with modern JavaScript frameworks, such as React and Vue. Nowhere is this more evident than the fact that modern Rails applications now include a gem called `webpacker`. This gem provides an interface between the Rails application and any dependencies provided from the frontend by Webpack.
+
+You can specify your JavaScript dependencies in files called _packs_, and then load those into your Rails application using ERB code.
+
+Brand new Rails applications have a file called `app/javascript/packs/application.js`:
+
+```js
+// This file is automatically compiled by Webpack, along with any other files
+// present in this directory. You're encouraged to place your actual application logic in
+// a relevant structure within app/javascript and only use these pack files to reference
+// that code so it'll be compiled.
+
+require("@rails/ujs").start()
+require("turbolinks").start()
+require("@rails/activestorage").start()
+require("channels")
+
+
+// Uncomment to copy all static images under ../images to the output folder and reference
+// them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
+// or the `imagePath` JavaScript helper below.
+//
+// const images = require.context('../images', true)
+// const imagePath = (name) => images(name, true)
+```
+
+<aside>
+  While these dependencies are typically JavaScript, although they could be CSS or images too.
+</aside>
+
+This file is served out of the application via this line in the application layout (`app/views/layouts/application.html.erb`):
+
+```erb
+<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+```
+
+When you run `rails s` and access `http://localhost:3000`, Rails will compile the Webpack assets and serve them through the Rails server itself.
+
+<aside>
+<header>What about webpack-dev-server?</header>
+If you don't want to wait for a request to tell Webpack to compile assets, you can run <code>bin/webpack-dev-server</code> as a separate process and your assets will be compiled as soon as they change, rather than whenever the page is refreshed. The difference is usually about half a second, but in larger applications it can be much longer than that. My advice would be to <em>always</em> rely on <code>bin/webpack-dev-server</code>.
+</aside>
+
+
+This `app/javascript/packs/application.js` will be the file that will be the place we load our JavaScript into our application. It doesn't have to be the _only_ place, we could in fact spread this out over multiple different packs, if we wished:
+
+```erb
+<%= javascript_pack_tag 'users', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'books', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'checkout', 'data-turbolinks-track': 'reload' %>
+```
+
+If we approached it this way, then we could split our code up and only load whatever assets we needed to load on certain pages. Perhaps we only want to load the `users` content on some pages, and the `checkout` code on others.
+
+For this tutorial, we'll stick with _one_ `application.js` file.
+
+We'll come back to this file later on when we get to implementing some frontend code. Before we need to build our frontend, we'll need to serve some data out of our Rails application. And to serve that data we're going to use GraphQL.
+
+## Setting up GraphQL
+
+Before we get to setup GraphQL, we'll quickly setup a model and some data in our database. Then we'll get to GraphQL.
+
+### Model setup
+
+Let's begin by creating a new model within our application and migrating the database to create the table for that model:
+
+```
+rails g model book title:string
+rails db:migrate
+```
+
+After this, we'll need to create at least one book so that we have some data to be served through the API:
+
+```
+rails c
+# wait a little bit
+>> Book.create!(title: "Active Rails")
+```
+
+With our model setup with some data, we can now proceed to adding our GraphQL API which will serve this data for the model.
+
+### Installing GraphQL
+
+There is a gem called `graphql` which has all the things we need to have to use GraphQL within our Rails application. Let's add it as a dependency of our application now:
+
+```
+bundle add graphql
+```
+
+Next up, we can run the installer that comes with that gem:
+
+```
+rails g graphql:install
+```
+
+This will setup a few classes within our application, and we will use some of these in this guide. Of note are:
+
+* `app/graphql/books_schema.rb` - Where the GraphQL schema for our application is defined.
+* `app/graphql/types/query_type.rb` - Where fields for GraphQL queries are defined.
+* `app/graphql/types/mutation_type.rb` - Where fields for GraphQL mutations are defined.
+
+At the end of this setup, we will see this message:
+
+> Gemfile has been modified, make sure you `bundle install`
+
+The modification that has been made is that another gem called `graphiql-rails` has been added to our Gemfile, along with two routes to `config/routes.rb`. Let's run `bundle install` before we forget to:
+
+```
+bundle install
+```
+
+The two routes that were added to `config/routes.rb` are:
+
+```ruby
+if Rails.env.development?
+  mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+end
+post "/graphql", to: "graphql#execute"
+```
+
+The first route enables GraphiQL, a graphical interface to GraphQL which is then accessible in our application at http://localhost:3000/graphiql.
+
+The second route is where our GraphiQL and our frontend will send GraphQL queries to. The `GraphqlController` was generated for us by the earlier `rails g graphql:install` invocation.
+
+Let's now setup a GraphQL object to represent books in our GraphQL API by running this command:
+
+```
+rails g graphql:object Book
+```
+
+This command will inspect our `Book` model and create a GraphQL type that exposes all attributes from that model. It create this file at `app/graphql/types/book_type.rb`:
+
+```
+module Types
+  class BookType < Types::BaseObject
+    field :id, ID, null: false
+    field :title, String, null: true
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
+  end
+end
+```
+
+We could remove any of these fields if we did not want to expose them through the GraphQL API. But for now, we'll keep them.
+
+To use this type, we can declare a field over in `app/graphql/types/query_type.rb`. We'll delete the example one that is there at the moment and turn this file into this:
+
+```
+module Types
+  class QueryType < Types::BaseObject
+    field :books, [Types::BookType], null: false
+    def books
+      Book.all
+    end
+  end
+end
+```
+
+<aside>
+  <header>
+    Fetching all records from a database considered dangerous
+  </header>
+
+  Fetching all the records at once in a table might mean you end up with a lot of records. In the past, you might've used something like <a href='https://github.com/mislav/will_paginate'>will_paginate</a> or <a href='https://github.com/kaminari/kaminari'>Kaminari</a> to do pagination in your application.
+
+  GraphQL uses [connections](https://graphql-ruby.org/pagination/connection_concepts) for this, but we will not be covering that in this guide.
+</aside>
+
+This will allow us to query our GraphQL endpoint and retrieve all the books by using this GraphQL query through GraphiQL:
+
+```gql
+query allBooks {
+  books {
+    id
+    title
+  }
+}
+```
+
+Well, we could! But `graphiql-rails` is [currently broken](https://github.com/rmosolgo/graphql-ruby/issues/2550) with Rails 6.
+
+### GraphiQL workaround
+
+The version of GraphiQL bundled with `graphiql-rails` is broken, and so we will need to work around this problem.
+
+Let's start by removing that gem from the `Gemfile`:
+
+```
+gem 'graphiql-rails', group: :development
+```
+
+And we'll remove the route from `config/routes.rb` as well:
+
+```ruby
+if Rails.env.development?
+  get '/graphiql', to: "graphiql#index"
+end
+```
+
+An alternative app we can use is the [GraphQL playground](https://www.apollographql.com/docs/apollo-server/testing/graphql-playground/). Download a version for your OS from the [releases page](https://github.com/graphql/graphql-playground/releases/tag/v1.8.10) on GitHub.
+
+To make this application work with our Rails application, we'll need to make one little change in the `GraphqlController`. We need to uncomment the `protect_from_forgery` line and turn it into this:
+
+```ruby
+protect_from_forgery with: :null_session, unless: -> { request.local? }
+```
+
+This will ensure that local requests -- requests from the same machine the application is running on, are allowed through, but everything else must send through a CSRF token. The CSRF token is provided by our Rails application, and we'll see that used a little later on when we get to using Apollo.
+
+Load up GraphQL playground and put in `http://localhost:3000/graphql` as the endpoint. In the left panel, enter:
+
+```gql
+query allBooks {
+  books {
+    id
+    title
+  }
+}
+```
+
+And then hit the Play button in between the panels. When the request succeeds, we'll see the data come back through from the GraphQL API:
+
+![GraphQL Playground](/images/graphql/graphql-playground.png)
+
+When we see this, we'll know that we've setup our GraphQL code correctly within the Rails application. This means we can now proceed to setting up the frontend of our application.
+
+## TypeScript + React setup
+
+There's two different ways we could go here:
+
+1. We could add React and Apollo to our application and live a happy and fruitful life using JavaScript.
+2. We could add React, Apollo _and TypeScript_ to our application and live a happy and fruitful life with an extra guarantee our code will be type-checked and we won't fall into the easy trap of comparing a string to an integer.
+
+I prefer the second route, even if it is a bit more work in the setup. The second path eases the cognitive load involved with remembering the types of things -- like we would have to do in a traditional Ruby or JavaScript application. TypeScript can _tell us_ the types of our variables, especially in an editor like Visual Studio Code which has frankly _excellent_ TypeScript integration.
+
+### TypeScript
+
+To start off, we'll add TypeScript to our Rails application which we can do by running this command:
+
+```
+rails webpacker:install:typescript
+```
+
+This will:
+
+* Add `typescript` and `ts-loader` as dependencies of our application in `package.json`. These packages are used to load and parse TypeScript files, and `typescript` comes with a command called `tsc` that we can use to check if our code is typed correctly.
+* Create a new file called `tsconfig.json` that contains all the configuration for TypeScript.
+* Configure Webpacker to load TypeScript files (anything ending in `.ts` or `tsx`), and it'll put a new file in `app/javascripts/packs` called `hello_typescript.ts`:
+
+```
+// Run this example by adding <%= javascript_pack_tag 'hello_typescript' %> to the head of your layout file,
+// like app/views/layouts/application.html.erb.
+
+console.log('Hello world from typescript');
+```
+
+We can delete this file, as we won't be needing it.
+
+One extra bit of configuration that we'll need to do here is to set a configuration value in `tsconfig.json`. Add this line in to the `compilerOptions` list:
+
+```
+"jsx": "react"
+```
+
+This will direct the TypeScript compiler to use React when it encounters a JSX tag. For more information about this option, [read this documentation page from the TypeScript handbook](https://www.typescriptlang.org/docs/handbook/jsx.html).
+
+
+### React
+
+Next up, we want to add React to our application. We can do this using a `webpacker:install` command too.
+
+```
+rails webpacker:install:react
+```
+
+This command will:
+
+* Create a `babel.config.js` file that contains configuration for Babel directing it how to load React components.
+* Create a file at `app/javascript/packs/hello_react.jsx` that demonstrates how to use React within our application.
+* Configures `config/webpacker.yml` to support files ending with `.jsx`
+* Adds the following JS packages:
+  * `@babel/preset-react`
+  * `babel-plugin-transform-react-remove-prop-types`
+  * `prop-types`
+  * `react`
+  * `react-dom`
+
+
+This `babel.config.js` file that was generated contains some code to load a library called: `babel-plugin-transform-react-remove-prop-types`:
+
+```
+isProductionEnv && [
+  'babel-plugin-transform-react-remove-prop-types',
+  {
+    removeImport: true
+  }
+]
+```
+
+PropTypes allows us to specify the types for React components. A small example of this is available in `app/javascript/packs/hello_react.jsx`:
+
+```
+Hello.defaultProps = {
+  name: 'David'
+}
+
+Hello.propTypes = {
+  name: PropTypes.string
+}
+```
+
+We will not be using prop-types in our code -- because we'll be using TypeScript instead. So let's remove this configuration from `babel.config.js`, as well as removing the `prop-types` and associated babel plugin:
+
+* ` yarn remove prop-types babel-plugin-transform-react-remove-prop-types`
+
+This will mean that the packages that have been added by `webpacker:install:react` are now just:
+
+* `@babel/preset-react`
+* `react`
+* `react-dom`
+
+The `@babel/preset-react` package configures Babel to parse JSX content into regular JavaScript code, and a few other niceties that we don't need to care about right now.
+
+The two other packages, `react` and `react-dom`, are the most useful of the lot, as they allow us to use React and have it interact with a page's DOM (Document Object Model). This work is separated into two packages, as React can be used in other contexts outside of a DOM, such as [React Native](https://reactnative.dev/).
+
+Let's take a closer look at what `app/javascripts/packs/hello_react.jsx` contains:
+
+```jsx
+// Run this example by adding <%= javascript_pack_tag 'hello_react' %> to the head of your layout file,
+// like app/views/layouts/application.html.erb. All it does is render <div>Hello React</div> at the bottom
+// of the page.
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
+
+const Hello = props => (
+  <div>Hello {props.name}!</div>
+)
+
+Hello.defaultProps = {
+  name: 'David'
+}
+
+Hello.propTypes = {
+  name: PropTypes.string
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <Hello name="React" />,
+    document.body.appendChild(document.createElement('div')),
+  )
+})
+```
+
+Now that we've taken out the `prop-types` library, we can remove all the propTypes code from this file:
+
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+const Hello = props => (
+  <div>Hello {props.name}!</div>
+)
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <Hello name="React" />,
+    document.body.appendChild(document.createElement('div')),
+  )
+})
+```
+
+That's much easier to read now!
+
+This file imports both the `React` and `ReactDOM` libraries. We need to import `React` wherever we're using JSX. And we import `ReactDOM` whenever we want to put a React component somewhere on our page.
+
+Next, this file defines a small function component, returning a simple `<div>` with a message inside it.
+
+Finally, this code waits for the `DOMContentLoaded` event to be sent out by the browser, and then it will append this component to the `<body>` tag of whatever page has included this JavaScript.
+
+### Rendering React within Rails
+
+Let's take a look at how to render this React component within our Rails application.
+
+To get started, we'll create a new controller, view, and route by running this command:
+
+```
+rails g controller home index
+```
+
+The route this generates will be in `config/routes.rb`, and will look like this:
+
+```ruby
+get 'home/index'
+```
+
+Let's change this to be a `root` route, just so we can visit it using http://localhost:3000/ instead of http://localhost:3000/home/index.
+
+```ruby
+root to: "home#index"
+```
+
+Once this route has been changed, we can go to http://localhost:3000 and see the view that was generated:
+
+![Simple Rails View](/images/graphql/simple-rails-view.png)
+
+This view is not currently rendering our React component, but we can make it do so by bringing in the `hello_react.jsx` file with this addition to `app/views/home/index.html.erb`:
+
+```erb
+<%= javascript_pack_tag "hello_react" %>
+```
+
+When we refresh the page, we'll see the React component appended to the bottom of the page:
+
+![Simple Rails View with React Component](/images/graphql/simple-rails-view-with-react.png)
+
+Excellent! We now have a way to make React components appear on our Rails views.
+
+There's a caveat to this however: these components will _always_ appear at the _bottom_ of our pages! If we were to add a footer to the bottom of the `<body>` tag within our application layout, these React components would appear underneath that footer. That is not ideal!
+
+What would be better for us is to be able to insert these components wherever we wish on the page. This will enable us to have Rails-generated HTML sitting along-side React components that also generate their own HTML.
+
+So to work around that, we'll devise a way to mount React components at particular places within Rails views.
+
+### Placeable React components
+
+What we now want to be able to do is to be able to put a React component anywhere in our view. Let's say that we wanted our "Hello React!" to appear _between_ the `h1` and `p` tags in `app/views/home/index.html.erb`:
+
+```erb
+<h1>Home#index</h1>
+<%# React component goes here %>
+<p>Find me in app/views/home/index.html.erb</p>
+```
+
+We cannot put `javascript_pack_tag` there, as the code in `hello_react.jsx` will still direct the component to be appended to the `body` tag:
+
+```jsx
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <Hello name="React" />,
+    document.body.appendChild(document.createElement('div')),
+  )
+})
+```
+
+So what can we do instead?
+
+Well, another way we can approach this problem is to have our code look for particular types of elements on the page, and then choose to put React components into those particular elements. For example, we can make it so if we were to write this code:
+
+```erb
+<h1>Home#index</h1>
+<div data-react-component='Hello'></div>
+<p>Find me in app/views/home/index.html.erb</p>
+
+<%= javascript_pack_tag "hello_react" %>
+```
+
+Then a component called `Hello` would be added in between those `<h1>` and `<p>` tags.
+
+To put this little `div` tag inside our views, we can write a helper in `app/helpers/application_helper.rb`:
+
+```ruby
+module ApplicationHelper
+  def react_component(component_name, props = {})
+    content_tag(
+      "div",
+      data: {
+        react_component: component_name
+      }
+    ) { "" }
+  end
+end
+```
+This code in `app/views/home/index.html.erb` will generate that `div`:
+
+```erb
+<%= react_component "Hello" %>
+```
+
+If we wanted to support parsing properties to this method, we could make this code:
+
+```ruby
+module ApplicationHelper
+  def react_component(component_name, **props)
+    content_tag(
+      "div",
+      data: {
+        react_component: component_name,
+        props: props.to_json,
+      }
+    ) { "" }
+  end
+end
+```
+
+This takes a list of properties and passes them through as extra `data` properties, and so allows us to write code such as:
+
+```erb
+<%= react_component "Hello", { name: "React" } %>
+```
+
+
+However, if we go and refresh that page again, we'll see the component is not being rendered in that spot -- it's still being rendered at the bottom of the page:
+
+![Simple Rails View with React Component](/images/graphql/simple-rails-view-with-react.png)
+
+But if we inspect the source code for our page, we'll see that the `<div>` _exists_`:
+
+```html
+<div data-react-component="Hello"></div>
+```
+
+In order to fix this up, we're going to need to write some additional code that will scan for these tags containing the `data-react-component` attribute, and then act on those tags.
+
+### Scanning for and mounting React components
+
+The code that we're going to use to do this scanning and mounting the React components is the most complicated code we'll come across in this guide. Please bare with me! What we'll do here is that we'll work on making this code work, then we'll go through it top-to-bottom.
+
+We'll put this code in a file called `app/javascript/mount.tsx`:
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom";
+
+export default function mount(components = {}) {
+  document.addEventListener("DOMContentLoaded", () => {
+    const mountPoints = document.querySelectorAll("[data-react-component]");
+    mountPoints.forEach((mountPoint) => {
+      const dataset = (mountPoint as HTMLElement).dataset;
+      const componentName = dataset["reactComponent"];
+      const Component = components[componentName];
+
+      if (Component) {
+        const props = JSON.parse(dataset["props"]);
+        ReactDOM.render(<Component {...props} />, mountPoint);
+      } else {
+        console.log(
+          "WARNING: No component found for: ",
+          dataset.reactComponent,
+          components
+        );
+      }
+    });
+  });
+}
+```
+
+And over in `app/javascript/packs/application.js`, we'll add these lines:
+
+```js
+import mount from "../mount";
+import Hello from "./hello_react";
+
+mount({ Hello });
+```
+
+Lastly, we'll need to export the `Hello` component from `app/javascript/packs/hello_react.js`:
+
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+export default (props) => (
+  <div>Hello {props.name}!</div>
+)
+```
+
+With this change to `hello_react.js`, we've removed the code that was previously automatically inserting the component at the bottom of the page, and instead we're now exporting this component and leaving the rendering of that component as something else's job.
+
+That _something else_ is that `mount.tsx` code that we wrote. Let's look at that again, step by step:
+
+```tsx
+export default function mount(components = {}) {
+  document.addEventListener("DOMContentLoaded", () => {
+    const mountPoints = document.querySelectorAll("[data-react-component]");
+```
+
+This code defines the `mount` function that we use in `application.js`. This function adds an event listener that waits for the `DOMContentLoaded` event to happen, just like the old code we had in `hello_react.js` did. Then we go a different path from there. Instead of rendering a _specific_ React component, we're instead going on a search for which ones the page wants us to render. We find all the elements that are "mount points" for our React components by using `querySelectorAll` and looking for those elements that match the CSS selector `[data-react-component]`.
+
+Let's look at the next couple of lines:
+
+```tsx
+mountPoints.forEach((mountPoint) => {
+  const dataset = (mountPoint as HTMLElement).dataset;
+  const componentName = dataset["reactComponent"];
+  const Component = components[componentName];
+```
+
+For all of the elements mentioned, we attempt to find out their component name by accessing the `data-react-component` property by using a combination of `dataset` and `["reactComponent"]`. Once we have that name, we can then attempt to find that component by a name using `components[componentName]`. As long as we've chosen to mount a component in `application.js` with this function, it will be available here.
+
+Let's look at the final few lines:
+
+```tsx
+if (Component) {
+  const props = JSON.parse(dataset["props"]);
+  ReactDOM.render(<Component {...props} />, mountPoint);
+} else {
+  console.log(
+    "WARNING: No component found for: ",
+    dataset.reactComponent,
+    components
+  );
+}
+```
+
+If this code finds a component, it attempts to parse the json contained in `dataset["props"]`. This will pull out the JSON from the `data-props` attribute on the `<div>`:
+
+```html
+<div data-react-component="Hello" data-props="{&quot;name&quot;:&quot;React&quot;}"></div>
+```
+
+Then, now that the `mount` function has all three of the `mountPoint`, the `Component` and the `props` determined, it can use `ReactDOM.render` to put this code directly onto the page, exactly where we said it should go.
+
+Let's refresh the page. This time we'll see the component is now in between the `<h1>` and `<p>` tags:
+
+!["Hello React" is in between the tags](/images/graphql/hello-react-mounted.png)
+
+Hooray! We now have an ability to put our React components wherever we like on the page.
+
+### `app/javascript/books/index.tsx`
+
+```
+import React from "react";
+
+const Books = () => {
+  return "Hello from Books/index.tsx!";
+};
+
+export default Books;
+```
+
+Add example data to the React component:
+
+```tsx
+import React from "react";
+
+interface BookType {
+  id: string;
+  title: string;
+}
+
+const Book = ({ title }: BookType) => {
+  return <div>{title}</div>;
+};
+
+const data = {
+  books: [
+    {
+      id: "1",
+      title: "Active Rails",
+    },
+  ],
+};
+
+const loading = false;
+
+const Books = () => {
+  if (loading) {
+    return <span>"Loading..."</span>;
+  }
+
+  return (
+    <div>
+      {data.books.map((book) => (
+        <Book {...book} key={book.id} />
+      ))}
+    </div>
+  );
+};
+
+export default Books;
+```
+
+## Apollo
+### Client
+
+* `yarn add @apollo/client`
+
+#### `app/javascript/graphql_provider`
+
+```tsx
+import React from "react";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+} from "@apollo/client";
+
+const csrfToken = document
+  .querySelector("meta[name=csrf-token]")
+  .getAttribute("content");
+
+const client = new ApolloClient({
+  link: new HttpLink({
+    credentials: "same-origin",
+    headers: {
+      "X-CSRF-Token": csrfToken,
+    },
+  }),
+  cache: new InMemoryCache(),
+});
+
+export const withProvider = (
+  WrappedComponent: React.ComponentType,
+  props: any = {}
+) => () => {
+  return (
+    <ApolloProvider client={client}>
+      <WrappedComponent {...props} />
+    </ApolloProvider>
+  );
+};
+```
+
+### TypeScript + React types
+
+### Rakefile
+```
+require "graphql/rake_task"
+
+GraphQL::RakeTask.new(
+  schema_name: "BooksSchema",
+  directory: "./app/javascript/graphql",
+  dependencies: [:environment]
+)
+```
+
+## GraphQL, cont.
+`graphql:schema:dump`
+
+## Codegen
+* `yarn add graphql`
+* `@graphql-codegen/cli`
+
+```
+yarn add -D @graphql-codegen/add @graphql-codegen/cli @graphql-codegen/fragment-matcher @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+```
+
+* `yarn graphql-codegen init`
+	* Application built with React
+	* Schema: `app/javascript/graphql/schema.graphql`
+	* Operations and fragments: `app/javaascript/**/*.tsx`
+	* Plugins: Leave default selected
+	* Output path: `app/javascript/graphql/types.tsx`
+	* Generate introspection file: no (graphql gem has done this already)
+	* Name config file: `codegen.yml`
+	* Script in package.json: `gql:codegen`
+
+* `yarn add @graphql-codegen/typescript-react-apollo`
+* Add plugin to `codegen.yml`:
+	* `- "typescript-react-apollo"`
