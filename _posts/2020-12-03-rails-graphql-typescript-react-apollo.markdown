@@ -2,7 +2,7 @@
 wordpress_id: RB-1606960088
 layout: post
 title: Rails + GraphQL + TypeScript + React + Apollo
-published: true
+published: false
 ---
 
 This is going to be a long post about how to setup a Rails application to serve a GraphQL API, that is then consumed using a combination of Apollo, React and TypeScript on the frontend. All within the same application.
