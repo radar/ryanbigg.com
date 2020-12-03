@@ -37,88 +37,689 @@
 
 <article>
   <div class='center'>
-    <a href="/2020/09/react-select-capybara-selenium">
-      <h2>React Select + Capybara + Selenium</h2>
+    <a href="/2020/12/rails-graphql-typescript-react-apollo">
+      <h2>Rails + GraphQL + TypeScript + React + Apollo</h2>
     </a>
-    <small>23 Sep 2020</small>
+    <small>03 Dec 2020</small>
   </div>
-  <p>Today, I was adding a <a href="https://react-select.com/home">React Select</a> element to a page, and I really wanted to test it.</p>
-<p>This is, surprisingly, <a href="https://github.com/JedWatson/react-select/issues/856">not the first time I've attempted this</a>.</p>
-<p>Since 2016, React Select has undergone some changes, released a brand-new (and much better!) version. One of these big features is that it uses <a href="https://emotion.sh/docs/introduction">Emotion</a> for styling. A consequence of this is that React Select no longer has <code>.Select</code>, or <code>.Select-input</code> classes that you could use as selectors in the tests. Instead, it will generate hashed CSS selectors, like <code>css-2b097c-container</code> and <code>css-1rhbuit-multiValue</code>. These have the potential to change: if the underlying CSS changes, then the hash will change. So they are not reliable in tests.</p>
-<p>To fix this, I used another prop of <code>ReactSelect</code> called <code>classNamePrefix</code>:</p>
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">CreatableSelect</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-select/creatable</span><span class="dl">"</span><span class="p">;</span>
+  <p>This is going to be a long post about how to setup a Rails application to serve a GraphQL API, that is then consumed using a combination of Apollo, React and TypeScript on the frontend. All within the same application.</p>
+<p>I believe this is a good choice of stack for a two main reasons:</p>
+<ol>
+<li>GraphQL provides a much cleaner query API than a REST API does -- especially because I can request only the data I want at any time.</li>
+<li>With TypeScript and another utility called <code>graphql-codegen</code>, I can ensure the types that are served by my API match exactly to the types used in my frontend at all times.</li>
+</ol>
+<p>For this post, all the code is written from the perspective of having just run the command to create a new Rails application:</p>
+<pre><code>rails new books
+</code></pre>
+<p>There's no fancy configuration here, just plain Rails.</p>
+<p>This guide is written in a way that should allow you to apply the same concepts to your existing applications if you have one of those you want to use.</p>
+<p>This guide is for <strong>intermediate</strong> Rails developers, and it will gloss over a few of the fundamental Rails concepts such as models, migrations, views, routes and controllers. I will assume you know those by now.</p>
+<p>What won't be glossed over is the GraphQL, TypeScript, React and Apollo setup. After all, that's why you're reading this post in the first place.</p>
+<h2 id="javascript-in-my-rails-app">JavaScript? In my Rails app?</h2>
+<p>For a long time there's been efforts to have one flavour or another of JavaScript be a part of Rails itself. It started out with Prototype.js, and moved onto jQuery, to now a situation where Rails does not thrust its opinion of a JavaScript framework into your application -- you're free to choose.</p>
+<p>There has been a modern push for Rails applications to integrate further with modern JavaScript frameworks, such as React and Vue. Nowhere is this more evident than the fact that modern Rails applications now include a gem called <code>webpacker</code>. This gem provides an interface between the Rails application and any dependencies provided from the frontend by Webpack.</p>
+<p>You can specify your JavaScript dependencies in files called <em>packs</em>, and then load those into your Rails application using ERB code.</p>
+<p>Brand new Rails applications have a file called <code>app/javascript/packs/application.js</code>:</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// This file is automatically compiled by Webpack, along with any other files</span>
+<span class="c1">// present in this directory. You're encouraged to place your actual application logic in</span>
+<span class="c1">// a relevant structure within app/javascript and only use these pack files to reference</span>
+<span class="c1">// that code so it'll be compiled.</span>
 
-<span class="c1">// ...</span>
+<span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">@rails/ujs</span><span class="dl">"</span><span class="p">).</span><span class="nx">start</span><span class="p">()</span>
+<span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">turbolinks</span><span class="dl">"</span><span class="p">).</span><span class="nx">start</span><span class="p">()</span>
+<span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">@rails/activestorage</span><span class="dl">"</span><span class="p">).</span><span class="nx">start</span><span class="p">()</span>
+<span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">channels</span><span class="dl">"</span><span class="p">)</span>
 
-<span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span> <span class="p">},</span>
-<span class="p">];</span>
 
-<span class="c1">// "tags" here comes from a prop on this component</span>
-<span class="kd">const</span> <span class="nx">selectedOptions</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">filter</span><span class="p">(({</span> <span class="nx">value</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">tags</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">value</span><span class="p">));</span>
+<span class="c1">// Uncomment to copy all static images under ../images to the output folder and reference</span>
+<span class="c1">// them with the image_pack_tag helper in views (e.g &lt;%= image_pack_tag 'rails.png' %&gt;)</span>
+<span class="c1">// or the `imagePath` JavaScript helper below.</span>
+<span class="c1">//</span>
+<span class="c1">// const images = require.context('../images', true)</span>
+<span class="c1">// const imagePath = (name) =&gt; images(name, true)</span>
+</code></pre></div></div>
+<aside>
+  While these dependencies are typically JavaScript, although they could be CSS or images too.
+</aside>
+<p>This file is served out of the application via this line in the application layout (<code>app/views/layouts/application.html.erb</code>):</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">javascript_pack_tag</span> <span class="s1">'application'</span><span class="p">,</span> <span class="s1">'data-turbolinks-track'</span><span class="p">:</span> <span class="s1">'reload'</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>When you run <code>rails s</code> and access <code>http://localhost:3000</code>, Rails will compile the Webpack assets and serve them through the Rails server itself.</p>
+<aside>
+<header>What about webpack-dev-server?</header>
+If you don't want to wait for a request to tell Webpack to compile assets, you can run <code>bin/webpack-dev-server</code> as a separate process and your assets will be compiled as soon as they change, rather than whenever the page is refreshed. The difference is usually about half a second, but in larger applications it can be much longer than that. My advice would be to <em>always</em> rely on <code>bin/webpack-dev-server</code>.
+</aside>
+<p>This <code>app/javascript/packs/application.js</code> will be the file that will be the place we load our JavaScript into our application. It doesn't have to be the <em>only</em> place, we could in fact spread this out over multiple different packs, if we wished:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">javascript_pack_tag</span> <span class="s1">'users'</span><span class="p">,</span> <span class="s1">'data-turbolinks-track'</span><span class="p">:</span> <span class="s1">'reload'</span> <span class="cp">%&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">javascript_pack_tag</span> <span class="s1">'books'</span><span class="p">,</span> <span class="s1">'data-turbolinks-track'</span><span class="p">:</span> <span class="s1">'reload'</span> <span class="cp">%&gt;</span>
+<span class="cp">&lt;%=</span> <span class="n">javascript_pack_tag</span> <span class="s1">'checkout'</span><span class="p">,</span> <span class="s1">'data-turbolinks-track'</span><span class="p">:</span> <span class="s1">'reload'</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>If we approached it this way, then we could split our code up and only load whatever assets we needed to load on certain pages. Perhaps we only want to load the <code>users</code> content on some pages, and the <code>checkout</code> code on others.</p>
+<p>For this tutorial, we'll stick with <em>one</em> <code>application.js</code> file.</p>
+<p>We'll come back to this file later on when we get to implementing some frontend code. Before we need to build our frontend, we'll need to serve some data out of our Rails application. And to serve that data we're going to use GraphQL.</p>
+<h2 id="setting-up-graphql">Setting up GraphQL</h2>
+<p>Before we get to setup GraphQL, we'll quickly setup a model and some data in our database. Then we'll get to GraphQL.</p>
+<h3 id="model-setup">Model setup</h3>
+<p>Let's begin by creating a new model within our application and migrating the database to create the table for that model:</p>
+<pre><code>rails g model book title:string
+rails db:migrate
+</code></pre>
+<p>After this, we'll need to create at least one book so that we have some data to be served through the API:</p>
+<pre><code>rails c
+# wait a little bit
+&gt;&gt; Book.create!(title: &quot;Active Rails&quot;)
+</code></pre>
+<p>With our model setup with some data, we can now proceed to adding our GraphQL API which will serve this data for the model.</p>
+<h3 id="installing-graphql">Installing GraphQL</h3>
+<p>There is a gem called <code>graphql</code> which has all the things we need to have to use GraphQL within our Rails application. Let's add it as a dependency of our application now:</p>
+<pre><code>bundle add graphql
+</code></pre>
+<p>Next up, we can run the installer that comes with that gem:</p>
+<pre><code>rails g graphql:install
+</code></pre>
+<p>This will setup a few classes within our application, and we will use some of these in this guide. Of note are:</p>
+<ul>
+<li><code>app/graphql/books_schema.rb</code> - Where the GraphQL schema for our application is defined.</li>
+<li><code>app/graphql/types/query_type.rb</code> - Where fields for GraphQL queries are defined.</li>
+<li><code>app/graphql/types/mutation_type.rb</code> - Where fields for GraphQL mutations are defined.</li>
+</ul>
+<p>At the end of this setup, we will see this message:</p>
+<blockquote>
+<p>Gemfile has been modified, make sure you <code>bundle install</code></p>
+</blockquote>
+<p>The modification that has been made is that another gem called <code>graphiql-rails</code> has been added to our Gemfile, along with two routes to <code>config/routes.rb</code>. Let's run <code>bundle install</code> before we forget to:</p>
+<pre><code>bundle install
+</code></pre>
+<p>The two routes that were added to <code>config/routes.rb</code> are:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="no">Rails</span><span class="p">.</span><span class="nf">env</span><span class="p">.</span><span class="nf">development?</span>
+  <span class="n">mount</span> <span class="no">GraphiQL</span><span class="o">::</span><span class="no">Rails</span><span class="o">::</span><span class="no">Engine</span><span class="p">,</span> <span class="ss">at: </span><span class="s2">"/graphiql"</span><span class="p">,</span> <span class="ss">graphql_path: </span><span class="s2">"/graphql"</span>
+<span class="k">end</span>
+<span class="n">post</span> <span class="s2">"/graphql"</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"graphql#execute"</span>
+</code></pre></div></div>
+<p>The first route enables GraphiQL, a graphical interface to GraphQL which is then accessible in our application at <a href="http://localhost:3000/graphiql">http://localhost:3000/graphiql</a>.</p>
+<p>The second route is where our GraphiQL and our frontend will send GraphQL queries to. The <code>GraphqlController</code> was generated for us by the earlier <code>rails g graphql:install</code> invocation.</p>
+<p>Let's now setup a GraphQL object to represent books in our GraphQL API by running this command:</p>
+<pre><code>rails g graphql:object Book
+</code></pre>
+<p>This command will inspect our <code>Book</code> model and create a GraphQL type that exposes all attributes from that model. It create this file at <code>app/graphql/types/book_type.rb</code>:</p>
+<pre><code>module Types
+  class BookType &lt; Types::BaseObject
+    field :id, ID, null: false
+    field :title, String, null: true
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
+  end
+end
+</code></pre>
+<p>We could remove any of these fields if we did not want to expose them through the GraphQL API. But for now, we'll keep them.</p>
+<p>To use this type, we can declare a field over in <code>app/graphql/types/query_type.rb</code>. We'll delete the example one that is there at the moment and turn this file into this:</p>
+<pre><code>module Types
+  class QueryType &lt; Types::BaseObject
+    field :books, [Types::BookType], null: false
+    def books
+      Book.all
+    end
+  end
+end
+</code></pre>
+<aside>
+  <header>
+    Fetching all records from a database considered dangerous
+  </header>
+<p>Fetching all the records at once in a table might mean you end up with a lot of records. In the past, you might've used something like <a href='https://github.com/mislav/will_paginate'>will_paginate</a> or <a href='https://github.com/kaminari/kaminari'>Kaminari</a> to do pagination in your application.</p>
+<p>GraphQL uses <a href="https://graphql-ruby.org/pagination/connection_concepts">connections</a> for this, but we will not be covering that in this guide.</p>
+</aside>
+<p>This will allow us to query our GraphQL endpoint and retrieve all the books by using this GraphQL query through GraphiQL:</p>
+<pre><code class="language-gql">>query allBooks {
+  books {
+    id
+    title
+  }
+}
+</code></pre>
+<p>Well, we could! But <code>graphiql-rails</code> is <a href="https://github.com/rmosolgo/graphql-ruby/issues/2550">currently broken</a> with Rails 6.</p>
+<h3 id="graphiql-workaround">GraphiQL workaround</h3>
+<p>The version of GraphiQL bundled with <code>graphiql-rails</code> is broken, and so we will need to work around this problem.</p>
+<p>Let's start by removing that gem from the <code>Gemfile</code>:</p>
+<pre><code>gem 'graphiql-rails', group: :development
+</code></pre>
+<p>And we'll remove the route from <code>config/routes.rb</code> as well:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="no">Rails</span><span class="p">.</span><span class="nf">env</span><span class="p">.</span><span class="nf">development?</span>
+  <span class="n">get</span> <span class="s1">'/graphiql'</span><span class="p">,</span> <span class="ss">to: </span><span class="s2">"graphiql#index"</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>An alternative app we can use is the <a href="https://www.apollographql.com/docs/apollo-server/testing/graphql-playground/">GraphQL playground</a>. Download a version for your OS from the <a href="https://github.com/graphql/graphql-playground/releases/tag/v1.8.10">releases page</a> on GitHub.</p>
+<p>To make this application work with our Rails application, we'll need to make one little change in the <code>GraphqlController</code>. We need to uncomment the <code>protect_from_forgery</code> line and turn it into this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">protect_from_forgery</span> <span class="ss">with: :null_session</span><span class="p">,</span> <span class="ss">unless: </span><span class="o">-&gt;</span> <span class="p">{</span> <span class="n">request</span><span class="p">.</span><span class="nf">local?</span> <span class="p">}</span>
+</code></pre></div></div>
+<p>This will ensure that local requests -- requests from the same machine the application is running on, are allowed through, but everything else must send through a CSRF token. The CSRF token is provided by our Rails application, and we'll see that used a little later on when we get to using Apollo.</p>
+<p>Load up GraphQL playground and put in <code>http://localhost:3000/graphql</code> as the endpoint. In the left panel, enter:</p>
+<pre><code class="language-gql">>query allBooks {
+  books {
+    id
+    title
+  }
+}
+</code></pre>
+<p>And then hit the Play button in between the panels. When the request succeeds, we'll see the data come back through from the GraphQL API:</p>
+<p><img src="/images/graphql/graphql-playground.png" alt="GraphQL Playground" /></p>
+<p>When we see this, we'll know that we've setup our GraphQL code correctly within the Rails application. This means we can now proceed to setting up the frontend of our application.</p>
+<h2 id="typescript--react-setup">TypeScript + React setup</h2>
+<p>There's two different ways we could go here:</p>
+<ol>
+<li>We could add React and Apollo to our application and live a happy and fruitful life using JavaScript.</li>
+<li>We could add React, Apollo <em>and TypeScript</em> to our application and live a happy and fruitful life with an extra guarantee our code will be type-checked and we won't fall into the easy trap of comparing a string to an integer.</li>
+</ol>
+<p>I prefer the second route, even if it is a bit more work in the setup. The second path eases the cognitive load involved with remembering the types of things -- like we would have to do in a traditional Ruby or JavaScript application. TypeScript can <em>tell us</em> the types of our variables, especially in an editor like Visual Studio Code which has frankly <em>excellent</em> TypeScript integration.</p>
+<h3 id="typescript">TypeScript</h3>
+<p>To start off, we'll add TypeScript to our Rails application which we can do by running this command:</p>
+<pre><code>rails webpacker:install:typescript
+</code></pre>
+<p>This will:</p>
+<ul>
+<li>Add <code>typescript</code> and <code>ts-loader</code> as dependencies of our application in <code>package.json</code>. These packages are used to load and parse TypeScript files, and <code>typescript</code> comes with a command called <code>tsc</code> that we can use to check if our code is typed correctly.</li>
+<li>Create a new file called <code>tsconfig.json</code> that contains all the configuration for TypeScript.</li>
+<li>Configure Webpacker to load TypeScript files (anything ending in <code>.ts</code> or <code>tsx</code>), and it'll put a new file in <code>app/javascripts/packs</code> called <code>hello_typescript.ts</code>:</li>
+</ul>
+<pre><code>// Run this example by adding &lt;%= javascript_pack_tag 'hello_typescript' %&gt; to the head of your layout file,
+// like app/views/layouts/application.html.erb.
 
-<span class="k">return</span> <span class="p">(</span>
-  <span class="p">&lt;</span><span class="nc">CreatableSelect</span>
-    <span class="na">options=</span><span class="si">{</span><span class="nx">options</span><span class="si">}</span>
-    <span class="na">defaultValue=</span><span class="si">{</span><span class="nx">selectedOptions</span><span class="si">}</span>
-    <span class="nt">isMulti</span>
-    <span class="na">classNamePrefix=</span><span class="s2">"tags"</span>
-  <span class="p">/&gt;</span>
+console.log('Hello world from typescript');
+</code></pre>
+<p>We can delete this file, as we won't be needing it.</p>
+<p>One extra bit of configuration that we'll need to do here is to set a configuration value in <code>tsconfig.json</code>. Add this line in to the <code>compilerOptions</code> list:</p>
+<pre><code>&quot;jsx&quot;: &quot;react&quot;
+</code></pre>
+<p>This will direct the TypeScript compiler to use React when it encounters a JSX tag. For more information about this option, <a href="https://www.typescriptlang.org/docs/handbook/jsx.html">read this documentation page from the TypeScript handbook</a>.</p>
+<h3 id="react">React</h3>
+<p>Next up, we want to add React to our application. We can do this using a <code>webpacker:install</code> command too.</p>
+<pre><code>rails webpacker:install:react
+</code></pre>
+<p>This command will:</p>
+<ul>
+<li>Create a <code>babel.config.js</code> file that contains configuration for Babel directing it how to load React components.</li>
+<li>Create a file at <code>app/javascript/packs/hello_react.jsx</code> that demonstrates how to use React within our application.</li>
+<li>Configures <code>config/webpacker.yml</code> to support files ending with <code>.jsx</code></li>
+<li>Adds the following JS packages:
+<ul>
+<li><code>@babel/preset-react</code></li>
+<li><code>babel-plugin-transform-react-remove-prop-types</code></li>
+<li><code>prop-types</code></li>
+<li><code>react</code></li>
+<li><code>react-dom</code></li>
+</ul>
+</li>
+</ul>
+<p>This <code>babel.config.js</code> file that was generated contains some code to load a library called: <code>babel-plugin-transform-react-remove-prop-types</code>:</p>
+<pre><code>isProductionEnv &amp;&amp; [
+  'babel-plugin-transform-react-remove-prop-types',
+  {
+    removeImport: true
+  }
+]
+</code></pre>
+<p>PropTypes allows us to specify the types for React components. A small example of this is available in <code>app/javascript/packs/hello_react.jsx</code>:</p>
+<pre><code>Hello.defaultProps = {
+  name: 'David'
+}
+
+Hello.propTypes = {
+  name: PropTypes.string
+}
+</code></pre>
+<p>We will not be using prop-types in our code -- because we'll be using TypeScript instead. So let's remove this configuration from <code>babel.config.js</code>, as well as removing the <code>prop-types</code> and associated babel plugin:</p>
+<ul>
+<li><code>yarn remove prop-types babel-plugin-transform-react-remove-prop-types</code></li>
+</ul>
+<p>This will mean that the packages that have been added by <code>webpacker:install:react</code> are now just:</p>
+<ul>
+<li><code>@babel/preset-react</code></li>
+<li><code>react</code></li>
+<li><code>react-dom</code></li>
+</ul>
+<p>The <code>@babel/preset-react</code> package configures Babel to parse JSX content into regular JavaScript code, and a few other niceties that we don't need to care about right now.</p>
+<p>The two other packages, <code>react</code> and <code>react-dom</code>, are the most useful of the lot, as they allow us to use React and have it interact with a page's DOM (Document Object Model). This work is separated into two packages, as React can be used in other contexts outside of a DOM, such as <a href="https://reactnative.dev/">React Native</a>.</p>
+<p>Let's take a closer look at what <code>app/javascripts/packs/hello_react.jsx</code> contains:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Run this example by adding &lt;%= javascript_pack_tag 'hello_react' %&gt; to the head of your layout file,</span>
+<span class="c1">// like app/views/layouts/application.html.erb. All it does is render &lt;div&gt;Hello React&lt;/div&gt; at the bottom</span>
+<span class="c1">// of the page.</span>
+
+<span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">PropTypes</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">prop-types</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">Hello</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Hello <span class="si">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span>!<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">)</span>
+
+<span class="nx">Hello</span><span class="p">.</span><span class="nx">defaultProps</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">David</span><span class="dl">'</span>
+<span class="p">}</span>
+
+<span class="nx">Hello</span><span class="p">.</span><span class="nx">propTypes</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="nx">PropTypes</span><span class="p">.</span><span class="nx">string</span>
+<span class="p">}</span>
+
+<span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">DOMContentLoaded</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Hello</span> <span class="na">name=</span><span class="s2">"React"</span> <span class="p">/&gt;,</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">div</span><span class="dl">'</span><span class="p">)),</span>
+  <span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+<p>Now that we've taken out the <code>prop-types</code> library, we can remove all the propTypes code from this file:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">Hello</span> <span class="o">=</span> <span class="nx">props</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Hello <span class="si">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span>!<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">)</span>
+
+<span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">DOMContentLoaded</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Hello</span> <span class="na">name=</span><span class="s2">"React"</span> <span class="p">/&gt;,</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">div</span><span class="dl">'</span><span class="p">)),</span>
+  <span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+<p>That's much easier to read now!</p>
+<p>This file imports both the <code>React</code> and <code>ReactDOM</code> libraries. We need to import <code>React</code> wherever we're using JSX. And we import <code>ReactDOM</code> whenever we want to put a React component somewhere on our page.</p>
+<p>Next, this file defines a small function component, returning a simple <code>&lt;div&gt;</code> with a message inside it.</p>
+<p>Finally, this code waits for the <code>DOMContentLoaded</code> event to be sent out by the browser, and then it will append this component to the <code>&lt;body&gt;</code> tag of whatever page has included this JavaScript.</p>
+<h3 id="rendering-react-within-rails">Rendering React within Rails</h3>
+<p>Let's take a look at how to render this React component within our Rails application.</p>
+<p>To get started, we'll create a new controller, view, and route by running this command:</p>
+<pre><code>rails g controller home index
+</code></pre>
+<p>The route this generates will be in <code>config/routes.rb</code>, and will look like this:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">get</span> <span class="s1">'home/index'</span>
+</code></pre></div></div>
+<p>Let's change this to be a <code>root</code> route, just so we can visit it using <a href="http://localhost:3000/">http://localhost:3000/</a> instead of <a href="http://localhost:3000/home/index">http://localhost:3000/home/index</a>.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">root</span> <span class="ss">to: </span><span class="s2">"home#index"</span>
+</code></pre></div></div>
+<p>Once this route has been changed, we can go to <a href="http://localhost:3000">http://localhost:3000</a> and see the view that was generated:</p>
+<p><img src="/images/graphql/simple-rails-view.png" alt="Simple Rails View" /></p>
+<p>This view is not currently rendering our React component, but we can make it do so by bringing in the <code>hello_react.jsx</code> file with this addition to <code>app/views/home/index.html.erb</code>:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">javascript_pack_tag</span> <span class="s2">"hello_react"</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>When we refresh the page, we'll see the React component appended to the bottom of the page:</p>
+<p><img src="/images/graphql/simple-rails-view-with-react.png" alt="Simple Rails View with React Component" /></p>
+<p>Excellent! We now have a way to make React components appear on our Rails views.</p>
+<p>There's a caveat to this however: these components will <em>always</em> appear at the <em>bottom</em> of our pages! If we were to add a footer to the bottom of the <code>&lt;body&gt;</code> tag within our application layout, these React components would appear underneath that footer. That is not ideal!</p>
+<p>What would be better for us is to be able to insert these components wherever we wish on the page. This will enable us to have Rails-generated HTML sitting along-side React components that also generate their own HTML.</p>
+<p>So to work around that, we'll devise a way to mount React components at particular places within Rails views.</p>
+<h3 id="placeable-react-components">Placeable React components</h3>
+<p>What we now want to be able to do is to be able to put a React component anywhere in our view. Let's say that we wanted our &quot;Hello React!&quot; to appear <em>between</em> the <code>h1</code> and <code>p</code> tags in <code>app/views/home/index.html.erb</code>:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Home#index<span class="nt">&lt;/h1&gt;</span>
+<span class="c">&lt;%# React component goes here %&gt;</span>
+<span class="nt">&lt;p&gt;</span>Find me in app/views/home/index.html.erb<span class="nt">&lt;/p&gt;</span>
+</code></pre></div></div>
+<p>We cannot put <code>javascript_pack_tag</code> there, as the code in <code>hello_react.jsx</code> will still direct the component to be appended to the <code>body</code> tag:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">DOMContentLoaded</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">Hello</span> <span class="na">name=</span><span class="s2">"React"</span> <span class="p">/&gt;,</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">div</span><span class="dl">'</span><span class="p">)),</span>
+  <span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div></div>
+<p>So what can we do instead?</p>
+<p>Well, another way we can approach this problem is to have our code look for particular types of elements on the page, and then choose to put React components into those particular elements. For example, we can make it so if we were to write this code:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;h1&gt;</span>Home#index<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">data-react-component=</span><span class="s">'Hello'</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;p&gt;</span>Find me in app/views/home/index.html.erb<span class="nt">&lt;/p&gt;</span>
+
+<span class="cp">&lt;%=</span> <span class="n">javascript_pack_tag</span> <span class="s2">"hello_react"</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>Then a component called <code>Hello</code> would be added in between those <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code> tags.</p>
+<p>To put this little <code>div</code> tag inside our views, we can write a helper in <code>app/helpers/application_helper.rb</code>:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">ApplicationHelper</span>
+  <span class="k">def</span> <span class="nf">react_component</span><span class="p">(</span><span class="n">component_name</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="p">{})</span>
+    <span class="n">content_tag</span><span class="p">(</span>
+      <span class="s2">"div"</span><span class="p">,</span>
+      <span class="ss">data: </span><span class="p">{</span>
+        <span class="ss">react_component: </span><span class="n">component_name</span>
+      <span class="p">}</span>
+    <span class="p">)</span> <span class="p">{</span> <span class="s2">""</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This code in <code>app/views/home/index.html.erb</code> will generate that <code>div</code>:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span> <span class="s2">"Hello"</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>If we wanted to support parsing properties to this method, we could make this code:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">ApplicationHelper</span>
+  <span class="k">def</span> <span class="nf">react_component</span><span class="p">(</span><span class="n">component_name</span><span class="p">,</span> <span class="o">**</span><span class="n">props</span><span class="p">)</span>
+    <span class="n">content_tag</span><span class="p">(</span>
+      <span class="s2">"div"</span><span class="p">,</span>
+      <span class="ss">data: </span><span class="p">{</span>
+        <span class="ss">react_component: </span><span class="n">component_name</span><span class="p">,</span>
+        <span class="ss">props: </span><span class="n">props</span><span class="p">.</span><span class="nf">to_json</span><span class="p">,</span>
+      <span class="p">}</span>
+    <span class="p">)</span> <span class="p">{</span> <span class="s2">""</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>This takes a list of properties and passes them through as extra <code>data</code> properties, and so allows us to write code such as:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span> <span class="s2">"Hello"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">name: </span><span class="s2">"React"</span> <span class="p">}</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>However, if we go and refresh that page again, we'll see the component is not being rendered in that spot -- it's still being rendered at the bottom of the page:</p>
+<p><img src="/images/graphql/simple-rails-view-with-react.png" alt="Simple Rails View with React Component" /></p>
+<p>But if we inspect the source code for our page, we'll see that the <code>&lt;div&gt;</code> <em>exists</em>`:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">data-react-component=</span><span class="s">"Hello"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div></div>
+<p>In order to fix this up, we're going to need to write some additional code that will scan for these tags containing the <code>data-react-component</code> attribute, and then act on those tags.</p>
+<h3 id="scanning-for-and-mounting-react-components">Scanning for and mounting React components</h3>
+<p>The code that we're going to use to do this scanning and mounting the React components is the most complicated code we'll come across in this guide. Please bare with me! What we'll do here is that we'll work on making this code work, then we'll go through it top-to-bottom.</p>
+<p>We'll put this code in a file called <code>app/javascript/mount.tsx</code>:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-dom</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">mount</span><span class="p">(</span><span class="nx">components</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">DOMContentLoaded</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">mountPoints</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="dl">"</span><span class="s2">[data-react-component]</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">mountPoints</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">mountPoint</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">dataset</span> <span class="o">=</span> <span class="p">(</span><span class="nx">mountPoint</span> <span class="k">as</span> <span class="nx">HTMLElement</span><span class="p">).</span><span class="nx">dataset</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">componentName</span> <span class="o">=</span> <span class="nx">dataset</span><span class="p">[</span><span class="dl">"</span><span class="s2">reactComponent</span><span class="dl">"</span><span class="p">];</span>
+      <span class="kd">const</span> <span class="nx">Component</span> <span class="o">=</span> <span class="nx">components</span><span class="p">[</span><span class="nx">componentName</span><span class="p">];</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">Component</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">props</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">dataset</span><span class="p">[</span><span class="dl">"</span><span class="s2">props</span><span class="dl">"</span><span class="p">]);</span>
+        <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nc">Component</span> <span class="err">{</span><span class="p">...</span><span class="nt">props</span><span class="err">}</span> <span class="p">/&gt;,</span> <span class="nx">mountPoint</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span>
+          <span class="dl">"</span><span class="s2">WARNING: No component found for: </span><span class="dl">"</span><span class="p">,</span>
+          <span class="nx">dataset</span><span class="p">.</span><span class="nx">reactComponent</span><span class="p">,</span>
+          <span class="nx">components</span>
+        <span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>And over in <code>app/javascript/packs/application.js</code>, we'll add these lines:</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">mount</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../mount</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">Hello</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./hello_react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nx">mount</span><span class="p">({</span> <span class="nx">Hello</span> <span class="p">});</span>
+</code></pre></div></div>
+<p>Lastly, we'll need to export the <code>Hello</code> component from <code>app/javascript/packs/hello_react.js</code>:</p>
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">ReactDOM</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react-dom</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">(</span><span class="nx">props</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Hello <span class="si">{</span><span class="nx">props</span><span class="p">.</span><span class="nx">name</span><span class="si">}</span>!<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">)</span>
+</code></pre></div></div>
+<p>With this change to <code>hello_react.js</code>, we've removed the code that was previously automatically inserting the component at the bottom of the page, and instead we're now exporting this component and leaving the rendering of that component as something else's job.</p>
+<p>That <em>something else</em> is that <code>mount.tsx</code> code that we wrote. Let's look at that again, step by step:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="kd">function</span> <span class="nx">mount</span><span class="p">(</span><span class="nx">components</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">DOMContentLoaded</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">mountPoints</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="dl">"</span><span class="s2">[data-react-component]</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+<p>This code defines the <code>mount</code> function that we use in <code>application.js</code>. This function adds an event listener that waits for the <code>DOMContentLoaded</code> event to happen, just like the old code we had in <code>hello_react.js</code> did. Then we go a different path from there. Instead of rendering a <em>specific</em> React component, we're instead going on a search for which ones the page wants us to render. We find all the elements that are &quot;mount points&quot; for our React components by using <code>querySelectorAll</code> and looking for those elements that match the CSS selector <code>[data-react-component]</code>.</p>
+<p>Let's look at the next couple of lines:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">mountPoints</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">mountPoint</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">dataset</span> <span class="o">=</span> <span class="p">(</span><span class="nx">mountPoint</span> <span class="k">as</span> <span class="nx">HTMLElement</span><span class="p">).</span><span class="nx">dataset</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">componentName</span> <span class="o">=</span> <span class="nx">dataset</span><span class="p">[</span><span class="dl">"</span><span class="s2">reactComponent</span><span class="dl">"</span><span class="p">];</span>
+  <span class="kd">const</span> <span class="nx">Component</span> <span class="o">=</span> <span class="nx">components</span><span class="p">[</span><span class="nx">componentName</span><span class="p">];</span>
+</code></pre></div></div>
+<p>For all of the elements mentioned, we attempt to find out their component name by accessing the <code>data-react-component</code> property by using a combination of <code>dataset</code> and <code>[&quot;reactComponent&quot;]</code>. Once we have that name, we can then attempt to find that component by a name using <code>components[componentName]</code>. As long as we've chosen to mount a component in <code>application.js</code> with this function, it will be available here.</p>
+<p>Let's look at the final few lines:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nx">Component</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">props</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">dataset</span><span class="p">[</span><span class="dl">"</span><span class="s2">props</span><span class="dl">"</span><span class="p">]);</span>
+  <span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">render</span><span class="p">(&lt;</span><span class="nc">Component</span> <span class="err">{</span><span class="p">...</span><span class="nt">props</span><span class="err">}</span> <span class="p">/&gt;,</span> <span class="nx">mountPoint</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span>
+    <span class="dl">"</span><span class="s2">WARNING: No component found for: </span><span class="dl">"</span><span class="p">,</span>
+    <span class="nx">componentName</span><span class="p">,</span>
+    <span class="nx">components</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>If this code finds a component, it attempts to parse the json contained in <code>dataset[&quot;props&quot;]</code>. This will pull out the JSON from the <code>data-props</code> attribute on the <code>&lt;div&gt;</code>:</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">data-react-component=</span><span class="s">"Hello"</span> <span class="na">data-props=</span><span class="s">"{&amp;quot;name&amp;quot;:&amp;quot;React&amp;quot;}"</span><span class="nt">&gt;&lt;/div&gt;</span>
+</code></pre></div></div>
+<p>Then, now that the <code>mount</code> function has all three of the <code>mountPoint</code>, the <code>Component</code> and the <code>props</code> determined, it can use <code>ReactDOM.render</code> to put this code directly onto the page, exactly where we said it should go.</p>
+<p>Let's refresh the page. This time we'll see the component is now in between the <code>&lt;h1&gt;</code> and <code>&lt;p&gt;</code> tags:</p>
+<p><img src="/images/graphql/hello-react-mounted.png" alt="&quot;Hello React&quot; is in between the tags" /></p>
+<p>Hooray! We now have an ability to put our React components wherever we like on the page. This will enable us to intermingle our Rails view code with React components -- we can put static HTML rendered server-side by Rails right next to dynamic HTML rendered client-side by React.</p>
+<h2 id="books-react-component">Books React Component</h2>
+<p>Let's now look at something a bit more complex than putting &quot;Hello React!&quot; on the page. This time, we're going to build another component, called <code>Books</code>. This component will render hard-coded data from a TypeScript file, onto <code>div</code> tags on the page.</p>
+<p>When we write this file, we'll be declaring types using TypeScript, and using those to guide us in what properties are available inside each of the components we build.</p>
+<p>We'll eventually use this file to pull in and display the data from our Rails application's GraphQL. Before we get there though, it will help to build a scaffold using static data so that we can experiment with it, if necessary.</p>
+<p>Let's create a new file at <code>app/javascripts/Books/index.tsx</code> and put this content in it:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="nx">type</span> <span class="nx">BookType</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">id</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+  <span class="nl">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="na">data</span><span class="p">:</span> <span class="p">{</span> <span class="na">books</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">BookType</span><span class="o">&gt;</span> <span class="p">}</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">books</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">id</span><span class="p">:</span> <span class="dl">"</span><span class="s2">1</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Active Rails</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">],</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">loading</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="na">Book</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">FunctionComponent</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">title</span> <span class="p">}:</span> <span class="nx">BookType</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span><span class="si">{</span><span class="nx">title</span><span class="si">}</span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;;</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">Books</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">loading</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>"Loading..."<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;;</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Books<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">books</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">book</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+          <span class="p">&lt;</span><span class="nc">Book</span> <span class="err">{</span><span class="p">...</span><span class="nt">book</span><span class="err">}</span> <span class="na">key=</span><span class="si">{</span><span class="nx">book</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">))</span><span class="si">}</span>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Books</span><span class="p">;</span>
+</code></pre></div></div>
+<p>In this file, we start by importing React. This is necessary because we're using JSX in this file.</p>
+<p>Next up, we define a type called <code>Book</code>, which defines the properties that we want to be available for every book. For the moment, these are simply <code>id</code> and <code>title</code>.</p>
+<p>Next, we define the shape of the data that will be coming through to our component, mimicking the shape of the data that GraphQL gives us. We provide a type for this, saying that the <code>data.books</code> key must be an array of objects that match the defined <code>BookType</code> type.</p>
+<aside>
+  <header>type BookType?</header>
+  <p>
+    It might seem a little strange here to be calling the type <code>BookType</code>. After all, shouldn't we already know it's a type? We don't call the variable that we call <code>id</code> by another name such as <code>idNum</code>, do we? That wouldn't make sense.
+  </p>
+  <p>
+    My main reason for doing that here is to more clearly differentiate the <code>Book</code> component from the <code>Book</code> type. If it's called <code>BookType</code>, I figure you'll know I'm talking about the type and I can use <code>Book</code> to refer to the component. It's a small trade-off, but a worthwhile one, I think.
+  </p>
+</aside>
+<p>Next, we define a <code>Book</code> component that again uses that <code>BookType</code> to ensure that the properties that are being received are of a certain type.</p>
+<p>Then we get to the <code>Books</code> component. This one uses the <code>loading</code> and <code>data</code> variables set outside of the component to pretend like it's loading data from our GraphQL service, and then uses the <code>Book</code> component to render that data.</p>
+<p>Finally, the <code>Books</code> component is exported.</p>
+<p>What we have here is the barest of bones required to render data using React in our application. This is just a few steps up from our &quot;Hello React&quot; example, and moves us closer towards having this frontend talk to our GraphQL backend.</p>
+<h3 id="mounting-the-books-component">Mounting the Books component</h3>
+<p>In order to use this component we will need to mount it within our application. We can do this by going to <code>app/javascript/application.js</code> and changing the end of that file to this:</p>
+<pre><code>import Hello from &quot;./hello_react&quot;;
+import Books from &quot;../Books&quot;
+
+mount({ Hello, Books });
+</code></pre>
+<p>This will now automatically render our <code>Hello</code> and <code>Books</code> components whenever they're requested through our application.</p>
+<p>To request the <code>Books</code> component to be rendered, we'll go over to <code>app/views/home/index.html.erb</code> and add this line in:</p>
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span> <span class="s2">"Books"</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+<p>Now when we refresh this page, we'll see our (very short!) list of books:</p>
+<p><img src="/images/graphql/books-component-appears.png" alt="List of books" /></p>
+<p>Success! The books component is now rendering on the page.</p>
+<p>One of the great things about this Webpacker setup that we have got going is that if you edit the code in <code>Books/index.tsx</code> and save the file, the browser will automatically refresh. Go ahead and try it out now!</p>
+<p>The component is still working with data that we've coded in ourselves. The next piece of this puzzle is to configure the frontend code so that instead of pulling the data in from a hardcoded source, it pulls it in from the GraphQL API provided by Rails.</p>
+<p>We can do this using a JavaScript package called Apollo.</p>
+<h2 id="apollo">Apollo</h2>
+<p>The <a href="https://www.apollographql.com/docs/react/">Apollo Client</a> is a widely-used package that is used to provide an easy way of communicating between the frontend and a GraphQL API. We'll use this package to replace the hard-coded data within <code>Books/index.tsx</code>.</p>
+<p>To get started, we will need to add the <code>@apollo/client</code> and <code>graphql</code> packages as a dependency. We can do that with this command:</p>
+<pre><code>yarn add @apollo/client graphql
+</code></pre>
+<p>If you're running <code>bin/webpack-dev-server</code>, make sure to restart it at this point to make sure it can load the new dependencies.</p>
+<p>Next, we will need to configure this Apollo Client to speak to our GraphQL API. We can do that by creating a new file at <code>app/javascript/graphqlProvider.tsx</code> and putting this code inside it:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span>
+  <span class="nx">ApolloClient</span><span class="p">,</span>
+  <span class="nx">InMemoryCache</span><span class="p">,</span>
+  <span class="nx">ApolloProvider</span><span class="p">,</span>
+  <span class="nx">HttpLink</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@apollo/client</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">csrfToken</span> <span class="o">=</span> <span class="nb">document</span>
+  <span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">meta[name=csrf-token]</span><span class="dl">"</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="dl">"</span><span class="s2">content</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ApolloClient</span><span class="p">({</span>
+  <span class="na">link</span><span class="p">:</span> <span class="k">new</span> <span class="nx">HttpLink</span><span class="p">({</span>
+    <span class="na">credentials</span><span class="p">:</span> <span class="dl">"</span><span class="s2">same-origin</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">headers</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">"</span><span class="s2">X-CSRF-Token</span><span class="dl">"</span><span class="p">:</span> <span class="nx">csrfToken</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">}),</span>
+  <span class="na">cache</span><span class="p">:</span> <span class="k">new</span> <span class="nx">InMemoryCache</span><span class="p">(),</span>
+<span class="p">});</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">withProvider</span> <span class="o">=</span> <span class="p">(</span>
+  <span class="nx">WrappedComponent</span><span class="p">:</span> <span class="nx">React</span><span class="p">.</span><span class="nx">ComponentType</span><span class="p">,</span>
+  <span class="nx">props</span><span class="p">:</span> <span class="nx">any</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="p">)</span> <span class="o">=&gt;</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nc">ApolloProvider</span> <span class="na">client=</span><span class="si">{</span><span class="nx">client</span><span class="si">}</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nc">WrappedComponent</span> <span class="err">{</span><span class="p">...</span><span class="nt">props</span><span class="err">}</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;/</span><span class="nc">ApolloProvider</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p>This code does two main things.</p>
+<p>The first thing is that it defines <code>client</code>, which sets the groundwork for how Apollo is configured to connect to our API. By using <code>HttpLink</code>, and <em>not</em> passing it a URL, Apollo will default to making requests to <code>/graphql</code> -- which is exactly where our GraphQL API is hosted.</p>
+<p>This <code>client</code> variable uses the <code>csrfToken</code> from the page as well, ensuring that the requests pass the CSRF protections built into the <code>GraphqlController</code> for our Rails application. If we did not do this, in a production environment users would not be able to make requests through to our GraphQL API as Rails would block their attempts due to null CSRF tokens being passed in.</p>
+<p>The second thing this code does is the <code>withProvider</code> variable. This is a function that wraps a passed in component in the <code>ApolloProvider</code> component, allowing that wrapped component to make calls to the GraphQL API.</p>
+<p>With this code setup, we can now turn our attention back to <code>Books/index.tsx</code>. We want to convert this code to do a GraphQL query to load its data. We can start this process by defining a GraphQL query at the top of this file:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">gql</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">graphql-tag</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">booksQuery</span> <span class="o">=</span> <span class="nx">gql</span><span class="s2">`
+  query booksQuery {
+    books {
+      title
+    }
+  }
+`</span><span class="p">;</span>
+</code></pre></div></div>
+<p>To use this query, we can use the <code>useQuery</code> hook function from Apollo. We must first import it:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">useQuery</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@apollo/client</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Then we can use it inside the <code>Books</code> component:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">Books</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">{</span> <span class="nx">data</span><span class="p">,</span> <span class="nx">loading</span><span class="p">,</span> <span class="nx">error</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">useQuery</span><span class="p">(</span><span class="nx">booksQuery</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">loading</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">&lt;</span><span class="nt">span</span><span class="p">&gt;</span>Loading...<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;;</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">(</span>
+    <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Books<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+        <span class="si">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">books</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">book</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+          <span class="p">&lt;</span><span class="nc">Book</span> <span class="err">{</span><span class="p">...</span><span class="nt">book</span><span class="err">}</span> <span class="na">key=</span><span class="si">{</span><span class="nx">book</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span> <span class="p">/&gt;</span>
+        <span class="p">))</span><span class="si">}</span>
+      <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p>Note that for the most part, the API is the same. We are still using the <code>loading</code> variable, and the data is available at <code>data.books</code>.</p>
+<p>The last thing to do here is to use the <code>withProvider</code> function to wrap the <code>Books</code> component.</p>
+<p>First, we'll need to import it.</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">withProvider</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../graphqlProbider</span><span class="dl">"</span>
+</code></pre></div></div>
+<p>Then we can wrap our <code>Books</code> component when we export it:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="nx">withProvider</span><span class="p">(</span><span class="nx">Books</span><span class="p">);</span>
+</code></pre></div></div>
+<p>This will make it so that the <code>Books</code> component has access to the Apollo client we have configured, and that will mean the <code>Books</code> component will be able to run its GraphQL query.</p>
+<p>When we refresh the page now, we'll see that the data is being loaded from our API! We've now successfully connected our first React component back through to our GraphQL API.</p>
+<p>We're not completely done yet. There's one more issue hanging around. That issue is that the <code>data</code> variable that is coming back from our query is completely untyped. I can see this in Visual Studio Code by hovering my cursor over <code>data</code>. Here's what I see:</p>
+<p><img src="/images/graphql/data-is-any.png" alt="data is you... no, it's any" /></p>
+<p>This is problematic, because it means that we're not having the properties we call on <code>data</code> be typechecked. This means we can write this code:</p>
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Books<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+      <span class="si">{</span><span class="nx">data</span><span class="p">.</span><span class="nx">notBooks</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">book</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span>
+        <span class="p">&lt;</span><span class="nc">Book</span> <span class="err">{</span><span class="p">...</span><span class="nt">book</span><span class="err">}</span> <span class="na">key=</span><span class="si">{</span><span class="nx">book</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span> <span class="p">/&gt;</span>
+      <span class="p">))</span><span class="si">}</span>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
 <span class="p">);</span>
 </code></pre></div></div>
-<p>This prop adds additional classes to the React Select component, such as <code>.tags__control</code> and <code>.tags__multi-value</code> -- values that <em>are</em> reliable and predictable!</p>
-<p>This means that in the Capybara test, I can now use these to interact with this React Select component, like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">within_tags</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-  <span class="n">within</span><span class="p">(</span><span class="s2">".tags__control"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-<span class="k">end</span>
+<p>And TypeScript won't tell us that <code>notBooks</code> is not a part of the returned data. Further to this, the <code>book</code> type is <em>also</em> <code>any</code>, and the correctness of that data is only enforced by the earlier <code>BookType</code> declaration we made earlier, and that we're still using in the <code>Book</code> component.</p>
+<p>We need to rectify this and ensure that we have accurate types from our data, right from the moment they come out of the API responses.</p>
+<h3 id="typescript--react-types">TypeScript + React types</h3>
+<h3 id="rakefile">Rakefile</h3>
+<pre><code>require &quot;graphql/rake_task&quot;
 
-<span class="k">def</span> <span class="nf">expect_selected_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-  <span class="n">within_tags</span> <span class="k">do</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">).</span><span class="nf">to</span> <span class="n">have_selector</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">add_new_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-  <span class="n">within_tags</span> <span class="k">do</span>
-    <span class="n">find</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nf">fill_in</span><span class="p">(</span><span class="ss">with: </span><span class="n">tag</span><span class="p">)</span>
-  <span class="k">end</span>
-
-  <span class="n">find</span><span class="p">(</span><span class="s2">".tags__option"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">).</span><span class="nf">click</span>
-<span class="k">end</span>
-
-<span class="k">def</span> <span class="nf">remove_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-  <span class="n">within_tags</span> <span class="k">do</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">find</span><span class="p">(</span><span class="s2">".tags__multi-value__remove"</span><span class="p">).</span><span class="nf">click</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="n">scenario</span> <span class="s2">"Can update a User's tags"</span><span class="p">,</span> <span class="ss">js: </span><span class="kp">true</span> <span class="k">do</span>
-  <span class="n">visit</span> <span class="n">edit_admin_user_path</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-
-  <span class="n">expect_selected_tag</span><span class="p">(</span><span class="s2">"Existing tag"</span><span class="p">)</span>
-  <span class="n">remove_tag</span><span class="p">(</span><span class="s2">"HIU"</span><span class="p">)</span>
-  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Paid"</span><span class="p">)</span>
-  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Custom tag"</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>I have the following helpers:</p>
-<ol>
-<li><code>expect_selected_tag</code>: When the page loads, the Select element should contain a tag that is <em>already</em> assigned to the user.</li>
-<li><code>remove_tag</code>: Used to remove a tag that appears in the Select element.</li>
-<li><code>add_new_tag</code>: Used to add either a tag from the list of options, or to create a brand new tag.</li>
-</ol>
-<p>With these helpers, I can effectively test React Select within Capybara and Selenium.</p>
+GraphQL::RakeTask.new(
+  schema_name: &quot;BooksSchema&quot;,
+  directory: &quot;./app/javascript/graphql&quot;,
+  dependencies: [:environment]
+)
+</code></pre>
+<h2 id="graphql-cont">GraphQL, cont.</h2>
+<p><code>graphql:schema:dump</code></p>
+<h2 id="codegen">Codegen</h2>
+<ul>
+<li><code>yarn add graphql</code></li>
+<li><code>@graphql-codegen/cli</code></li>
+</ul>
+<pre><code>yarn add -D @graphql-codegen/add @graphql-codegen/cli @graphql-codegen/fragment-matcher @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+</code></pre>
+<ul>
+<li>
+<p><code>yarn graphql-codegen init</code></p>
+<ul>
+<li>Application built with React</li>
+<li>Schema: <code>app/javascript/graphql/schema.graphql</code></li>
+<li>Operations and fragments: <code>app/javaascript/**/*.tsx</code></li>
+<li>Plugins: Leave default selected</li>
+<li>Output path: <code>app/javascript/graphql/types.tsx</code></li>
+<li>Generate introspection file: no (graphql gem has done this already)</li>
+<li>Name config file: <code>codegen.yml</code></li>
+<li>Script in package.json: <code>gql:codegen</code></li>
+</ul>
+</li>
+<li>
+<p><code>yarn add @graphql-codegen/typescript-react-apollo</code></p>
+</li>
+<li>
+<p>Add plugin to <code>codegen.yml</code>:</p>
+<ul>
+<li><code>- &quot;typescript-react-apollo&quot;</code></li>
+</ul>
+</li>
+</ul>
 
 </article>
 
 <div id='archive'>
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li><a href="/2020/09/react-select-capybara-selenium">React Select + Capybara + Selenium</a><br>
+      <div>23 Sep 2020</div>
+    </li>
     
     <li><a href="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging">Selenium, Capybara, ChromeDriver: connection refused error debugging</a><br>
       <div>29 Aug 2020</div>
@@ -154,10 +755,6 @@
     
     <li><a href="/2019/11/they-fixed-the-keyboard">They fixed the keyboard</a><br>
       <div>28 Nov 2019</div>
-    </li>
-    
-    <li><a href="/2019/11/rough-edges">Rough Edges</a><br>
-      <div>18 Nov 2019</div>
     </li>
     
   </ul>

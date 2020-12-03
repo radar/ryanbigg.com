@@ -2,7 +2,7 @@
 wordpress_id: RB-1606960088
 layout: post
 title: Rails + GraphQL + TypeScript + React + Apollo
-published: false
+published: true
 ---
 
 This is going to be a long post about how to setup a Rails application to serve a GraphQL API, that is then consumed using a combination of Apollo, React and TypeScript on the frontend. All within the same application.
@@ -631,7 +631,7 @@ if (Component) {
 } else {
   console.log(
     "WARNING: No component found for: ",
-    dataset.reactComponent,
+    componentName,
     components
   );
 }
@@ -649,35 +649,27 @@ Let's refresh the page. This time we'll see the component is now in between the 
 
 !["Hello React" is in between the tags](/images/graphql/hello-react-mounted.png)
 
-Hooray! We now have an ability to put our React components wherever we like on the page.
+Hooray! We now have an ability to put our React components wherever we like on the page. This will enable us to intermingle our Rails view code with React components -- we can put static HTML rendered server-side by Rails right next to dynamic HTML rendered client-side by React.
 
-### `app/javascript/books/index.tsx`
+## Books React Component
 
-```
-import React from "react";
+Let's now look at something a bit more complex than putting "Hello React!" on the page. This time, we're going to build another component, called `Books`. This component will render hard-coded data from a TypeScript file, onto `div` tags on the page.
 
-const Books = () => {
-  return "Hello from Books/index.tsx!";
-};
+When we write this file, we'll be declaring types using TypeScript, and using those to guide us in what properties are available inside each of the components we build.
 
-export default Books;
-```
+We'll eventually use this file to pull in and display the data from our Rails application's GraphQL. Before we get there though, it will help to build a scaffold using static data so that we can experiment with it, if necessary.
 
-Add example data to the React component:
+Let's create a new file at `app/javascripts/Books/index.tsx` and put this content in it:
 
 ```tsx
 import React from "react";
 
-interface BookType {
+type BookType = {
   id: string;
   title: string;
-}
-
-const Book = ({ title }: BookType) => {
-  return <div>{title}</div>;
 };
 
-const data = {
+const data: { books: Array<BookType> } = {
   books: [
     {
       id: "1",
@@ -688,6 +680,10 @@ const data = {
 
 const loading = false;
 
+const Book: React.FunctionComponent = ({ title }: BookType) => {
+  return <li>{title}</li>;
+};
+
 const Books = () => {
   if (loading) {
     return <span>"Loading..."</span>;
@@ -695,9 +691,12 @@ const Books = () => {
 
   return (
     <div>
-      {data.books.map((book) => (
-        <Book {...book} key={book.id} />
-      ))}
+      <h1>Books</h1>
+      <ul>
+        {data.books.map((book) => (
+          <Book {...book} key={book.id} />
+        ))}
+      </ul>
     </div>
   );
 };
@@ -705,12 +704,76 @@ const Books = () => {
 export default Books;
 ```
 
+In this file, we start by importing React. This is necessary because we're using JSX in this file.
+
+Next up, we define a type called `Book`, which defines the properties that we want to be available for every book. For the moment, these are simply `id` and `title`.
+
+Next, we define the shape of the data that will be coming through to our component, mimicking the shape of the data that GraphQL gives us. We provide a type for this, saying that the `data.books` key must be an array of objects that match the defined `BookType` type.
+
+<aside>
+  <header>type BookType?</header>
+
+  <p>
+    It might seem a little strange here to be calling the type <code>BookType</code>. After all, shouldn't we already know it's a type? We don't call the variable that we call <code>id</code> by another name such as <code>idNum</code>, do we? That wouldn't make sense.
+  </p>
+
+  <p>
+    My main reason for doing that here is to more clearly differentiate the <code>Book</code> component from the <code>Book</code> type. If it's called <code>BookType</code>, I figure you'll know I'm talking about the type and I can use <code>Book</code> to refer to the component. It's a small trade-off, but a worthwhile one, I think.
+  </p>
+</aside>
+
+Next, we define a `Book` component that again uses that `BookType` to ensure that the properties that are being received are of a certain type.
+
+Then we get to the `Books` component. This one uses the `loading` and `data` variables set outside of the component to pretend like it's loading data from our GraphQL service, and then uses the `Book` component to render that data.
+
+Finally, the `Books` component is exported.
+
+What we have here is the barest of bones required to render data using React in our application. This is just a few steps up from our "Hello React" example, and moves us closer towards having this frontend talk to our GraphQL backend.
+
+### Mounting the Books component
+
+In order to use this component we will need to mount it within our application. We can do this by going to `app/javascript/application.js` and changing the end of that file to this:
+
+```
+import Hello from "./hello_react";
+import Books from "../Books"
+
+mount({ Hello, Books });
+```
+
+This will now automatically render our `Hello` and `Books` components whenever they're requested through our application.
+
+To request the `Books` component to be rendered, we'll go over to `app/views/home/index.html.erb` and add this line in:
+
+```erb
+<%= react_component "Books" %>
+```
+
+Now when we refresh this page, we'll see our (very short!) list of books:
+
+![List of books](/images/graphql/books-component-appears.png)
+
+Success! The books component is now rendering on the page.
+
+One of the great things about this Webpacker setup that we have got going is that if you edit the code in `Books/index.tsx` and save the file, the browser will automatically refresh. Go ahead and try it out now!
+
+The component is still working with data that we've coded in ourselves. The next piece of this puzzle is to configure the frontend code so that instead of pulling the data in from a hardcoded source, it pulls it in from the GraphQL API provided by Rails.
+
+We can do this using a JavaScript package called Apollo.
+
 ## Apollo
-### Client
 
-* `yarn add @apollo/client`
+The [Apollo Client](https://www.apollographql.com/docs/react/) is a widely-used package that is used to provide an easy way of communicating between the frontend and a GraphQL API. We'll use this package to replace the hard-coded data within `Books/index.tsx`.
 
-#### `app/javascript/graphql_provider`
+To get started, we will need to add the `@apollo/client` and `graphql` packages as a dependency. We can do that with this command:
+
+```
+yarn add @apollo/client graphql
+```
+
+If you're running `bin/webpack-dev-server`, make sure to restart it at this point to make sure it can load the new dependencies.
+
+Next, we will need to configure this Apollo Client to speak to our GraphQL API. We can do that by creating a new file at `app/javascript/graphqlProvider.tsx` and putting this code inside it:
 
 ```tsx
 import React from "react";
@@ -746,6 +809,101 @@ export const withProvider = (
   );
 };
 ```
+
+This code does two main things.
+
+The first thing is that it defines `client`, which sets the groundwork for how Apollo is configured to connect to our API. By using `HttpLink`, and _not_ passing it a URL, Apollo will default to making requests to `/graphql` -- which is exactly where our GraphQL API is hosted.
+
+This `client` variable uses the `csrfToken` from the page as well, ensuring that the requests pass the CSRF protections built into the `GraphqlController` for our Rails application. If we did not do this, in a production environment users would not be able to make requests through to our GraphQL API as Rails would block their attempts due to null CSRF tokens being passed in.
+
+The second thing this code does is the `withProvider` variable. This is a function that wraps a passed in component in the `ApolloProvider` component, allowing that wrapped component to make calls to the GraphQL API.
+
+With this code setup, we can now turn our attention back to `Books/index.tsx`. We want to convert this code to do a GraphQL query to load its data. We can start this process by defining a GraphQL query at the top of this file:
+
+```tsx
+import React from "react";
+import gql from "graphql-tag";
+
+const booksQuery = gql`
+  query booksQuery {
+    books {
+      title
+    }
+  }
+`;
+```
+
+To use this query, we can use the `useQuery` hook function from Apollo. We must first import it:
+
+```tsx
+import { useQuery } from "@apollo/client";
+```
+
+Then we can use it inside the `Books` component:
+
+```tsx
+const Books = () => {
+  const { data, loading, error } = useQuery(booksQuery);
+
+  if (loading) {
+    return <span>Loading...</span>;
+  }
+
+  return (
+    <div>
+      <h1>Books</h1>
+      <ul>
+        {data.books.map((book) => (
+          <Book {...book} key={book.id} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+```
+
+Note that for the most part, the API is the same. We are still using the `loading` variable, and the data is available at `data.books`.
+
+The last thing to do here is to use the `withProvider` function to wrap the `Books` component.
+
+First, we'll need to import it.
+
+```tsx
+import { withProvider } from "../graphqlProbider"
+```
+
+Then we can wrap our `Books` component when we export it:
+
+```tsx
+export default withProvider(Books);
+```
+
+This will make it so that the `Books` component has access to the Apollo client we have configured, and that will mean the `Books` component will be able to run its GraphQL query.
+
+When we refresh the page now, we'll see that the data is being loaded from our API! We've now successfully connected our first React component back through to our GraphQL API.
+
+We're not completely done yet. There's one more issue hanging around. That issue is that the `data` variable that is coming back from our query is completely untyped. I can see this in Visual Studio Code by hovering my cursor over `data`. Here's what I see:
+
+![data is you... no, it's any](/images/graphql/data-is-any.png)
+
+This is problematic, because it means that we're not having the properties we call on `data` be typechecked. This means we can write this code:
+
+```tsx
+return (
+  <div>
+    <h1>Books</h1>
+    <ul>
+      {data.notBooks.map((book) => (
+        <Book {...book} key={book.id} />
+      ))}
+    </ul>
+  </div>
+);
+```
+
+And TypeScript won't tell us that `notBooks` is not a part of the returned data. Further to this, the `book` type is _also_ `any`, and the correctness of that data is only enforced by the earlier `BookType` declaration we made earlier, and that we're still using in the `Book` component.
+
+We need to rectify this and ensure that we have accurate types from our data, right from the moment they come out of the API responses.
 
 ### TypeScript + React types
 
