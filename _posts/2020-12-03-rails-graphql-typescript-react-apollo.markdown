@@ -42,11 +42,10 @@ Brand new Rails applications have a file called `app/javascript/packs/applicatio
 // a relevant structure within app/javascript and only use these pack files to reference
 // that code so it'll be compiled.
 
-require("@rails/ujs").start()
-require("turbolinks").start()
-require("@rails/activestorage").start()
-require("channels")
-
+require("@rails/ujs").start();
+require("turbolinks").start();
+require("@rails/activestorage").start();
+require("channels");
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
@@ -72,7 +71,6 @@ When you run `rails s` and access `http://localhost:3000`, Rails will compile th
 <header>What about webpack-dev-server?</header>
 If you don't want to wait for a request to tell Webpack to compile assets, you can run <code>bin/webpack-dev-server</code> as a separate process and your assets will be compiled as soon as they change, rather than whenever the page is refreshed. The difference is usually about half a second, but in larger applications it can be much longer than that. My advice would be to <em>always</em> rely on <code>bin/webpack-dev-server</code>.
 </aside>
-
 
 This `app/javascript/packs/application.js` will be the file that will be the place we load our JavaScript into our application. It doesn't have to be the _only_ place, we could in fact spread this out over multiple different packs, if we wished:
 
@@ -127,9 +125,9 @@ rails g graphql:install
 
 This will setup a few classes within our application, and we will use some of these in this guide. Of note are:
 
-* `app/graphql/books_schema.rb` - Where the GraphQL schema for our application is defined.
-* `app/graphql/types/query_type.rb` - Where fields for GraphQL queries are defined.
-* `app/graphql/types/mutation_type.rb` - Where fields for GraphQL mutations are defined.
+- `app/graphql/books_schema.rb` - Where the GraphQL schema for our application is defined.
+- `app/graphql/types/query_type.rb` - Where fields for GraphQL queries are defined.
+- `app/graphql/types/mutation_type.rb` - Where fields for GraphQL mutations are defined.
 
 At the end of this setup, we will see this message:
 
@@ -193,9 +191,10 @@ end
     Fetching all records from a database considered dangerous
   </header>
 
-  Fetching all the records at once in a table might mean you end up with a lot of records. In the past, you might've used something like <a href='https://github.com/mislav/will_paginate'>will_paginate</a> or <a href='https://github.com/kaminari/kaminari'>Kaminari</a> to do pagination in your application.
+Fetching all the records at once in a table might mean you end up with a lot of records. In the past, you might've used something like <a href='https://github.com/mislav/will_paginate'>will_paginate</a> or <a href='https://github.com/kaminari/kaminari'>Kaminari</a> to do pagination in your application.
 
-  GraphQL uses [connections](https://graphql-ruby.org/pagination/connection_concepts) for this, but we will not be covering that in this guide.
+GraphQL uses [connections](https://graphql-ruby.org/pagination/connection_concepts) for this, but we will not be covering that in this guide.
+
 </aside>
 
 This will allow us to query our GraphQL endpoint and retrieve all the books by using this GraphQL query through GraphiQL:
@@ -275,9 +274,9 @@ rails webpacker:install:typescript
 
 This will:
 
-* Add `typescript` and `ts-loader` as dependencies of our application in `package.json`. These packages are used to load and parse TypeScript files, and `typescript` comes with a command called `tsc` that we can use to check if our code is typed correctly.
-* Create a new file called `tsconfig.json` that contains all the configuration for TypeScript.
-* Configure Webpacker to load TypeScript files (anything ending in `.ts` or `tsx`), and it'll put a new file in `app/javascripts/packs` called `hello_typescript.ts`:
+- Add `typescript` and `ts-loader` as dependencies of our application in `package.json`. These packages are used to load and parse TypeScript files, and `typescript` comes with a command called `tsc` that we can use to check if our code is typed correctly.
+- Create a new file called `tsconfig.json` that contains all the configuration for TypeScript.
+- Configure Webpacker to load TypeScript files (anything ending in `.ts` or `tsx`), and it'll put a new file in `app/javascripts/packs` called `hello_typescript.ts`:
 
 ```
 // Run this example by adding <%= javascript_pack_tag 'hello_typescript' %> to the head of your layout file,
@@ -296,7 +295,6 @@ One extra bit of configuration that we'll need to do here is to set a configurat
 
 This will direct the TypeScript compiler to use React when it encounters a JSX tag. For more information about this option, [read this documentation page from the TypeScript handbook](https://www.typescriptlang.org/docs/handbook/jsx.html).
 
-
 ### React
 
 Next up, we want to add React to our application. We can do this using a `webpacker:install` command too.
@@ -307,16 +305,15 @@ rails webpacker:install:react
 
 This command will:
 
-* Create a `babel.config.js` file that contains configuration for Babel directing it how to load React components.
-* Create a file at `app/javascript/packs/hello_react.jsx` that demonstrates how to use React within our application.
-* Configures `config/webpacker.yml` to support files ending with `.jsx`
-* Adds the following JS packages:
-  * `@babel/preset-react`
-  * `babel-plugin-transform-react-remove-prop-types`
-  * `prop-types`
-  * `react`
-  * `react-dom`
-
+- Create a `babel.config.js` file that contains configuration for Babel directing it how to load React components.
+- Create a file at `app/javascript/packs/hello_react.jsx` that demonstrates how to use React within our application.
+- Configures `config/webpacker.yml` to support files ending with `.jsx`
+- Adds the following JS packages:
+  - `@babel/preset-react`
+  - `babel-plugin-transform-react-remove-prop-types`
+  - `prop-types`
+  - `react`
+  - `react-dom`
 
 This `babel.config.js` file that was generated contains some code to load a library called: `babel-plugin-transform-react-remove-prop-types`:
 
@@ -343,13 +340,13 @@ Hello.propTypes = {
 
 We will not be using prop-types in our code -- because we'll be using TypeScript instead. So let's remove this configuration from `babel.config.js`, as well as removing the `prop-types` and associated babel plugin:
 
-* ` yarn remove prop-types babel-plugin-transform-react-remove-prop-types`
+- ` yarn remove prop-types babel-plugin-transform-react-remove-prop-types`
 
 This will mean that the packages that have been added by `webpacker:install:react` are now just:
 
-* `@babel/preset-react`
-* `react`
-* `react-dom`
+- `@babel/preset-react`
+- `react`
+- `react-dom`
 
 The `@babel/preset-react` package configures Babel to parse JSX content into regular JavaScript code, and a few other niceties that we don't need to care about right now.
 
@@ -362,46 +359,42 @@ Let's take a closer look at what `app/javascripts/packs/hello_react.jsx` contain
 // like app/views/layouts/application.html.erb. All it does is render <div>Hello React</div> at the bottom
 // of the page.
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
+import React from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 
-const Hello = props => (
-  <div>Hello {props.name}!</div>
-)
+const Hello = (props) => <div>Hello {props.name}!</div>;
 
 Hello.defaultProps = {
-  name: 'David'
-}
+  name: "David",
+};
 
 Hello.propTypes = {
-  name: PropTypes.string
-}
+  name: PropTypes.string,
+};
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   ReactDOM.render(
     <Hello name="React" />,
-    document.body.appendChild(document.createElement('div')),
-  )
-})
+    document.body.appendChild(document.createElement("div"))
+  );
+});
 ```
 
 Now that we've taken out the `prop-types` library, we can remove all the propTypes code from this file:
 
 ```jsx
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from "react";
+import ReactDOM from "react-dom";
 
-const Hello = props => (
-  <div>Hello {props.name}!</div>
-)
+const Hello = (props) => <div>Hello {props.name}!</div>;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   ReactDOM.render(
     <Hello name="React" />,
-    document.body.appendChild(document.createElement('div')),
-  )
-})
+    document.body.appendChild(document.createElement("div"))
+  );
+});
 ```
 
 That's much easier to read now!
@@ -469,12 +462,12 @@ What we now want to be able to do is to be able to put a React component anywher
 We cannot put `javascript_pack_tag` there, as the code in `hello_react.jsx` will still direct the component to be appended to the `body` tag:
 
 ```jsx
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   ReactDOM.render(
     <Hello name="React" />,
-    document.body.appendChild(document.createElement('div')),
-  )
-})
+    document.body.appendChild(document.createElement("div"))
+  );
+});
 ```
 
 So what can we do instead?
@@ -505,6 +498,7 @@ module ApplicationHelper
   end
 end
 ```
+
 This code in `app/views/home/index.html.erb` will generate that `div`:
 
 ```erb
@@ -532,7 +526,6 @@ This takes a list of properties and passes them through as extra `data` properti
 ```erb
 <%= react_component "Hello", { name: "React" } %>
 ```
-
 
 However, if we go and refresh that page again, we'll see the component is not being rendered in that spot -- it's still being rendered at the bottom of the page:
 
@@ -591,12 +584,10 @@ mount({ Hello });
 Lastly, we'll need to export the `Hello` component from `app/javascript/packs/hello_react.js`:
 
 ```jsx
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from "react";
+import ReactDOM from "react-dom";
 
-export default (props) => (
-  <div>Hello {props.name}!</div>
-)
+export default (props) => <div>Hello {props.name}!</div>;
 ```
 
 With this change to `hello_react.js`, we've removed the code that was previously automatically inserting the component at the bottom of the page, and instead we're now exporting this component and leaving the rendering of that component as something else's job.
@@ -629,18 +620,14 @@ if (Component) {
   const props = JSON.parse(dataset["props"]);
   ReactDOM.render(<Component {...props} />, mountPoint);
 } else {
-  console.log(
-    "WARNING: No component found for: ",
-    componentName,
-    components
-  );
+  console.log("WARNING: No component found for: ", componentName, components);
 }
 ```
 
 If this code finds a component, it attempts to parse the json contained in `dataset["props"]`. This will pull out the JSON from the `data-props` attribute on the `<div>`:
 
 ```html
-<div data-react-component="Hello" data-props="{&quot;name&quot;:&quot;React&quot;}"></div>
+<div data-react-component="Hello" data-props='{"name":"React"}'></div>
 ```
 
 Then, now that the `mount` function has all three of the `mountPoint`, the `Component` and the `props` determined, it can use `ReactDOM.render` to put this code directly onto the page, exactly where we said it should go.
@@ -765,6 +752,8 @@ We can do this using a JavaScript package called Apollo.
 
 The [Apollo Client](https://www.apollographql.com/docs/react/) is a widely-used package that is used to provide an easy way of communicating between the frontend and a GraphQL API. We'll use this package to replace the hard-coded data within `Books/index.tsx`.
 
+### Setting up Apollo
+
 To get started, we will need to add the `@apollo/client` and `graphql` packages as a dependency. We can do that with this command:
 
 ```
@@ -818,6 +807,8 @@ This `client` variable uses the `csrfToken` from the page as well, ensuring that
 
 The second thing this code does is the `withProvider` variable. This is a function that wraps a passed in component in the `ApolloProvider` component, allowing that wrapped component to make calls to the GraphQL API.
 
+### Using Apollo in our Books component
+
 With this code setup, we can now turn our attention back to `Books/index.tsx`. We want to convert this code to do a GraphQL query to load its data. We can start this process by defining a GraphQL query at the top of this file:
 
 ```tsx
@@ -825,7 +816,7 @@ import React from "react";
 import gql from "graphql-tag";
 
 const booksQuery = gql`
-  query booksQuery {
+  query allBooks {
     books {
       title
     }
@@ -869,7 +860,7 @@ The last thing to do here is to use the `withProvider` function to wrap the `Boo
 First, we'll need to import it.
 
 ```tsx
-import { withProvider } from "../graphqlProbider"
+import { withProvider } from "../graphqlProbider";
 ```
 
 Then we can wrap our `Books` component when we export it:
@@ -905,9 +896,35 @@ And TypeScript won't tell us that `notBooks` is not a part of the returned data.
 
 We need to rectify this and ensure that we have accurate types from our data, right from the moment they come out of the API responses.
 
-### TypeScript + React types
+## Sharing types between backend + frontend
 
-### Rakefile
+When we write GraphQL queries, we must specify the types for all the fields. For example, over in `app/graphql/types/book_type.rb` we specify the types like this:
+
+```ruby
+module Types
+  class BookType < Types::BaseObject
+    field :id, ID, null: false
+    field :title, String, null: true
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
+  end
+end
+```
+
+These types are here so that we know what kind of data we're working with. We know that `title` is going to be a string, and that `created_at` is _also_ going to be returned as a string... except it's a string formatted as an `ISO8601` timestamp as indicated by its special typing.
+
+We want these types in our React code so that we can be sure we're working with them correctly. But these types are in Ruby, not in JavaScript. So how do we get them out of Ruby, and into JavaScript?
+
+The way we can do this is with a Rake task built into the `graphql` gem itself which will allow us to dump the GraphQL schema out to a particular file. This schema will be a JSON representation of our GraphQL API, and enables [introspection](https://graphql.org/learn/introspection/) of the API. If you've ever wondered how GraphQL apps like GraphQL Playground and GraphiQL know what fields are available, this is how! The application reads that schema, and from that it will know the fields and their types.
+
+We can dump the schema for this application by using a Rake task that is built into the `graphql` gem. That task needs some configuration so that it can find out where our Ruby schema is, and where to dump the JSON schema definitions to.
+
+Once we have that schema dumped, we can generate types from that dump by using a JavaScript package called `codegen`.
+
+### Dumping types from the GraphQL backend
+
+Let's start by dumping the types from the backend using a Rake task. Let's create this Rake task and specify its configuration adding these lines to the `Rakefile` within our application:
+
 ```
 require "graphql/rake_task"
 
@@ -918,27 +935,95 @@ GraphQL::RakeTask.new(
 )
 ```
 
-## GraphQL, cont.
-`graphql:schema:dump`
+The `GraphQL::RakeTask.new` initializer is responsible for registering the Rake task with Rake. The `schema_name` option tells it where to find the schema, and this name _must_ match the schema class name in `app/graphql`. It's the name of your application, followed by the word "Schema", typically.
 
-## Codegen
-* `yarn add graphql`
-* `@graphql-codegen/cli`
+The `directory` option tells this Rake task where we want to put the JSON schema definitions.
+
+And finally, `dependencies` tells the Rake task to first run the `environment` Rake task. This `environment` Rake task is responsible for loading the Rails application environment, and it will load the `BooksSchema` class as a part of that work.
+
+With the Rake task setup, we can now run it by running this command:
 
 ```
-yarn add -D @graphql-codegen/add @graphql-codegen/cli @graphql-codegen/fragment-matcher @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo
+rake graphql:schema:dump
 ```
 
-* `yarn graphql-codegen init`
-	* Application built with React
-	* Schema: `app/javascript/graphql/schema.graphql`
-	* Operations and fragments: `app/javaascript/**/*.tsx`
-	* Plugins: Leave default selected
-	* Output path: `app/javascript/graphql/types.tsx`
-	* Generate introspection file: no (graphql gem has done this already)
-	* Name config file: `codegen.yml`
-	* Script in package.json: `gql:codegen`
+This command will read our schema -- written in Ruby -- and convert it into a JSON file, which can be read by JavaScript.
 
-* `yarn add @graphql-codegen/typescript-react-apollo`
-* Add plugin to `codegen.yml`:
-	* `- "typescript-react-apollo"`
+### Generating types from the dumped schema
+
+Now that we have our schema dumped out, we can load it in using a package called `@graphql-codegen/cli`. We will need to install this package first:
+
+```
+yarn add -D @graphql-codegen/cli
+```
+
+Once this package has been installed, we can run another command to configure it. This configuration will ensure that Codegen works exactly as we want it for our application. We can kick off this configuration step by running:
+
+```
+yarn graphql-codegen init
+```
+
+This command will prompt us for a few separate things:
+
+1. **Application built with**: Choose "React"
+2. **Schema**: `app/javascript/graphql/schema.graphql`
+3. **Operations and fragments**: `app/javascript/**/*.tsx`
+4. **Plugins**: Leave default selected
+5. **Output path**: `app/javascript/graphql/types.tsx`
+6. **Generate introspection file**: Choose "no" because the `graphql` gem has done this already with the Rake task we just ran.
+7. **Name config file**: Leave it as the default, `codegen.yml`
+8. **Script in package.json**: `gql:codegen`
+
+This `init` script will then install more `codegen` packages that will assist us. These packages will appear within the `package.json` `devDependencies` list:
+
+- @graphql-codegen/typescript
+- @graphql-codegen/typescript-operations
+- @graphql-codegen/typescript-react-apollo
+
+These packages are the ones that will be used to generate the types for our TypeScript code. The `codegen` series of packages will do this by reading from the `schema.graphql` file that was dumped from the `rake graphql:schema:dump` Rake task. The way to make `codegen` generate these types is by running the `package.json` script `gql:codegen`:
+
+```
+yarn gql:codegen
+```
+
+This command will read that `schema.graphql` file and generate TypeScript types into `app/javascript/graphql/types.tsx`. Note that this will only read from the schema file generated by `rake graphql:schema:dump` rather than constantly being updated by the backend automatically. So you will want to get into the habit of running both the Rake task and the Yarn command at the same time:
+
+```
+rake graphql:schema:dump && yarn gql:codegen
+```
+
+Let's go through what each of these Codegen packages provides us, to better understand what we're getting out of using this tool.
+
+### Codegen + TypeScript
+
+The first package, `@graphql-codegen/typescript`, generates TypeScript types from objects in the schema. If we go to `app/javascript/graphql/types.tsx`, here's a couple of the types that we will see:
+
+```
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  /** An ISO 8601-encoded datetime */
+  ISO8601DateTime: any;
+};
+
+export type Book = {
+  __typename?: 'Book';
+  createdAt: Scalars['ISO8601DateTime'];
+  id: Scalars['ID'];
+  title?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['ISO8601DateTime'];
+};
+```
+
+First, there are some scalars that define shortcuts to common types. These are used a little further down when the `Book` type is defined to specify the types of fields that are available for `Book` objects according to our API. You will notice there that the `title` property is specified with a question-mark. That means that this property can be missing completely from the returned object.
+
+These types provide us the ground work for types in our application's TypeScript code. If we were to use these, we could leverage the shared types between the backend and the frontend. Our frontend _couldn't_ use types that aren't correct according to the backend.
+
+But this picture is not complete without the two other packages here, so let's cover those first before we look into how we can use those types.
+
+### Codegen + TypeScript + GraphQL Operations
+
+The second package, `@graphql-codegen/typescript-operations`, generates TypeScript types from objects in the schema. If we go to `app/javascript/graphql/types.tsx`, here's a couple of the types that we will see:
