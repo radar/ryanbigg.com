@@ -898,6 +898,8 @@ We need to rectify this and ensure that we have accurate types from our data, ri
 
 ## Sharing types between backend + frontend
 
+In this final section, we'll make it so that we can have our frontend read and understand the types specified by our backend. We will do this by using a combination of features from the `graphql` gem, as well as a series of JavaScript packages from the `@graphql-codegen` family.
+
 When we write GraphQL queries, we must specify the types for all the fields. For example, over in `app/graphql/types/book_type.rb` we specify the types like this:
 
 ```ruby
@@ -1026,4 +1028,157 @@ But this picture is not complete without the two other packages here, so let's c
 
 ### Codegen + TypeScript + GraphQL Operations
 
-The second package, `@graphql-codegen/typescript-operations`, generates TypeScript types from objects in the schema. If we go to `app/javascript/graphql/types.tsx`, here's a couple of the types that we will see:
+The second package, `@graphql-codegen/typescript-operations`, generates TypeScript types from the operations and fragments we've specified in our TypeScript code. An example of an operation is this query in `app/javascript/Books/index.tsx`:
+
+```tsx
+const booksQuery = gql`
+  query allBooks {
+    books {
+      title
+    }
+  }
+`;
+```
+
+The `@graphql-codegen/typescript-operations` package scans our TypeScript files for these operations and will generate corresponding types for them. If we go to `app/javascript/graphql/types.tsx`, we'll see the generated types for this query:
+
+```ts
+export type AllBooksQueryVariables = Exact<{ [key: string]: never; }>;
+
+export type AllBooksQuery = (
+{ **typename?: 'Query' }
+& { books: Array<(
+{ **typename?: 'Book' }
+& Pick<Book, 'title'>
+)> }
+);
+```
+
+The first type here says that the `allBooks` query does not take any variables. The second type specifies that when the `AllBooksQuery` returns data, it does so with a key called `books`, and that the value for that `books` key will be an array of items that are shaped as the `Book` type specifies, but _just_ the `title` field from that type -- as indicated by `Pick<Book, 'title'>`.
+
+This type can be used to ensure that we're only accessing data that our GraphQL query returns. The second type here specifies that _yes_ the query _does_ return an array of books... but it also says that the information that will come from that query _only_ consists of the `title` field. There is no other field there.
+
+We can use this second type in our code by specifying it as a generic in `Books/index.tsx`:
+
+```tsx
+const { data, loading, error } = useQuery<AllBooksQuery>(booksQuery);
+```
+
+This says to `useQuery`, that the type of data being returned by this function will match the shape specified by `AllBooksQuery`.
+
+If we look a little further down in our file, we'll see that the code is failing because we're trying to access the `id` property from a `Book` object:
+
+![Property 'id' does not exist](/images/graphql/property-id-does-not-exist.png)
+
+We're seeing this message from TypeScript because our type for `AllBooksQuery` does not specify that books returned from that query have an `id` property. TypeScript is smart enough to know that we're making a mistake here, and it quickly points it out!
+
+We can fix this by adding an `id` field to the query in `Books/index.tsx`:
+
+```tsx
+const booksQuery = gql`
+  query allBooks {
+    books {
+      id
+      title
+    }
+  }
+`;
+```
+
+And then by re-generating the types using:
+
+```
+yarn gql:codegen
+```
+
+This last command updates the `AllBooksQuery` type to this:
+
+```tsx
+export type AllBooksQuery = { __typename?: "Query" } & {
+  books: Array<{ __typename?: "Book" } & Pick<Book, "id" | "title">>;
+};
+```
+
+This is a type that now specifies that `Book` can have `title` _and_ `id` specified. If we look back at the place where the error previously was occurring, we'll now see that it is fine:
+
+![property id is fine](/images/graphql/property-id-is-fine.png)
+
+This is the benefit that we get out of using `@graphql-codegen/typescript-operations`. This package inspects the queries that are used in our application, and it will generate types from them. Those types can then be used by TypeScript to inform us if we're requesting correct or incorrect properties.
+
+### Codegen + TypeScript + React + Apollo
+
+The final package that is added by Codegen's `init` script is one called `@graphql-codegen/typescript-react-apollo`. This package brings together all of the previous parts into one very neat cohesive whole.
+
+This package does not provide us with types, but instead it provides us with functions. Specifically, it provides us with hooks that we can use in our React components to shortcut the necessity of specifying `AllBooksQuery` or `AllBooksQueryVariables` as type arguments.
+
+Here's one of the functions it provides us:
+
+```tsx
+export function useAllBooksQuery(
+  baseOptions?: Apollo.QueryHookOptions<AllBooksQuery, AllBooksQueryVariables>
+) {
+  return Apollo.useQuery<AllBooksQuery, AllBooksQueryVariables>(
+    AllBooksDocument,
+    baseOptions
+  );
+}
+```
+
+We can call this function in `Books/index.tsx` by first importing it:
+
+```tsx
+import { useAllBooksQuery } from "graphql/types";
+```
+
+And then using it in place of our previous `useQuery` invocation in that same file:
+
+```tsx
+const Books = () => {
+  const { data, loading, error } = useAllBooksQuery();
+```
+
+Isn't this much nicer than what we just had there?
+
+By invoking this function, we are getting Codegen to do the heavy lifting of specifying the type arguments for us. If we did not have Codegen doing this, then we would need to write it all out ourselves. A full query, including query variables, would need to be written like this:
+
+```tsx
+const Books = () => {
+  const { data, loading, error } = useQuery<
+    AllBooksQuery,
+    AllBooksQueryVariables
+  >(AllBooksDocument, baseOptions);
+```
+
+That is quite messy and would require us to import all of these different things into this file.
+
+Instead of doing that, we can use `@graphql-codegen/typescript-react-apollo` and that will provide us small functions like `useAllBooksQuery` that we can use to ensure we have accurate types from the backend all the way through to the frontend.
+
+To ensure that this is working as intended we'll try to replicate that "Property 'id' is missing" error we saw before. We can replicate that error by removing the `id` field from the `booksQuery` in `Books/index.tsx`:
+
+```tsx
+const booksQuery = gql`
+  query allBooks {
+    books {
+      title
+    }
+  }
+`;
+```
+
+Next, we'll run `yarn gql:codegen` to regenerate the types for this query.
+
+Once that command completes, we'll see that the `id` property is missing again:
+
+![Property 'id' does not exist](/images/graphql/property-id-does-not-exist.png)
+
+Excellent! This means that it is all working as it should.
+
+## What we've accomplished
+
+By using the `graphql` gem within the Ruby part of our Rails application, we've been able to expose data from our database through a GraphQL API. We then read that data using a combination of React, Apollo and TypeScript on the frontend.
+
+When we're using TypeScript, we need to be able to know the types of our data. This will ensure that our program is as correct as it can be. While we _could_ define these types ourselves -- as we saw earlier on when we were setting up TypeScript -- it is instead better to automatically generate them from the GraphQL API's types instead. The way we do this is with a combination of the `graphql` gem's Rake task (defined in `Rakefile`), and another command called `yarn gql:codegen`. The latter command outputs types to `app/javascript/graphql/types.tsx`, and then it's from that file we can import things like the `useBooksQuery` function, and `Book` type, if we require it.
+
+One other thing to remember is that thanks to the `@graphql-codegen/typescript-operations`
+
+All of this work is designed to set a solid foundation for a GraphQL API.
