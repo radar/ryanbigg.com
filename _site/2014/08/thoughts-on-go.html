@@ -37,26 +37,38 @@
               <a href="/2014/08/thoughts-on-go"><h2>Thoughts on Go</h2></a>
               <small>08 Aug 2014</small>
             </div>
-            <p>I've had an interest in Go now for about a year. I've not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn't do much. I've also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes' go-lifx</a> project, which is Go bindings for LIFX lights. It's still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
+            <p>I’ve had an interest in Go now for about a year. I’ve not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn’t do much. I’ve also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes’ go-lifx</a> project, which is Go bindings for LIFX lights. It’s still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
+
 <p>This was the first week that not only that I wrote Go code <em>for my job</em>, but I actually got to deploy it in a live production context. And it was the first week at my new job at LIFX, too. All this little program does now is read some stats from a JSON file and report them back to our analytics service. The earlier version was written in Ruby, which meant that Ruby needed to be compiled on this box just for one little script. Having the little script in Go means that we no longer need to compile Ruby on that box; a small victory but a victory nonetheless.</p>
-<p>I dislike that I don't know much about Go still at this stage. That probably boils down to me not really having a proper use for it until recent. It could also be because a lot of the Go documentation out there is similar to a cookbook that only explains the properties of the ingredients, rather than having recipes. I enjoy learning by example and I think other people do also, because they bought <a href="https://manning.com/bigg2">a book that I wrote</a> that's all about the examples.</p>
-<p>I like that the Go packages themselves are pretty well-documented. I especially like that I know what <em>type</em> of object I'm supposed to be passing in. Take <a href="http://golang.org/pkg/time/#Unix"><code>time.Unix</code></a> for example. It works similarly to <code>Time.at(unix_time)</code> in Ruby. The Go documentation for <code>time.Unix</code> clearly indicates that it takes two arguments, both of which are of the <code>int64</code> type, and that it returns a Time &quot;instance&quot;. That's something that I didn't think I would like, given that I've been doing Ruby for so long and it has a little thing called duck-typing where methods can be defined on anything and everything. A Ruby motto could perhaps be: &quot;If it quacks like a duck, let's pretend it is a duck for fear of finding out what it truly is.&quot; In Ruby, methods can return whatever they want and more often than not, to know what a method returns you have to look at how that method is defined. Oh, and in Go methods can return multiple values, like <code>json.Marshal</code> (like <code>to_json</code> in Ruby) which will return the marshalled JSON (as an array of bytes) as well as (possibly) an error if that marshalling fails for some reason.</p>
-<p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code>go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go's built-in tool: <code>go build</code>.</p>
-<p>I also enjoy the <code>go get</code> tool. It took me a while to figure out that if I structured my <code>~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
-<pre><code>Projects/go
+
+<p>I dislike that I don’t know much about Go still at this stage. That probably boils down to me not really having a proper use for it until recent. It could also be because a lot of the Go documentation out there is similar to a cookbook that only explains the properties of the ingredients, rather than having recipes. I enjoy learning by example and I think other people do also, because they bought <a href="https://manning.com/bigg2">a book that I wrote</a> that’s all about the examples.</p>
+
+<p>I like that the Go packages themselves are pretty well-documented. I especially like that I know what <em>type</em> of object I’m supposed to be passing in. Take <a href="http://golang.org/pkg/time/#Unix"><code class="language-plaintext highlighter-rouge">time.Unix</code></a> for example. It works similarly to <code class="language-plaintext highlighter-rouge">Time.at(unix_time)</code> in Ruby. The Go documentation for <code class="language-plaintext highlighter-rouge">time.Unix</code> clearly indicates that it takes two arguments, both of which are of the <code class="language-plaintext highlighter-rouge">int64</code> type, and that it returns a Time “instance”. That’s something that I didn’t think I would like, given that I’ve been doing Ruby for so long and it has a little thing called duck-typing where methods can be defined on anything and everything. A Ruby motto could perhaps be: “If it quacks like a duck, let’s pretend it is a duck for fear of finding out what it truly is.” In Ruby, methods can return whatever they want and more often than not, to know what a method returns you have to look at how that method is defined. Oh, and in Go methods can return multiple values, like <code class="language-plaintext highlighter-rouge">json.Marshal</code> (like <code class="language-plaintext highlighter-rouge">to_json</code> in Ruby) which will return the marshalled JSON (as an array of bytes) as well as (possibly) an error if that marshalling fails for some reason.</p>
+
+<p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code class="language-plaintext highlighter-rouge">go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go’s built-in tool: <code class="language-plaintext highlighter-rouge">go build</code>.</p>
+
+<p>I also enjoy the <code class="language-plaintext highlighter-rouge">go get</code> tool. It took me a while to figure out that if I structured my <code class="language-plaintext highlighter-rouge">~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Projects/go
   -&gt; src
     -&gt; github.com
       -&gt; bjeanes
         -&gt; go-lifx
-</code></pre>
-<p>I've set <code>GOPATH</code> to <code>~/Projects/go</code> and so then when I type <code>go get github.com/codegangsta/cli</code> it will install it into <code>~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
-<pre><code>import (
-  &quot;github.com/codegangsta/cli&quot;
+</code></pre></div></div>
+
+<p>I’ve set <code class="language-plaintext highlighter-rouge">GOPATH</code> to <code class="language-plaintext highlighter-rouge">~/Projects/go</code> and so then when I type <code class="language-plaintext highlighter-rouge">go get github.com/codegangsta/cli</code> it will install it into <code class="language-plaintext highlighter-rouge">~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import (
+  "github.com/codegangsta/cli"
 )
-</code></pre>
+</code></pre></div></div>
+
 <p>That way, if I want to use it in another project then I can do it in exactly the same way.</p>
-<p>Finally, the <code>go fmt</code> tool is the tool to end all (most?) coding syntax debates. It enforces tab-indentation, and blank spaces for alignment. It does a couple more things, which are <a href="http://golang.org/cmd/gofmt/">explained in gofmt's documentation</a>.</p>
+
+<p>Finally, the <code class="language-plaintext highlighter-rouge">go fmt</code> tool is the tool to end all (most?) coding syntax debates. It enforces tab-indentation, and blank spaces for alignment. It does a couple more things, which are <a href="http://golang.org/cmd/gofmt/">explained in gofmt’s documentation</a>.</p>
+
 <p>Overall, I enjoy the language and look forward to learning more about it, as well as finding other situations where we can use it at LIFX.</p>
+
 
           </article>
         </div>

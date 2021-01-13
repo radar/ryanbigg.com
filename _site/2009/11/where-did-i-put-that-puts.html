@@ -37,8 +37,9 @@
               <a href="/2009/11/where-did-i-put-that-puts"><h2>Where did I put that puts?</h2></a>
               <small>04 Nov 2009</small>
             </div>
-            <p>This is the question I ask after I've just finished a massive debugging session and I run the tests and halfway through there's something vague like &quot;S3&quot; printed out. So I do a Cmd+Shift+F looking for that string and of course it doesn't exist. What's a guy to do?</p>
-<p>Well, at <a href='http://mocra.com'>Mocra</a> we put this in our <em>config/environment.rb</em> file (although a better location would be in a required file located somewhere in lib, probably named <em>debug.rb</em>):</p>
+            <p>This is the question I ask after I’ve just finished a massive debugging session and I run the tests and halfway through there’s something vague like “S3” printed out. So I do a Cmd+Shift+F looking for that string and of course it doesn’t exist. What’s a guy to do?</p>
+
+<p>Well, at <a href="http://mocra.com">Mocra</a> we put this in our <em>config/environment.rb</em> file (although a better location would be in a required file located somewhere in lib, probably named <em>debug.rb</em>):</p>
 <pre>
 \# Print the location of puts/p calls so you can find them later
 def puts str
@@ -51,7 +52,8 @@ def p obj
   super obj
 end
 </pre>
-<p>And when we don't want it we comment it out. This will give us the exact location of the puts so we can track it down and remove it.</p>
+
+<p>And when we don’t want it we comment it out. This will give us the exact location of the puts so we can track it down and remove it.</p>
 
           </article>
         </div>

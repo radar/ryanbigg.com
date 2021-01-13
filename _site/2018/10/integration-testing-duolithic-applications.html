@@ -37,25 +37,38 @@
               <a href="/2018/10/integration-testing-duolithic-applications"><h2>Working Towards Integration Testing Duolithic Applications</h2></a>
               <small>16 Oct 2018</small>
             </div>
-            <p>I've been revisiting <a href="https://github.com/radar/twist-v2">Twist v2</a> recently. It's my book review tool that I've rebuilt multiple times over the past 8 years. Its latest incarnation is what I'm calling a &quot;duolith&quot;: a very light Hanami backend application with a GraphQL API, and a frontend built with React and Apollo.</p>
-<p>The backend and the frontend codebases are kept in separate directories in the same codebase. This allows for separation between the Ruby and JavaScript code, but also the ability to commit changes to both at the same time. The frontend knows how to communicate with the backend, but the backend is frontend-agnostic. Tomorrow I could replace it with Vue and the backend wouldn't care at all.</p>
-<p>I've got pretty extensive testing for the backend, but sparse tests for the frontend. But nothing testing the connection between the two. So I've been thinking about how to write some integration tests to cover everything. In the apps I'm used to (Rails ones), I'd just drop some tests into <code>spec/features</code> and it would Just Work™ because that's what Rails is good at.</p>
-<p>But this time I've made my life (intentionally) harder by separating the codebases, with the intention over the long-term being that these two codebases are easy to navigate due to their clean separations. The time between re-visiting this app can be months, so it's important that it's easy to grok again once I come back to it.</p>
+            <p>I’ve been revisiting <a href="https://github.com/radar/twist-v2">Twist v2</a> recently. It’s my book review tool that I’ve rebuilt multiple times over the past 8 years. Its latest incarnation is what I’m calling a “duolith”: a very light Hanami backend application with a GraphQL API, and a frontend built with React and Apollo.</p>
+
+<p>The backend and the frontend codebases are kept in separate directories in the same codebase. This allows for separation between the Ruby and JavaScript code, but also the ability to commit changes to both at the same time. The frontend knows how to communicate with the backend, but the backend is frontend-agnostic. Tomorrow I could replace it with Vue and the backend wouldn’t care at all.</p>
+
+<p>I’ve got pretty extensive testing for the backend, but sparse tests for the frontend. But nothing testing the connection between the two. So I’ve been thinking about how to write some integration tests to cover everything. In the apps I’m used to (Rails ones), I’d just drop some tests into <code class="language-plaintext highlighter-rouge">spec/features</code> and it would Just Work™ because that’s what Rails is good at.</p>
+
+<p>But this time I’ve made my life (intentionally) harder by separating the codebases, with the intention over the long-term being that these two codebases are easy to navigate due to their clean separations. The time between re-visiting this app can be months, so it’s important that it’s easy to grok again once I come back to it.</p>
+
 <hr />
+
 <p>Integration testing though is an interesting problem. I know I need some sort of test harness that boots a database, the backend app and the frontend app and then runs some tests over it? But how would I do that?</p>
-<p>But then there's an added complication: for each test I need to setup specific data to test it. And that data should be included in the test itself, so it's easy to find what's relevant to this particular test.</p>
-<p>To start with, I tried creating a completely separate thing called <code>integration</code> at the top-level of this repository, but ran into issues with how to setup the data cleanly. I wanted classes from the <code>backend</code> application, but in <code>integration</code> they weren't there.</p>
-<p>So I tried another tack: putting the integration tests in the <code>backend</code> application. This instantly meant that I could access classes to create data for my tests. I could then also rely on the RSpec suite of tests that were already there, extending it a little further.</p>
-<p>I've been <a href="https://github.com/radar/twist-v2/blob/integration-tests/docker-compose.yml">looking into Docker Compose</a> for just this and it seems to be working. I can start up:</p>
+
+<p>But then there’s an added complication: for each test I need to setup specific data to test it. And that data should be included in the test itself, so it’s easy to find what’s relevant to this particular test.</p>
+
+<p>To start with, I tried creating a completely separate thing called <code class="language-plaintext highlighter-rouge">integration</code> at the top-level of this repository, but ran into issues with how to setup the data cleanly. I wanted classes from the <code class="language-plaintext highlighter-rouge">backend</code> application, but in <code class="language-plaintext highlighter-rouge">integration</code> they weren’t there.</p>
+
+<p>So I tried another tack: putting the integration tests in the <code class="language-plaintext highlighter-rouge">backend</code> application. This instantly meant that I could access classes to create data for my tests. I could then also rely on the RSpec suite of tests that were already there, extending it a little further.</p>
+
+<p>I’ve been <a href="https://github.com/radar/twist-v2/blob/integration-tests/docker-compose.yml">looking into Docker Compose</a> for just this and it seems to be working. I can start up:</p>
+
 <ul>
-<li>A database</li>
-<li>Migrations (to create the tables)</li>
-<li>Frontend application</li>
-<li>Backend application</li>
-<li>Feature tests</li>
+  <li>A database</li>
+  <li>Migrations (to create the tables)</li>
+  <li>Frontend application</li>
+  <li>Backend application</li>
+  <li>Feature tests</li>
 </ul>
-<p>And then it run those tests in an &quot;integration test environment&quot;.</p>
-<p>I've got a work-in-progress branch that I wanted to share here: <a href="https://github.com/radar/twist-v2/tree/integration-tests">twist-v2 @ integration-tests</a>. You can start following along at <code>docker-compose.yml</code> to see how things are piecing together. Take a look at <code>backend/Dockerfile</code> and <code>frontend/Dockerfile</code> too.</p>
+
+<p>And then it run those tests in an “integration test environment”.</p>
+
+<p>I’ve got a work-in-progress branch that I wanted to share here: <a href="https://github.com/radar/twist-v2/tree/integration-tests">twist-v2 @ integration-tests</a>. You can start following along at <code class="language-plaintext highlighter-rouge">docker-compose.yml</code> to see how things are piecing together. Take a look at <code class="language-plaintext highlighter-rouge">backend/Dockerfile</code> and <code class="language-plaintext highlighter-rouge">frontend/Dockerfile</code> too.</p>
+
 <p>Now that I have something working, I can be more confident that this application is working as I intend it to.</p>
 
           </article>

@@ -38,73 +38,94 @@
               <small>05 Dec 2011</small>
             </div>
             <p>More people who are new to Ruby are getting into TDD and BDD thanks to the wonderful tools like RSpec and
-Cucumber that make it easy for them to do so. There's no real public information on exactly <em>what</em> you should be testing, though.</p>
+Cucumber that make it easy for them to do so. There’s no real public information on exactly <em>what</em> you should be testing, though.</p>
+
 <h3 id="testing-validations">Testing Validations</h3>
+
 <p>RSpec supports the shoulda-matchers gem and I see a lot of people using this to test validations on their models,
-and this is the <em>first</em> test that they're writing. I personally think that this is the wrong way of doing things.</p>
+and this is the <em>first</em> test that they’re writing. I personally think that this is the wrong way of doing things.</p>
+
 <p>The first test should be one that follows the exact steps that the user would need to do in order to approve this
 functionality.</p>
-<p>In the example test (written in Capybara's syntax) below, the user fills in the form (ignoring one of the required fields) and then should see that there's an error on the page.</p>
-<pre><code>visit root_path
-click_link &quot;Posts&quot;
-click_link &quot;New Post&quot;
 
-fill_in &quot;Title&quot;, :with =&gt; &quot;Deciding what tests to write&quot;
-click_button &quot;Create Post&quot;
+<p>In the example test (written in Capybara’s syntax) below, the user fills in the form (ignoring one of the required fields) and then should see that there’s an error on the page.</p>
 
-within(&quot;#flash_alert&quot;) do
-  page.should have_content(&quot;Post could not be created.&quot;)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>visit root_path
+click_link "Posts"
+click_link "New Post"
+
+fill_in "Title", :with =&gt; "Deciding what tests to write"
+click_button "Create Post"
+
+within("#flash_alert") do
+  page.should have_content("Post could not be created.")
 end
 
-within(&quot;#post_form .errors&quot;) do
-  page.should have_content(&quot;Body cannot be blank&quot;)
+within("#post_form .errors") do
+  page.should have_content("Body cannot be blank")
 end
-</code></pre>
+</code></pre></div></div>
+
 <p>Or if you prefer Cucumber:</p>
-<pre><code>Given a user is creating a new post
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a user is creating a new post
 And the user leaves the post text blank
-When the user clicks &quot;Create Post&quot;
+When the user clicks "Create Post"
 Then they should see a validation error:
-  &quot;&quot;&quot;
+  """
     Body cannot be blank
-  &quot;&quot;&quot;
-</code></pre>
-<p>You can imagine the steps that Cucumber would use, they'd use the Capybara methods just like the original example.</p>
-<p>The point is, this test is testing the user's interaction with the page, which I think is the most <em>critical</em> part
+  """
+</code></pre></div></div>
+
+<p>You can imagine the steps that Cucumber would use, they’d use the Capybara methods just like the original example.</p>
+
+<p>The point is, this test is testing the user’s interaction with the page, which I think is the most <em>critical</em> part
 of the application. If the user cannot see this error message, why does it matter if the model validates the
-presence of this field? <em>It doesn't.</em></p>
+presence of this field? <em>It doesn’t.</em></p>
+
 <p>Testing that the model contains the validation is a secondary thing, and is generally something I skip doing. The
-test for at least one of the form's validations goes into the request spec. If I'm feeling pedantic I'll write
+test for at least one of the form’s validations goes into the request spec. If I’m feeling pedantic I’ll write
 another for the other validations, but I can <em>assume</em> that dynamic_form (the thing that provides
-<code>error_messages_for</code> is doing the right thing when it comes to its own methods. If one error message is showing
+<code class="language-plaintext highlighter-rouge">error_messages_for</code> is doing the right thing when it comes to its own methods. If one error message is showing
 up, good chance the others are.</p>
-<p>In the case where validation error messages <em>don't</em> show up then I write a specific test for that inside the
+
+<p>In the case where validation error messages <em>don’t</em> show up then I write a specific test for that inside the
 request spec before going on to fix it wherever I need to.</p>
+
 <h3 id="testing-complex-logic">Testing Complex Logic</h3>
-<p>In <a href='http://spreecommerce.com'>Spree</a>, there's complex logic involved around orders and tracking
+
+<p>In <a href="http://spreecommerce.com">Spree</a>, there’s complex logic involved around orders and tracking
 inventory. This is something I <em>could</em> test with a request spec, but how the system works is made up of so many
 little parts it makes it slow to test the whole thing:</p>
+
 <ul>
-<li>A product exists in the system, has a &quot;count on hand&quot; of 1.</li>
-<li>A user wants to buy this product, so clicks &quot;Add to cart&quot;</li>
-<li>A new order is created in the system, with this item</li>
-<li>User is prompted to sign in</li>
-<li>User is prompted for billing + shipping details.</li>
-<li>User is prompted for credit card details</li>
-<li>User clicks &quot;Confirm&quot; on order page</li>
-<li>Order goes through, deducting 1 from &quot;count on hand&quot; total, bringing it to 0.</li>
+  <li>A product exists in the system, has a “count on hand” of 1.</li>
+  <li>A user wants to buy this product, so clicks “Add to cart”</li>
+  <li>A new order is created in the system, with this item</li>
+  <li>User is prompted to sign in</li>
+  <li>User is prompted for billing + shipping details.</li>
+  <li>User is prompted for credit card details</li>
+  <li>User clicks “Confirm” on order page</li>
+  <li>Order goes through, deducting 1 from “count on hand” total, bringing it to 0.</li>
 </ul>
-<p>A huge portion of these steps aren't even required to test the count on hand decreasing. What we care about is
+
+<p>A huge portion of these steps aren’t even required to test the count on hand decreasing. What we care about is
 that when an order is placed in the system that the count on hand decreases by one. And so this is where a unit
 test would be better.</p>
-<p>This unit test would check that when an order is created, a method such as <code>unstock_items!</code> is called. There would then be another unit test for the actual function of the <code>unstock_items!</code>
+
+<p>This unit test would check that when an order is created, a method such as <code class="language-plaintext highlighter-rouge">unstock_items!</code> is called. There would then be another unit test for the actual function of the <code class="language-plaintext highlighter-rouge">unstock_items!</code>
 call, ensuring that it goes through the line items for the order and depletes the stock on the products as necessary.</p>
+
 <p>The unit test is going to be much lighter (and quicker to run!) than the request spec, which is just a massive win.</p>
+
 <h3 id="conclusion">Conclusion</h3>
-<p>At the final retrospective at the CodeRetreat event on Saturday in Sydney, it was brought up that there's no &quot;right&quot; way to test. Some people thought that testing from the &quot;bottom-up&quot; (unit test first, request specs or similar later) was better, but then they saw the merits of testing &quot;top-down&quot; (request specs or similar first, then unit tests for the fiddly bits) as well.</p>
-<p>I think liberal applications of both of these methodologies is <em>one</em> &quot;right&quot; way to test. The more I test, the more I find myself getting better at knowing what to test and how to test it. I
-can see the merits of both ways. I'm preferring top-down though, as that's, in my opinion, testing what the client is going to be seeing, and that's what matters most. If there's a bit of
-gnarly code in there, like the order inventory tracking, then that's when I'd dive down into unit testing.</p>
+
+<p>At the final retrospective at the CodeRetreat event on Saturday in Sydney, it was brought up that there’s no “right” way to test. Some people thought that testing from the “bottom-up” (unit test first, request specs or similar later) was better, but then they saw the merits of testing “top-down” (request specs or similar first, then unit tests for the fiddly bits) as well.</p>
+
+<p>I think liberal applications of both of these methodologies is <em>one</em> “right” way to test. The more I test, the more I find myself getting better at knowing what to test and how to test it. I
+can see the merits of both ways. I’m preferring top-down though, as that’s, in my opinion, testing what the client is going to be seeing, and that’s what matters most. If there’s a bit of
+gnarly code in there, like the order inventory tracking, then that’s when I’d dive down into unit testing.</p>
+
 <p>What are your thoughts on this?</p>
 
           </article>

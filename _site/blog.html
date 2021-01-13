@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <html lang="en">
-  <head>
+<head>
   <meta charset="UTF-8">
   <title>Blog - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
@@ -15,8 +15,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-  <body>
-    <header class="topbar">
+
+<body>
+  <header class="topbar">
   <h1><a href="/">Ryan Bigg</a></h1>
 
   <div class='items'>
@@ -29,96 +30,47 @@
   </div>
 </header>
 
-    <div class="main">
-      <div class='content'>
-        <div class='content-inner'>
-          <article>
-            
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article>
+          
 
 <article>
   <div class='center'>
-    <a href="/2020/09/react-select-capybara-selenium">
-      <h2>React Select + Capybara + Selenium</h2>
+    <a href="/2021/01/twist-v2-live-coding">
+      <h2>Twist V2 - Live Coding</h2>
     </a>
-    <small>23 Sep 2020</small>
+    <small>14 Jan 2021</small>
   </div>
-  <p>Today, I was adding a <a href="https://react-select.com/home">React Select</a> element to a page, and I really wanted to test it.</p>
-<p>This is, surprisingly, <a href="https://github.com/JedWatson/react-select/issues/856">not the first time I've attempted this</a>.</p>
-<p>Since 2016, React Select has undergone some changes, released a brand-new (and much better!) version. One of these big features is that it uses <a href="https://emotion.sh/docs/introduction">Emotion</a> for styling. A consequence of this is that React Select no longer has <code>.Select</code>, or <code>.Select-input</code> classes that you could use as selectors in the tests. Instead, it will generate hashed CSS selectors, like <code>css-2b097c-container</code> and <code>css-1rhbuit-multiValue</code>. These have the potential to change: if the underlying CSS changes, then the hash will change. So they are not reliable in tests.</p>
-<p>To fix this, I used another prop of <code>ReactSelect</code> called <code>classNamePrefix</code>:</p>
-<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">CreatableSelect</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-select/creatable</span><span class="dl">"</span><span class="p">;</span>
+  <p>This year, I’ve been continuing on my work on <a href="https://github.com/radar/twist-v2">Twist</a>. As the README says:</p>
 
-<span class="c1">// ...</span>
+<blockquote>
+  <p>This is a rewrite of my <a href="http://github.com/radar/twist">Rails-based book review app</a> in <a href="https://rom-rb.org/">rom-rb</a>, <a href="https://dry-rb.org/">dry-rb</a>, (some parts of) <a href="https://hanamirb.org/">Hanami</a>, <a href="https://sidekiq.org/">Sidekiq</a>, <a href="https://graphql.org/">GraphQL</a>, <a href="https://reactjs.org/">React</a>, <a href="https://reach.tech/router/">Reach Router</a>, <a href="https://www.apollographql.com/">Apollo</a>, <a href="https://www.typescriptlang.org/">TypeScript</a>, <a href="https://graphql-code-generator.com/">GraphQL Code Generator</a>, <a href="https://tailwindcss.com/">Tailwind</a>, and whatever other Cool Hipster Tech™ I can get my grubby hands on.</p>
+</blockquote>
 
-<span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">[</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span> <span class="p">},</span>
-<span class="p">];</span>
+<p>This application is a hybrid application, consisting of two distinct parts: a Ruby backend, and a TypeScript frontend. They communicate over GraphQL.</p>
 
-<span class="c1">// "tags" here comes from a prop on this component</span>
-<span class="kd">const</span> <span class="nx">selectedOptions</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">filter</span><span class="p">(({</span> <span class="nx">value</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">tags</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">value</span><span class="p">));</span>
+<p>To demonstrate what working on this application is like, I’m doing some live coding sessions on it, every Wednesday morning.</p>
 
-<span class="k">return</span> <span class="p">(</span>
-  <span class="p">&lt;</span><span class="nc">CreatableSelect</span>
-    <span class="na">options=</span><span class="si">{</span><span class="nx">options</span><span class="si">}</span>
-    <span class="na">defaultValue=</span><span class="si">{</span><span class="nx">selectedOptions</span><span class="si">}</span>
-    <span class="nt">isMulti</span>
-    <span class="na">classNamePrefix=</span><span class="s2">"tags"</span>
-  <span class="p">/&gt;</span>
-<span class="p">);</span>
-</code></pre></div></div>
-<p>This prop adds additional classes to the React Select component, such as <code>.tags__control</code> and <code>.tags__multi-value</code> -- values that <em>are</em> reliable and predictable!</p>
-<p>This means that in the Capybara test, I can now use these to interact with this React Select component, like this:</p>
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">within_tags</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-  <span class="n">within</span><span class="p">(</span><span class="s2">".tags__control"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-<span class="k">end</span>
+<h2 id="episode-1-starting-the-invitations-feature">Episode 1: Starting the invitations feature</h2>
 
-<span class="k">def</span> <span class="nf">expect_selected_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-  <span class="n">within_tags</span> <span class="k">do</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">).</span><span class="nf">to</span> <span class="n">have_selector</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qWdyo3icsjU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 
-<span class="k">def</span> <span class="nf">add_new_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-  <span class="n">within_tags</span> <span class="k">do</span>
-    <span class="n">find</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nf">fill_in</span><span class="p">(</span><span class="ss">with: </span><span class="n">tag</span><span class="p">)</span>
-  <span class="k">end</span>
+<h2 id="episode-2-continuing-the-invitations-feature">Episode 2: Continuing the invitations feature</h2>
 
-  <span class="n">find</span><span class="p">(</span><span class="s2">".tags__option"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">).</span><span class="nf">click</span>
-<span class="k">end</span>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/RKQLEEGIPyE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 
-<span class="k">def</span> <span class="nf">remove_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
-  <span class="n">within_tags</span> <span class="k">do</span>
-    <span class="n">within</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span> <span class="k">do</span>
-      <span class="n">find</span><span class="p">(</span><span class="s2">".tags__multi-value__remove"</span><span class="p">).</span><span class="nf">click</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="n">scenario</span> <span class="s2">"Can update a User's tags"</span><span class="p">,</span> <span class="ss">js: </span><span class="kp">true</span> <span class="k">do</span>
-  <span class="n">visit</span> <span class="n">edit_admin_user_path</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
-
-  <span class="n">expect_selected_tag</span><span class="p">(</span><span class="s2">"Existing tag"</span><span class="p">)</span>
-  <span class="n">remove_tag</span><span class="p">(</span><span class="s2">"HIU"</span><span class="p">)</span>
-  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Paid"</span><span class="p">)</span>
-  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Custom tag"</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>I have the following helpers:</p>
-<ol>
-<li><code>expect_selected_tag</code>: When the page loads, the Select element should contain a tag that is <em>already</em> assigned to the user.</li>
-<li><code>remove_tag</code>: Used to remove a tag that appears in the Select element.</li>
-<li><code>add_new_tag</code>: Used to add either a tag from the list of options, or to create a brand new tag.</li>
-</ol>
-<p>With these helpers, I can effectively test React Select within Capybara and Selenium.</p>
 
 </article>
 
 <div id='archive'>
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li><a href="/2020/09/react-select-capybara-selenium">React Select + Capybara + Selenium</a><br>
+      <div>23 Sep 2020</div>
+    </li>
     
     <li><a href="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging">Selenium, Capybara, ChromeDriver: connection refused error debugging</a><br>
       <div>29 Aug 2020</div>
@@ -156,32 +108,31 @@
       <div>28 Nov 2019</div>
     </li>
     
-    <li><a href="/2019/11/rough-edges">Rough Edges</a><br>
-      <div>18 Nov 2019</div>
-    </li>
-    
   </ul>
   <center><a href='/blogography.html'>The Last 100 Posts</a></center>
 </div>
 
-          </article>
-        </div>
+        </article>
       </div>
     </div>
-    <footer>
+  </div>
+  <footer>
     01101110 01101111 01110100 01101000 01101001 01101110 01100111 00100000 01110100 01101111 00100000 01110011 01100101 01100101 00100000 01101000 01100101 01110010 01100101 0001010 0001010 0001010 0001010 0001010 01100010 01110010 01100001 01110110 01101111 00100000 01100110 01101111 01111000 01110100 01110010 01101111 01110100 00100000 01110101 01101110 01101001 01100110 01101111 01110010 01101101
 </footer>
 
 
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-      ga('create', 'UA-60556315-1', 'auto');
-      ga('send', 'pageview');
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
 
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

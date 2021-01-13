@@ -38,24 +38,45 @@
               <small>22 Jun 2017</small>
             </div>
             <p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2017_08_01/43810">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
+
 <p>I was made aware of <a href="https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56">this commit</a> recently (thanks to Rebecca Skinner) to Rails which introduces what is effectively a global state to Rails applications.</p>
+
 <p>Rather than writing why global state in-general is a bad thing myself, I will instead link you to this <a href="https://softwareengineering.stackexchange.com/questions/148108/why-is-global-state-so-evil">excellent question + answer on the Software Engineering Stack Exchange</a>.</p>
+
 <blockquote>
-<p>Very briefly, it makes program state unpredictable.</p>
-<p>To elaborate, imagine you have a couple of objects that both use the same global variable. Assuming you're not using a source of randomness anywhere within either module, then the output of a particular method can be predicted (and therefore tested) if the state of the system is known before you execute the method.</p>
+  <p>Very briefly, it makes program state unpredictable.</p>
+
+  <p>To elaborate, imagine you have a couple of objects that both use the same global variable. Assuming you’re not using a source of randomness anywhere within either module, then the output of a particular method can be predicted (and therefore tested) if the state of the system is known before you execute the method.</p>
 </blockquote>
+
 <p>This implementation also chooses to use <a href="https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56#diff-3c3c0f647bc4702f9453c173a707aa06R90">thread-local variables</a> which <a href="https://stackoverflow.com/a/8291218/15245">this answer over on Stack Overflow</a> explains is not a good choice because:</p>
+
 <blockquote>
-<ul>
-<li>It's harder to test them, as you will have to remember to set the thread-local variables when you're testing out code that uses it</li>
-<li>Classes who use thread locals will need knowledge that these objects are not available for them but inside a thread-local variable and this kind of indirection usually breaks the law of demeter</li>
-<li>Not cleaning up thread-locals might be an issue if your framework reuses threads (the thread-local variable would be already initiated and code that relies on ||= calls to initialize variables might fail</li>
-</ul>
+  <ul>
+    <li>It’s harder to test them, as you will have to remember to set the thread-local variables when you’re testing out code that uses it</li>
+    <li>Classes who use thread locals will need knowledge that these objects are not available for them but inside a thread-local variable and this kind of indirection usually breaks the law of demeter</li>
+    <li>
+      <table>
+        <tbody>
+          <tr>
+            <td>Not cleaning up thread-locals might be an issue if your framework reuses threads (the thread-local variable would be already initiated and code that relies on</td>
+            <td> </td>
+            <td>= calls to initialize variables might fail</td>
+          </tr>
+        </tbody>
+      </table>
+    </li>
+  </ul>
 </blockquote>
-<p>Not to mention that this also violates the well-established <a href="https://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a> too. Suddenly, <code>Current</code> is available <em>anywhere</em> in your application. Good code is <em>explicit</em> in how it makes data available to its methods / functions. This <code>CurrentAttributes</code> feature is not good code, nor is it making it <em>explicitly clear</em> how <code>Current.user</code> arrives in the model. It is just there &quot;magically&quot;.</p>
-<p>I enjoy and have benefited from Rails magic in the past. Some of my favourite features are <code>render @collection</code> and the <a href="http://ryanbigg.com/2012/03/polymorphic-routes">polymorphic routing</a>. Those are great features because their scope is limited. I know that I can render a collection in a view. I know I can use polymorphic routing in controllers, models and helpers.</p>
-<p>This <code>CurrentAttributes</code> is much too magical for my liking because of how it introduces a thread-local global state which hides where the actual work of setting values on <code>Current</code> is done, and because it is <em>implicit</em> about where those values come from.</p>
-<p>&quot;They're just set in the controller!&quot;, may be a defense for this. But what if you don't have a controller? What if you have a background job instead? How about a test? True, in both cases you could use <code>Current</code> to provide the values:</p>
+
+<p>Not to mention that this also violates the well-established <a href="https://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a> too. Suddenly, <code class="language-plaintext highlighter-rouge">Current</code> is available <em>anywhere</em> in your application. Good code is <em>explicit</em> in how it makes data available to its methods / functions. This <code class="language-plaintext highlighter-rouge">CurrentAttributes</code> feature is not good code, nor is it making it <em>explicitly clear</em> how <code class="language-plaintext highlighter-rouge">Current.user</code> arrives in the model. It is just there “magically”.</p>
+
+<p>I enjoy and have benefited from Rails magic in the past. Some of my favourite features are <code class="language-plaintext highlighter-rouge">render @collection</code> and the <a href="http://ryanbigg.com/2012/03/polymorphic-routes">polymorphic routing</a>. Those are great features because their scope is limited. I know that I can render a collection in a view. I know I can use polymorphic routing in controllers, models and helpers.</p>
+
+<p>This <code class="language-plaintext highlighter-rouge">CurrentAttributes</code> is much too magical for my liking because of how it introduces a thread-local global state which hides where the actual work of setting values on <code class="language-plaintext highlighter-rouge">Current</code> is done, and because it is <em>implicit</em> about where those values come from.</p>
+
+<p>“They’re just set in the controller!”, may be a defense for this. But what if you don’t have a controller? What if you have a background job instead? How about a test? True, in both cases you could use <code class="language-plaintext highlighter-rouge">Current</code> to provide the values:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">post_id</span><span class="p">)</span>
   <span class="no">Current</span><span class="p">.</span><span class="nf">user</span> <span class="o">=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
   <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">find_by</span><span class="p">(</span><span class="n">post_id</span><span class="p">)</span>
@@ -63,8 +84,11 @@
   <span class="c1"># code to run the job goes here</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>Here, <code>Post#run_long_running_thing</code> can simply access the current user by accessing <code>Current.user</code>. But it is not immediately clear -- if all you're looking at is the <code>Post#run_long_running_thing</code> method -- where <code>Current.user</code> is being set in the first place. It's implied that it's set somewhere else, but to attempt to find where it's set in this context may be difficult. Doing a find in the project for <code>Current.user =</code> may turn up multiple places (controllers, jobs, etc.) where the variable is set. Which one is the right one <em>for this context</em>?</p>
-<p>As for tests, for those you would need to setup <code>Current.user</code> before hand if you had any code relying on that. I'd imagine something like:</p>
+
+<p>Here, <code class="language-plaintext highlighter-rouge">Post#run_long_running_thing</code> can simply access the current user by accessing <code class="language-plaintext highlighter-rouge">Current.user</code>. But it is not immediately clear – if all you’re looking at is the <code class="language-plaintext highlighter-rouge">Post#run_long_running_thing</code> method – where <code class="language-plaintext highlighter-rouge">Current.user</code> is being set in the first place. It’s implied that it’s set somewhere else, but to attempt to find where it’s set in this context may be difficult. Doing a find in the project for <code class="language-plaintext highlighter-rouge">Current.user =</code> may turn up multiple places (controllers, jobs, etc.) where the variable is set. Which one is the right one <em>for this context</em>?</p>
+
+<p>As for tests, for those you would need to setup <code class="language-plaintext highlighter-rouge">Current.user</code> before hand if you had any code relying on that. I’d imagine something like:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">let</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryGirl</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
 <span class="n">before</span> <span class="p">{</span> <span class="no">Current</span><span class="p">.</span><span class="nf">user</span> <span class="o">=</span> <span class="n">user</span> <span class="p">}</span>
 
@@ -72,16 +96,25 @@
   <span class="n">post</span><span class="p">.</span><span class="nf">run_long_running_thing</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>Again, it is not explicit when you're looking at the <code>run_long_running_thing</code> method or its tests where <code>Current.user</code> is being set.</p>
-<p>There doesn't appear to be anywhere in the <code>CurrentAttributes</code> code -- as far as I can tell -- where it would reset the state of this <code>Current</code> object in between each test. Therefore, setting it in one test like what I've done above now makes it bleed through &quot;magically&quot; into other tests. That behaviour seems like a horrible thing to have in a codebase. You could very well have situations where you're <em>expecting</em> <code>Current.user</code> to be <code>nil</code> but instead it's set to some vaule because some other test set it. Now which of the 500 tests in my application did that? Good luck finding it.</p>
+
+<p>Again, it is not explicit when you’re looking at the <code class="language-plaintext highlighter-rouge">run_long_running_thing</code> method or its tests where <code class="language-plaintext highlighter-rouge">Current.user</code> is being set.</p>
+
+<p>There doesn’t appear to be anywhere in the <code class="language-plaintext highlighter-rouge">CurrentAttributes</code> code – as far as I can tell – where it would reset the state of this <code class="language-plaintext highlighter-rouge">Current</code> object in between each test. Therefore, setting it in one test like what I’ve done above now makes it bleed through “magically” into other tests. That behaviour seems like a horrible thing to have in a codebase. You could very well have situations where you’re <em>expecting</em> <code class="language-plaintext highlighter-rouge">Current.user</code> to be <code class="language-plaintext highlighter-rouge">nil</code> but instead it’s set to some vaule because some other test set it. Now which of the 500 tests in my application did that? Good luck finding it.</p>
+
 <h3 id="convention-over-configuration-and-perhaps-explicitness-over-implicitness">Convention over configuration, and perhaps explicitness over implicitness?</h3>
-<p>Rails is still a good framework. I know DHH's rebuttal to this will be &quot;don't use it then&quot; or something along those lines. Similar to his response to <a href="https://github.com/rails/rails/pull/25115">my reverting of callback suppression</a> a while back.</p>
+
+<p>Rails is still a good framework. I know DHH’s rebuttal to this will be “don’t use it then” or something along those lines. Similar to his response to <a href="https://github.com/rails/rails/pull/25115">my reverting of callback suppression</a> a while back.</p>
+
 <blockquote>
-<p>Protecting programmers from themselves is explicitly not in the charter for Rails when it comes to providing features that have a valid use case but could be abused.</p>
+  <p>Protecting programmers from themselves is explicitly not in the charter for Rails when it comes to providing features that have a valid use case but could be abused.</p>
 </blockquote>
-<p>I just can't reason with the guy at all. We have vastly different opinions on this sort of thing.</p>
-<p>I think Rails choosing to go with ultra-implicitness -- like in this <code>Current</code> case -- is a vastly wrong move that will lead to a lot of frustration with Rails codebases that use this feature. I think Rails should, in situations like this, choose to opt for explicitness over implicitness. Rails has enough magic in it and it certainly doesn't need any more.</p>
+
+<p>I just can’t reason with the guy at all. We have vastly different opinions on this sort of thing.</p>
+
+<p>I think Rails choosing to go with ultra-implicitness – like in this <code class="language-plaintext highlighter-rouge">Current</code> case – is a vastly wrong move that will lead to a lot of frustration with Rails codebases that use this feature. I think Rails should, in situations like this, choose to opt for explicitness over implicitness. Rails has enough magic in it and it certainly doesn’t need any more.</p>
+
 <p>This feature is not something that was sought after (it appears like DHH thought it was a good idea one day and just <em>did it</em>), and we have much better ways of doing this. For instance, in the job code above, it would be better to pass it explicitly:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">post_id</span><span class="p">)</span>
   <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
   <span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">find_by</span><span class="p">(</span><span class="n">post_id</span><span class="p">)</span>
@@ -89,16 +122,22 @@
   <span class="c1"># code to run the job goes here</span>
 <span class="k">end</span>
 </code></pre></div></div>
+
 <p>Similarly, in the test explictness also wins:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">let</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">{</span> <span class="no">FactoryGirl</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span> <span class="p">}</span>
 
 <span class="n">it</span> <span class="s2">"runs the long running thing"</span> <span class="k">do</span>
   <span class="n">post</span><span class="p">.</span><span class="nf">run_long_running_thing</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>In both of these cases, it is <em>very</em> clear how <code>user</code> arrives in the <code>run_long_running_thing</code> method: it is passed in as an argument.</p>
-<p>Let's finish by taking a look at the code from the pull request and look at how it can be written more explicitly.</p>
-<h3 id="dhhs-currentattributes-code-vs-my-explicit-code">DHH's CurrentAttributes code vs my explicit code</h3>
+
+<p>In both of these cases, it is <em>very</em> clear how <code class="language-plaintext highlighter-rouge">user</code> arrives in the <code class="language-plaintext highlighter-rouge">run_long_running_thing</code> method: it is passed in as an argument.</p>
+
+<p>Let’s finish by taking a look at the code from the pull request and look at how it can be written more explicitly.</p>
+
+<h3 id="dhhs-currentattributes-code-vs-my-explicit-code">DHH’s CurrentAttributes code vs my explicit code</h3>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># app/models/current.rb</span>
 <span class="k">class</span> <span class="nc">Current</span> <span class="o">&lt;</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">CurrentAttributes</span>
   <span class="n">attribute</span> <span class="ss">:account</span><span class="p">,</span> <span class="ss">:user</span>
@@ -145,26 +184,37 @@
   <span class="kp">include</span> <span class="no">SetCurrentRequestDetails</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>Including the <code>Authentication</code> module into <code>ApplicationController</code> to add a single method seems like a bit of premature extraction. Let's ignore that for now.</p>
-<p>This implementation with its <code>before_action</code> to <code>set_current_authenticated_user</code> will mean that <code>Current.user</code> is set on all requests, even those which don't refer to the <code>current_user</code> at all.</p>
-<p>A better implementation would be a <code>current_user</code> method which evaluates its <code>find</code> when it is called. You'll see this pattern in a lot of Rails applications.</p>
+
+<p>Including the <code class="language-plaintext highlighter-rouge">Authentication</code> module into <code class="language-plaintext highlighter-rouge">ApplicationController</code> to add a single method seems like a bit of premature extraction. Let’s ignore that for now.</p>
+
+<p>This implementation with its <code class="language-plaintext highlighter-rouge">before_action</code> to <code class="language-plaintext highlighter-rouge">set_current_authenticated_user</code> will mean that <code class="language-plaintext highlighter-rouge">Current.user</code> is set on all requests, even those which don’t refer to the <code class="language-plaintext highlighter-rouge">current_user</code> at all.</p>
+
+<p>A better implementation would be a <code class="language-plaintext highlighter-rouge">current_user</code> method which evaluates its <code class="language-plaintext highlighter-rouge">find</code> when it is called. You’ll see this pattern in a lot of Rails applications.</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">current_user</span>
   <span class="vi">@current_user</span> <span class="o">||=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">cookies</span><span class="p">.</span><span class="nf">signed</span><span class="p">[</span><span class="ss">:user_id</span><span class="p">])</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>In fact, this is similar to <a href="https://github.com/plataformatec/devise/blob/master/lib/devise/controllers/helpers.rb#L123-L125">how Devise presents its <code>current_user</code> method</a>. It uses <code>warden</code> instead of <code>cookies.signed</code>, but it's implementation is similar enough:</p>
+
+<p>In fact, this is similar to <a href="https://github.com/plataformatec/devise/blob/master/lib/devise/controllers/helpers.rb#L123-L125">how Devise presents its <code class="language-plaintext highlighter-rouge">current_user</code> method</a>. It uses <code class="language-plaintext highlighter-rouge">warden</code> instead of <code class="language-plaintext highlighter-rouge">cookies.signed</code>, but it’s implementation is similar enough:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">current_</span><span class="c1">#{mapping}</span>
   <span class="vi">@current_</span><span class="c1">#{mapping} ||= warden.authenticate(scope: :#{mapping})</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>Ok, so now we've got a <code>current_user</code> method which is available in the <em>controllers</em> but what if we want to use it in the view? For instance, if we want to say <code>Hello, #{current_user.name}</code> in a layout? Easy enough: make it a helper method.</p>
+
+<p>Ok, so now we’ve got a <code class="language-plaintext highlighter-rouge">current_user</code> method which is available in the <em>controllers</em> but what if we want to use it in the view? For instance, if we want to say <code class="language-plaintext highlighter-rouge">Hello, #{current_user.name}</code> in a layout? Easy enough: make it a helper method.</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">current_user</span>
   <span class="vi">@current_user</span> <span class="o">||=</span> <span class="no">User</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">cookies</span><span class="p">.</span><span class="nf">signed</span><span class="p">[</span><span class="ss">:user_id</span><span class="p">])</span>
 <span class="k">end</span>
 <span class="n">helper_method</span> <span class="ss">:current_user</span>
 </code></pre></div></div>
-<p>Great, so now it's available in controllers, helpers and views. All without making it available <em>everywhere</em> in the current thread.</p>
-<p>Now I would like to focus on the second half of DHH's code:</p>
+
+<p>Great, so now it’s available in controllers, helpers and views. All without making it available <em>everywhere</em> in the current thread.</p>
+
+<p>Now I would like to focus on the second half of DHH’s code:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MessagesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
   <span class="k">def</span> <span class="nf">create</span>
     <span class="no">Current</span><span class="p">.</span><span class="nf">account</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">message_params</span><span class="p">)</span>
@@ -184,17 +234,26 @@
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>Here, DHH is <em>implicitly</em> linking the message's creator to the <code>Current.user</code> by using the <code>default</code> option on <code>belongs_to</code>. I believe that this violates the MVC layer abstraction. The <code>Current.user</code> is just &quot;magically&quot; available in the model, with absolutely no context of how it got there in the first place.</p>
-<p>A common pattern in Rails applications is not to do this, but instead to explicitly set the <code>creator</code> at the point of creation:</p>
+
+<p>Here, DHH is <em>implicitly</em> linking the message’s creator to the <code class="language-plaintext highlighter-rouge">Current.user</code> by using the <code class="language-plaintext highlighter-rouge">default</code> option on <code class="language-plaintext highlighter-rouge">belongs_to</code>. I believe that this violates the MVC layer abstraction. The <code class="language-plaintext highlighter-rouge">Current.user</code> is just “magically” available in the model, with absolutely no context of how it got there in the first place.</p>
+
+<p>A common pattern in Rails applications is not to do this, but instead to explicitly set the <code class="language-plaintext highlighter-rouge">creator</code> at the point of creation:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
   <span class="vi">@message</span> <span class="o">=</span> <span class="n">current_account</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">message_params</span><span class="p">)</span>
   <span class="vi">@message</span><span class="p">.</span><span class="nf">creator</span> <span class="o">=</span> <span class="n">current_user</span>
 </code></pre></div></div>
-<p>Let's assume <code>current_account</code> is a similar abstraction to the <code>current_user</code> one. It's clear here that in the controller that <em>this</em> is where the <code>creator</code> is assigned. With DHH's code, it is not immediately clear from the controller code itself that <code>creator</code> is assigned at all.</p>
-<p>Not only that, but this also lends itself to being abstracted into a &quot;service object&quot; which is responsible for creating a message. Let's say that you want to log an <code>Event</code> whenever a <code>Message</code> is created. Oh, I see DHH's code does that already with an <code>after_create</code> callback. Well then.</p>
-<p>In the case of DHH's code, the <code>after_create</code> callback will happen whenever a <code>Message</code> is created anywhere in your application. This might be suitable in a controller, but what if you want to test some database logic, or something else which requires a persisted message, and you don't care about an event being there at the same time? What if when you created an event you had extra logic on it which caused <em>another</em> record to be created too?</p>
+
+<p>Let’s assume <code class="language-plaintext highlighter-rouge">current_account</code> is a similar abstraction to the <code class="language-plaintext highlighter-rouge">current_user</code> one. It’s clear here that in the controller that <em>this</em> is where the <code class="language-plaintext highlighter-rouge">creator</code> is assigned. With DHH’s code, it is not immediately clear from the controller code itself that <code class="language-plaintext highlighter-rouge">creator</code> is assigned at all.</p>
+
+<p>Not only that, but this also lends itself to being abstracted into a “service object” which is responsible for creating a message. Let’s say that you want to log an <code class="language-plaintext highlighter-rouge">Event</code> whenever a <code class="language-plaintext highlighter-rouge">Message</code> is created. Oh, I see DHH’s code does that already with an <code class="language-plaintext highlighter-rouge">after_create</code> callback. Well then.</p>
+
+<p>In the case of DHH’s code, the <code class="language-plaintext highlighter-rouge">after_create</code> callback will happen whenever a <code class="language-plaintext highlighter-rouge">Message</code> is created anywhere in your application. This might be suitable in a controller, but what if you want to test some database logic, or something else which requires a persisted message, and you don’t care about an event being there at the same time? What if when you created an event you had extra logic on it which caused <em>another</em> record to be created too?</p>
+
 <p>Having such a callback irrevocably ties together messages and events <em>implicitly</em>.</p>
-<p>As I mentioned before, it would be better to abstract this into a &quot;service object&quot;.</p>
+
+<p>As I mentioned before, it would be better to abstract this into a “service object”.</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateMessageWithCreator</span>
   <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">run</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">current_user</span><span class="p">)</span>
     <span class="n">message</span> <span class="o">=</span> <span class="n">current_account</span><span class="p">.</span><span class="nf">messages</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">message_params</span><span class="p">)</span>
@@ -203,7 +262,9 @@
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
+
 <p>You can then call this code in your controller like this:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create</span>
   <span class="k">if</span> <span class="no">CreateMessageWithCreator</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">message_params</span><span class="p">,</span> <span class="n">current_user</span><span class="p">)</span>
     <span class="no">Event</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">record: </span><span class="n">record</span><span class="p">)</span>
@@ -215,10 +276,14 @@
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This way, then you would know that in <em>this particular case</em> you're <em>definitely</em> creating a message with a linked creator and it frees you up to create messages without creators or events, if the need did arise.</p>
+
+<p>This way, then you would know that in <em>this particular case</em> you’re <em>definitely</em> creating a message with a linked creator and it frees you up to create messages without creators or events, if the need did arise.</p>
+
 <p>I think having these dependencies clearly highlighted in the code rather than magically abstracted away is a much, much better solution.</p>
+
 <h2 id="conclusion">Conclusion</h2>
-<p>Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it's DHH's change and it's his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.</p>
+
+<p>Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it’s DHH’s change and it’s his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.</p>
 
           </article>
         </div>

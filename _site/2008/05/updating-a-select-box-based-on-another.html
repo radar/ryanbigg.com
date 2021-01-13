@@ -37,41 +37,45 @@
               <a href="/2008/05/updating-a-select-box-based-on-another"><h2>Updating a select box based on another</h2></a>
               <small>20 May 2008</small>
             </div>
-            <p>In two projects now I've had to use code where I update a select box (machines) in regards to what's selected in the first (customers). mark[oz] from #rubyonrails asked how to do this last week and I told him I would write a blog post the following night. 5 days later, here it is.</p>
-<p>I use this when I'm creating a new call and the user needs to select which customer and then which machine. I have the following in my CallsController:</p>
+            <p>In two projects now I’ve had to use code where I update a select box (machines) in regards to what’s selected in the first (customers). mark[oz] from #rubyonrails asked how to do this last week and I told him I would write a blog post the following night. 5 days later, here it is.</p>
+
+<p>I use this when I’m creating a new call and the user needs to select which customer and then which machine. I have the following in my CallsController:</p>
 <pre lang="rails">def new
   @call = Call.new
-  @customers = Customer.find(:all, :order => "name ASC")
+  @customers = Customer.find(:all, :order =&gt; "name ASC")
 end</pre>
 <p>Relatively simple. We instantiate a new call object so the form knows where to go, and we define <span class="term">@customers</span> so the first select box has some information.</p>
+
 <p>Of course in our Customer model we have:</p>
-<pre lang="rails">class Customer < ActiveRecord::Base
+<pre lang="rails">class Customer &lt; ActiveRecord::Base
   has_many :machines
 end</pre>
 <p>And the machine model:</p>
-<pre lang="rails">class Machine < ActiveRecord::Base
+<pre lang="rails">class Machine &lt; ActiveRecord::Base
   belongs_to :customer
 end</pre>
 <p>And the call model:</p>
-<pre lang="rails">class Call < ActiveRecord::Base
+<pre lang="rails">class Call &lt; ActiveRecord::Base
   belongs_to :machine
   belongs_to :customer
 </pre>
+
 <p>These define the relationships used within the system.</p>
+
 <p>Next is the <span class="term">new.html.erb</span> page itself.</p>
 <pre lang="rails"><strong>New Call</strong>
-<% form_for @call do |f| %>
-  <%= render :partial => "form" %>
-  <%= submit_tag "Create" %>
-<% end %></pre>
+&lt;% form_for @call do |f| %&gt;
+  &lt;%= render :partial =&gt; "form" %&gt;
+  &lt;%= submit_tag "Create" %&gt;
+&lt;% end %&gt;</pre>
 <p>And a stripped-down version of the form partial:</p>
-<pre lang="rails"><%= f.label "customer_id" %>
-<%= f.select "customer_id", @customers.map { |c| [c.name, c.id] }%>
-<%= observe_field "call_customer_id", :url => by_customer_machines_path, :with => "customer_id" %>
-<%= f.label "machine_id" %>
-<%= f.select "machine_id", "Please select a customer" %></pre>
+<pre lang="rails">&lt;%= f.label "customer_id" %&gt;
+&lt;%= f.select "customer_id", @customers.map { |c| [c.name, c.id] }%&gt;
+&lt;%= observe_field "call_customer_id", :url =&gt; by_customer_machines_path, :with =&gt; "customer_id" %&gt;
+&lt;%= f.label "machine_id" %&gt;
+&lt;%= f.select "machine_id", "Please select a customer" %&gt;</pre>
 <p>Right now that we have the form all set up, lets set up our machines controller</p>
-<pre lang="rails">class MachinesController < ApplicationController
+<pre lang="rails">class MachinesController &lt; ApplicationController
 #CRUD operations go here
 
 def by_customer
@@ -85,7 +89,7 @@ end</pre>
   customer.resources :machines
 end
 
-map.resources :machines, :collection => { :by_customer => :post }</pre>
+map.resources :machines, :collection =&gt; { :by_customer =&gt; :post }</pre>
 <p>Now when we select a customer from the top drop down, the machines drop down should be populated too.</p>
 
           </article>

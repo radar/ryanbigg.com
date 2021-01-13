@@ -38,32 +38,47 @@
               <small>03 Feb 2020</small>
             </div>
             <p>This is the 3rd part of a 4 part series covering the <a href="https://rom-rb.org/">rom-rb</a> and <a href="https://dry-rb.org/">dry-rb</a> suites of gems.</p>
+
 <ul>
-<li>Part 1: <a href="/2020/02/rom-and-dry-showcase-part-1">Application + Database setup</a></li>
-<li>Part 2: <a href="/2020/02/rom-and-dry-showcase-part-2">Validations + Transactions</a></li>
+  <li>Part 1: <a href="/2020/02/rom-and-dry-showcase-part-1">Application + Database setup</a></li>
+  <li>Part 2: <a href="/2020/02/rom-and-dry-showcase-part-2">Validations + Transactions</a></li>
 </ul>
-<p>In this 3rd part, we're going to look at how we can test the application that we've built so far. In particular, we'll test three classes:</p>
+
+<p>In this 3rd part, we’re going to look at how we can test the application that we’ve built so far. In particular, we’ll test three classes:</p>
+
 <ul>
-<li>The contract -- to ensure it validates input correctly</li>
-<li>The repository -- to ensure we can insert data into our database correctly and that we could find data once it is inserted</li>
-<li>The transaction -- to ensure that we can process the whole transaction correctly</li>
+  <li>The contract – to ensure it validates input correctly</li>
+  <li>The repository – to ensure we can insert data into our database correctly and that we could find data once it is inserted</li>
+  <li>The transaction – to ensure that we can process the whole transaction correctly</li>
 </ul>
-<p>When we get up to the transaction part, we'll see how we can use one more feature of <code>dry-auto_inject</code> to stub out the repository dependency in this particular test. Why would we want to stub out this dependency? Because we already have tests that make sure that our repository works! We don't need to test it again a second time in the transaction class.</p>
-<p>Let's get started!</p>
+
+<p>When we get up to the transaction part, we’ll see how we can use one more feature of <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> to stub out the repository dependency in this particular test. Why would we want to stub out this dependency? Because we already have tests that make sure that our repository works! We don’t need to test it again a second time in the transaction class.</p>
+
+<p>Let’s get started!</p>
+
 <h2 id="adding-rspec">Adding RSpec</h2>
-<p>First things first! We will need to set up the RSpec testing framework, and a gem called <code>database_cleaner-sequel</code>. The database cleaner gem will ensure that our database is kept pristine across the different tests in our application. If we have data &quot;leaking&quot; across tests, that data may influence the outcome of other tests.</p>
-<p>Let's add these gems to our <code>Gemfile</code> now:</p>
+
+<p>First things first! We will need to set up the RSpec testing framework, and a gem called <code class="language-plaintext highlighter-rouge">database_cleaner-sequel</code>. The database cleaner gem will ensure that our database is kept pristine across the different tests in our application. If we have data “leaking” across tests, that data may influence the outcome of other tests.</p>
+
+<p>Let’s add these gems to our <code class="language-plaintext highlighter-rouge">Gemfile</code> now:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">group</span> <span class="ss">:test</span> <span class="k">do</span>
   <span class="n">gem</span> <span class="s1">'rspec'</span>
   <span class="n">gem</span> <span class="s1">'database_cleaner-sequel'</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>We've put these gems in a &quot;test&quot; group, as we will not want them installed when we deploy to production.</p>
-<p>Then we'll install these gems locally with <code>bundle install</code>.</p>
+
+<p>We’ve put these gems in a “test” group, as we will not want them installed when we deploy to production.</p>
+
+<p>Then we’ll install these gems locally with <code class="language-plaintext highlighter-rouge">bundle install</code>.</p>
+
 <p>Next up, we can initialize RSpec by running:</p>
-<pre><code>bundle exec rspec --init
-</code></pre>
-<p>This will create us a <code>spec</code> directory with a file called <code>spec_helper.rb</code> in it. Here's that file with the comments removed <em>and</em> with the database cleaner configuration added:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle exec rspec --init
+</code></pre></div></div>
+
+<p>This will create us a <code class="language-plaintext highlighter-rouge">spec</code> directory with a file called <code class="language-plaintext highlighter-rouge">spec_helper.rb</code> in it. Here’s that file with the comments removed <em>and</em> with the database cleaner configuration added:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">RSpec</span><span class="p">.</span><span class="nf">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
   <span class="n">config</span><span class="p">.</span><span class="nf">expect_with</span> <span class="ss">:rspec</span> <span class="k">do</span> <span class="o">|</span><span class="n">expectations</span><span class="o">|</span>
     <span class="n">expectations</span><span class="p">.</span><span class="nf">include_chain_clauses_in_custom_matcher_descriptions</span> <span class="o">=</span> <span class="kp">true</span>
@@ -86,12 +101,18 @@
 <span class="nb">require</span> <span class="s1">'database_cleaner/sequel'</span>
 <span class="no">DatabaseCleaner</span><span class="p">.</span><span class="nf">strategy</span> <span class="o">=</span> <span class="ss">:truncation</span>
 </code></pre></div></div>
-<p>At the bottom of this file, I've also added two lines to require <code>config/application.rb</code> and to finalize our application. This will ensure that by
+
+<p>At the bottom of this file, I’ve also added two lines to require <code class="language-plaintext highlighter-rouge">config/application.rb</code> and to finalize our application. This will ensure that by
 the time the tests run everything for our application has been loaded.</p>
-<p>At the bottom of the <code>configure</code> block, we clean the database to ensure that each and every test starts out with a completely empty database. How that database gets cleaned is defined by the final two lines in this file: it's a <code>truncation</code> strategy meaning that each table in our database will be truncated before the test runs.</p>
-<p>That's all the setup that we'll need to do here. Let's write our first couple of tests for the contract.</p>
+
+<p>At the bottom of the <code class="language-plaintext highlighter-rouge">configure</code> block, we clean the database to ensure that each and every test starts out with a completely empty database. How that database gets cleaned is defined by the final two lines in this file: it’s a <code class="language-plaintext highlighter-rouge">truncation</code> strategy meaning that each table in our database will be truncated before the test runs.</p>
+
+<p>That’s all the setup that we’ll need to do here. Let’s write our first couple of tests for the contract.</p>
+
 <h2 id="testing-the-contract">Testing the contract</h2>
-<p>When we go to test a contract, we want to be sure that both the valid <em>and</em> invalid paths are covered effectively. Let's start off with the invalid paths first and we'll finish with the valid one. We'll create a new file in <code>spec/contracts/users/create_user_spec.rb</code>:</p>
+
+<p>When we go to test a contract, we want to be sure that both the valid <em>and</em> invalid paths are covered effectively. Let’s start off with the invalid paths first and we’ll finish with the valid one. We’ll create a new file in <code class="language-plaintext highlighter-rouge">spec/contracts/users/create_user_spec.rb</code>:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'spec_helper'</span>
 
 <span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
@@ -128,12 +149,18 @@ the time the tests run everything for our application has been loaded.</p>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>In both of these tests, we're setting up some invalid input for the contract. And also in both of these tests, we're asserting that the contract shows us an error indicating either the <code>first_name</code> or <code>last_name</code> fields are missing.</p>
-<p>We can run this test with <code>bundle exec rspec</code>. When we do this, we'll see that the contract is working as intended:</p>
-<pre><code>2 examples, 0 failures
-</code></pre>
+
+<p>In both of these tests, we’re setting up some invalid input for the contract. And also in both of these tests, we’re asserting that the contract shows us an error indicating either the <code class="language-plaintext highlighter-rouge">first_name</code> or <code class="language-plaintext highlighter-rouge">last_name</code> fields are missing.</p>
+
+<p>We can run this test with <code class="language-plaintext highlighter-rouge">bundle exec rspec</code>. When we do this, we’ll see that the contract is working as intended:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2 examples, 0 failures
+</code></pre></div></div>
+
 <p>This is good to see, and will now provide us with a safety net. If someone was to delete one of the lines from the contract <em>perhaps accidentally</em>, then our tests would catch that.</p>
-<p>Let's add another test for the happy path, the path of successful validation, to this file too:</p>
+
+<p>Let’s add another test for the happy path, the path of successful validation, to this file too:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
   <span class="n">context</span> <span class="s2">"given valid parameters"</span> <span class="k">do</span>
     <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
@@ -153,13 +180,20 @@ the time the tests run everything for our application has been loaded.</p>
 
   <span class="o">...</span>
 </code></pre></div></div>
-<p>In this test, we provide all the correct values for the input and therefore our contract should be successful. Let's run the tests again and see:</p>
-<pre><code>3 examples, 0 failures
-</code></pre>
+
+<p>In this test, we provide all the correct values for the input and therefore our contract should be successful. Let’s run the tests again and see:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>3 examples, 0 failures
+</code></pre></div></div>
+
 <p>Great!</p>
-<p>We're able to test our contract just like a standard Ruby class. We initialize the contract, and then depending on the input it is given, the contract with either succeed or fail.</p>
+
+<p>We’re able to test our contract just like a standard Ruby class. We initialize the contract, and then depending on the input it is given, the contract with either succeed or fail.</p>
+
 <h2 id="testing-the-repository">Testing the repository</h2>
-<p>To test the repository, we can take the same kind of path. For this repository's tests, we need to assert that the <code>create</code> method for <code>Bix::Repos::UserRepo</code> does a few things. What things? Well, let's look at our code for the repository:</p>
+
+<p>To test the repository, we can take the same kind of path. For this repository’s tests, we need to assert that the <code class="language-plaintext highlighter-rouge">create</code> method for <code class="language-plaintext highlighter-rouge">Bix::Repos::UserRepo</code> does a few things. What things? Well, let’s look at our code for the repository:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
   <span class="k">module</span> <span class="nn">Repos</span>
     <span class="k">class</span> <span class="nc">UserRepo</span> <span class="o">&lt;</span> <span class="no">ROM</span><span class="o">::</span><span class="no">Repository</span><span class="p">[</span><span class="ss">:users</span><span class="p">]</span>
@@ -182,14 +216,19 @@ the time the tests run everything for our application has been loaded.</p>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>The repository has a <code>create</code> method and with this method we need to make sure:</p>
+
+<p>The repository has a <code class="language-plaintext highlighter-rouge">create</code> method and with this method we need to make sure:</p>
+
 <ul>
-<li>The method returns a <code>Bix::User</code> object -- because <code>struct_namespace</code> has configured the repository to use the <code>Bix</code> namespace for all structs.</li>
-<li>That the <code>Bix::User</code> object returned has an <code>id</code> attribute -- this ID is automatically set by the database</li>
-<li>That both <code>created_at</code> and <code>updated_at</code> are set automatically -- based on how we've configured the command at the top of the repository.</li>
+  <li>The method returns a <code class="language-plaintext highlighter-rouge">Bix::User</code> object – because <code class="language-plaintext highlighter-rouge">struct_namespace</code> has configured the repository to use the <code class="language-plaintext highlighter-rouge">Bix</code> namespace for all structs.</li>
+  <li>That the <code class="language-plaintext highlighter-rouge">Bix::User</code> object returned has an <code class="language-plaintext highlighter-rouge">id</code> attribute – this ID is automatically set by the database</li>
+  <li>That both <code class="language-plaintext highlighter-rouge">created_at</code> and <code class="language-plaintext highlighter-rouge">updated_at</code> are set automatically – based on how we’ve configured the command at the top of the repository.</li>
 </ul>
-<p>The repository also has an <code>all</code> method, and just to be thorough we can add a simple test for this method to assert that <code>Bix::User</code> objects are returned.</p>
-<p>Let's add the tests for the <code>create</code> method first. We'll create a new file at <code>spec/repos/user_repo_spec.rb</code> for these tests:</p>
+
+<p>The repository also has an <code class="language-plaintext highlighter-rouge">all</code> method, and just to be thorough we can add a simple test for this method to assert that <code class="language-plaintext highlighter-rouge">Bix::User</code> objects are returned.</p>
+
+<p>Let’s add the tests for the <code class="language-plaintext highlighter-rouge">create</code> method first. We’ll create a new file at <code class="language-plaintext highlighter-rouge">spec/repos/user_repo_spec.rb</code> for these tests:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s2">"spec_helper"</span>
 
 <span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span> <span class="k">do</span>
@@ -211,17 +250,25 @@ the time the tests run everything for our application has been loaded.</p>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This test asserts that when we call <code>create</code> on our repository that it will return a <code>Bix::User</code> object and that the object has values for <code>id</code>, <code>first_name</code>, <code>last_name</code>, <code>created_at</code> and <code>updated_at</code>.</p>
-<p>If we run this test with <code>bundle exec rspec</code>, we'll see that it passes:</p>
-<pre><code>4 examples, 0 failures
-</code></pre>
-<p>Good! We've now asserted that at least the <code>struct_namespace</code> and <code>commands</code> methods from our repository are working as they should. If a mistake was to be made, like accidentally removing the <code>struct_namespace</code> method from the repository, our test would break:</p>
-<pre><code>  1) Bix::Repos::UserRepo#create creates a user
+
+<p>This test asserts that when we call <code class="language-plaintext highlighter-rouge">create</code> on our repository that it will return a <code class="language-plaintext highlighter-rouge">Bix::User</code> object and that the object has values for <code class="language-plaintext highlighter-rouge">id</code>, <code class="language-plaintext highlighter-rouge">first_name</code>, <code class="language-plaintext highlighter-rouge">last_name</code>, <code class="language-plaintext highlighter-rouge">created_at</code> and <code class="language-plaintext highlighter-rouge">updated_at</code>.</p>
+
+<p>If we run this test with <code class="language-plaintext highlighter-rouge">bundle exec rspec</code>, we’ll see that it passes:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>4 examples, 0 failures
+</code></pre></div></div>
+
+<p>Good! We’ve now asserted that at least the <code class="language-plaintext highlighter-rouge">struct_namespace</code> and <code class="language-plaintext highlighter-rouge">commands</code> methods from our repository are working as they should. If a mistake was to be made, like accidentally removing the <code class="language-plaintext highlighter-rouge">struct_namespace</code> method from the repository, our test would break:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  1) Bix::Repos::UserRepo#create creates a user
      Failure/Error: expect(user).to be_a(Bix::User)
        expected #&lt;ROM::Struct::User ...&gt; to be a kind of Bix::User
-</code></pre>
-<p>The issue with this repository returning a <code>ROM::Struct::User</code> object instead of a <code>Bix::User</code> object is that the <code>ROM::Struct::User</code> objects will not have access to any of <code>Bix::User</code>'s methods, like <code>full_name</code>. If we had this mistake in our application, and we tried using <code>User#full_name</code> then our application would break. This demonstrates why it's important to have tested that <code>struct_namespace</code> is working.</p>
-<p>Let's add another quick test to our repository to test <code>all</code>:</p>
+</code></pre></div></div>
+
+<p>The issue with this repository returning a <code class="language-plaintext highlighter-rouge">ROM::Struct::User</code> object instead of a <code class="language-plaintext highlighter-rouge">Bix::User</code> object is that the <code class="language-plaintext highlighter-rouge">ROM::Struct::User</code> objects will not have access to any of <code class="language-plaintext highlighter-rouge">Bix::User</code>’s methods, like <code class="language-plaintext highlighter-rouge">full_name</code>. If we had this mistake in our application, and we tried using <code class="language-plaintext highlighter-rouge">User#full_name</code> then our application would break. This demonstrates why it’s important to have tested that <code class="language-plaintext highlighter-rouge">struct_namespace</code> is working.</p>
+
+<p>Let’s add another quick test to our repository to test <code class="language-plaintext highlighter-rouge">all</code>:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">context</span> <span class="s2">"#all"</span> <span class="k">do</span>
   <span class="n">before</span> <span class="k">do</span>
     <span class="n">subject</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">32</span><span class="p">)</span>
@@ -234,20 +281,31 @@ the time the tests run everything for our application has been loaded.</p>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This test uses <code>create</code> to setup a user in our database, and then asserts that when we call <code>all</code> we get a user back.</p>
-<p>If we run this test, we'll see that it's already working:</p>
-<pre><code>5 examples, 0 failures
-</code></pre>
-<p>This means that our <code>all</code> method now has some test coverage. If this method was to break <em>somehow</em>, then our test would indicate that the method was faulty and then we wwould know to fix it.</p>
+
+<p>This test uses <code class="language-plaintext highlighter-rouge">create</code> to setup a user in our database, and then asserts that when we call <code class="language-plaintext highlighter-rouge">all</code> we get a user back.</p>
+
+<p>If we run this test, we’ll see that it’s already working:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5 examples, 0 failures
+</code></pre></div></div>
+
+<p>This means that our <code class="language-plaintext highlighter-rouge">all</code> method now has some test coverage. If this method was to break <em>somehow</em>, then our test would indicate that the method was faulty and then we wwould know to fix it.</p>
+
 <h2 id="testing-the-transaction">Testing the transaction</h2>
-<p>So far, our testing of contracts and repositories has been very straightforward Ruby class tests. We have relied on <code>subject</code> from RSpec which is a method that behaves like this:</p>
-<pre><code>def subject
+
+<p>So far, our testing of contracts and repositories has been very straightforward Ruby class tests. We have relied on <code class="language-plaintext highlighter-rouge">subject</code> from RSpec which is a method that behaves like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def subject
   &lt;described class&gt;.new
 end
-</code></pre>
-<p>Now we're going to look at how to test a transaction, and here's where things are going to get more interesting. Rather than relying on RSpec's own <code>subject</code>, we're going to define our own. And when we define our own, we're going to use a feature of <code>dry_auto-inject</code>, called <em>dependency injection</em>. This feature will allow us to inject a stubbed repository into our transaction, so that we don't have to hit the database for our transaction's test.</p>
-<p>Not hitting the database means that we will save time on this test: there's no need to make a request to a system outside of our Ruby code, and that'll also mean that <code>database_cleaner</code> will not need to clean anything from the database. Ultimately, by injecting the repository dependency into our application's transactions when we're testing them means that we can have fast transcation tests.</p>
-<p>Let's look at how to do this by creating a new file at <code>spec/transactions/users/create_user_spec.rb</code>:</p>
+</code></pre></div></div>
+
+<p>Now we’re going to look at how to test a transaction, and here’s where things are going to get more interesting. Rather than relying on RSpec’s own <code class="language-plaintext highlighter-rouge">subject</code>, we’re going to define our own. And when we define our own, we’re going to use a feature of <code class="language-plaintext highlighter-rouge">dry_auto-inject</code>, called <em>dependency injection</em>. This feature will allow us to inject a stubbed repository into our transaction, so that we don’t have to hit the database for our transaction’s test.</p>
+
+<p>Not hitting the database means that we will save time on this test: there’s no need to make a request to a system outside of our Ruby code, and that’ll also mean that <code class="language-plaintext highlighter-rouge">database_cleaner</code> will not need to clean anything from the database. Ultimately, by injecting the repository dependency into our application’s transactions when we’re testing them means that we can have fast transcation tests.</p>
+
+<p>Let’s look at how to do this by creating a new file at <code class="language-plaintext highlighter-rouge">spec/transactions/users/create_user_spec.rb</code>:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'spec_helper'</span>
 
 <span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
@@ -274,15 +332,21 @@ end
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>In this test, we define our own <code>subject</code> block, which will override RSpec's default. We inject the <code>user_repo</code> dependency into the transaction object by passing a <code>user_repo</code> key in the <code>new</code> method. This works because <code>dry-auto_inject</code> re-defines <code>initialize</code> for classes when we use this syntax:</p>
+
+<p>In this test, we define our own <code class="language-plaintext highlighter-rouge">subject</code> block, which will override RSpec’s default. We inject the <code class="language-plaintext highlighter-rouge">user_repo</code> dependency into the transaction object by passing a <code class="language-plaintext highlighter-rouge">user_repo</code> key in the <code class="language-plaintext highlighter-rouge">new</code> method. This works because <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> re-defines <code class="language-plaintext highlighter-rouge">initialize</code> for classes when we use this syntax:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kp">include</span> <span class="no">Import</span><span class="p">[</span>
   <span class="s2">"contracts.users.create_user"</span><span class="p">,</span>
   <span class="s2">"repos.user_repo"</span>
 <span class="p">]</span>
 </code></pre></div></div>
-<p>By default, <code>dry-auto_inject</code> will load the contract class <code>Bix::Contracts::Users::CreateUser</code>, as well as the repo class <code>Bix::Repos::UserRepo</code> and provide them to the class through the <code>create_user</code> and <code>user_repo</code> methods automatically. The keys that we provide to <code>Import[]</code> here match the keys that are automatically defined by <code>dry-system</code> when it automatically registers the components for our application.</p>
-<p>If we want to swap in something else for either the contract or the repository, we can do that by passing in a key matching the name (either <code>create_user</code> or <code>user_repo</code>) when we initialize this class. Just like we do in our test!</p>
+
+<p>By default, <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> will load the contract class <code class="language-plaintext highlighter-rouge">Bix::Contracts::Users::CreateUser</code>, as well as the repo class <code class="language-plaintext highlighter-rouge">Bix::Repos::UserRepo</code> and provide them to the class through the <code class="language-plaintext highlighter-rouge">create_user</code> and <code class="language-plaintext highlighter-rouge">user_repo</code> methods automatically. The keys that we provide to <code class="language-plaintext highlighter-rouge">Import[]</code> here match the keys that are automatically defined by <code class="language-plaintext highlighter-rouge">dry-system</code> when it automatically registers the components for our application.</p>
+
+<p>If we want to swap in something else for either the contract or the repository, we can do that by passing in a key matching the name (either <code class="language-plaintext highlighter-rouge">create_user</code> or <code class="language-plaintext highlighter-rouge">user_repo</code>) when we initialize this class. Just like we do in our test!</p>
+
 <p>If we wanted to do this ourselves, without any sort of dry gem magic, it would look like this:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">attr_reader</span> <span class="ss">:user_repo</span><span class="p">,</span> <span class="ss">:create_user</span>
 
 <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span>
@@ -293,8 +357,11 @@ end
   <span class="vi">@create_user</span> <span class="o">=</span> <span class="n">create_user</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>As we can see, by using <code>dry-auto_inject</code> along with <code>dry-system</code> we get to save a lot of typing.</p>
-<p>Let's look at that test again:</p>
+
+<p>As we can see, by using <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> along with <code class="language-plaintext highlighter-rouge">dry-system</code> we get to save a lot of typing.</p>
+
+<p>Let’s look at that test again:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'spec_helper'</span>
 
 <span class="no">RSpec</span><span class="p">.</span><span class="nf">describe</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span> <span class="k">do</span>
@@ -321,14 +388,22 @@ end
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>The test asserts that when we use <code>subject.call</code> that the repository receives the <code>create</code> method once. We've stubbed this method to return a <code>Bix::User</code> object, and that's what we'll see when we call <code>result.success</code> at the end of the test.</p>
-<p>Let's run this test and we'll see how it goes:</p>
-<pre><code>6 examples, 0 failures
-</code></pre>
-<p>Success! We're able to test our transaction without it hitting the database at all. This means that our transaction test is isolated from the database, leading to it being quick. While we only have one transaction test <em>now</em>, as this application grows and we add further transaction tests this quickness will quickly pile-up to a big benefit.</p>
-<p>There's also another benefit of this isolation: if we had database constraints then we would have to cater for those in this test.  Imagine for instance that when we created users that they had to be associated with a &quot;Group&quot; and that Groups had to be associated with an &quot;Account&quot;. In a normal application to test such a thing, we would need to create three separate objects our database: an account, a group, and a user.</p>
-<p>For one test, it won't matter too much. But if accounts, groups and users are the <em>core</em> of our application, it would quickly stack up to lots of database calls. By stubbing out the user repository dependency while testing this transaction, we have isolated that test from any database concern. A better place to test that sort of database concern would be in the repository test, anyway.</p>
-<p>To finish up, let's add one more test for what happens when this transaction fails due to invalid input:</p>
+
+<p>The test asserts that when we use <code class="language-plaintext highlighter-rouge">subject.call</code> that the repository receives the <code class="language-plaintext highlighter-rouge">create</code> method once. We’ve stubbed this method to return a <code class="language-plaintext highlighter-rouge">Bix::User</code> object, and that’s what we’ll see when we call <code class="language-plaintext highlighter-rouge">result.success</code> at the end of the test.</p>
+
+<p>Let’s run this test and we’ll see how it goes:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>6 examples, 0 failures
+</code></pre></div></div>
+
+<p>Success! We’re able to test our transaction without it hitting the database at all. This means that our transaction test is isolated from the database, leading to it being quick. While we only have one transaction test <em>now</em>, as this application grows and we add further transaction tests this quickness will quickly pile-up to a big benefit.</p>
+
+<p>There’s also another benefit of this isolation: if we had database constraints then we would have to cater for those in this test.  Imagine for instance that when we created users that they had to be associated with a “Group” and that Groups had to be associated with an “Account”. In a normal application to test such a thing, we would need to create three separate objects our database: an account, a group, and a user.</p>
+
+<p>For one test, it won’t matter too much. But if accounts, groups and users are the <em>core</em> of our application, it would quickly stack up to lots of database calls. By stubbing out the user repository dependency while testing this transaction, we have isolated that test from any database concern. A better place to test that sort of database concern would be in the repository test, anyway.</p>
+
+<p>To finish up, let’s add one more test for what happens when this transaction fails due to invalid input:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">context</span> <span class="s2">"with invalid input"</span> <span class="k">do</span>
   <span class="n">let</span><span class="p">(</span><span class="ss">:input</span><span class="p">)</span> <span class="k">do</span>
     <span class="p">{</span>
@@ -345,15 +420,23 @@ end
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This <code>input</code> is missing a <code>first_name</code> key, and so our transaction should fail. This means that the <code>user_repo</code> should <em>never</em> receive a <code>create</code> method, because our transaction will only call that if the <code>validate</code> step passes. When the validation fails, we would expect the result from this transaction to be a failure, and that failure to contain errors indicating what went wrong.</p>
-<p>When we run this test with <code>bundle exec rspec</code>, we'll see it pass:</p>
-<pre><code>7 examples, 0 failures
-</code></pre>
+
+<p>This <code class="language-plaintext highlighter-rouge">input</code> is missing a <code class="language-plaintext highlighter-rouge">first_name</code> key, and so our transaction should fail. This means that the <code class="language-plaintext highlighter-rouge">user_repo</code> should <em>never</em> receive a <code class="language-plaintext highlighter-rouge">create</code> method, because our transaction will only call that if the <code class="language-plaintext highlighter-rouge">validate</code> step passes. When the validation fails, we would expect the result from this transaction to be a failure, and that failure to contain errors indicating what went wrong.</p>
+
+<p>When we run this test with <code class="language-plaintext highlighter-rouge">bundle exec rspec</code>, we’ll see it pass:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>7 examples, 0 failures
+</code></pre></div></div>
+
 <h2 id="summary">Summary</h2>
-<p>In this 3rd part of the ROM and Dry showcase, we've seen how easy it is to add tests to our application to ensure that the individual parts of the application are working.</p>
-<p>We saw that in order to test a contract and a repository, we can initialize either class and call the methods we want to test. There's nothing particularly special that we've had to do to test these classes; we treat them like the plain Ruby classes they are.</p>
-<p>When testing the transaction, we've chosen to isolate those tests from the database by injecting a stubbed <code>UserRepo</code> object in place of the real thing. This isolation will mean that our tests will not have to concern themselves with setting up database state -- for instance, if we had foreign key constraints -- and over time it will mean that our transaction tests will be lightning fast.</p>
-<p>In the next part of this series, we'll add the final piece of our application to our stack: a way to make HTTP requests. And we'll <em>definitely</em> be adding tests for this too!</p>
+
+<p>In this 3rd part of the ROM and Dry showcase, we’ve seen how easy it is to add tests to our application to ensure that the individual parts of the application are working.</p>
+
+<p>We saw that in order to test a contract and a repository, we can initialize either class and call the methods we want to test. There’s nothing particularly special that we’ve had to do to test these classes; we treat them like the plain Ruby classes they are.</p>
+
+<p>When testing the transaction, we’ve chosen to isolate those tests from the database by injecting a stubbed <code class="language-plaintext highlighter-rouge">UserRepo</code> object in place of the real thing. This isolation will mean that our tests will not have to concern themselves with setting up database state – for instance, if we had foreign key constraints – and over time it will mean that our transaction tests will be lightning fast.</p>
+
+<p>In the next part of this series, we’ll add the final piece of our application to our stack: a way to make HTTP requests. And we’ll <em>definitely</em> be adding tests for this too!</p>
 
           </article>
         </div>

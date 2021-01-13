@@ -37,8 +37,10 @@
               <a href="/2014/12/filtering-by-index-in-elasticsearch"><h2>Filtering by index in Elasticsearch</h2></a>
               <small>03 Dec 2014</small>
             </div>
-            <p>Today I needed to filter by indexes in an Elasticsearch instance, and so I googled for how to do this but I couldn't find anything other than the <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-indices-filter.html">indicies filter</a> which isn't helpful without a proper context of where to use it in a query.</p>
+            <p>Today I needed to filter by indexes in an Elasticsearch instance, and so I googled for how to do this but I couldn’t find anything other than the <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-indices-filter.html">indicies filter</a> which isn’t helpful without a proper context of where to use it in a query.</p>
+
 <p>Instead of that filter, this is what I came up with to do the filtering:</p>
+
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="p">.</span><span class="nf">new</span>
 <span class="n">client</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="ss">index: </span><span class="s2">"logstash-2014.12.03,logstash-2014.12.02..."</span><span class="p">,</span> <span class="ss">body: </span><span class="p">{</span>
   <span class="ss">query: </span><span class="p">{</span>
@@ -46,7 +48,9 @@
   <span class="p">}</span>
 <span class="p">})</span>
 </code></pre></div></div>
+
 <p>I hope this post can help other people who are looking for the same thing.</p>
+
 
           </article>
         </div>

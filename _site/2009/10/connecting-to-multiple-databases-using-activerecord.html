@@ -37,17 +37,20 @@
               <a href="/2009/10/connecting-to-multiple-databases-using-activerecord"><h2>Connecting to Multiple Databases Using ActiveRecord</h2></a>
               <small>17 Oct 2009</small>
             </div>
-            <p>You can call <code>establish_connection</code> with the key that points to another database config in your <code>config/database.yml</code></p>
-<pre><code>class Person &lt; ActiveRecord::Base
+            <p>You can call <code class="language-plaintext highlighter-rouge">establish_connection</code> with the key that points to another database config in your <code class="language-plaintext highlighter-rouge">config/database.yml</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Person &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
 class Ticket &lt; ActiveRecord::Base
   establish_connection(:bug_tracker)
 end
-</code></pre>
+</code></pre></div></div>
+
 <p>If you have a whole bunch of models that need to connect to another database:</p>
-<pre><code>class HR &lt; ActiveRecord::Base
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class HR &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
@@ -58,7 +61,8 @@ end
 class Resource &lt; HR
   # ...
 end
-</code></pre>
+</code></pre></div></div>
+
           </article>
         </div>
       </div>

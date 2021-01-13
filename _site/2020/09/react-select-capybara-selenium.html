@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <title>React Select + Capybara + Selenium - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/dracula.min.css">
+<script src="/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+  <body>
+    <header class="topbar">
+  <h1><a href="/">Ryan Bigg</a></h1>
+
+  <div class='items'>
+    <a href="/">Who?</a> &middot;
+    <a href="/books">Books</a> &middot;
+    <a href="/blog">Blog</a> &middot;
+    <a href="/history">History</a> &middot;
+    <a href="/now">Now</a> &middot;
+    <a href="/mentoring">Mentoring</a>
+  </div>
+</header>
+
+    <div class="main">
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <div class='center'>
+              <a href="/2020/09/react-select-capybara-selenium"><h2>React Select + Capybara + Selenium</h2></a>
+              <small>23 Sep 2020</small>
+            </div>
+            <p>Today, I was adding a <a href="https://react-select.com/home">React Select</a> element to a page, and I really wanted to test it.</p>
+
+<p>This is, surprisingly, <a href="https://github.com/JedWatson/react-select/issues/856">not the first time I’ve attempted this</a>.</p>
+
+<p>Since 2016, React Select has undergone some changes, released a brand-new (and much better!) version. One of these big features is that it uses <a href="https://emotion.sh/docs/introduction">Emotion</a> for styling. A consequence of this is that React Select no longer has <code class="language-plaintext highlighter-rouge">.Select</code>, or <code class="language-plaintext highlighter-rouge">.Select-input</code> classes that you could use as selectors in the tests. Instead, it will generate hashed CSS selectors, like <code class="language-plaintext highlighter-rouge">css-2b097c-container</code> and <code class="language-plaintext highlighter-rouge">css-1rhbuit-multiValue</code>. These have the potential to change: if the underlying CSS changes, then the hash will change. So they are not reliable in tests.</p>
+
+<p>To fix this, I used another prop of <code class="language-plaintext highlighter-rouge">ReactSelect</code> called <code class="language-plaintext highlighter-rouge">classNamePrefix</code>:</p>
+
+<div class="language-tsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">CreatableSelect</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">react-select/creatable</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// ...</span>
+
+<span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Admin</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">HIU</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Organisational</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">label</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Paid</span><span class="dl">"</span> <span class="p">},</span>
+<span class="p">];</span>
+
+<span class="c1">// "tags" here comes from a prop on this component</span>
+<span class="kd">const</span> <span class="nx">selectedOptions</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">filter</span><span class="p">(({</span> <span class="nx">value</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">tags</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">value</span><span class="p">));</span>
+
+<span class="k">return</span> <span class="p">(</span>
+  <span class="p">&lt;</span><span class="nc">CreatableSelect</span>
+    <span class="na">options</span><span class="p">=</span><span class="si">{</span><span class="nx">options</span><span class="si">}</span>
+    <span class="na">defaultValue</span><span class="p">=</span><span class="si">{</span><span class="nx">selectedOptions</span><span class="si">}</span>
+    <span class="na">isMulti</span>
+    <span class="na">classNamePrefix</span><span class="p">=</span><span class="s">"tags"</span>
+  <span class="p">/&gt;</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p>This prop adds additional classes to the React Select component, such as <code class="language-plaintext highlighter-rouge">.tags__control</code> and <code class="language-plaintext highlighter-rouge">.tags__multi-value</code> – values that <em>are</em> reliable and predictable!</p>
+
+<p>This means that in the Capybara test, I can now use these to interact with this React Select component, like this:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">within_tags</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+  <span class="n">within</span><span class="p">(</span><span class="s2">".tags__control"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">expect_selected_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+  <span class="n">within_tags</span> <span class="k">do</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">page</span><span class="p">).</span><span class="nf">to</span> <span class="n">have_selector</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">add_new_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+  <span class="n">within_tags</span> <span class="k">do</span>
+    <span class="n">find</span><span class="p">(</span><span class="s2">"input"</span><span class="p">).</span><span class="nf">fill_in</span><span class="p">(</span><span class="ss">with: </span><span class="n">tag</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">find</span><span class="p">(</span><span class="s2">".tags__option"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">).</span><span class="nf">click</span>
+<span class="k">end</span>
+
+<span class="k">def</span> <span class="nf">remove_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+  <span class="n">within_tags</span> <span class="k">do</span>
+    <span class="n">within</span><span class="p">(</span><span class="s2">".tags__multi-value"</span><span class="p">,</span> <span class="ss">text: </span><span class="n">tag</span><span class="p">)</span> <span class="k">do</span>
+      <span class="n">find</span><span class="p">(</span><span class="s2">".tags__multi-value__remove"</span><span class="p">).</span><span class="nf">click</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">scenario</span> <span class="s2">"Can update a User's tags"</span><span class="p">,</span> <span class="ss">js: </span><span class="kp">true</span> <span class="k">do</span>
+  <span class="n">visit</span> <span class="n">edit_admin_user_path</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+
+  <span class="n">expect_selected_tag</span><span class="p">(</span><span class="s2">"Existing tag"</span><span class="p">)</span>
+  <span class="n">remove_tag</span><span class="p">(</span><span class="s2">"HIU"</span><span class="p">)</span>
+  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Paid"</span><span class="p">)</span>
+  <span class="n">add_new_tag</span><span class="p">(</span><span class="s2">"Custom tag"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>I have the following helpers:</p>
+
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">expect_selected_tag</code>: When the page loads, the Select element should contain a tag that is <em>already</em> assigned to the user.</li>
+  <li><code class="language-plaintext highlighter-rouge">remove_tag</code>: Used to remove a tag that appears in the Select element.</li>
+  <li><code class="language-plaintext highlighter-rouge">add_new_tag</code>: Used to add either a tag from the list of options, or to create a brand new tag.</li>
+</ol>
+
+<p>With these helpers, I can effectively test React Select within Capybara and Selenium.</p>
+
+          </article>
+        </div>
+      </div>
+    </div>
+    <footer>
+    01101110 01101111 01110100 01101000 01101001 01101110 01100111 00100000 01110100 01101111 00100000 01110011 01100101 01100101 00100000 01101000 01100101 01110010 01100101 0001010 0001010 0001010 0001010 0001010 01100010 01110010 01100001 01110110 01101111 00100000 01100110 01101111 01111000 01110100 01110010 01101111 01110100 00100000 01110101 01101110 01101001 01100110 01101111 01110010 01101101
+</footer>
+
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60556315-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>

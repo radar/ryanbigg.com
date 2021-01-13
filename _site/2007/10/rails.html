@@ -37,15 +37,18 @@
               <a href="/2007/10/rails"><h2>Rails 2.0</h2></a>
               <small>04 Oct 2007</small>
             </div>
-            <p>Rails 2.0 Preview Release 1 was released a couple of days ago. The original idea was of this post to go through all the changelogs and find out all the stuff I thought was cool and list it here. The problem is that there's too much cool stuff. [url=http://blog.rubyonrails.org/2007/9/30/rails-2-0-0-preview-release]DHH summed it up quite nicely.[/url]</p>
+            <p>Rails 2.0 Preview Release 1 was released a couple of days ago. The original idea was of this post to go through all the changelogs and find out all the stuff I thought was cool and list it here. The problem is that there’s too much cool stuff. [url=http://blog.rubyonrails.org/2007/9/30/rails-2-0-0-preview-release]DHH summed it up quite nicely.[/url]</p>
+
 <p>My favourites are:</p>
 <ol>
-<li>has_one and has_many for restful routes. For example, [term]map.resources :forums, :has_many =&gt; :topics[/term].</li>
-<li>Sexy migrations.</li>
-<li>The way it loads faster, mashing all the javascript/css into one file so it only gets two files (one for js, one for css) instead of 6 or 7.</li>
-<li>Instead of specifying [term]topic_path(@topic)[/term] for a topics path, now you can do [term]topic_path[/term] and Rails will know what you're talking about.</li>
+  <li>has_one and has_many for restful routes. For example, [term]map.resources :forums, :has_many =&gt; :topics[/term].</li>
+  <li>Sexy migrations.</li>
+  <li>The way it loads faster, mashing all the javascript/css into one file so it only gets two files (one for js, one for css) instead of 6 or 7.</li>
+  <li>Instead of specifying [term]topic_path(@topic)[/term] for a topics path, now you can do [term]topic_path[/term] and Rails will know what you’re talking about.</li>
 </ol>
-<p>One thing I'm annoyed at is that routes like [term]forum_edit_topic_path(forum,topic) [/term] to edit a topic now become: [term]edit_forum_topic_path(forum,topic)[/term] Going through each page and finding all the routes that use this will be a pain, and I'm considering making a small ruby script to do it for me.</p>
+
+<p>One thing I’m annoyed at is that routes like [term]forum_edit_topic_path(forum,topic) [/term] to edit a topic now become: [term]edit_forum_topic_path(forum,topic)[/term] Going through each page and finding all the routes that use this will be a pain, and I’m considering making a small ruby script to do it for me.</p>
+
 <p>TOMORROW, I hope to get the LPC report up!</p>
 
           </article>

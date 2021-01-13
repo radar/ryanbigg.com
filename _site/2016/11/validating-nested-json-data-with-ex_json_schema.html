@@ -37,7 +37,8 @@
               <a href="/2016/11/validating-nested-json-data-with-ex_json_schema"><h2>Validating nested JSON data with ex_json_schema</h2></a>
               <small>24 Nov 2016</small>
             </div>
-            <p>I've been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
+            <p>I’ve been working on an Elixir service which reads events from a JSON API and then processes those events. The code to deserialize the events runs a little like this:</p>
+
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Event</span> <span class="k">do</span>
   <span class="k">def</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="k">do</span>
     <span class="p">%{</span><span class="s2">"id"</span> <span class="o">=&gt;</span> <span class="n">id</span><span class="p">,</span> <span class="s2">"type"</span> <span class="o">=&gt;</span> <span class="n">type</span><span class="p">,</span> <span class="s2">"body"</span> <span class="o">=&gt;</span> <span class="n">body</span><span class="p">}</span> <span class="o">=</span> <span class="n">data</span>
@@ -49,7 +50,9 @@
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>It's invoked like <code>Event.deserialize(Response, data)</code>, where <code>data</code> looks something like:</p>
+
+<p>It’s invoked like <code class="language-plaintext highlighter-rouge">Event.deserialize(Response, data)</code>, where <code class="language-plaintext highlighter-rouge">data</code> looks something like:</p>
+
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">%{</span>
   <span class="s2">"id"</span> <span class="o">=&gt;</span> <span class="s2">"1"</span><span class="p">,</span>
   <span class="s2">"type"</span> <span class="o">=&gt;</span> <span class="s2">"response"</span><span class="p">,</span>
@@ -63,9 +66,13 @@
   <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></div>
-<p>I've come across an issue where <em>sometimes</em> the event's data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I've chosen to do this is to use <a href="https://github.com/jonasschmidt/ex_json_schema"><code>ex_json_schema</code></a>, which allows you to validate that an Elixir <code>Map</code>  matches a <a href="http://json-schema.org/">JSON Schema</a> specification, which is also defined as an Elixir <code>Map</code>.</p>
-<p>In the case of the above data, I want to make sure that the data <em>definitely</em> contains the <code>survey_id</code>, and <code>answers</code> properties, and that every answer has a <code>comment</code> property. If these conditions aren't met, then the data should be declared invalid and the event should not be processed.</p>
-<p>To do this, I first declare a schema in the <code>Response</code> module:</p>
+
+<p>I’ve come across an issue where <em>sometimes</em> the event’s data is either malformed, or entirely missing and so I want to validate it as it arrives in the service. The way that I’ve chosen to do this is to use <a href="https://github.com/jonasschmidt/ex_json_schema"><code class="language-plaintext highlighter-rouge">ex_json_schema</code></a>, which allows you to validate that an Elixir <code class="language-plaintext highlighter-rouge">Map</code>  matches a <a href="http://json-schema.org/">JSON Schema</a> specification, which is also defined as an Elixir <code class="language-plaintext highlighter-rouge">Map</code>.</p>
+
+<p>In the case of the above data, I want to make sure that the data <em>definitely</em> contains the <code class="language-plaintext highlighter-rouge">survey_id</code>, and <code class="language-plaintext highlighter-rouge">answers</code> properties, and that every answer has a <code class="language-plaintext highlighter-rouge">comment</code> property. If these conditions aren’t met, then the data should be declared invalid and the event should not be processed.</p>
+
+<p>To do this, I first declare a schema in the <code class="language-plaintext highlighter-rouge">Response</code> module:</p>
+
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Response</span> <span class="k">do</span>
   <span class="k">def</span> <span class="n">schema</span> <span class="k">do</span>
     <span class="p">%{</span>
@@ -97,19 +104,26 @@
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>This schema defines that the <code>survey_id</code> and <code>answers</code> properties within the &quot;root&quot; of the <code>Map</code> that I'm providing are present, and also validates that all the items within <code>answers</code> have a <code>comment</code> property. Not only this, but it also validates the type of the data that's incoming too. The <code>survey_id</code> and <code>comment</code> properties should <em>always</em> be strings. If they aren't, then the data will be invalid according to this schema.</p>
-<p>To use this schema, we first have to <em>resolve</em> it. The <code>ex_json_schema</code> documentation suggests resolving the schema only once:</p>
+
+<p>This schema defines that the <code class="language-plaintext highlighter-rouge">survey_id</code> and <code class="language-plaintext highlighter-rouge">answers</code> properties within the “root” of the <code class="language-plaintext highlighter-rouge">Map</code> that I’m providing are present, and also validates that all the items within <code class="language-plaintext highlighter-rouge">answers</code> have a <code class="language-plaintext highlighter-rouge">comment</code> property. Not only this, but it also validates the type of the data that’s incoming too. The <code class="language-plaintext highlighter-rouge">survey_id</code> and <code class="language-plaintext highlighter-rouge">comment</code> properties should <em>always</em> be strings. If they aren’t, then the data will be invalid according to this schema.</p>
+
+<p>To use this schema, we first have to <em>resolve</em> it. The <code class="language-plaintext highlighter-rouge">ex_json_schema</code> documentation suggests resolving the schema only once:</p>
+
 <blockquote>
-<p>You should only resolve a schema once to avoid the overhead of resolving it in every validation call.</p>
+  <p>You should only resolve a schema once to avoid the overhead of resolving it in every validation call.</p>
 </blockquote>
-<p>In order to follow that instruction, I pass the schema to the <code>deserialize</code> function:</p>
+
+<p>In order to follow that instruction, I pass the schema to the <code class="language-plaintext highlighter-rouge">deserialize</code> function:</p>
+
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Event</span> <span class="k">do</span>
   <span class="k">def</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
     <span class="o">...</span>
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>To validate that the data matches the schema, I'm doing this:</p>
+
+<p>To validate that the data matches the schema, I’m doing this:</p>
+
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">Event</span> <span class="k">do</span>
   <span class="k">def</span> <span class="n">process</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span> <span class="k">do</span>
     <span class="n">validate</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
@@ -137,8 +151,11 @@
   <span class="k">defp</span> <span class="n">deserialize</span><span class="p">({</span><span class="ss">:error</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">},</span> <span class="n">_</span><span class="p">),</span> <span class="k">do</span><span class="p">:</span> <span class="p">{</span><span class="ss">:error</span><span class="p">,</span> <span class="n">id</span><span class="p">,</span> <span class="n">errors</span><span class="p">}</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>There's now two new functions in this <code>Event</code> module: <code>process</code> and <code>validate</code>. The <code>process</code> function serves as the new entrypoint for this module, and it validates and deserializes the data. The <code>validate</code> function uses the schema to validate the data. If the data is valid, it returns <code>{:ok, data}</code>, and if it's not, then it returns <code>{:error, errors, id}</code>. That return value is then passed to <code>deserialize</code>, which will then deserialize a valid event, and pass through the errors if the data was not valid.</p>
-<p>This <code>Event.process/3</code> function can then be invoked like this:</p>
+
+<p>There’s now two new functions in this <code class="language-plaintext highlighter-rouge">Event</code> module: <code class="language-plaintext highlighter-rouge">process</code> and <code class="language-plaintext highlighter-rouge">validate</code>. The <code class="language-plaintext highlighter-rouge">process</code> function serves as the new entrypoint for this module, and it validates and deserializes the data. The <code class="language-plaintext highlighter-rouge">validate</code> function uses the schema to validate the data. If the data is valid, it returns <code class="language-plaintext highlighter-rouge">{:ok, data}</code>, and if it’s not, then it returns <code class="language-plaintext highlighter-rouge">{:error, errors, id}</code>. That return value is then passed to <code class="language-plaintext highlighter-rouge">deserialize</code>, which will then deserialize a valid event, and pass through the errors if the data was not valid.</p>
+
+<p>This <code class="language-plaintext highlighter-rouge">Event.process/3</code> function can then be invoked like this:</p>
+
 <div class="language-elixir highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">defmodule</span> <span class="no">MyApp</span><span class="o">.</span><span class="no">EventProcessor</span> <span class="k">do</span>
   <span class="k">def</span> <span class="n">process_events</span><span class="p">(</span><span class="n">event_module</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span> <span class="k">do</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">event_module</span><span class="o">.</span><span class="n">schema</span> <span class="c1"># schema may be resolved earlier than this</span>
@@ -155,11 +172,14 @@
   <span class="k">end</span>
 <span class="k">end</span>
 </code></pre></div></div>
-<p>If, for example, a blank event was sent to <code>Event.process/3</code>, it would return the <code>{:error, id, errors}</code> tuple with some errors, which are very readable:</p>
-<pre><code>{&quot;Required property survey_id was not present.&quot;, &quot;#&quot;},
-{&quot;Required property comment was not present.&quot;, &quot;#/answer/0&quot;},
-</code></pre>
-<p>It's clear from this output that the event wasn't processed because the <code>survey_id</code> is missing, and the <code>comment</code> is missing from the first answer.</p>
+
+<p>If, for example, a blank event was sent to <code class="language-plaintext highlighter-rouge">Event.process/3</code>, it would return the <code class="language-plaintext highlighter-rouge">{:error, id, errors}</code> tuple with some errors, which are very readable:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"Required property survey_id was not present.", "#"},
+{"Required property comment was not present.", "#/answer/0"},
+</code></pre></div></div>
+
+<p>It’s clear from this output that the event wasn’t processed because the <code class="language-plaintext highlighter-rouge">survey_id</code> is missing, and the <code class="language-plaintext highlighter-rouge">comment</code> is missing from the first answer.</p>
 
           </article>
         </div>

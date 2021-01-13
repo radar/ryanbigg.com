@@ -38,60 +38,88 @@
               <small>02 Jan 2011</small>
             </div>
             <p>This guide was originally posted in my <a href="http://github.com/radar/guides">guides</a> repository, but I thought I would cross-post it on the blog too to increase exposure. I hope it helps some who are trying to figure this kind of thing out.</p>
-<p>If you want to see more guides like this, <a href="http://pledgie.com/campaigns/14034">donate to me!</a>. I'm thinking of doing one on Rails engines after I finish the <a href="http://ryanbigg.com/guides/initialization.html">initialization guide</a></p>
-<p>This guide will demonstrate how we can extend Active Record's functionality to provide a couple of new methods on our models which will allow us to find records based on a specified month or year, implementing the same functionality as found in the <a href="http://github.com/radar/by_star">by_star</a> gem, but in a modern Rails 3 way using the features that Active Record and ARel provide.</p>
-<p>This guide assumes you've read the &quot;<a href="http://github.com/radar/guides/blob/master/gem-development.md">Gem Development</a>&quot; guide which introduces how to develop a basic gem with Bundler. We extensively use the skills learned in that guide in this guide to build this gem, including Bundler and RSpec.</p>
-<p>When we're done here, we'll have a gem that we can add into a Rails application and then be able to call methods on the Active Record models in the application, such as these <code>by_year</code> permutations which will find records based on the year passed in:</p>
-<pre><code>Invoice.by_year
+
+<p>If you want to see more guides like this, <a href="http://pledgie.com/campaigns/14034">donate to me!</a>. I’m thinking of doing one on Rails engines after I finish the <a href="http://ryanbigg.com/guides/initialization.html">initialization guide</a></p>
+
+<p>This guide will demonstrate how we can extend Active Record’s functionality to provide a couple of new methods on our models which will allow us to find records based on a specified month or year, implementing the same functionality as found in the <a href="http://github.com/radar/by_star">by_star</a> gem, but in a modern Rails 3 way using the features that Active Record and ARel provide.</p>
+
+<p>This guide assumes you’ve read the “<a href="http://github.com/radar/guides/blob/master/gem-development.md">Gem Development</a>” guide which introduces how to develop a basic gem with Bundler. We extensively use the skills learned in that guide in this guide to build this gem, including Bundler and RSpec.</p>
+
+<p>When we’re done here, we’ll have a gem that we can add into a Rails application and then be able to call methods on the Active Record models in the application, such as these <code class="language-plaintext highlighter-rouge">by_year</code> permutations which will find records based on the year passed in:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Invoice.by_year
 Invoice.by_year(2010, :field =&gt; :sent_at)
-</code></pre>
-<p>Lastly, we'll add a method which we can call inside classes to set up a default for this gem:</p>
-<pre><code>by_star do
+</code></pre></div></div>
+
+<p>Lastly, we’ll add a method which we can call inside classes to set up a default for this gem:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>by_star do
   field :sent_at
 end
-</code></pre>
-<h3 id="the-beginning">The Beginning</h3>
-<p>To begin with, we're going to generate a new gem using the <code>bundle gem</code> command:</p>
-<pre><code>bundle gem by_star
-</code></pre>
-<p>This command generates the beginning scaffold, but there's something missing... tests! We'll add RSpec to the <code>by_star.gemspec</code> file that was generated as a development dependency, changing our development dependencies to now contain both the <code>bundler</code> and <code>rspec</code> gems:</p>
-<pre><code>s.add_development_dependency &quot;bundler&quot;, &quot;&gt;= 1.0.0&quot;
-s.add_development_dependency &quot;rspec&quot;, &quot;~&gt; 2.3&quot;
-</code></pre>
-<p>We'll also need to add a development dependency for sqlite3-ruby as we'll be using an SQLite3 database for our tests:</p>
-<pre><code>s.add_development_dependency &quot;sqlite3-ruby&quot;
-</code></pre>
-<p>Whilst we're in this file we'll add a dependency for Active Record 3, given that we're going to be extending it:</p>
-<pre><code>s.add_dependency &quot;activerecord&quot;, &quot;~&gt; 3.0&quot;
-</code></pre>
-<p>To make sure all these gems are now installed we can run <code>bundle install</code>.</p>
-<h3 id="setting-up-the-first-test">Setting up the first test</h3>
-<p>Our first test is going to implement the first version of the <code>by_year</code> method. Let's create the file that will include this test at <code>spec/lib/by_star_spec.rb</code> now:</p>
-<pre><code>require 'spec_helper'
+</code></pre></div></div>
 
-describe &quot;by_star&quot; do
-  context &quot;by_year&quot; do
-    it &quot;current year&quot; do
-      Post.by_year.map(&amp;:text).should include(&quot;First post!&quot;)
+<h3 id="the-beginning">The Beginning</h3>
+
+<p>To begin with, we’re going to generate a new gem using the <code class="language-plaintext highlighter-rouge">bundle gem</code> command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle gem by_star
+</code></pre></div></div>
+
+<p>This command generates the beginning scaffold, but there’s something missing… tests! We’ll add RSpec to the <code class="language-plaintext highlighter-rouge">by_star.gemspec</code> file that was generated as a development dependency, changing our development dependencies to now contain both the <code class="language-plaintext highlighter-rouge">bundler</code> and <code class="language-plaintext highlighter-rouge">rspec</code> gems:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s.add_development_dependency "bundler", "&gt;= 1.0.0"
+s.add_development_dependency "rspec", "~&gt; 2.3"
+</code></pre></div></div>
+
+<p>We’ll also need to add a development dependency for sqlite3-ruby as we’ll be using an SQLite3 database for our tests:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s.add_development_dependency "sqlite3-ruby"
+</code></pre></div></div>
+
+<p>Whilst we’re in this file we’ll add a dependency for Active Record 3, given that we’re going to be extending it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>s.add_dependency "activerecord", "~&gt; 3.0"
+</code></pre></div></div>
+
+<p>To make sure all these gems are now installed we can run <code class="language-plaintext highlighter-rouge">bundle install</code>.</p>
+
+<h3 id="setting-up-the-first-test">Setting up the first test</h3>
+
+<p>Our first test is going to implement the first version of the <code class="language-plaintext highlighter-rouge">by_year</code> method. Let’s create the file that will include this test at <code class="language-plaintext highlighter-rouge">spec/lib/by_star_spec.rb</code> now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require 'spec_helper'
+
+describe "by_star" do
+  context "by_year" do
+    it "current year" do
+      Post.by_year.map(&amp;:text).should include("First post!")
     end
   end
-
+  
 end
-</code></pre>
-<p>For this test to begin to run, we'll need to create the <code>spec_helper</code> file it requires on the first line. This file will be responsible for setting up the environment and test data so that our test will run. The first thing this file needs to do is exist at <code>spec/spec_helper.rb</code> and the second thing is to set up the test data. We're going to need a database where we can execute queries. We'll begin this file like this:</p>
-<pre><code>require 'by_star'
+</code></pre></div></div>
 
-ActiveRecord::Base.establish_connection(:adapter =&gt; &quot;sqlite3&quot;, 
-                                       :database =&gt; File.dirname(__FILE__) + &quot;/by_star.sqlite3&quot;)
-</code></pre>
-<p>The <code>require</code> here to the <code>by_star</code> (<code>lib/by_star.rb</code>) file should load everything that this gem needs to run, including Active Record. We'll modify <code>lib/by_star.rb</code> to have a require to load Active Record as its first line now:</p>
-<pre><code>require 'active_record'
-</code></pre>
-<p>With Active Record required, <code>spec/spec_helper.rb</code> will be able to use <code>ActiveRecord::Base.establish_connection</code> to create a new database located at <code>spec/by_star.sqlite3</code>. It's in this database that we'll set up our test data, but to do that we're first going to need to set up the schema for the tables. Underneath the <code>establish_connection</code> line in <code>spec/spec_helper.rb</code> we'll now put this:</p>
-<pre><code>load File.dirname(__FILE__) + '/support/schema.rb'
-</code></pre>
-<p>This will load the file at <code>spec/support/schema.rb</code> which should define the schema for our tables. In this file, we'll put this:</p>
-<pre><code>ActiveRecord::Schema.define do
+<p>For this test to begin to run, we’ll need to create the <code class="language-plaintext highlighter-rouge">spec_helper</code> file it requires on the first line. This file will be responsible for setting up the environment and test data so that our test will run. The first thing this file needs to do is exist at <code class="language-plaintext highlighter-rouge">spec/spec_helper.rb</code> and the second thing is to set up the test data. We’re going to need a database where we can execute queries. We’ll begin this file like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require 'by_star'
+
+ActiveRecord::Base.establish_connection(:adapter =&gt; "sqlite3", 
+                                       :database =&gt; File.dirname(__FILE__) + "/by_star.sqlite3")
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">require</code> here to the <code class="language-plaintext highlighter-rouge">by_star</code> (<code class="language-plaintext highlighter-rouge">lib/by_star.rb</code>) file should load everything that this gem needs to run, including Active Record. We’ll modify <code class="language-plaintext highlighter-rouge">lib/by_star.rb</code> to have a require to load Active Record as its first line now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require 'active_record'
+</code></pre></div></div>
+
+<p>With Active Record required, <code class="language-plaintext highlighter-rouge">spec/spec_helper.rb</code> will be able to use <code class="language-plaintext highlighter-rouge">ActiveRecord::Base.establish_connection</code> to create a new database located at <code class="language-plaintext highlighter-rouge">spec/by_star.sqlite3</code>. It’s in this database that we’ll set up our test data, but to do that we’re first going to need to set up the schema for the tables. Underneath the <code class="language-plaintext highlighter-rouge">establish_connection</code> line in <code class="language-plaintext highlighter-rouge">spec/spec_helper.rb</code> we’ll now put this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load File.dirname(__FILE__) + '/support/schema.rb'
+</code></pre></div></div>
+
+<p>This will load the file at <code class="language-plaintext highlighter-rouge">spec/support/schema.rb</code> which should define the schema for our tables. In this file, we’ll put this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ActiveRecord::Schema.define do
   self.verbose = false
 
   create_table :posts, :force =&gt; true do |t|
@@ -99,93 +127,130 @@ ActiveRecord::Base.establish_connection(:adapter =&gt; &quot;sqlite3&quot;,
     t.timestamps
   end
 end
-</code></pre>
-<p>This piece of code will define the schema that we need in our database for us, using the syntax we're familiar with from Rails migrations. Now we'll define the data in a file also in the <code>spec/support</code> file, but this time we'll call it <code>spec/support/data.rb</code>. We'll keep the data separate because it's easier to manage these two separate from one another. In this file we'll put this:</p>
-<pre><code>Post.create(:text =&gt; &quot;First post!&quot;)
-</code></pre>
-<p>To define the model, we'll create one more final file at <code>spec/support/models.rb</code> and define the <code>Post</code> model in this:</p>
-<pre><code>class Post &lt; ActiveRecord::Base
+</code></pre></div></div>
+
+<p>This piece of code will define the schema that we need in our database for us, using the syntax we’re familiar with from Rails migrations. Now we’ll define the data in a file also in the <code class="language-plaintext highlighter-rouge">spec/support</code> file, but this time we’ll call it <code class="language-plaintext highlighter-rouge">spec/support/data.rb</code>. We’ll keep the data separate because it’s easier to manage these two separate from one another. In this file we’ll put this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Post.create(:text =&gt; "First post!")
+</code></pre></div></div>
+
+<p>To define the model, we’ll create one more final file at <code class="language-plaintext highlighter-rouge">spec/support/models.rb</code> and define the <code class="language-plaintext highlighter-rouge">Post</code> model in this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Post &lt; ActiveRecord::Base
 
 end
-</code></pre>
-<p>To load this file and <code>spec/support/data.rb</code> we'll put these lines in <code>spec/spec_helper.rb</code>, right under the other <code>load</code>:</p>
-<pre><code>load File.dirname(__FILE__) + '/support/models.rb'
+</code></pre></div></div>
+
+<p>To load this file and <code class="language-plaintext highlighter-rouge">spec/support/data.rb</code> we’ll put these lines in <code class="language-plaintext highlighter-rouge">spec/spec_helper.rb</code>, right under the other <code class="language-plaintext highlighter-rouge">load</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load File.dirname(__FILE__) + '/support/models.rb'
 load File.dirname(__FILE__) + '/support/data.rb'
-</code></pre>
-<p>With the schema, models and data now all set up we should be able run our spec and have it fail because it's missing the <code>by_year</code> method now:</p>
-<pre><code>$ bundle exec rspec spec
+</code></pre></div></div>
+
+<p>With the schema, models and data now all set up we should be able run our spec and have it fail because it’s missing the <code class="language-plaintext highlighter-rouge">by_year</code> method now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bundle exec rspec spec
 F
 
 Failures:
 
   1) by_star by_year current year
-     Failure/Error: Post.by_year.map(&amp;:text).should include(&quot;First post!&quot;)
+     Failure/Error: Post.by_year.map(&amp;:text).should include("First post!")
      undefined method `by_year' for #&lt;Class:0x00000101febfd0&gt;
      # ./spec/lib/by_star_spec.rb:6:in `block (3 levels) in &lt;top (required)&gt;'
-</code></pre>
-<p>Ah, now it can't find the <code>by_year</code> method, so now we get to the extending part.</p>
-<h3 id="implementing-codebyyearcode">Implementing <code>by_year</code></h3>
-<p>To add these methods to Active Record, we'll use the <code>extend</code> method which will add methods from the module to the class, there by <em>extending</em> it. Get it? Good. At the bottom of <code>lib/by_star.rb</code> we'll add this line:</p>
-<pre><code>ActiveRecord::Base.extend ByStar
-</code></pre>
-<p>Now we just need to define the <code>by_year</code> method inside the <code>ByStar</code> module now. This method should return all objects that are in the given year. For now, we'll just get it to do objects in the current year. Let's define the <code>by_year</code> method in the module now:</p>
-<pre><code>module ByStar
+</code></pre></div></div>
+
+<p>Ah, now it can’t find the <code class="language-plaintext highlighter-rouge">by_year</code> method, so now we get to the extending part.</p>
+
+<h3 id="implementing-by_year">Implementing <code class="language-plaintext highlighter-rouge">by_year</code></h3>
+
+<p>To add these methods to Active Record, we’ll use the <code class="language-plaintext highlighter-rouge">extend</code> method which will add methods from the module to the class, there by <em>extending</em> it. Get it? Good. At the bottom of <code class="language-plaintext highlighter-rouge">lib/by_star.rb</code> we’ll add this line:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ActiveRecord::Base.extend ByStar
+</code></pre></div></div>
+
+<p>Now we just need to define the <code class="language-plaintext highlighter-rouge">by_year</code> method inside the <code class="language-plaintext highlighter-rouge">ByStar</code> module now. This method should return all objects that are in the given year. For now, we’ll just get it to do objects in the current year. Let’s define the <code class="language-plaintext highlighter-rouge">by_year</code> method in the module now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module ByStar
   def by_year
     start_time = Time.now.beginning_of_year
     end_time = Time.now.end_of_year
     where(self.arel_table[:created_at].in(start_time..end_time))
   end
 end
-</code></pre>
-<p>Here we get the times at both ends of the year, the very first microsecond and the very last microsecond. Then we call <code>self.arel_table</code> which returns an <code>ARel::Table</code> object which we can then use to build our queries. We call the <code>[]</code> method and pass in <code>:created_at</code> as the key and then call the <code>in</code> method on that, passing in the beginning and the end of the year. This will construct a <code>BETWEEN</code> SQL query for us for the <code>created_at</code> column in our <code>posts</code> table:</p>
-<pre><code>SELECT &quot;posts&quot;.* FROM &quot;posts&quot; WHERE (&quot;posts&quot;.&quot;created_at&quot; BETWEEN '2011-01-01 00:00:00.000000' AND '2011-12-31 23:59:59.999999')
-</code></pre>
-<p>That time should be precise enough for anyone! The <code>by_year</code> method will return an <code>ActiveRecord::Relation</code> object which can then be used for further scoping if the people using our gems want to do something else to it, such as limiting it to return only 5 records by calling it like this:</p>
-<pre><code>Post.by_year.limit(5)
-</code></pre>
+</code></pre></div></div>
+
+<p>Here we get the times at both ends of the year, the very first microsecond and the very last microsecond. Then we call <code class="language-plaintext highlighter-rouge">self.arel_table</code> which returns an <code class="language-plaintext highlighter-rouge">ARel::Table</code> object which we can then use to build our queries. We call the <code class="language-plaintext highlighter-rouge">[]</code> method and pass in <code class="language-plaintext highlighter-rouge">:created_at</code> as the key and then call the <code class="language-plaintext highlighter-rouge">in</code> method on that, passing in the beginning and the end of the year. This will construct a <code class="language-plaintext highlighter-rouge">BETWEEN</code> SQL query for us for the <code class="language-plaintext highlighter-rouge">created_at</code> column in our <code class="language-plaintext highlighter-rouge">posts</code> table:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SELECT "posts".* FROM "posts" WHERE ("posts"."created_at" BETWEEN '2011-01-01 00:00:00.000000' AND '2011-12-31 23:59:59.999999')
+</code></pre></div></div>
+
+<p>That time should be precise enough for anyone! The <code class="language-plaintext highlighter-rouge">by_year</code> method will return an <code class="language-plaintext highlighter-rouge">ActiveRecord::Relation</code> object which can then be used for further scoping if the people using our gems want to do something else to it, such as limiting it to return only 5 records by calling it like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Post.by_year.limit(5)
+</code></pre></div></div>
+
 <p>Such is the power of Active Record 3.</p>
-<p>With this method defined, let's see if we can have one passing spec now:</p>
-<pre><code>$ bundle exec rspec spec/
+
+<p>With this method defined, let’s see if we can have one passing spec now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bundle exec rspec spec/
 .
 
 Finished in 0.00169 seconds
 1 example, 0 failures
-</code></pre>
-<p>Cool! Next, we'll get it to work with a numbered year and a time object, and then we'll get to passing options to this method.</p>
+</code></pre></div></div>
+
+<p>Cool! Next, we’ll get it to work with a numbered year and a time object, and then we’ll get to passing options to this method.</p>
+
 <h3 id="a-numbered-year">A numbered year</h3>
-<p>We need a new test that will let <code>by_year</code> now take a year. Let's add one to the the <code>context &quot;by_year&quot;</code> in <code>spec/lib/by_star_spec.rb</code>:</p>
-<pre><code>it &quot;a specified year&quot; do
-  Post.by_year(Time.now.year - 1).map(&amp;:text).should include(&quot;So last year!&quot;)
+
+<p>We need a new test that will let <code class="language-plaintext highlighter-rouge">by_year</code> now take a year. Let’s add one to the the <code class="language-plaintext highlighter-rouge">context "by_year"</code> in <code class="language-plaintext highlighter-rouge">spec/lib/by_star_spec.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it "a specified year" do
+  Post.by_year(Time.now.year - 1).map(&amp;:text).should include("So last year!")
 end
-</code></pre>
-<p>To test this, we're going to need a post from last year. We'll add one to <code>spec/support/data.rb</code> now:</p>
-<pre><code>Post.create(:text =&gt; &quot;So last year!&quot;, :created_at =&gt; Time.now - 1.year)
-</code></pre>
-<p>To get <code>by_year</code> to support this we will change the method to now take one argument which, defaults to the current year, and use it to construct a <code>Time</code> object to use in the method itself.</p>
-<pre><code>def by_year(year=Time.now.year)
-  start_time = Date.strptime(&quot;#{year}-01-01&quot;, &quot;%Y-%m-%d&quot;).to_time
+</code></pre></div></div>
+
+<p>To test this, we’re going to need a post from last year. We’ll add one to <code class="language-plaintext highlighter-rouge">spec/support/data.rb</code> now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Post.create(:text =&gt; "So last year!", :created_at =&gt; Time.now - 1.year)
+</code></pre></div></div>
+
+<p>To get <code class="language-plaintext highlighter-rouge">by_year</code> to support this we will change the method to now take one argument which, defaults to the current year, and use it to construct a <code class="language-plaintext highlighter-rouge">Time</code> object to use in the method itself.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def by_year(year=Time.now.year)
+  start_time = Date.strptime("#{year}-01-01", "%Y-%m-%d").to_time
   end_time = start_time.end_of_year
   where(self.arel_table[:created_at].in(start_time..end_time))
 end
-</code></pre>
-<p>The <code>Date.strptime</code> call here will convert the year into a <code>Date</code> object, and then we call <code>to_time</code> on it to get a <code>Time</code> object, just like the one we got from <code>Time.now</code>. Let's see if this makes our spec run now:</p>
-<pre><code>$ bundle exec rspec spec/
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Date.strptime</code> call here will convert the year into a <code class="language-plaintext highlighter-rouge">Date</code> object, and then we call <code class="language-plaintext highlighter-rouge">to_time</code> on it to get a <code class="language-plaintext highlighter-rouge">Time</code> object, just like the one we got from <code class="language-plaintext highlighter-rouge">Time.now</code>. Let’s see if this makes our spec run now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bundle exec rspec spec/
 ..
 
 Finished in 0.00358 seconds
 2 examples, 0 failures
-</code></pre>
-<p>We're just flying through these. The final modification we'll make to how this method is called is get it to take options which will customise what field it does the searching on.</p>
+</code></pre></div></div>
+
+<p>We’re just flying through these. The final modification we’ll make to how this method is called is get it to take options which will customise what field it does the searching on.</p>
+
 <h3 id="methods-and-options-sitting-in-a-tree">Methods and options, sitting in a tree</h3>
-<p>We're going to get the <code>by_year</code> method to take a set of options which will modify its behaviour. This set of options will only contain one key, but as it will be a <code>Hash</code> object, it leaves it open to taking multiple options at a later stage. Options that are not <code>:field</code> (or <code>'field'</code> if people feel so inclined) will do nothing. Let's write a new spec for this now in <code>spec/lib/by_star_spec.rb</code>:</p>
-<pre><code>it &quot;a specified year, with options&quot; do
-  published_posts = Post.by_year(Time.now.year, :field =&gt; &quot;published_at&quot;)
-  published_posts.map(&amp;:text).should include(&quot;First published post!&quot;)
-  published_posts.map(&amp;:text).should_not include(&quot;First post!&quot;)
+
+<p>We’re going to get the <code class="language-plaintext highlighter-rouge">by_year</code> method to take a set of options which will modify its behaviour. This set of options will only contain one key, but as it will be a <code class="language-plaintext highlighter-rouge">Hash</code> object, it leaves it open to taking multiple options at a later stage. Options that are not <code class="language-plaintext highlighter-rouge">:field</code> (or <code class="language-plaintext highlighter-rouge">'field'</code> if people feel so inclined) will do nothing. Let’s write a new spec for this now in <code class="language-plaintext highlighter-rouge">spec/lib/by_star_spec.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it "a specified year, with options" do
+  published_posts = Post.by_year(Time.now.year, :field =&gt; "published_at")
+  published_posts.map(&amp;:text).should include("First published post!")
+  published_posts.map(&amp;:text).should_not include("First post!")
 end
-</code></pre>
-<p>Here the options are going to be <code>{ :field =&gt; &quot;published_at&quot; }</code> and this will modify the <code>by_year</code> method to look up based on this field instead. We ensure that we don't see the &quot;First post!&quot; post because this doesn't have a <code>published_at</code> field set, and shouldn't show up in our test if the options are being interpreted as they should be. The <code>published_at</code> field doesn't exist in our database's schema yet, so we'll add it to the <code>spec/support/schema.rb</code> file, changing our <code>posts</code> table definition to this:</p>
-<pre><code>ActiveRecord::Schema.define do
+</code></pre></div></div>
+
+<p>Here the options are going to be <code class="language-plaintext highlighter-rouge">{ :field =&gt; "published_at" }</code> and this will modify the <code class="language-plaintext highlighter-rouge">by_year</code> method to look up based on this field instead. We ensure that we don’t see the “First post!” post because this doesn’t have a <code class="language-plaintext highlighter-rouge">published_at</code> field set, and shouldn’t show up in our test if the options are being interpreted as they should be. The <code class="language-plaintext highlighter-rouge">published_at</code> field doesn’t exist in our database’s schema yet, so we’ll add it to the <code class="language-plaintext highlighter-rouge">spec/support/schema.rb</code> file, changing our <code class="language-plaintext highlighter-rouge">posts</code> table definition to this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ActiveRecord::Schema.define do
   self.verbose = false
 
   create_table :posts, :force =&gt; true do |t|
@@ -194,55 +259,75 @@ end
     t.datetime :published_at
   end
 end
-</code></pre>
-<p>When we re-run our tests, the <code>posts</code> table will be re-created with this new field. To get a record with the <code>published_at</code> attribute set to something, we'll set one up in <code>spec/support/data.rb</code>:</p>
-<pre><code>Post.create(:text =&gt; &quot;First published post!&quot;, :published_at =&gt; Time.now)
-</code></pre>
-<p>Now to get this variety of the <code>by_year</code> method to work, we'll convert the method to this:</p>
-<pre><code>def by_year(year=Time.now.year, options={ :field =&gt; &quot;created_at&quot; })
-  start_time = Date.strptime(&quot;#{year}-01-01&quot;, &quot;%Y-%m-%d&quot;).to_time
+</code></pre></div></div>
+
+<p>When we re-run our tests, the <code class="language-plaintext highlighter-rouge">posts</code> table will be re-created with this new field. To get a record with the <code class="language-plaintext highlighter-rouge">published_at</code> attribute set to something, we’ll set one up in <code class="language-plaintext highlighter-rouge">spec/support/data.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Post.create(:text =&gt; "First published post!", :published_at =&gt; Time.now)
+</code></pre></div></div>
+
+<p>Now to get this variety of the <code class="language-plaintext highlighter-rouge">by_year</code> method to work, we’ll convert the method to this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def by_year(year=Time.now.year, options={ :field =&gt; "created_at" })
+  start_time = Date.strptime("#{year}-01-01", "%Y-%m-%d").to_time
   end_time = start_time.end_of_year
   field = options[:field]
   
   where(self.arel_table[field].in(start_time..end_time))
 end
-</code></pre>
-<p>There we have the <code>options</code> defaulting to a hash with the <code>:field</code> key set to &quot;created_at&quot;. If we pass through another field, like we do in the test, then it will alter the field used to do the lookup. So, does this test pass? Let's find out:</p>
-<pre><code>$ bundle exec rspec spec/
+</code></pre></div></div>
+
+<p>There we have the <code class="language-plaintext highlighter-rouge">options</code> defaulting to a hash with the <code class="language-plaintext highlighter-rouge">:field</code> key set to “created_at”. If we pass through another field, like we do in the test, then it will alter the field used to do the lookup. So, does this test pass? Let’s find out:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bundle exec rspec spec/
 ...
 
 Finished in 0.0049 seconds
 3 examples, 0 failures
-</code></pre>
+</code></pre></div></div>
+
 <p>There we go, passing too! One final thing: the class configuration.</p>
+
 <h3 id="configuring-the-gem-in-the-class">Configuring the gem in the class</h3>
-<p>If we've got a model that doesn't have a <code>created_at</code> field, but does have another field, then we don't want to always be passing in the <code>:field</code> option everywhere. Instead, we want to configure this option on a per-class basis like this:</p>
-<pre><code>class Event &lt; ActiveRecord::Base
+
+<p>If we’ve got a model that doesn’t have a <code class="language-plaintext highlighter-rouge">created_at</code> field, but does have another field, then we don’t want to always be passing in the <code class="language-plaintext highlighter-rouge">:field</code> option everywhere. Instead, we want to configure this option on a per-class basis like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Event &lt; ActiveRecord::Base
   by_star do
     field :date
   end
 end
-</code></pre>
-<p>To test this implementation, we'll define a new model called <code>Event</code> in <code>spec/support/models.rb</code> using exactly the same code as above. Then we'll need to add the table for this to <code>spec/support/schema.rb</code>:</p>
-<pre><code>create_table :events, :force =&gt; true do |t|
+</code></pre></div></div>
+
+<p>To test this implementation, we’ll define a new model called <code class="language-plaintext highlighter-rouge">Event</code> in <code class="language-plaintext highlighter-rouge">spec/support/models.rb</code> using exactly the same code as above. Then we’ll need to add the table for this to <code class="language-plaintext highlighter-rouge">spec/support/schema.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>create_table :events, :force =&gt; true do |t|
   t.string :name
   t.date :date
 end
-</code></pre>
-<p>And then finally, to test that this actually works, we need to add data to <code>spec/support/data.rb</code>:</p>
-<pre><code>Event.create(:name =&gt; &quot;The Party&quot;, :date =&gt; Time.now)
-</code></pre>
-<p>Oh, and yes we'll need to add a test for this too in <code>spec/lib/by_star_spec.rb</code>:</p>
-<pre><code>it &quot;pre-configured field&quot; do
-  Event.by_year.map(&amp;:name).should include(&quot;The Party&quot;)
+</code></pre></div></div>
+
+<p>And then finally, to test that this actually works, we need to add data to <code class="language-plaintext highlighter-rouge">spec/support/data.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Event.create(:name =&gt; "The Party", :date =&gt; Time.now)
+</code></pre></div></div>
+
+<p>Oh, and yes we’ll need to add a test for this too in <code class="language-plaintext highlighter-rouge">spec/lib/by_star_spec.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it "pre-configured field" do
+  Event.by_year.map(&amp;:name).should include("The Party")
 end
-</code></pre>
-<p>Let's run our specs now:</p>
-<pre><code>$ bundle exec rspec spec
+</code></pre></div></div>
+
+<p>Let’s run our specs now:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bundle exec rspec spec
 ... undefined method `by_star' for Event(Table doesn't exist):Class
-</code></pre>
-<p>There's currently no <code>by_star</code> method defined on the <code>Event</code> class... because we're still yet to define it. This method takes a block which we'll use to configure the gem for this model and we'll now place it inside the <code>ByStar</code> module inside <code>lib/by_star.rb</code>:</p>
-<pre><code>def by_star(&amp;block)
+</code></pre></div></div>
+
+<p>There’s currently no <code class="language-plaintext highlighter-rouge">by_star</code> method defined on the <code class="language-plaintext highlighter-rouge">Event</code> class… because we’re still yet to define it. This method takes a block which we’ll use to configure the gem for this model and we’ll now place it inside the <code class="language-plaintext highlighter-rouge">ByStar</code> module inside <code class="language-plaintext highlighter-rouge">lib/by_star.rb</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def by_star(&amp;block)
   @config ||= ByStar::Config.new
   @config.instance_eval(&amp;block) if block_given?
   @config
@@ -254,25 +339,33 @@ class Config
     @field
   end
 end
-</code></pre>
-<p>When the <code>by_star</code> method is called, it will get a new <code>ByStar::Config</code> object and evaluate the block it's given within the context of that object, so that any method called inside the block is now called on the <code>ByStar::Config</code> object itself. In the <code>Config</code> class, we define a <code>field</code> method which will set <code>@field</code> to a value if one's given and return it, or if no value is given then simply return the set value. Using this, we can reference the field as <code>by_star.field</code> in our <code>by_year</code> method. But we must take care to recognise that the passed option to the method should have precedence over the class's default. Therefore, our <code>by_year</code> method should now look like this:</p>
-<pre><code> def by_year(year=Time.now.year, options = {})
-   beginning_of_year = Date.strptime(&quot;#{year}-01-01&quot;, &quot;%Y-%m-%d&quot;).beginning_of_year
+</code></pre></div></div>
+
+<p>When the <code class="language-plaintext highlighter-rouge">by_star</code> method is called, it will get a new <code class="language-plaintext highlighter-rouge">ByStar::Config</code> object and evaluate the block it’s given within the context of that object, so that any method called inside the block is now called on the <code class="language-plaintext highlighter-rouge">ByStar::Config</code> object itself. In the <code class="language-plaintext highlighter-rouge">Config</code> class, we define a <code class="language-plaintext highlighter-rouge">field</code> method which will set <code class="language-plaintext highlighter-rouge">@field</code> to a value if one’s given and return it, or if no value is given then simply return the set value. Using this, we can reference the field as <code class="language-plaintext highlighter-rouge">by_star.field</code> in our <code class="language-plaintext highlighter-rouge">by_year</code> method. But we must take care to recognise that the passed option to the method should have precedence over the class’s default. Therefore, our <code class="language-plaintext highlighter-rouge">by_year</code> method should now look like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> def by_year(year=Time.now.year, options = {})
+   beginning_of_year = Date.strptime("#{year}-01-01", "%Y-%m-%d").beginning_of_year
    end_of_year = beginning_of_year.end_of_year
-   field = options[:field] || by_star.field || &quot;created_at&quot;
+   field = options[:field] || by_star.field || "created_at"
    where(self.arel_table[field].in(beginning_of_year..end_of_year))
  end
-</code></pre>
-<p>We've taken out the default in the <code>options</code> argument for the method, because if it defaulted to <code>created_at</code> then we wouldn't know if that was what was passed in or if that was the default. So instead, on the second-to-last line for this method, we check if the <code>:field</code> key in <code>options</code> is set and if it isn't then fall back to <code>by_star.field</code> and if that's not set then finally <code>created_at</code> becomes our default once more. One more run of our specs and everything should now be peachy:</p>
-<pre><code> $ bundle exec rspec spec/
+</code></pre></div></div>
+
+<p>We’ve taken out the default in the <code class="language-plaintext highlighter-rouge">options</code> argument for the method, because if it defaulted to <code class="language-plaintext highlighter-rouge">created_at</code> then we wouldn’t know if that was what was passed in or if that was the default. So instead, on the second-to-last line for this method, we check if the <code class="language-plaintext highlighter-rouge">:field</code> key in <code class="language-plaintext highlighter-rouge">options</code> is set and if it isn’t then fall back to <code class="language-plaintext highlighter-rouge">by_star.field</code> and if that’s not set then finally <code class="language-plaintext highlighter-rouge">created_at</code> becomes our default once more. One more run of our specs and everything should now be peachy:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> $ bundle exec rspec spec/
  ....
 
  Finished in 0.01141 seconds
  4 examples, 0 failures
-</code></pre>
+</code></pre></div></div>
+
 <h3 id="conclusion">Conclusion</h3>
-<p>In this guide you have learned how to extend Active Record to have a <code>by_year</code> method which finds records based on the current year, or one that was passed in. The lookup field is configurable by passing in a <code>:field</code> option to the method. Finally, we set up a way to configure the options for our method using a class method called <code>by_star</code>.</p>
-<p>I hope you've learned something by reading this, and thanks for doing so! You can find the end-result of this gem in the <a href="https://github.com/radar/guides/tree/master/extending-active-record">extending-active-record directory</a> on <a href="http://github.com/radar/guides">this project</a>.</p>
+
+<p>In this guide you have learned how to extend Active Record to have a <code class="language-plaintext highlighter-rouge">by_year</code> method which finds records based on the current year, or one that was passed in. The lookup field is configurable by passing in a <code class="language-plaintext highlighter-rouge">:field</code> option to the method. Finally, we set up a way to configure the options for our method using a class method called <code class="language-plaintext highlighter-rouge">by_star</code>.</p>
+
+<p>I hope you’ve learned something by reading this, and thanks for doing so! You can find the end-result of this gem in the <a href="https://github.com/radar/guides/tree/master/extending-active-record">extending-active-record directory</a> on <a href="http://github.com/radar/guides">this project</a>.</p>
+
 <p>If you like my work, <a href="http://pledgie.com/campaigns/14034">donate to me!</a></p>
 
           </article>

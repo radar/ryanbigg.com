@@ -38,77 +38,130 @@
               <small>29 Aug 2018</small>
             </div>
             <p>This post is part of a series of posts about the first cohort of the Culture Amp Junior Engineering Program (JEP). You can read the first two posts here:</p>
+
 <ul>
-<li><a href="https://ryanbigg.com/2018/08/junior-engineering-program-launch">Junior Engineering Program: Launch</a></li>
-<li><a href="https://ryanbigg.com/2018/08/junior-engineering-program-onboarding">Junior Engineering Program: Onboarding</a></li>
+  <li><a href="https://ryanbigg.com/2018/08/junior-engineering-program-launch">Junior Engineering Program: Launch</a></li>
+  <li><a href="https://ryanbigg.com/2018/08/junior-engineering-program-onboarding">Junior Engineering Program: Onboarding</a></li>
 </ul>
-<p>In the last post I covered the process of what we did in the weeks immediately following the juniors starting, but didn't talk too much about what we taught them during those or subsequent weeks. That is what this post is going to talk about: what we taught our juniors over the 26 weeks of the Junior Engineering Program.</p>
+
+<p>In the last post I covered the process of what we did in the weeks immediately following the juniors starting, but didn’t talk too much about what we taught them during those or subsequent weeks. That is what this post is going to talk about: what we taught our juniors over the 26 weeks of the Junior Engineering Program.</p>
+
 <p>In the first post, I briefly rattled off some tech that we used:</p>
+
 <blockquote>
-<p>The juniors learned how to work effectively in teams and amongst themselves, as well as learning about /Ruby, PostgreSQL, Mongo, Rails, JavaScript, Flow, React, JSON APIs and GraphQL/, all within 6 months time.</p>
+  <p>The juniors learned how to work effectively in teams and amongst themselves, as well as learning about /Ruby, PostgreSQL, Mongo, Rails, JavaScript, Flow, React, JSON APIs and GraphQL/, all within 6 months time.</p>
 </blockquote>
+
 <p>This would seem to imply a logical progression from Ruby to PostgreSQL to Mongo and so on. Things were not quite done that way. At the start of the program, I had pre-planned the first 7 weeks of work. In hindsight, this planning was excessive.</p>
-<p>At the start of most JEP weeks, we had a retrospective session where we discussed the previous week's work, and what we would like to do in the coming weeks. This really influenced what was taught throughout the program and provided a better structure than one I could've come up with myself. Often, the JEP cohort would be the one deciding what we would learn next time, not me.</p>
+
+<p>At the start of most JEP weeks, we had a retrospective session where we discussed the previous week’s work, and what we would like to do in the coming weeks. This really influenced what was taught throughout the program and provided a better structure than one I could’ve come up with myself. Often, the JEP cohort would be the one deciding what we would learn next time, not me.</p>
+
 <h2 id="part-1-git-github--ruby-weeks-1-5">Part 1: Git, GitHub + Ruby (Weeks 1-5)</h2>
+
 <p>In this first part, we covered Git + GitHub and Ruby.</p>
-<p>For the Git + GitHub sessions, the juniors wrote some &quot;user manuals&quot;, telling us about themselves. They then had to commit these manuals to a git branch and submit a pull request to merge that into the master branch. Other juniors would then review that PR. This was designed to get them familiar with git branching, merging and the GitHub pull request / review cycle.</p>
-<p>For the remainder of this part, we focussed on Ruby skills. We covered some Exercism and Advent of Code Exercises. I think these exercises are a great tool to practice Ruby with. When working on these exercises, we introduced the concept of &quot;mob programming&quot;, where one junior would write code for 5 minutes while the other juniors told them what to type. Once the 5 minutes was up, another junior would take over. This was good practice working well together in a group.</p>
+
+<p>For the Git + GitHub sessions, the juniors wrote some “user manuals”, telling us about themselves. They then had to commit these manuals to a git branch and submit a pull request to merge that into the master branch. Other juniors would then review that PR. This was designed to get them familiar with git branching, merging and the GitHub pull request / review cycle.</p>
+
+<p>For the remainder of this part, we focussed on Ruby skills. We covered some Exercism and Advent of Code Exercises. I think these exercises are a great tool to practice Ruby with. When working on these exercises, we introduced the concept of “mob programming”, where one junior would write code for 5 minutes while the other juniors told them what to type. Once the 5 minutes was up, another junior would take over. This was good practice working well together in a group.</p>
+
 <p>We also worked on modelling a small Ruby application that had a similar data model as our big Rails application. Alongside this small application, I taught them about <a href="https://github.com/radar/guides/blob/master/code-organisation.md">code organisation within a Ruby application</a> and how to write RSpec tests from scratch.</p>
+
 <p>During the writing of this application, I showed examples of two of my favourite design principles: the Single Responsibility Principle and the Law of Demeter. Code was written to intentionally violate these design principles, and then the code was refactored to use them. I think this demonstration went well.</p>
+
 <h2 id="part-2-v1-rails-weeks-6-8">Part 2, v1: Rails (Weeks 6-8)</h2>
+
 <p>And then I tried teaching them Rails. The goal here was for the juniors to build a link shortener application, which is more complicated than it sounds.</p>
-<p>I'll cover more about this in the &quot;Lessons Learned&quot; section at the end, but one does not simply teach Rails to juniors straight after teaching them Ruby. I realised this after some of my juniors asked &quot;What does this <code>SELECT * FROM</code> thing mean in the output?&quot;. It became pretty clear to me that I had completely ignored that the juniors didn't know about databases yet.</p>
+
+<p>I’ll cover more about this in the “Lessons Learned” section at the end, but one does not simply teach Rails to juniors straight after teaching them Ruby. I realised this after some of my juniors asked “What does this <code class="language-plaintext highlighter-rouge">SELECT * FROM</code> thing mean in the output?”. It became pretty clear to me that I had completely ignored that the juniors didn’t know about databases yet.</p>
+
 <p>We started working on this Rails application, using RSpec &amp; Capybara to test it. We got as far as building out the initial CRUD implementation of this app, but really the juniors needed to know more about databases before they could work effectively in a Rails application.</p>
+
 <h2 id="part-2-v2-databases-weeks-9-13">Part 2: v2: Databases (Weeks 9-13)</h2>
+
 <p>And so I spent a few weeks teaching them about databases. Because our link shortener Rails application was using a relational database to start with, we started learning about PostgreSQL (Week 9).</p>
+
 <p>In these weeks, we covered how to insert, select, update and delete records from a table, how to join multiple tables together and about <a href="https://en.wikipedia.org/wiki/Database_normalization">database normalization</a>.</p>
+
 <p>At Culture Amp we also use MongoDB, and so we spent two weeks covering the same sorts of actions as above, but with that database instead.  We also covered some more esoteric knowledge, like the <a href="https://docs.mongodb.com/manual/core/aggregation-pipeline/">MongoDB Aggregation Pipeline</a>.</p>
+
 <h2 id="part-3-rails-week-14">Part 3: Rails (Week 14)</h2>
+
 <p>Once we had worked on databases for a few weeks, we came back to the link shortener Rails application. The juniors finished off their CRUD implementations, and began work on adding user authentication and a JSON API to this application.</p>
+
 <h2 id="part-4-the-rails-exam-week-15">Part 4: The Rails Exam (Week 15)</h2>
-<p>Once the juniors had built out this application, we then gave them an exam to test their knowledge of Rails applications. <a href="https://github.com/cultureamp/jep/tree/master/week15">This exam</a> involved building a small CRUD application from scratch, using all the skills that they had learned in the proceeding weeks. The juniors had an entire week to complete this exam. There was to be no &quot;pass&quot; or &quot;fail&quot; in this exam; it was just to provide some insight into where the juniors were at when it came to Rails.</p>
-<p>The following week I spent marking these exams, again using a rubric that I had devised. I spent a lot of this week talking to the juniors about their results. I covered things like what they might've missed, ways to write cleaner code and more. To say more would be to give away a few of the &quot;answers&quot;.</p>
+
+<p>Once the juniors had built out this application, we then gave them an exam to test their knowledge of Rails applications. <a href="https://github.com/cultureamp/jep/tree/master/week15">This exam</a> involved building a small CRUD application from scratch, using all the skills that they had learned in the proceeding weeks. The juniors had an entire week to complete this exam. There was to be no “pass” or “fail” in this exam; it was just to provide some insight into where the juniors were at when it came to Rails.</p>
+
+<p>The following week I spent marking these exams, again using a rubric that I had devised. I spent a lot of this week talking to the juniors about their results. I covered things like what they might’ve missed, ways to write cleaner code and more. To say more would be to give away a few of the “answers”.</p>
+
 <h2 id="part-5-javascript--react--apis-weeks-16-18">Part 5: JavaScript / React / APIs (Weeks 16-18)</h2>
+
 <p>We rounded off the program by teaching the juniors about JavaScript, React, and APIs.</p>
+
 <p>This part was kicked off by one of our Senior JavaScript Engineers, Sam Margalit. He ran two days of JEP, teaching the foundations of JavaScript, Flow and React in that time.</p>
+
 <p>The juniors then learned how to integrate their React applications with the Rails app that they had built. This was done first by building and using a JSON API that they built within the Rails application, and then later on by an equivalent GraphQL API.</p>
+
 <h2 id="lessons-learned">Lessons Learned</h2>
+
 <p>Planning the JEP course was remarkably hard and I have newfound respect for teachers who do this sort of curriculum planning thing year-round.</p>
+
 <h3 id="better-explanations--walkthroughs">Better explanations / walkthroughs</h3>
-<p>What I found with a lot of the material for juniors, especially when it was <em>brand new</em> to them, was that in order to learn they needed more than just the code itself. While it's intuitive <em>to me</em> to read code top-to-bottom and (usually) understand it first-pass, it is not the case for juniors. Writing code is  the same.</p>
-<p>For this, I would involve more pseudocode and step-by-step walkthroughs of what the code should be doing in order to accomplish a particular goal. A few weeks in it was brought up by a junior that the simple task of me writing the steps of a short program on the whiteboard really helped them understand the order of what the program was doing. I think a good term for this sort of thing is &quot;chunking&quot; -- breaking problems down into their smallest pieces. We'll focus a lot on this next JEP.</p>
+
+<p>What I found with a lot of the material for juniors, especially when it was <em>brand new</em> to them, was that in order to learn they needed more than just the code itself. While it’s intuitive <em>to me</em> to read code top-to-bottom and (usually) understand it first-pass, it is not the case for juniors. Writing code is  the same.</p>
+
+<p>For this, I would involve more pseudocode and step-by-step walkthroughs of what the code should be doing in order to accomplish a particular goal. A few weeks in it was brought up by a junior that the simple task of me writing the steps of a short program on the whiteboard really helped them understand the order of what the program was doing. I think a good term for this sort of thing is “chunking” – breaking problems down into their smallest pieces. We’ll focus a lot on this next JEP.</p>
+
 <p>Along the same lines, I would like to do more practice of walking through code to track how something is defined and then used throughout a Rails codebase. As an example: how would a junior know how to find how a field is displayed on a particular page, if they only knew the route and the value of the field? How would they even <em>begin</em> to debug that sort of thing? More practice is required here also.</p>
+
 <h3 id="more-focus-on-fundamentals">More focus on fundamentals</h3>
-<p>What might've helped here also is more practice around the fundamentals. Just how does it all work when you type in <code>http://localhost:3000</code> into your browser and hit enter? What is a HTTP request? What's HTTP? What's a port? What's DNS? What's TCP?</p>
-<p>I don't mean to say that there needs to be a whole <em>week</em> dedicated to each of these things, but at least covering them in a light amount of detail would be a good start. We definitely missed doing this at the start of the JEP and the next time around I will do this as these are the real fundamental concepts of every web application.</p>
-<h3 id="databases-embeforeem-rails">Databases <em>before</em> Rails</h3>
-<p>And now for the big regret: I hinted at this earlier on, but teaching Rails <em>immediately</em> after Ruby was... well, it was one of those &quot;what was I thinking?&quot; moments. The &quot;M(odel)&quot; of Rails applications is thing that underpins it all; if there is no data (no models) within a Rails application, what's the point? Teaching databases <em>first</em> is vital.</p>
+
+<p>What might’ve helped here also is more practice around the fundamentals. Just how does it all work when you type in <code class="language-plaintext highlighter-rouge">http://localhost:3000</code> into your browser and hit enter? What is a HTTP request? What’s HTTP? What’s a port? What’s DNS? What’s TCP?</p>
+
+<p>I don’t mean to say that there needs to be a whole <em>week</em> dedicated to each of these things, but at least covering them in a light amount of detail would be a good start. We definitely missed doing this at the start of the JEP and the next time around I will do this as these are the real fundamental concepts of every web application.</p>
+
+<h3 id="databases-before-rails">Databases <em>before</em> Rails</h3>
+
+<p>And now for the big regret: I hinted at this earlier on, but teaching Rails <em>immediately</em> after Ruby was… well, it was one of those “what was I thinking?” moments. The “M(odel)” of Rails applications is thing that underpins it all; if there is no data (no models) within a Rails application, what’s the point? Teaching databases <em>first</em> is vital.</p>
+
 <p>Juniors must have at least an understanding of how to query databases, and perhaps also an understanding of how to model them in the first place in order to work effectively within applications that are backed by a database.</p>
+
 <p>I would like to spend more time earlier on in the course teaching them about MVC <em>after</em> Ruby but before even talking about Rails. I want to spend time teaching them about models and what they provide, and then about views and what they do and wrap it up with how controllers bring the two together. No Rails course or book out there that I know of introduces MVC <em>slowly</em> like this, but I think it is certainly required.</p>
+
 <h3 id="flip-it-and-reverse-it">Flip it and reverse it</h3>
+
 <p>Last time, we taught in roughly this (simplified) order:</p>
+
 <ol>
-<li>Ruby</li>
-<li>Databases</li>
-<li>Rails</li>
-<li>APIs</li>
-<li>JavaScript</li>
-<li>React</li>
+  <li>Ruby</li>
+  <li>Databases</li>
+  <li>Rails</li>
+  <li>APIs</li>
+  <li>JavaScript</li>
+  <li>React</li>
 </ol>
-<p>After our experiences with the JEP last time and talking about the structure of the next JEP with other people, I'm now convinced that this order was backwards.</p>
-<p>We should be starting at the browser and then working back from there. The whole reason why we'd use Ruby to run Rails to serve an API that React reads from is so that we would see something in the browser! So I think rendering stuff in the browser <em>first</em> is a better approach.</p>
+
+<p>After our experiences with the JEP last time and talking about the structure of the next JEP with other people, I’m now convinced that this order was backwards.</p>
+
+<p>We should be starting at the browser and then working back from there. The whole reason why we’d use Ruby to run Rails to serve an API that React reads from is so that we would see something in the browser! So I think rendering stuff in the browser <em>first</em> is a better approach.</p>
+
 <p>This means that I would teach roughly in this order next time:</p>
+
 <ol>
-<li>HTML / CSS / JavaScript</li>
-<li>React</li>
-<li>APIs</li>
-<li>Ruby / Sinatra</li>
-<li>Databases</li>
-<li>...</li>
+  <li>HTML / CSS / JavaScript</li>
+  <li>React</li>
+  <li>APIs</li>
+  <li>Ruby / Sinatra</li>
+  <li>Databases</li>
+  <li>…</li>
 </ol>
+
 <p>The browser is the entry point for most requests. To understand why you need Ruby to build a web <em>thing</em>, you first need to realise what a web <em>thing</em> looks like. We could start with building a static site and then slowly make it more dynamic by bringing in things like React, external APIs, etc.</p>
-<p>To work with browser tech there's sites like <a href="codepen.io">Codepen</a> and <a href="stackblitz.com">StackBlitz</a> that have zero-setup required. This means that we'll have a smoother time jumping into things too.</p>
-<p>I'm glad that I get to experiment with the JEP structure like this and I really look forward to seeing what comes out of this browsers-first experiment.</p>
+
+<p>To work with browser tech there’s sites like <a href="codepen.io">Codepen</a> and <a href="stackblitz.com">StackBlitz</a> that have zero-setup required. This means that we’ll have a smoother time jumping into things too.</p>
+
+<p>I’m glad that I get to experiment with the JEP structure like this and I really look forward to seeing what comes out of this browsers-first experiment.</p>
+
 
           </article>
         </div>

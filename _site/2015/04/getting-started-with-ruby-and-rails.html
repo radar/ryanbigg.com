@@ -38,104 +38,154 @@
               <small>30 Apr 2015</small>
             </div>
             <p>Last updated: 1st November 2017</p>
+
 <p>There are a lot of people who wish to get started with Ruby and Rails, but
-don't know where to start. I hope that this post will serve as a guide for
+don’t know where to start. I hope that this post will serve as a guide for
 those people.</p>
+
 <h2 id="operating-systems">Operating Systems</h2>
+
 <h3 id="windows">Windows</h3>
+
 <p>People try to develop Ruby and Ruby on Rails apps on Windows and they struggle
-with it. You can try developing on it, but know that it's going to be more
+with it. You can try developing on it, but know that it’s going to be more
 painful than the other options (Linux or Mac).</p>
-<p>It's for this reason that I recommend installing Ubuntu in a VM
-(using <a href="https://www.virtualbox.org/">VirtualBox</a>) on your Windows PC if you're
+
+<p>It’s for this reason that I recommend installing Ubuntu in a VM
+(using <a href="https://www.virtualbox.org/">VirtualBox</a>) on your Windows PC if you’re
 in that environment.</p>
+
 <h3 id="ubuntu">Ubuntu</h3>
-<p>Once you've got Ubuntu setup, you can follow my <a href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/">Ubuntu, Ruby, ruby-install,
+
+<p>Once you’ve got Ubuntu setup, you can follow my <a href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/">Ubuntu, Ruby, ruby-install,
 chruby, Rails and You guide</a>
 which will setup a proper development environment for you on Ubuntu.</p>
-<p><strong>Don't install Ruby packages from <code>apt</code></strong>. That way lies pain and suffering.</p>
+
+<p><strong>Don’t install Ruby packages from <code class="language-plaintext highlighter-rouge">apt</code></strong>. That way lies pain and suffering.</p>
+
 <h3 id="mac">Mac</h3>
-<p>If you're on Mac, you can follow my <a href="http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you">Mac OS X, Ruby, ruby-instlal, chruby and You guide</a>.
+
+<p>If you’re on Mac, you can follow my <a href="http://ryanbigg.com/2015/06/mac-os-x-ruby-ruby-install-chruby-and-you">Mac OS X, Ruby, ruby-instlal, chruby and You guide</a>.
 Install ruby-install, chruby as per that guide, and then you can install
 <a href="http://brew.sh/">Homebrew</a>, and then install PostgreSQL by running this
 command:</p>
-<pre><code>brew install postgresql
-</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install postgresql
+</code></pre></div></div>
+
 <p>Or MySQL with this:</p>
-<pre><code>brew install mysql
-</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install mysql
+</code></pre></div></div>
+
 <h2 id="getting-started-with-ruby">Getting started with Ruby</h2>
+
 <h3 id="code-school">Code School</h3>
+
 <p><strong>FREE</strong></p>
-<p><a href="https://www.codeschool.com/learn/ruby">Code School's Ruby videos</a> are a great
+
+<p><a href="https://www.codeschool.com/learn/ruby">Code School’s Ruby videos</a> are a great
 introduction to Ruby and I would certainly recommend them to anyone who wants
 to get started with learning Ruby.</p>
+
 <h3 id="the-ruby-koans">The Ruby Koans</h3>
+
 <p><strong>FREE</strong></p>
-<p>Your environment is now setup and now you're wondering where to go from here.
+
+<p>Your environment is now setup and now you’re wondering where to go from here.
 I <em>always</em> recommend the <a href="http://rubykoans.com/">Ruby Koans</a> which, as their
 site says:</p>
+
 <blockquote>
-<p>The Koans walk you along the path to enlightenment in order to learn Ruby.
+  <p>The Koans walk you along the path to enlightenment in order to learn Ruby.
 The goal is to learn the Ruby language, syntax, structure, and some common
 functions and libraries. We also teach you culture. Testing is not just
 something we pay lip service to, but something we live. It is essential in
 your quest to learn and do great things in the language.</p>
 </blockquote>
-<p>The Koans are a fantastic introduction to Ruby and if I had my way, it'd be
+
+<p>The Koans are a fantastic introduction to Ruby and if I had my way, it’d be
 where all newbies started to learn. I encourage anyone who attempts these to
 pause once in a while and think about why a certain method or syntax works the
 way it does.</p>
-<p>You don't have to complete them all, just try your best. It's time I admitted:
-I've never actually completed the Koans myself. One day I might.</p>
+
+<p>You don’t have to complete them all, just try your best. It’s time I admitted:
+I’ve never actually completed the Koans myself. One day I might.</p>
+
 <h3 id="the-well-grounded-rubyist">The Well-Grounded Rubyist</h3>
+
 <p><strong>PAID</strong></p>
+
 <p>If a book is more your style, then <a href="http://manning.com/black3">The Well-Grounded
 Rubyist</a> is the one that I would recommend. The
 very first version of this book (Ruby for Rails) is what I learned Ruby from.
-I don't link to it here because it was out of date when I read it and that
+I don’t link to it here because it was out of date when I read it and that
 makes it even more out of date now.</p>
+
 <h3 id="learn-ruby-the-hard-way">Learn Ruby the Hard Way</h3>
+
 <p><strong>Free online</strong></p>
+
 <p><a href="https://learncodethehardway.org/ruby/">Learn Ruby the Hard Way</a> gives a
-non-nonsense introduction to Ruby, taking you from <code>puts</code> all the way up to a
+non-nonsense introduction to Ruby, taking you from <code class="language-plaintext highlighter-rouge">puts</code> all the way up to a
 web-based game in over 50 exercises.</p>
+
 <h3 id="practical-object-oriented-design-in-ruby-poodr">Practical Object-Oriented Design in Ruby (POODR)</h3>
+
 <p><strong>PAID</strong></p>
-<p>The <a href="http://www.poodr.com/">POODR book by Sandi Metz</a> is one of my favourite Ruby books and gives some great examples of how to write excellent Ruby code in an easy-to-read style. Sandi Metz's conference talks are also wonderful watching.</p>
-<h3 id="bottles">99 Bottles</h3>
+
+<p>The <a href="http://www.poodr.com/">POODR book by Sandi Metz</a> is one of my favourite Ruby books and gives some great examples of how to write excellent Ruby code in an easy-to-read style. Sandi Metz’s conference talks are also wonderful watching.</p>
+
+<h3 id="99-bottles">99 Bottles</h3>
+
 <p><strong>PAID</strong></p>
+
 <p>The <a href="https://www.sandimetz.com/99bottles/">99 Bottles book</a> also by Sandi Metz
 and Katrina Owen gives some great advice on how to reorganise code without
 going too far.</p>
+
 <h1 id="getting-started-with-rails">Getting started with Rails</h1>
+
 <h3 id="rails-4-in-action">Rails 4 in Action</h3>
+
 <p><strong>PAID</strong></p>
-<p>It'd be remiss of me to not mention my own book, <a href="https://manning.com/bigg2">Rails 4 in
+
+<p>It’d be remiss of me to not mention my own book, <a href="https://manning.com/bigg2">Rails 4 in
 Action</a> in this section. In the book, we build a
 ticket-tracking application from the ground up using Behaviour Driven
 Development. We cover things like nested resources, authentication, building an
 API and deployment.</p>
+
 <p>Thousands of people have found it to be a great introduction to
 Rails, and some people have even gotten Rails jobs after having read it.</p>
+
 <h3 id="rails-tutorial">Rails Tutorial</h3>
+
 <p><strong>FREE</strong></p>
-<p>If you don't want to shell out the money for my book (and why not?!), then the
+
+<p>If you don’t want to shell out the money for my book (and why not?!), then the
 free <a href="https://www.railstutorial.org/">Rails Tutorial</a> is the next-best-thing.
 In that tutorial, you build a Twitter-like application from scratch.</p>
+
 <h2 id="more-reading--viewing--listening">More reading / viewing / listening</h2>
+
 <p>Before you go ahead and read this list, you should take some time to go through the resources above and gain a basic understanding of Ruby + Rails. Consider these supplementary to the above list.</p>
+
 <h3 id="books">Books</h3>
+
 <ul>
-<li><a href="http://www.confidentruby.com/">Confident Ruby</a></li>
-<li><a href="http://www.amazon.com/Eloquent-Ruby-Addison-Wesley-Professional-Series/dp/0321584104">Eloquent Ruby</a></li>
-<li><a href="http://www.clean-ruby.com/">Clean Ruby</a></li>
+  <li><a href="http://www.confidentruby.com/">Confident Ruby</a></li>
+  <li><a href="http://www.amazon.com/Eloquent-Ruby-Addison-Wesley-Professional-Series/dp/0321584104">Eloquent Ruby</a></li>
+  <li><a href="http://www.clean-ruby.com/">Clean Ruby</a></li>
 </ul>
+
 <h3 id="screencasts">Screencasts</h3>
+
 <ul>
-<li><a href="http://rubytapas.com">Ruby Tapas</a> - Bite sized screencasts about Ruby</li>
-<li><a href="https://www.dailydrip.com/topics/rails">Daily Drip</a> - Bite sized screencasts about Rails</li>
+  <li><a href="http://rubytapas.com">Ruby Tapas</a> - Bite sized screencasts about Ruby</li>
+  <li><a href="https://www.dailydrip.com/topics/rails">Daily Drip</a> - Bite sized screencasts about Rails</li>
 </ul>
+
 <p>If you think of anything that should be added to this post, please leave a comment.</p>
 
           </article>

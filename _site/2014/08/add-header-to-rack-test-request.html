@@ -37,21 +37,28 @@
               <a href="/2014/08/add-header-to-rack-test-request"><h2>Add header to Rack::Test request</h2></a>
               <small>06 Aug 2014</small>
             </div>
-            <p>I couldn't find any results on the Google for the title of this blog post, so I'm writing it here.</p>
+            <p>I couldn’t find any results on the Google for the title of this blog post, so I’m writing it here.</p>
+
 <p>All I wanted to do was to send through a header. I tried this:</p>
-<pre><code>it &quot;test&quot; do
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it "test" do
   get '/test', {}, { 'Test-Header' =&gt; 'Test value' }
   expect(last_response.status).to eq(200)
 end
-</code></pre>
-<p>That doesn't work, because that third argument is actually the Rack <code>env</code> object.</p>
+</code></pre></div></div>
+
+<p>That doesn’t work, because that third argument is actually the Rack <code class="language-plaintext highlighter-rouge">env</code> object.</p>
+
 <p>The correct way to do it is this:</p>
-<pre><code>it &quot;test&quot; do
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>it "test" do
   header 'Test-Header', 'Test value'
   get '/test'
   expect(last_response.status).to eq(200)
 end
-</code></pre>
+</code></pre></div></div>
+
+
           </article>
         </div>
       </div>

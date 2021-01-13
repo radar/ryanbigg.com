@@ -37,16 +37,26 @@
               <a href="/2009/07/adding-your-own-differ-to-rspec"><h2>Adding Your Own Differ to RSpec</h2></a>
               <small>17 Jul 2009</small>
             </div>
-            <p>Recently I <a href='https://rspec.lighthouseapp.com/projects/5645/tickets/848-diff_as_hash'>added diff_as_hash to rspec</a> and I'd like to show you what I did, so you can add your own differs, and it's only a couple of lines of code. You can edit your own local gem copy of rspec using the find_gem gem's edit_gem command.</p>
-<p>Let's use the example that you want to add a BigDecimal differ.</p>
+            <p>Recently I <a href="https://rspec.lighthouseapp.com/projects/5645/tickets/848-diff_as_hash">added diff_as_hash to rspec</a> and I’d like to show you what I did, so you can add your own differs, and it’s only a couple of lines of code. You can edit your own local gem copy of rspec using the find_gem gem’s edit_gem command.</p>
+
+<p>Let’s use the example that you want to add a BigDecimal differ.</p>
+
 <h3><em>lib/spec/expectations/fail_with.rb</em></h3>
-<p>First of all you're going to need to add a line to this file, something that looks like the lines here, along with the other <span class='term'>elsif</span>s:</p>
-&lt;script src="http://gist.github.com/148909.js"></script>
+
+<p>First of all you’re going to need to add a line to this file, something that looks like the lines here, along with the other <span class="term">elsif</span>s:</p>
+
+<script src="http://gist.github.com/148909.js"></script>
+
 <h3><em>lib/spec/runner/differs/default.rb</em></h3>
-<p>Secondly, in this file inside the <span class='term'>Spec::Expectations::Differs::Default</span> class you'll have to define your <span class='term'>diff_as_big_decimal</span> differ:</p>
-&lt;script src="http://gist.github.com/148912.js"></script>
-<p>Now when you diff BigDecimal numbers in your rspec tests, you'll see this output, rather than the ugly output.</p>
+
+<p>Secondly, in this file inside the <span class="term">Spec::Expectations::Differs::Default</span> class you’ll have to define your <span class="term">diff_as_big_decimal</span> differ:</p>
+
+<script src="http://gist.github.com/148912.js"></script>
+
+<p>Now when you diff BigDecimal numbers in your rspec tests, you’ll see this output, rather than the ugly output.</p>
+
 <p>However, what would be nicer is if you could expand on this diffing syntax in your own project, rather than having to hack rspec and have it wiped next time you upgrade. More on that later though.</p>
+
 
           </article>
         </div>

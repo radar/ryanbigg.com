@@ -38,82 +38,134 @@
               <small>09 Jun 2015</small>
             </div>
             <p><strong>Last updated: February 13th, 2019</strong></p>
+
 <p>
   <strong>This beginner's guide will set up with Ruby 2.6.1, chruby, ruby-install and Rails 5.2.2 and is specifically written for a <em>development</em> environment on Mac OS X, but will probably work on many other operating systems with slight modifications.</strong>
 </p>
-<p>This guide is <em>almost</em> a copy of my <a href='http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/'>Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but this one has instructions for Macs.</p>
+
+<p>This guide is <em>almost</em> a copy of my <a href="http://ryanbigg.com/2014/10/ubuntu-ruby-ruby-install-chruby-and-you/">Ubuntu, Ruby, ruby-install, chruby, Rails and You</a> guide, but this one has instructions for Macs.</p>
+
 <p>This guide will cover installing a couple of things:</p>
+
 <ul>
-<li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
-<li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
-<li><strong>Ruby 2.6.1</strong>: at the time of writing the newest current stable release of Ruby.</li>
-<li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
-<li><strong>Rails 5.2.2</strong>: at the time of writing the newest current stable release of Rails.</li>
+  <li><a href="https://github.com/postmodern/ruby-install"><strong>ruby-install</strong></a>: a very lightweight way to install multiple Rubies on the same box.</li>
+  <li><a href="https://github.com/postmodern/chruby"><strong>chruby</strong></a>: a way to easily switch between those Ruby installs</li>
+  <li><strong>Ruby 2.6.1</strong>: at the time of writing the newest current stable release of Ruby.</li>
+  <li><strong>Bundler</strong>: a package dependency manager used in the Ruby community</li>
+  <li><strong>Rails 5.2.2</strong>: at the time of writing the newest current stable release of Rails.</li>
 </ul>
+
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
-<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as &quot;What is RubyGems?&quot; and more importantly &quot;How do I turn this computer-thing on?&quot;. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
-<p>If you're looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
+
+<p>We assume you have <code class="language-plaintext highlighter-rouge">sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as “What is RubyGems?” and more importantly “How do I turn this computer-thing on?”. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
+
+<p>If you’re looking for a good Rails book, I wrote one called <a href="http://manning.com/bigg2">Rails 4 in Action</a>.</p>
+
 <h3 id="housekeeping">Housekeeping</h3>
-<p>The first thing we're going to need to install is XCode which you can get from the Mac App Store.</p>
-<p>After you have that installed, we're going to need to open Terminal to execute a few commands. Use Spotlight (CMD + Space) to open it by typing in &quot;Terminal&quot; and pressing Enter. You should see a white window open. This is where we'll be putting the following commands via copy and paste.</p>
-<p>We'll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
-<pre><code>xcode-select --install
-</code></pre>
-<p>First of all, we're going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href="https://brew.sh">homebrew</a>. We can install this by using this command:</p>
-<pre><code>ruby -e &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)&quot;
-</code></pre>
-<p>Next, we'll install <code>chruby</code> and <code>ruby-install</code>.</p>
-<pre><code>brew install chruby ruby-install
-</code></pre>
+
+<p>The first thing we’re going to need to install is XCode which you can get from the Mac App Store.</p>
+
+<p>After you have that installed, we’re going to need to open Terminal to execute a few commands. Use Spotlight (CMD + Space) to open it by typing in “Terminal” and pressing Enter. You should see a white window open. This is where we’ll be putting the following commands via copy and paste.</p>
+
+<p>We’ll use XCode to install the Command Line Tools which install some libraries that Ruby will use to compile itself.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xcode-select --install
+</code></pre></div></div>
+
+<p>First of all, we’re going to need to install some package management script so that we can install packages such as Git, MySQL and other things exceptionally easy. The best package management system on Mac OS X for this is <a href="https://brew.sh">homebrew</a>. We can install this by using this command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+</code></pre></div></div>
+
+<p>Next, we’ll install <code class="language-plaintext highlighter-rouge">chruby</code> and <code class="language-plaintext highlighter-rouge">ruby-install</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install chruby ruby-install
+</code></pre></div></div>
+
 <h3 id="ruby-install">ruby-install</h3>
+
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
-<pre><code>ruby-install -V
-</code></pre>
-<p>If you see this, then you've successfully installed ruby-install:</p>
-<pre><code>ruby-install: 0.7.0
-</code></pre>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-install -V
+</code></pre></div></div>
+
+<p>If you see this, then you’ve successfully installed ruby-install:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-install: 0.7.0
+</code></pre></div></div>
+
 <h3 id="ruby">Ruby</h3>
+
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
-<pre><code>ruby-install --latest ruby
-</code></pre>
-<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it's done, we'll have Ruby 2.6.1 installed.</p>
-<p>Now we'll need to load chruby automatically, which we can do by adding these lines to <code>~/.bash_profile</code> (or <code>~/.zshrc</code> if you're using ZSH):</p>
-<pre><code>source /usr/local/opt/chruby/share/chruby/chruby.sh
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-install --latest ruby
+</code></pre></div></div>
+
+<p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it’s done, we’ll have Ruby 2.6.1 installed.</p>
+
+<p>Now we’ll need to load chruby automatically, which we can do by adding these lines to <code class="language-plaintext highlighter-rouge">~/.bash_profile</code> (or <code class="language-plaintext highlighter-rouge">~/.zshrc</code> if you’re using ZSH):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source /usr/local/opt/chruby/share/chruby/chruby.sh
 source /usr/local/opt/chruby/share/chruby/auto.sh
-</code></pre>
-<p>In order for this to take effect, we'll need to source that file:</p>
-<pre><code>. ~/.bash_profile
+</code></pre></div></div>
+
+<p>In order for this to take effect, we’ll need to source that file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>. ~/.bash_profile
 # or (if you're using ZSH)
 . ~/.zshrc
-</code></pre>
+</code></pre></div></div>
+
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
-<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it's working:</p>
-<pre><code>ruby-2.6.1
-</code></pre>
-<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
-<pre><code>ruby-2.6.1
-</code></pre>
-<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we're using, we can run <code>chruby ruby-2.6.1</code> for example -- assuming that we have Ruby 2.6.1 installed first!</p>
-<p>Did this work? Let's find out by running <code>ruby -v</code>:</p>
-<pre><code>ruby 2.6.1p33 (2019-01-30 revision 66950) [x86_64-darwin17]
-</code></pre>
+
+<p>To verify that chruby is installed and has detected our Ruby installation, run <code class="language-plaintext highlighter-rouge">chruby</code>. If you see this, then it’s working:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-2.6.1
+</code></pre></div></div>
+
+<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code class="language-plaintext highlighter-rouge">~/.ruby-version</code> with this content:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-2.6.1
+</code></pre></div></div>
+
+<p>This file tells <code class="language-plaintext highlighter-rouge">chruby</code> which Ruby we want to use by default. To change the ruby version that we’re using, we can run <code class="language-plaintext highlighter-rouge">chruby ruby-2.6.1</code> for example – assuming that we have Ruby 2.6.1 installed first!</p>
+
+<p>Did this work? Let’s find out by running <code class="language-plaintext highlighter-rouge">ruby -v</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby 2.6.1p33 (2019-01-30 revision 66950) [x86_64-darwin17]
+</code></pre></div></div>
+
 <h3 id="rails">Rails</h3>
-<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don't need to use that nasty <code>sudo</code> to install things; we've got write-access! To install the Rails gem we'll run this command:</p>
-<pre><code>gem install rails -v 5.2.2 --no-document
-</code></pre>
-<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
+
+<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don’t need to use that nasty <code class="language-plaintext highlighter-rouge">sudo</code> to install things; we’ve got write-access! To install the Rails gem we’ll run this command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem install rails -v 5.2.2 --no-document
+</code></pre></div></div>
+
+<p>This will install the <code class="language-plaintext highlighter-rouge">rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
+
 <h3 id="mysql">MySQL</h3>
-<p>Before you can use MySQL, you'll need to install it with Homebrew:</p>
-<pre><code>brew install mysql
-</code></pre>
-<p>After this, <code>gem install mysql2</code> should succeed.</p>
+
+<p>Before you can use MySQL, you’ll need to install it with Homebrew:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install mysql
+</code></pre></div></div>
+
+<p>After this, <code class="language-plaintext highlighter-rouge">gem install mysql2</code> should succeed.</p>
+
 <h3 id="postgresql">PostgreSQL</h3>
-<p>Before you can use PostgreSQL, you'll need to install it with Homebrew:</p>
-<pre><code>brew install postgresql
-</code></pre>
-<p>After this, <code>gem install pg</code> should succeed.</p>
+
+<p>Before you can use PostgreSQL, you’ll need to install it with Homebrew:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install postgresql
+</code></pre></div></div>
+
+<p>After this, <code class="language-plaintext highlighter-rouge">gem install pg</code> should succeed.</p>
+
 <h3 id="fin">Fin</h3>
-<p>And that's it! Now you've got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href='http://guides.rubyonrails.org'>official guides for Ruby on Rails</a>.</p>
+
+<p>And that’s it! Now you’ve got a Ruby environment you can use to write your (first?) Rails application in with such minimal effort. A good read after this would be the <a href="http://guides.rubyonrails.org">official guides for Ruby on Rails</a>.</p>
+
 <p>The combination of chruby and ruby-install is such a powerful tool and comes in handy for day-to-day Ruby development. Use it, and not the packages from apt to live a life of development luxury.</p>
 
           </article>

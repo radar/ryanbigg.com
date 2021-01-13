@@ -37,22 +37,24 @@
               <a href="/2008/06/i-am-so-freaking-awesome"><h2>I am so freaking awesome</h2></a>
               <small>24 Jun 2008</small>
             </div>
-            <pre lang='rails'>
+            <pre lang="rails">
   (Dir.entries("#{RAILS_ROOT}/app/models") - [".","..",".svn"]).each do |model|
-    has_many model.split(".").first.pluralize.to_sym, :foreign_key => "owner_id"
+    has_many model.split(".").first.pluralize.to_sym, :foreign_key =&gt; "owner_id"
   end
 </pre>
+
 <p>I tried adding:</p>
-<pre lang='rails'>
+
+<pre lang="rails">
  if model.classify.is_a?(ActiveRecord::Base)
-      <<-EVAL
+      &lt;&lt;-EVAL
       class #{model.classify}
         belongs_to :owner
       end
       EVAL
     end
 </pre>
-<p>too, but Rails didn't like that.</p>
+<p>too, but Rails didn’t like that.</p>
 
           </article>
         </div>

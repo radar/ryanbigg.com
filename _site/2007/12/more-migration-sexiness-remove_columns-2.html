@@ -45,8 +45,10 @@ remove_column :table, :column_2
 remove_column :table, :column_3
 
 remove_column :table, :column_4...</pre>
-<p>and by now you're starting to get the idea. I have to not only type out remove_column four times, but also the table name! What a waste of time!</p>
+<p>and by now you’re starting to get the idea. I have to not only type out remove_column four times, but also the table name! What a waste of time!</p>
+
 <p>So I hacked up some code and put it into lib/custom_methods.rb.</p>
+
 <pre lang="ruby"> module ActiveRecord
 module ConnectionAdapters
 class MysqlAdapter
@@ -59,11 +61,16 @@ end
 end
 end
 end</pre>
+
 <p>So now instead of the monstrosity above I can now type:</p>
-<pre lang='ruby'>remove_columns :table, :column_1, :column_2, :column_3, :column_4</pre>
+
+<pre lang="ruby">remove_columns :table, :column_1, :column_2, :column_3, :column_4</pre>
+
 <p>to remove all the columns.</p>
-<p>Also inspired by remove_columns was add_columns (already spied by the observant few). There's a little difference in add_columns compared with add_column, the type is now the second argument instead of the third:</p>
-<pre lang='ruby'>add_columns :table, :string, :column_1, :column_2, :column_3</pre>
+
+<p>Also inspired by remove_columns was add_columns (already spied by the observant few). There’s a little difference in add_columns compared with add_column, the type is now the second argument instead of the third:</p>
+
+<pre lang="ruby">add_columns :table, :string, :column_1, :column_2, :column_3</pre>
 
           </article>
         </div>
