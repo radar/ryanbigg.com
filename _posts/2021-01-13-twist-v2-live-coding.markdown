@@ -19,3 +19,7 @@ To demonstrate what working on this application is like, I'm doing some live cod
 ## Episode 2: Continuing the invitations feature
 
 {% include video.html src="https://www.youtube.com/embed/RKQLEEGIPyE" %}
+
+## Episode 3: Checking for permissions on the invitations
+
+{% include video.html src="https://www.youtube.com/embed/Bg1W8-SzbHw " %}
