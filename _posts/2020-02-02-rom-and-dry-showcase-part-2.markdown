@@ -266,6 +266,7 @@ This code is a bit longer than the code we had previously. However, it comes wit
 
   <p>
     A much better approach is a call method that delegates to <em>other</em> methods.
+  </p>
 </aside>
 
 The `call` method here is responsible for ordering the steps of our transaction. It takes our initial `input` for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the `validate` method:
