@@ -11,7 +11,7 @@ Here's the setup that I have in the room at the moment.
 
 ## Desk
 
-I bought this desk from a second hand office furniture shop. I am pretty sure it used to be a door. It has lived a thousand lives, perhaps more. Someone's bolted some extendable legs on the bottom of it, but it stays at the same height because in order to re-set the height I need to clear off the whole desk.
+I bought this desk from a second hand office furniture shop. I am pretty sure it used to be a door. It has lived a thousand lives, perhaps more. Someone's bolted some extendable legs on the bottom of it, but it stays at the same height because in order to re-set the height I need to clear off the whole desk. There's a lot of things on this desk, as you're about to find out.
 
 ## Chair - Herman Miller Mirra 2
 
