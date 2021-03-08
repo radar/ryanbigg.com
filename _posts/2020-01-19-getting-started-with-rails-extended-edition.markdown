@@ -2470,7 +2470,7 @@ Configuration Gotchas
 
 The easiest way to work with Rails is to store all external data as UTF-8. If
 you don't, Ruby libraries and Rails will often be able to convert your native
-data into UTF-8, but this doesn't always work reliably, so you're better off
+data into UTF-8, but this doesn't always wowrk reliably, so you're better off
 ensuring that all external data is UTF-8.
 
 If you have made a mistake in this area, the most common symptom is a black

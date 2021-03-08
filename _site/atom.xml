@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2021-02-05T12:52:42+11:00</updated>
+ <updated>2021-03-09T09:04:55+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -1574,206 +1574,196 @@ end
 
   <p>
     A much better approach is a call method that delegates to <em>other</em> methods.
-&lt;/aside&gt;
+  </p>
+</aside>
 
-The `call` method here is responsible for ordering the steps of our transaction. It takes our initial `input` for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the `validate` method:
+<p>The <code class="language-plaintext highlighter-rouge">call</code> method here is responsible for ordering the steps of our transaction. It takes our initial <code class="language-plaintext highlighter-rouge">input</code> for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the <code class="language-plaintext highlighter-rouge">validate</code> method:</p>
 
-```ruby
-def validate(input)
-  create_contract = Contracts::Users::CreateUser.new
-  create_contract.call(input).to_monad
-end
-```
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+  <span class="n">create_contract</span> <span class="o">=</span> <span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+  <span class="n">create_contract</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">).</span><span class="nf">to_monad</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
-In this method, we use our contract that we built earlier. When we call this contract, it will return a `Dry::Validation::Result` object. To use this in conjunction with `dry-monads`' Do Notation, we need to convert this object to a Result Monad. We do this by calling `to_monad` on the result.
+<p>In this method, we use our contract that we built earlier. When we call this contract, it will return a <code class="language-plaintext highlighter-rouge">Dry::Validation::Result</code> object. To use this in conjunction with <code class="language-plaintext highlighter-rouge">dry-monads</code>’ Do Notation, we need to convert this object to a Result Monad. We do this by calling <code class="language-plaintext highlighter-rouge">to_monad</code> on the result.</p>
 
-If the validation succeeds, we'll get back a `Success(validated_input)` result monad, otherwise a `Failure(validation_result)` result monad will be returned.
+<p>If the validation succeeds, we’ll get back a <code class="language-plaintext highlighter-rouge">Success(validated_input)</code> result monad, otherwise a <code class="language-plaintext highlighter-rouge">Failure(validation_result)</code> result monad will be returned.</p>
 
-If it fails at this point, the transaction will stop and return the validation failure.
+<p>If it fails at this point, the transaction will stop and return the validation failure.</p>
 
-If it succeeds however, the transaction to the next step: `create_user`:
+<p>If it succeeds however, the transaction to the next step: <code class="language-plaintext highlighter-rouge">create_user</code>:</p>
 
-```ruby
-def create_user(result)
-  user_repo = Bix::Repos::UserRepo.new
-  Success(user_repo.create(result.values))
-end
-```
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+  <span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span><span class="p">.</span><span class="nf">new</span>
+  <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
-This step takes a `result` argument, which will be the `validated_input` returned from our validation step. We then initialise a new repo, and use that to create a user, taking the `result.values`. These values will be the validated and type-casted values from the validation's result.
+<p>This step takes a <code class="language-plaintext highlighter-rouge">result</code> argument, which will be the <code class="language-plaintext highlighter-rouge">validated_input</code> returned from our validation step. We then initialise a new repo, and use that to create a user, taking the <code class="language-plaintext highlighter-rouge">result.values</code>. These values will be the validated and type-casted values from the validation’s result.</p>
 
-Let's try using this class now in `bin/console`:
+<p>Let’s try using this class now in <code class="language-plaintext highlighter-rouge">bin/console</code>:</p>
 
-```ruby
-create_user = Bix::Transactions::Users::CreateUser.new
-result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: 32)
-# =&gt; Success(#&lt;Bix::User id=4 first_name="Ryan" last_name="Bigg" age=32 ...&gt;)
-```
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">32</span><span class="p">)</span>
+<span class="c1"># =&gt; Success(#&lt;Bix::User id=4 first_name="Ryan" last_name="Bigg" age=32 ...&gt;)</span>
+</code></pre></div></div>
 
-When we use this transaction, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a `Success` result monad.
+<p>When we use this transaction, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a <code class="language-plaintext highlighter-rouge">Success</code> result monad.</p>
 
-Let's see what happens if the validation fails in this transaction:
+<p>Let’s see what happens if the validation fails in this transaction:</p>
 
-```ruby
-create_user = Bix::Transactions::Users::CreateUser.new
-result = create_user.call(first_name: "Ryan", last_name: "", age: 32)
-# =&gt; Failure(#&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"", :age=&gt;32} errors={:last_name=&gt;["must be filled"]}&gt;)
-```
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span> <span class="ss">last_name: </span><span class="s2">""</span><span class="p">,</span> <span class="ss">age: </span><span class="mi">32</span><span class="p">)</span>
+<span class="c1"># =&gt; Failure(#&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"", :age=&gt;32} errors={:last_name=&gt;["must be filled"]}&gt;)</span>
+</code></pre></div></div>
 
-This time, we get back a `Failure` result monad, which is wrapping our `Dry::Validation::Result`. This will mean that the persistence won't happen at all.
+<p>This time, we get back a <code class="language-plaintext highlighter-rouge">Failure</code> result monad, which is wrapping our <code class="language-plaintext highlighter-rouge">Dry::Validation::Result</code>. This will mean that the persistence won’t happen at all.</p>
 
-Our transaction class so far has only two methods, but _could_ be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they've signed up?
+<p>Our transaction class so far has only two methods, but <em>could</em> be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they’ve signed up?</p>
 
-Or what if we had a transaction class that handled account signup, where both an account _and_ a user had to be created? A flowchart for that transaction class would look like this:
+<p>Or what if we had a transaction class that handled account signup, where both an account <em>and</em> a user had to be created? A flowchart for that transaction class would look like this:</p>
 
-![More complex transaction diagram](/images/rom/dry-monads-complex.png)
+<p><img src="/images/rom/dry-monads-complex.png" alt="More complex transaction diagram" /></p>
 
-A transaction class is a great way of grouping together all these steps into small, discrete methods.
+<p>A transaction class is a great way of grouping together all these steps into small, discrete methods.</p>
 
-## Handling success or failure
+<h2 id="handling-success-or-failure">Handling success or failure</h2>
 
-Let's now think about how we would actually use this `CreateUser` transaction class in a real context, something a bit more specialised than a simple `bin/console` session. For this section, we'll create a new file at the root of the Bix application, called `transaction_test.rb`. In this file, we'll put this content:
+<p>Let’s now think about how we would actually use this <code class="language-plaintext highlighter-rouge">CreateUser</code> transaction class in a real context, something a bit more specialised than a simple <code class="language-plaintext highlighter-rouge">bin/console</code> session. For this section, we’ll create a new file at the root of the Bix application, called <code class="language-plaintext highlighter-rouge">transaction_test.rb</code>. In this file, we’ll put this content:</p>
 
-```ruby
-require_relative "config/application"
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s2">"config/application"</span>
 
-Bix::Application.finalize!
+<span class="no">Bix</span><span class="o">::</span><span class="no">Application</span><span class="p">.</span><span class="nf">finalize!</span>
 
-include Dry::Monads[:result]
+<span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
 
-input = {
-  first_name: "Ryan",
-  last_name: "Bigg",
-  age: 32
-}
+<span class="n">input</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">first_name: </span><span class="s2">"Ryan"</span><span class="p">,</span>
+  <span class="ss">last_name: </span><span class="s2">"Bigg"</span><span class="p">,</span>
+  <span class="ss">age: </span><span class="mi">32</span>
+<span class="p">}</span>
 
-create_user = Bix::Transactions::Users::CreateUser.new
-case create_user.call(input)
-when Success
-  puts "User created successfully!"
-when Failure(Dry::Validation::Result)
-  puts "User creation failed:"
-  puts result.failure.errors.to_h # TODO variable result is not defined
-end
-```
+<span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Transactions</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+<span class="k">case</span> <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">input</span><span class="p">)</span>
+<span class="k">when</span> <span class="no">Success</span>
+  <span class="nb">puts</span> <span class="s2">"User created successfully!"</span>
+<span class="k">when</span> <span class="no">Failure</span><span class="p">(</span><span class="no">Dry</span><span class="o">::</span><span class="no">Validation</span><span class="o">::</span><span class="no">Result</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"User creation failed:"</span>
+  <span class="nb">puts</span> <span class="n">result</span><span class="p">.</span><span class="nf">failure</span><span class="p">.</span><span class="nf">errors</span><span class="p">.</span><span class="nf">to_h</span> <span class="c1"># TODO variable result is not defined</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
-This file starts out the same way as `bin/console`: we require `config/application.rb` and then "finalize" our application. This finalization step will load all the application's files and start all of the application's dependencies.
+<p>This file starts out the same way as <code class="language-plaintext highlighter-rouge">bin/console</code>: we require <code class="language-plaintext highlighter-rouge">config/application.rb</code> and then “finalize” our application. This finalization step will load all the application’s files and start all of the application’s dependencies.</p>
 
-Next up, we include `Dry::Monads[:result]`. This gives us access to the `Success` and `Failure` result monad classes that we use at the end of this file.
+<p>Next up, we include <code class="language-plaintext highlighter-rouge">Dry::Monads[:result]</code>. This gives us access to the <code class="language-plaintext highlighter-rouge">Success</code> and <code class="language-plaintext highlighter-rouge">Failure</code> result monad classes that we use at the end of this file.</p>
 
-Once we've set everything up, we define an input hash for our transaction, and the transaction itself. When we call the transaction, we can use a `case` to match on the outcome of the transaction. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a `Dry::Validation::Result` failure), we output the validation error messages.
+<p>Once we’ve set everything up, we define an input hash for our transaction, and the transaction itself. When we call the transaction, we can use a <code class="language-plaintext highlighter-rouge">case</code> to match on the outcome of the transaction. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a <code class="language-plaintext highlighter-rouge">Dry::Validation::Result</code> failure), we output the validation error messages.</p>
 
-Here we've seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it.
+<p>Here we’ve seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren’t limited to using it just within a controller – we could use it anywhere we pleased. This example is just a small one showing us how we could use it.</p>
 
-In Part 4 of this guide, we'll re-visit how to use this transaction in a different context.
+<p>In Part 4 of this guide, we’ll re-visit how to use this transaction in a different context.</p>
 
-## Automatically injecting dependencies
+<h2 id="automatically-injecting-dependencies">Automatically injecting dependencies</h2>
 
-Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let's re-visit our transaction's code:
+<p>Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let’s re-visit our transaction’s code:</p>
 
-```ruby
-module Bix
-  module Transactions
-    module Users
-      class CreateUser
-        include Dry::Monads[:result]
-        include Dry::Monads::Do.for(:call)
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Transactions</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">CreateUser</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="o">::</span><span class="no">Do</span><span class="p">.</span><span class="nf">for</span><span class="p">(</span><span class="ss">:call</span><span class="p">)</span>
 
-        def call(params)
-          values = yield validate(params)
-          user = yield persist(values)
+        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+          <span class="n">values</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+          <span class="n">user</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">persist</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
-          Success(user)
-        end
+          <span class="no">Success</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+        <span class="k">end</span>
 
-        def validate(params)
-          create_user = Bix::Contracts::Users::CreateUser.new
-          create_user.call(params).to_monad
-        end
+        <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+          <span class="n">create_user</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Contracts</span><span class="o">::</span><span class="no">Users</span><span class="o">::</span><span class="no">CreateUser</span><span class="p">.</span><span class="nf">new</span>
+          <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">).</span><span class="nf">to_monad</span>
+        <span class="k">end</span>
 
-        def persist(result)
-          user_repo = Bix::Repos::UserRepo.new
-          Success(user_repo.create(result.values))
-        end
-      end
-    end
-  end
-end
-```
+        <span class="k">def</span> <span class="nf">persist</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+          <span class="n">user_repo</span> <span class="o">=</span> <span class="no">Bix</span><span class="o">::</span><span class="no">Repos</span><span class="o">::</span><span class="no">UserRepo</span><span class="p">.</span><span class="nf">new</span>
+          <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
-This code looks pretty clean as it stands. But there's one extra thing we can do to make it even tidier, and that thing is to use `dry-auto_inject`'s import feature. When we define things like the `CreateUser` contract or the `UserRepo` within our application, these classes are automatically registered with `Bix::Application`, because we've directed the application to `auto_register` things in `lib`. This happened over in `config/application.rb`:
+<p>This code looks pretty clean as it stands. But there’s one extra thing we can do to make it even tidier, and that thing is to use <code class="language-plaintext highlighter-rouge">dry-auto_inject</code>’s import feature. When we define things like the <code class="language-plaintext highlighter-rouge">CreateUser</code> contract or the <code class="language-plaintext highlighter-rouge">UserRepo</code> within our application, these classes are automatically registered with <code class="language-plaintext highlighter-rouge">Bix::Application</code>, because we’ve directed the application to <code class="language-plaintext highlighter-rouge">auto_register</code> things in <code class="language-plaintext highlighter-rouge">lib</code>. This happened over in <code class="language-plaintext highlighter-rouge">config/application.rb</code>:</p>
 
-```ruby
-require_relative "boot"
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require_relative</span> <span class="s2">"boot"</span>
 
-require "dry/system/container"
-require "dry/auto_inject"
+<span class="nb">require</span> <span class="s2">"dry/system/container"</span>
+<span class="nb">require</span> <span class="s2">"dry/auto_inject"</span>
 
-module Bix
-  class Application &lt; Dry::System::Container
-    configure do |config|
-      config.root = File.expand_path('..', __dir__)
-      config.default_namespace = 'bix'
+<span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">class</span> <span class="nc">Application</span> <span class="o">&lt;</span> <span class="no">Dry</span><span class="o">::</span><span class="no">System</span><span class="o">::</span><span class="no">Container</span>
+    <span class="n">configure</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+      <span class="n">config</span><span class="p">.</span><span class="nf">root</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">expand_path</span><span class="p">(</span><span class="s1">'..'</span><span class="p">,</span> <span class="n">__dir__</span><span class="p">)</span>
+      <span class="n">config</span><span class="p">.</span><span class="nf">default_namespace</span> <span class="o">=</span> <span class="s1">'bix'</span>
 
-      config.auto_register = 'lib'
-    end
+      <span class="n">config</span><span class="p">.</span><span class="nf">auto_register</span> <span class="o">=</span> <span class="s1">'lib'</span>
+    <span class="k">end</span>
 
-    load_paths!('lib')
-  end
+    <span class="n">load_paths!</span><span class="p">(</span><span class="s1">'lib'</span><span class="p">)</span>
+  <span class="k">end</span>
 
-  Import = Dry::AutoInject(Application)
-end
-```
+  <span class="no">Import</span> <span class="o">=</span> <span class="no">Dry</span><span class="o">::</span><span class="no">AutoInject</span><span class="p">(</span><span class="no">Application</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
-We saw earlier that we could refer to the ROM container with the syntax `include Import["container"]` within our `UserRepo` class. Well, we can do the same thing with our contract and repository in this transaction class too.
+<p>We saw earlier that we could refer to the ROM container with the syntax <code class="language-plaintext highlighter-rouge">include Import["container"]</code> within our <code class="language-plaintext highlighter-rouge">UserRepo</code> class. Well, we can do the same thing with our contract and repository in this transaction class too.</p>
 
-Here's how we'll do it. At the top of the class, we'll put these two `include` lines:
+<p>Here’s how we’ll do it. At the top of the class, we’ll put these two <code class="language-plaintext highlighter-rouge">include</code> lines:</p>
 
-```ruby
-module Bix
-  module Transactions
-    module Users
-      class CreateUser
-        include Dry::Monads[:result]
-        include Dry::Monads::Do.for(:call)
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Bix</span>
+  <span class="k">module</span> <span class="nn">Transactions</span>
+    <span class="k">module</span> <span class="nn">Users</span>
+      <span class="k">class</span> <span class="nc">CreateUser</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="p">[</span><span class="ss">:result</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Dry</span><span class="o">::</span><span class="no">Monads</span><span class="o">::</span><span class="no">Do</span><span class="p">.</span><span class="nf">for</span><span class="p">(</span><span class="ss">:call</span><span class="p">)</span>
 
-        include Import["contracts.users.create_user"]
-        include Import["repos.user_repo"]
-...
-```
+        <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"contracts.users.create_user"</span><span class="p">]</span>
+        <span class="kp">include</span> <span class="no">Import</span><span class="p">[</span><span class="s2">"repos.user_repo"</span><span class="p">]</span>
+<span class="o">...</span>
+</code></pre></div></div>
 
-By using `include` like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our `validate` and `persist` methods in this transaction to this:
+<p>By using <code class="language-plaintext highlighter-rouge">include</code> like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our <code class="language-plaintext highlighter-rouge">validate</code> and <code class="language-plaintext highlighter-rouge">persist</code> methods in this transaction to this:</p>
 
-```ruby
-def validate(params)
-  create_user.call(params).to_monad
-end
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+  <span class="n">create_user</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="n">params</span><span class="p">).</span><span class="nf">to_monad</span>
+<span class="k">end</span>
 
-def persist(result)
-  Success(user_repo.create(result.values))
-end
-```
+<span class="k">def</span> <span class="nf">persist</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+  <span class="no">Success</span><span class="p">(</span><span class="n">user_repo</span><span class="p">.</span><span class="nf">create</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="nf">values</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div></div>
 
-That's a lot cleaner, isn't it? We're now able to refer to the contract as simply `create_user`, and the repository as `user_repo`, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this transaction has, right at the top of the class. We don't need to scan through the class to figure out what they are anymore.
+<p>That’s a lot cleaner, isn’t it? We’re now able to refer to the contract as simply <code class="language-plaintext highlighter-rouge">create_user</code>, and the repository as <code class="language-plaintext highlighter-rouge">user_repo</code>, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this transaction has, right at the top of the class. We don’t need to scan through the class to figure out what they are anymore.</p>
 
-To make sure that things are working again, let's try running `ruby transaction_test.rb` again. If the `input` hash at the top of this file contains valid input, then we should see the successful message still:
+<p>To make sure that things are working again, let’s try running <code class="language-plaintext highlighter-rouge">ruby transaction_test.rb</code> again. If the <code class="language-plaintext highlighter-rouge">input</code> hash at the top of this file contains valid input, then we should see the successful message still:</p>
 
-```
-User created successfully!
-```
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>User created successfully!
+</code></pre></div></div>
 
-If this transaction class went on to use other classes from our application, we could import them with very little effort, thanks to the `dry-system` and `dry-auto_inject` gems.
+<p>If this transaction class went on to use other classes from our application, we could import them with very little effort, thanks to the <code class="language-plaintext highlighter-rouge">dry-system</code> and <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> gems.</p>
 
-## Summary
+<h2 id="summary">Summary</h2>
 
-In this 2nd part of the ROM and Dry showcase, we have used the `dry-validation` gem to add a  _contract_ to our application. A contract is a class that contains validation logic. It's a way of saying that incoming data must meet some criteria before our application can use it.
+<p>In this 2nd part of the ROM and Dry showcase, we have used the <code class="language-plaintext highlighter-rouge">dry-validation</code> gem to add a  <em>contract</em> to our application. A contract is a class that contains validation logic. It’s a way of saying that incoming data must meet some criteria before our application can use it.</p>
 
-In the second half of this guide, we used `dry-monads` to define a _transaction_ class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: `validate` and `persist`. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.
+<p>In the second half of this guide, we used <code class="language-plaintext highlighter-rouge">dry-monads</code> to define a <em>transaction</em> class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: <code class="language-plaintext highlighter-rouge">validate</code> and <code class="language-plaintext highlighter-rouge">persist</code>. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.</p>
 
-In the final part of this guide, we used `dry-auto_inject` once more to automatically inject the repository and contract into our transaction class, allowing us to tidy up the code very slightly, but still noticeably.
+<p>In the final part of this guide, we used <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> once more to automatically inject the repository and contract into our transaction class, allowing us to tidy up the code very slightly, but still noticeably.</p>
 
-In the next part, we're going to look at how we can test the parts of the application that we've built so far by using the RSpec testing framework. We'll also see _another_ advantage of `dry-auto_inject` in this part.
-</p></aside>
+<p>In the next part, we’re going to look at how we can test the parts of the application that we’ve built so far by using the RSpec testing framework. We’ll also see <em>another</em> advantage of <code class="language-plaintext highlighter-rouge">dry-auto_inject</code> in this part.</p>
 ]]></content>
  </entry>
  
@@ -4793,7 +4783,7 @@ resources:</p>
 
 <p>The easiest way to work with Rails is to store all external data as UTF-8. If
 you don’t, Ruby libraries and Rails will often be able to convert your native
-data into UTF-8, but this doesn’t always work reliably, so you’re better off
+data into UTF-8, but this doesn’t always wowrk reliably, so you’re better off
 ensuring that all external data is UTF-8.</p>
 
 <p>If you have made a mistake in this area, the most common symptom is a black

@@ -12,7 +12,7 @@
 
 require 'rubygems'
 require 'bundler/setup'
-require 'active_support/core_ext/string'
+require 'babosa'
 
 TEMPLATE = "template.markdown"
 TARGET_DIR = "_posts"
@@ -20,13 +20,13 @@ TARGET_DIR = "_posts"
 # Get the title which was passed as an argument
 title = ARGV[0]
 # Get the filename
-filename = title.parameterize
+filename = title.to_slug.normalize
 filename = "#{Time.now.strftime('%Y-%m-%d')}-#{filename}.markdown"
 filepath = File.join(TARGET_DIR, filename)
-2
+
 # Create a copy of the template with the title replaced
 new_post = File.read("_layouts/" + TEMPLATE)
-new_post.gsub!('TITLE', title);
+new_post.gsub!('TITLE', title)
 new_post.gsub!('RB-ID', "RB-#{Time.now.to_i}")
 
 # Write out the file to the target directory
