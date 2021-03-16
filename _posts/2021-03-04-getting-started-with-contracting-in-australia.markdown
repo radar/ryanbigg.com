@@ -2,7 +2,7 @@
 wordpress_id: RB-1614848792
 layout: post
 title: Contracting as a developer in Australia
-published: false
+published: true
 ---
 
 (All advice in this blog post is of a general nature and comes with the regular disclaimers, such as: "I am not a lawyer / tax agent", etc. etc. If you have questions about the law or your tax obligations, talk to real lawyers, tax agents or even the people at the ATO.)
@@ -13,7 +13,7 @@ Maybe it was the two redundancies and then being fired. Maybe it was the "ride o
 
 It wasn't supposed to be full-time -- but having two months off work does _nasty_ things to your bank account. Alas. So I'm working full-time (for now) as a contractor, hoping to reduce that to 4 days in the near future.
 
-Someone asked these questions on an Australian web developer Slack group recently:
+Another developer by the name of Susan Pan asked these questions on an Australian web developer Slack group recently:
 
 > Hey everyone, was wondering if there are any people here with contracting experience? I’m new to the industry and also new to contracting so I have no idea about the logistics of it all (working out a salary, need an abn?, legal protections, etc). I’d be super appreciative if anyone has any time to chat/dm about their experience? Thanks!
 
@@ -21,7 +21,7 @@ Here's my (slightly edited) answers to those questions, and I'll add a bit extra
 
 ## ABN
 
-If you're working as a contractor within Australia it's likely that you'll need an ABN. You can [check your ABN eligibilty here](https://abr.gov.au/ABRWeb/Default.aspx?Target=CheckAbnEntitlement&pid=71). I have an ABN. You can look it up, even.
+If you're working as a contractor within Australia it's likely that you'll need an ABN. You can [check your ABN eligibilty here](https://abr.gov.au/ABRWeb/Default.aspx?Target=CheckAbnEntitlement&pid=71). I have an ABN. You can look it up!
 
 An ABN helps identify transactions between businesses within Australia. The government will _probably_ require you to have one, so I would suggest getting one as a first point of call. But! Check your eligibility first.
 
@@ -49,7 +49,7 @@ Speaking of tax, if you're earning over $75k, you'll need to [register for GST a
 
 I then take 9.5% of whatever I get paid and put that directly into my superannuation. This leaves me with 40% to split up according to my family's budget. Some of that goes into a savings account to provide a buffer for when I take annual leave or sick leave. Thinking more about the salary split: I should probably take ~11% of the total and put it purposefully aside to cover sick leave / annual leave. Calculated as 6 weeks of the year (6/52), so ~11%. That would probably make more sense than taking it out of the family's joint savings account.
 
-Money, it's hard.
+Money, it's hard!
 
 ## Invoicing / Tax
 
@@ -109,5 +109,3 @@ The header of this section is a Scouts motto. After attending the scouts for pre
 I care about the long-term viability of your codebase, company and team, not just the money coming in the door. The money in the door helps me keep my family alive and happy. The work I deliver at your company keeps _your_ families alive and happy, and I want that to remain that way long-term. If it remains that way, it's likely you'll keep me as a contractor or at least recommend me to your favourite people.
 
 I've had to work on codebases where contractors who _didn't_ care about those things ("oh fuck we've only got 2 weeks shipitshipitshipit") and it was miserable. I don't want misery -- I want happiness. I want people to go "yeah, you should hire Ryan because he came in for 3 months and did X, Y and Z and rocked our socks." Yeah it's nice being paid, but the _success_ of doing a good job is what counts.
-
-## Portfolio
