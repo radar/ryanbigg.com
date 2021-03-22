@@ -44,7 +44,7 @@ As a friend of mine, [Bo Jeanes](https://twitter.com/bjeanes) put it neatly once
 A decade of Ruby development has produced some great alternatives to Rails'
 MVC directory structure that are definitely worthwhile to consider.
 
-In this guide, I want to show an _alternative_ viewpoint on how a Rails
+In this book, I want to show an _alternative_ viewpoint on how a Rails
 application should be organised in order to increase its maintainability.
 
 These are the best pieces that I've found to work for me and others.
@@ -357,7 +357,7 @@ change, but at least _fewer_ reasons to change than Active Record classes.
 
 It's possible to build a Rails application with distinct classes for validations, persistence and logic that concerns itself with data from database records. It's possible to build one that does not combine a heap of messy logic in a controller action, muddling it in with request and response handling.
 
-Just because DHH & friends decided in 2006 that there was One True Way™ to build a Rails application -- it does not mean that now in 2021, a full 15 years later, that we need to hew as close to that as possible. We can explore other pathways. This is a book dedicated to charting that exploration, leading to a brighter future for your Rails application.
+Just because DHH & friends decided in 2004 that there was One True Way™ to build a Rails application -- it does not mean that now in 2021, a full 17 years later, that we need to hew as close to that as possible. We can explore other pathways. This is a book dedicated to charting that exploration, leading to a brighter future for your Rails application.
 
 The way we're going to _improve_ upon the default Rails architecture is with two suites of gems: those from the [dry-rb](https://dry-rb.org/) suite, and those from the [rom-rb](https://rom-rb.org) suite.
 
