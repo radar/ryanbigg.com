@@ -181,7 +181,7 @@ for <code class="language-plaintext highlighter-rouge">Project#contributors</cod
 contributors to this project”) with database querying and it’s <em>the</em> major
 problem with Active Record’s design.</p>
 
-<p>What’s worse, is that you can make a database call <em>wherever a model is used in a Rails application</em>. If you use a model in a view, a view can make a database call. A view helper can. Anywhere! Rails’ attitude to this is one of “this is fine”, because they provide sharp knives and you’re supposed to be the omakase chef who knows better. Constant vigilance can be exhausting, however.</p>
+<p>What’s worse, is that you can make a database call <em>wherever a model is used in a Rails application</em>. If you use a model in a view, a view can make a database call. A view helper can. Anywhere! Rails’ attitude to this is one of “this is fine”, because they provide sharp knives and you’re supposed to trust the “omakase chefs” of the Rails core team. Constant vigilance can be exhausting, however.</p>
 
 <p>Database queries are cheap to make because Active Record makes it so darn
 easy. When looking at the performance of a large, in-production Rails
@@ -255,46 +255,11 @@ Active Record’s tentacles with our business logic.</p>
 
 <h2 id="views">Views</h2>
 
-<p>Views in a typical Rails application are used to define logic for how to present data from models.</p>
+<p>Views in a typical Rails application are used to define logic for how to present data from models once this data has been fetched by controllers.</p>
 
-<p>Views fall apart in two major areas:</p>
+<p>We’ve already discussed how Active Record allows you to execute additional queries in any context that a model is used. Typically additional queries like the <code class="language-plaintext highlighter-rouge">tickets</code> and <code class="language-plaintext highlighter-rouge">contributors</code> ones above will be executed in a view. There’s no clear barrier between models and views to prevent this from happening.</p>
 
-<ol>
-  <li>Database queries</li>
-  <li>Shared helpers</li>
-</ol>
-
-<h3 id="database-queries">Database queries</h3>
-
-<p>When we use a controller to prepare data for a view, there is nothing preventing us from doing further queries in the view. For example, we might have controller code like this:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def show
-  @project = Project.find(params[:id])
-end
-</code></pre></div></div>
-
-<p>Then, in the view:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ul&gt;
-  &lt;% @project.tickets.each do |ticket| %&gt;
-    &lt;li&gt;&lt;%= ticket.author.name %&gt;&lt;/li&gt;
-  &lt;% end %&gt;
-&lt;/ul&gt;
-</code></pre></div></div>
-
-<p>This is another case of that N+1 query I mentioned earlier. Over the rendering of this view there is:</p>
-
-<ul>
-  <li>One query to load the project</li>
-  <li>One query to load the tickets, and;</li>
-  <li>One query <em>per ticket</em> to load a ticket’s author.</li>
-</ul>
-
-<p>The view has control over which database queries get executed. There is, in essence, two places where database queries are executed: the action in the controller, <em>and</em> the view.</p>
-
-<p>The view now mixes two responsibilities: how to <em>render</em> the data, and how to <em>query</em> the data. It now has become impossible to render this view in an isolated fashion from the database.</p>
-
-<h3 id="shared-helpers">Shared helpers</h3>
+<p>This sort of “leakage” makes it very hard for views to be used in complete isolation from a database. The moment a view uses a model is the moment that the view is now potentially tied to a database. For example: could you look at a view and quickly know how many, if any, database queries were being executed? Probably not.</p>
 
 <p>To define any sort of Ruby logic for views, Rails recommends using view helpers. Perhaps we want to render a particular avatar for users:</p>
 
@@ -316,21 +281,24 @@ end
 
 <p>This code is defined in a helper file at <code class="language-plaintext highlighter-rouge">app/helpers/users_helper.rb</code>, but is used in a completely separate directory, under a completely different namespace. The distance between where the code is <em>defined</em> and where it is <em>used</em> is very far apart.</p>
 
-<p>Not only this, but it is unclear if this is used in just one place, or many different places. If we change it for this <em>one</em> context, will it potentially break other areas? We cannot know without looking through our code diligently.</p>
+<p>On top of all that, helpers are then shared across <em>all</em> views. So while the helper is defined in <code class="language-plaintext highlighter-rouge">UsersHelper</code>, it will be available for <em>all</em> views. If you define a helper in <code class="language-plaintext highlighter-rouge">UsersHelper</code>, then it is also available under views at <code class="language-plaintext highlighter-rouge">app/views/tickets</code>, or <code class="language-plaintext highlighter-rouge">app/views/projects</code>, too.</p>
 
-<p>On top of all that, helpers are then shared across <em>all</em> views. So while the helper is defined in <code class="language-plaintext highlighter-rouge">UsersHelper</code>, it will be available for <em>all</em> views.</p>
+<p>Because of this “wide sharing” of view helpers, we don’t know if changing it is going to have ramifications elsewhere in our application. If we change it for this <em>one</em> context, will it potentially break other areas? We cannot know without looking through our code diligently.</p>
 
 <h3 id="presenters">Presenters</h3>
 
 <p>A common way to approach solving this problem is through the <em>presenter</em> pattern. Presenters define classes that then “accentuate” models. They’re typically used to include presentational logic for models – things that would be “incorrect” to put in a model, but okay to put in a view.</p>
 
+<p>By using a presenter, we have a clear indicator of where the presenter’s method is used: look for things like <code class="language-plaintext highlighter-rouge">UserPresenter.new(user)</code>, and then that’ll be where it is used.</p>
+
 <p>Here’s our <code class="language-plaintext highlighter-rouge">avatar</code> example, but this time in a presenter:</p>
 
-<p>class UserPresenter
-    def avatar
-      image_tag(user.avatar_url || “anonymous.png”)
-    end
-  end</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class UserPresenter
+  def avatar
+    image_tag(user.avatar_url || "anonymous.png")
+  end
+end
+</code></pre></div></div>
 
 <p>To use this, we would then need to initialize a new instance of this presenter per user object:</p>
 
@@ -369,15 +337,15 @@ end
 
 <p>This is not a very clear way to organize this code, and the more this pattern is used, the more confusing your application will get.</p>
 
-<p>Views in a default Rails application leave us with no alternative other than to create a sticky mess.</p>
+<p>Views in a default Rails application leave us with no alternative other than to create a sticky combined mess of logic between our ERB files and helper files that are globally shared.</p>
 
 <h2 id="we-can-do-better">We can do better</h2>
 
-<p>It should be possible to work with the business logic of your application
-without these database calls being made; and without the database at all. Being
-able to reach into the database from your business logic <em>should</em> be hard work.
-Your business logic should have everything it needs to work by that stage. A
-class containing only business logic and being passed some data should not need
+<p>It should be possible to render a view without relying on a model to be connected to a database. Being
+able to reach into the database from your views <em>should</em> be hard work.
+Your business logic should have everything it needs to work by the stage a view is being rendered. This will then make it easier to test the view in isolation from the other components of your application.</p>
+
+<p>The source of these frustrations is the Active Record pattern and Rails’ strict adherence to it. A class containing only business logic and being passed some data should not need
 to know also about how that data is validated, any “callbacks” or how that data
 is persisted too. If a class knows about all of those things, it has too many
 responsibilities.</p>
@@ -412,7 +380,9 @@ change, but at least <em>fewer</em> reasons to change than Active Record classes
 
 <p>It’s possible to build a Rails application with distinct classes for validations, persistence and logic that concerns itself with data from database records. It’s possible to build one that does not combine a heap of messy logic in a controller action, muddling it in with request and response handling.</p>
 
-<p>Just because DHH &amp; friends decided in 2004 that there was One True Way™ to build a Rails application – it does not mean that now in 2021, a full 17 years later, that we need to hew as close to that as possible. We can explore other pathways. This is a book dedicated to charting that exploration, leading to a brighter future for your Rails application.</p>
+<p>Just because DHH &amp; friends decided in 2006 that there was One True Way™ to build a Rails application – it does not mean that now in 2021, a full 15 years later, that we need to hew as close to that as possible.</p>
+
+<p>We can explore other pathways. This is a book dedicated to charting that exploration, leading to a brighter future for your Rails application.</p>
 
 <p>The way we’re going to <em>improve</em> upon the default Rails architecture is with two suites of gems: those from the <a href="https://dry-rb.org/">dry-rb</a> suite, and those from the <a href="https://rom-rb.org">rom-rb</a> suite.</p>
 
@@ -422,7 +392,7 @@ change, but at least <em>fewer</em> reasons to change than Active Record classes
 
 <p>We’ll take apart the intermingling of request-response handling and business logic from within our controllers, and move that out to another set of distinct classes.</p>
 
-<p>We’ll move code that would typically be in a view or a helper, into yet another type of distinct class.</p>
+<p>We’ll move code that would typically be in a view or a helper, into yet another type of distinct class: one called a <em>view component</em>.</p>
 
 <p>And with this, we’ll move forward into that bright future that’ll lead to your Rails applications being maintainable.</p>
 

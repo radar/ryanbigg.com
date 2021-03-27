@@ -2,7 +2,7 @@
 wordpress_id: RB-1614848792
 layout: post
 title: Contracting as a developer in Australia
-published: true
+published: false
 ---
 
 (All advice in this blog post is of a general nature and comes with the regular disclaimers, such as: "I am not a lawyer / tax agent", etc. etc. If you have questions about the law or your tax obligations, talk to real lawyers, tax agents or even the people at the ATO.)
@@ -25,9 +25,11 @@ If you're working as a contractor within Australia it's likely that you'll need 
 
 An ABN helps identify transactions between businesses within Australia. The government will _probably_ require you to have one, so I would suggest getting one as a first point of call. But! Check your eligibility first.
 
-## Salary
+## Money
 
- I contract out at a daily rate that was worked out based on what I was previously paid ($150k as a senior Ruby / JavaScript dev), plus a bit of extra padding to account for things like 1) making my own tax + super contributions 2) giving myself annual leave and sick leave.
+### Working out a daily rate
+
+I contract out at a daily rate that was worked out based on what I was previously paid ($150k as a senior Ruby / JavaScript dev), plus a bit of extra padding to account for things like 1) making my own tax + super contributions 2) giving myself annual leave and sick leave.
 
 I am now charging out at [redacted] as a contractor, working 8 hour days. This works out to [redacted]/day, which is a nice round number that makes me happy.
 
@@ -39,25 +41,39 @@ That's essentially how I work out my number, too. What I will say is that if I w
 
 What clients get for that number is someone with a decade and a half of web development experience in many different teams of different shapes and sizes, with a good knowledge across many different languages. And: "he wrote _the book on Rails!_"
 
+### Invoicing
+
+Invoicing: get yourself a [Xero](https://xero.com) subscription and hook it up to your bank account. Dedicate a time on a particular morning each week to track expenses in Xero and issue invoices or to follow up unpaid invoices.
+
+Expense tracking is incredibly helpful for depreciating things around tax time like the "tools of the trade": laptops, chairs, desks, pencils, pens, rulers... if you use it for a job, keep the receipt (in Xero) and list it under business expenses.
+
+On that same topic: talk to a tax agent around tax time. Again, this is another couple-of-hundred-dollars worth of expenses but the good ones will save you more than what you pay them in raw time-value. The tax agent bill can then be expensed the next financial year. Your tax agent's job is to sift through the data you've diligently collected in Xero and to help you pay the correct amount of tax, or even in some cases to get a tax refund if you've overpaid in your tax obligations.
+
+### GST
+
+Speaking of tax: if you're earning over $75k, you'll need to [register for GST as well](https://www.ato.gov.au/Business/GST/Registering-for-GST/). The ATO purports to have the facilities to do this online, but when I tried using their app it shit the bed (maybe they need to hire more contractors?) and so I had to call them up. Even though I had to wait a while, the agent was super helpful and guided me through all the steps.
+
+I'm now registered for GST, which means that I need to _collect_ GST from the clients that I charge, and then pay that money every quarter to the government, through a process called a Business Activity Statement. You take _all_ the money you charged for GST, _minus_ the GST on purchases you've paid for the business, and that's then your BAS payment for the quarter.
+
+Xero has a great automatic tool for calculating BAS.
+
+### What's it going to take to run the business this month?
+
+Once I've invoiced the client, received the money and correctly set aside the GST amount, it's math time.
+
+For the sole-tradership that I operate, there are business expenses that need to be taken of on usually a recurring rate. These provide me with a baseline cost of what it's going to take to run the business this month.
+
+### Pay yourself
+
 Using that base number, I can then work out that my tax rate is somewhere in the range of 37c-45c in the dollar, depending on if I end up making more than $180k this year or not. This depends on how many weeks I can work this year. This is impossible to predict, given the nature of contracting work. Tide goes in, tide goes out.
 
 So I err on the side of it being 45c instead of 37c. To make the mental math easy, I take whatever I get paid and put away half (50%) of that into a savings account that is then, essentially, untouchable. That then goes to paying my quarterly tax bills that I get from the government. Previously, I was on a Pay-as-you-go quarterly payment plan with the government thanks to my [Leanpub royalties](https://leanpub.com) -- but that'll be changing to a quarterly Business Activity Statement soon due to the increased nature of my "business's" earnings.
 
 By the time tax time comes around and I talk to my tax agent (below) -- if there's still leftover money in the savings account then that gets rolled into the general transaction account for the business and I'll spend it on things that I need, or transfer it into my family's accounts.
 
-Speaking of tax, if you're earning over $75k, you'll need to [register for GST as well](https://www.ato.gov.au/Business/GST/Registering-for-GST/). The ATO purports to have the facilities to do this online, but when I tried using their app it shit the bed (maybe they need to hire more contractors?) and so I had to call them up. Even though I had to wait a while, the agent was super helpful and guided me through all the steps.
-
 I then take 9.5% of whatever I get paid and put that directly into my superannuation. This leaves me with 40% to split up according to my family's budget. Some of that goes into a savings account to provide a buffer for when I take annual leave or sick leave. Thinking more about the salary split: I should probably take ~11% of the total and put it purposefully aside to cover sick leave / annual leave. Calculated as 6 weeks of the year (6/52), so ~11%. That would probably make more sense than taking it out of the family's joint savings account.
 
 Money, it's hard!
-
-## Invoicing / Tax
-
-Invoicing: get yourself a [Xero](https://xero.com) subscription and hook it up to your bank account. Dedicate a time on a particular morning each week to track expenses in Xero and issue invoices or to follow up unpaid invoices.
-
-Expense tracking is incredibly helpful for depreciating things around tax time like the "tools of the trade": laptops, chairs, desks, pencils, pens, rulers... if you use it for a job, keep the receipt (in Xero) and list it under business expenses.
-
-On that same topic: talk to a tax agent around tax time. Again, this is another couple-of-hundred-dollars worth of expenses but the good ones will save you more than what you pay them in raw time-value. The tax agent bill can then be expensed the next financial year. Your tax agent's job is to sift through the data you've diligently collected in Xero and to help you pay the correct amount of tax, or even in some cases to get a tax refund if you've overpaid in your BAS / PAYG obligations.
 
 ## Get it in writing
 
