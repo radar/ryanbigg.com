@@ -84,11 +84,11 @@ An Active Record model is responsible for _at least_ the following things:
 
 If you were to colour each responsibility of your model, it might look something like this:
 
-![Normal model](images/maintainable_rails/normal_model_clean.png)
+![Normal model](/images/maintainable_rails/normal_model_clean.png)
 
 Or really, it might look like this:
 
-![Normal model](images/maintainable_rails/normal_model.png)
+![Normal model](/images/maintainable_rails/normal_model.png)
 
 In traditional Rails models, all of this gets muddled together in the model,
 making it very hard to disentangle code that talks to the database and code
