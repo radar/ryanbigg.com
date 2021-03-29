@@ -4,13 +4,36 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2021-03-28T10:37:11+11:00</updated>
+ <updated>2021-03-30T08:56:23+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>The Bikeshed</title>
+   <link href="http://ryanbigg.com/2021/03/the-bikeshed"/>
+   <updated>2021-03-30T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2021/03/the-bikeshed</id>
+   <content type="html"><![CDATA[<p>Hello.</p>
+
+<p>This is a meeting to discuss the bike shed project. I called this 2.5hr long meeting (running until 1pm) on a Monday so we can start the week by deciding the way forward for the bike shed project.</p>
+
+<p>As the senior consultant here I have some ideas.</p>
+
+<p>The previous bike shed colour did not test well with our beta users and we were particularly ravaged by that one guy on Twitter in an extensive 46-tweet thread. Turns out, chatruese is his ex-wife’s favourite colour. Due to the above reasons, we will be deciding on a new colour for the bike sheds.</p>
+
+<p>We are A/B testing new colours with a focus group that is including not only bike riders but also drivers, motorbike riders and those people with the electronic skateboards. The upcoming Bike Shed 2.0 project will be catering for their needs too.</p>
+
+<p>Dave 3 from our consulting team has determined that the previous consultants did a poor job architecting the bike shed and as such it is not up to code. Daves 2 through 5 recommend a rebuild, while Daves 1 and 6 are still on the fence. That is, they’re on BAU work for the Fence Alpha release that was due out a week and a half ago.</p>
+
+<p>Dave 3 estimates the rebuild of the bike shed will take approximately 3 months, which coincidentally is two weeks longer than our contract lasts for. We will talk to the management here about renewing our contract for another 12 months.</p>
+
+<p>Are there any questions before we begin?</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Maintainable Rails</title>
@@ -6408,47 +6431,6 @@ methods that I’m not remembering right now that can do it too… it’s genera
 <p>There’s no need to build your URLs in any Rails version greater-than 2 using hashes; that’s pretty old school. If you see cases like this in your applications, attempt a refactoring!</p>
 
 <p>Experiment with your new knowledge of polymorphic routing and use it to the best of your advantage.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Working Towards Integration Testing Duolithic Applications</title>
-   <link href="http://ryanbigg.com/2018/10/integration-testing-duolithic-applications"/>
-   <updated>2018-10-16T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2018/10/integration-testing-duolithic-applications</id>
-   <content type="html"><![CDATA[<p>I’ve been revisiting <a href="https://github.com/radar/twist-v2">Twist v2</a> recently. It’s my book review tool that I’ve rebuilt multiple times over the past 8 years. Its latest incarnation is what I’m calling a “duolith”: a very light Hanami backend application with a GraphQL API, and a frontend built with React and Apollo.</p>
-
-<p>The backend and the frontend codebases are kept in separate directories in the same codebase. This allows for separation between the Ruby and JavaScript code, but also the ability to commit changes to both at the same time. The frontend knows how to communicate with the backend, but the backend is frontend-agnostic. Tomorrow I could replace it with Vue and the backend wouldn’t care at all.</p>
-
-<p>I’ve got pretty extensive testing for the backend, but sparse tests for the frontend. But nothing testing the connection between the two. So I’ve been thinking about how to write some integration tests to cover everything. In the apps I’m used to (Rails ones), I’d just drop some tests into <code class="language-plaintext highlighter-rouge">spec/features</code> and it would Just Work™ because that’s what Rails is good at.</p>
-
-<p>But this time I’ve made my life (intentionally) harder by separating the codebases, with the intention over the long-term being that these two codebases are easy to navigate due to their clean separations. The time between re-visiting this app can be months, so it’s important that it’s easy to grok again once I come back to it.</p>
-
-<hr />
-
-<p>Integration testing though is an interesting problem. I know I need some sort of test harness that boots a database, the backend app and the frontend app and then runs some tests over it? But how would I do that?</p>
-
-<p>But then there’s an added complication: for each test I need to setup specific data to test it. And that data should be included in the test itself, so it’s easy to find what’s relevant to this particular test.</p>
-
-<p>To start with, I tried creating a completely separate thing called <code class="language-plaintext highlighter-rouge">integration</code> at the top-level of this repository, but ran into issues with how to setup the data cleanly. I wanted classes from the <code class="language-plaintext highlighter-rouge">backend</code> application, but in <code class="language-plaintext highlighter-rouge">integration</code> they weren’t there.</p>
-
-<p>So I tried another tack: putting the integration tests in the <code class="language-plaintext highlighter-rouge">backend</code> application. This instantly meant that I could access classes to create data for my tests. I could then also rely on the RSpec suite of tests that were already there, extending it a little further.</p>
-
-<p>I’ve been <a href="https://github.com/radar/twist-v2/blob/integration-tests/docker-compose.yml">looking into Docker Compose</a> for just this and it seems to be working. I can start up:</p>
-
-<ul>
-  <li>A database</li>
-  <li>Migrations (to create the tables)</li>
-  <li>Frontend application</li>
-  <li>Backend application</li>
-  <li>Feature tests</li>
-</ul>
-
-<p>And then it run those tests in an “integration test environment”.</p>
-
-<p>I’ve got a work-in-progress branch that I wanted to share here: <a href="https://github.com/radar/twist-v2/tree/integration-tests">twist-v2 @ integration-tests</a>. You can start following along at <code class="language-plaintext highlighter-rouge">docker-compose.yml</code> to see how things are piecing together. Take a look at <code class="language-plaintext highlighter-rouge">backend/Dockerfile</code> and <code class="language-plaintext highlighter-rouge">frontend/Dockerfile</code> too.</p>
-
-<p>Now that I have something working, I can be more confident that this application is working as I intend it to.</p>
 ]]></content>
  </entry>
  
