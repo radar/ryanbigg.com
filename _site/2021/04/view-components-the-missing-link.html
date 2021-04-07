@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <title>View Components: The Missing Link - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="http://feeds.feedburner.com/ryanbigg" rel="alternate" title="The Life of a Radar" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+  <body>
+    <header class="topbar">
+  <h1><a href="/">Ryan Bigg</a></h1>
+
+  <div class='items'>
+    <a href="/">Who?</a> &middot;
+    <a href="/books">Books</a> &middot;
+    <a href="/blog">Blog</a> &middot;
+    <a href="/setup">Setup</a> &middot;
+    <a href="/history">History</a> &middot;
+    <a href="/now">Now</a> &middot;
+    <a href="/mentoring">Mentoring</a>
+  </div>
+</header>
+
+    <div class="main">
+      <div class='content'>
+        <div class='content-inner'>
+          <article>
+            <div class='center'>
+              <a href="/2021/04/view-components-the-missing-link"><h2>View Components: The Missing Link</h2></a>
+              <small>07 Apr 2021</small>
+            </div>
+            <p>There has been an uptick in making Rails play nice with React recently, made possible by gems such as <a href="https://github.com/reactjs/react-rails">react-rails</a>. The <code class="language-plaintext highlighter-rouge">react-rails</code> gem allows you to inject React components into your Rails views like this:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"HelloWorld"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">greeting: </span><span class="s2">"Hello from react-rails."</span> <span class="p">})</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>The first argument here is the component name, and the hash at the end is the props that get passed down to the component.</p>
+
+<p>This gem serves a very useful purpose, but I think there’s a missing link here and I want to show you what that link is, and how best to leverage it.</p>
+
+<h3 id="complicated-props-crowd-up-the-view">Complicated props crowd up the view</h3>
+
+<p>Sometimes, we want to pass a bunch of props through to a React component. Maybe it starts out as one prop and then grows to ten props. This can get really messy:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"UserPicker"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">users: </span><span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span> <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}}</span> <span class="p">},</span> <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span> <span class="p">})</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>As a component grows in complexity, the amount of Ruby in the view continues to grow and grow. Views are sometimes treated like a dumping ground: “well, this <em>can’t</em> go in the model and it <em>shouldn’t</em> go in the controller… guess I’ll just leave it here in the view!”</p>
+
+<p>Yes, this could be more clearly written with some line breaks:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"UserPicker"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="ss">users: </span><span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
+    <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}</span>
+  <span class="k">end</span><span class="p">,</span>
+  <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span>
+<span class="p">})</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>But that still feels quite clunky!</p>
+
+<h3 id="enter-view-components">Enter, view components</h3>
+
+<p>GitHub, has released a gem called <a href="https://github.com/github/view_component/">view_component</a> which aims to solve this problem in a neat way. The <code class="language-plaintext highlighter-rouge">view_component</code> gem defines new classes where you can put complicated view logic, and separates those views into their own directory too.</p>
+
+<p>Let’s take our <code class="language-plaintext highlighter-rouge">UserPicker</code> component from above. This now becomes a class called <code class="language-plaintext highlighter-rouge">UserPickerComponent</code>, and lives at <code class="language-plaintext highlighter-rouge">app/components</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UserPickerComponent</span> <span class="o">&lt;</span> <span class="no">ViewComponent</span><span class="o">::</span><span class="no">Base</span>
+  <span class="nb">attr_reader</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:selected_user_ids</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">users</span><span class="p">:,</span> <span class="n">selected_user_ids</span><span class="p">:)</span>
+    <span class="vi">@users</span> <span class="o">=</span> <span class="n">users</span>
+    <span class="vi">@selected_user_ids</span> <span class="o">=</span> <span class="n">selected_user_ids</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">props</span>
+    <span class="n">user_props</span> <span class="o">=</span> <span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span> <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}</span> <span class="p">}</span>
+
+    <span class="p">{</span>
+      <span class="ss">users: </span><span class="n">user_props</span><span class="p">,</span>
+      <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span>
+    <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>That’s much nicer! Our Ruby code is now where it belongs: in a <em>Ruby</em> file. The code that converts the users to an array-of-hashes with <code class="language-plaintext highlighter-rouge">value</code> and <code class="language-plaintext highlighter-rouge">label</code> key now feels at home in this file and has stopped clogging up our ERB file.</p>
+
+<p>But where’s our ERB code? That now lives in a separate view component file at <code class="language-plaintext highlighter-rouge">app/components/user_picker.html.erb</code>:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">helpers</span><span class="p">.</span><span class="nf">react_component</span> <span class="s2">"UserPicker"</span><span class="p">,</span> <span class="o">**</span><span class="n">props</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>To access the <code class="language-plaintext highlighter-rouge">react_component</code> helper, we need to use the <code class="language-plaintext highlighter-rouge">helpers</code> method provided by <code class="language-plaintext highlighter-rouge">view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
+
+<p>The main thing to note is that our Ruby code now lives in a Ruby file, and the code to render the React component lives over in the component’s view. If we had any additional HTML that was required to be wrapped around this component, this is where it would belong too. I’ve left that out to make things simple here.</p>
+
+<h3 id="rendering-a-view-component">Rendering a view component</h3>
+
+<p>With the Ruby and ERB nicely separated into a view <em>component</em>, it’s time to add that code back to our view. We will first need to initialize the component in the controller action:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">new</span>
+  <span class="vi">@user_picker_component</span> <span class="o">=</span> <span class="no">UserPickerComponent</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+    <span class="ss">users: </span><span class="vi">@users</span><span class="p">,</span>
+    <span class="ss">selected_user_ids: </span><span class="vi">@selected_user_ids</span><span class="p">,</span>
+  <span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Then we can render the component, just like we would render a partial, by calling <code class="language-plaintext highlighter-rouge">render</code> in the view for the action:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;%= render(@user_picker_component) %&gt;
+</code></pre></div></div>
+
+<p>And there you have it, a clear separation between the responsibilities for rendering a React component within a Rails application. We now have:</p>
+
+<ul>
+  <li>The controller action: responsible for collection information based on the request, and prepares the component</li>
+  <li>The view: tells Rails where we want to put the component</li>
+  <li>The component Ruby class: container for any Ruby code that we need to run <em>before</em> rendering our React component, but <em>after</em> the controller has done its duty</li>
+  <li>The component view file: a clearly separated file that concerns itself with only rendering a React component</li>
+</ul>
+
+          </article>
+        </div>
+      </div>
+    </div>
+    <footer>
+    01101110 01101111 01110100 01101000 01101001 01101110 01100111 00100000 01110100 01101111 00100000 01110011 01100101 01100101 00100000 01101000 01100101 01110010 01100101 0001010 0001010 0001010 0001010 0001010 01100010 01110010 01100001 01110110 01101111 00100000 01100110 01101111 01111000 01110100 01110010 01101111 01110100 00100000 01110101 01101110 01101001 01100110 01101111 01110010 01101101
+</footer>
+
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-60556315-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </body>
+</html>
