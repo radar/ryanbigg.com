@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,41 +40,41 @@
 
 <p>Start with a fresh Rails app, using MySQL:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails new shop -d mysql
-</code></pre></div></div>
+<pre><code>rails new shop -d mysql
+</code></pre>
 
-<p>Create a new <code class="language-plaintext highlighter-rouge">Variant</code> model:</p>
+<p>Create a new <code>Variant</code> model:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails g model variant price:decimal
-</code></pre></div></div>
+<pre><code>rails g model variant price:decimal
+</code></pre>
 
-<p>We just so happen to know that we need to specify a precision (numbers before the decimal) and scale (numbers after the decimal) for this column, and we (read: I) can never remember the syntax for that in the <code class="language-plaintext highlighter-rouge">generate</code> command, so we edit the migration to provide both a <code class="language-plaintext highlighter-rouge">precision</code> and <code class="language-plaintext highlighter-rouge">scale</code> for this column, turning it into this:</p>
+<p>We just so happen to know that we need to specify a precision (numbers before the decimal) and scale (numbers after the decimal) for this column, and we (read: I) can never remember the syntax for that in the <code>generate</code> command, so we edit the migration to provide both a <code>precision</code> and <code>scale</code> for this column, turning it into this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateVariants</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="n">create_table</span> <span class="ss">:variants</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-      <span class="n">t</span><span class="p">.</span><span class="nf">decimal</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">precision: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">scale: </span><span class="mi">2</span>
+<pre><code class="language-ruby">class CreateVariants &lt; ActiveRecord::Migration
+  def change
+    create_table :variants do |t|
+      t.decimal :price, precision: 10, scale: 2
 
-      <span class="n">t</span><span class="p">.</span><span class="nf">timestamps</span> <span class="ss">null: </span><span class="kp">false</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+      t.timestamps null: false
+    end
+  end
+end
+</code></pre>
 
-<p>Running this migration with <code class="language-plaintext highlighter-rouge">rake db:migrate</code> will generate a <code class="language-plaintext highlighter-rouge">db/schema.rb</code> which looks like this:</p>
+<p>Running this migration with <code>rake db:migrate</code> will generate a <code>db/schema.rb</code> which looks like this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Schema</span><span class="p">.</span><span class="nf">define</span><span class="p">(</span><span class="ss">version: </span><span class="mi">20151110060233</span><span class="p">)</span> <span class="k">do</span>
-  <span class="n">create_table</span> <span class="s2">"variants"</span><span class="p">,</span> <span class="ss">force: :cascade</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-    <span class="n">t</span><span class="p">.</span><span class="nf">decimal</span>  <span class="s2">"price"</span><span class="p">,</span>      <span class="ss">precision: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">scale: </span><span class="mi">2</span>
-    <span class="n">t</span><span class="p">.</span><span class="nf">datetime</span> <span class="s2">"created_at"</span><span class="p">,</span>                          <span class="ss">null: </span><span class="kp">false</span>
-    <span class="n">t</span><span class="p">.</span><span class="nf">datetime</span> <span class="s2">"updated_at"</span><span class="p">,</span>                          <span class="ss">null: </span><span class="kp">false</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">ActiveRecord::Schema.define(version: 20151110060233) do
+  create_table "variants", force: :cascade do |t|
+    t.decimal  "price",      precision: 10, scale: 2
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+  end
+end
+</code></pre>
 
-<p>A <code class="language-plaintext highlighter-rouge">show columns from variants;</code> MySQL query will show this:</p>
+<p>A <code>show columns from variants;</code> MySQL query will show this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>+------------+---------------+------+-----+---------+----------------+
+<pre><code>+------------+---------------+------+-----+---------+----------------+
 | Field      | Type          | Null | Key | Default | Extra          |
 +------------+---------------+------+-----+---------+----------------+
 | id         | int(11)       | NO   | PRI | NULL    | auto_increment |
@@ -82,66 +82,66 @@
 | created_at | datetime      | NO   |     | NULL    |                |
 | updated_at | datetime      | NO   |     | NULL    |                |
 +------------+---------------+------+-----+---------+----------------+
-</code></pre></div></div>
+</code></pre>
 
-<p>Note here that the <code class="language-plaintext highlighter-rouge">price</code> field has a <code class="language-plaintext highlighter-rouge">precision</code> of 10 and <code class="language-plaintext highlighter-rouge">scale</code> of 2; that’s indicated by <code class="language-plaintext highlighter-rouge">decimal(10,2)</code>. That’s good, because that’s what we specified inside our migration.</p>
+<p>Note here that the <code>price</code> field has a <code>precision</code> of 10 and <code>scale</code> of 2; that’s indicated by <code>decimal(10,2)</code>. That’s good, because that’s what we specified inside our migration.</p>
 
 <p>Let’s stop here and create three variants in our console:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails console
+<pre><code>rails console
 Variant.create(price: 18.49)
 Variant.create(price: 26.99)
 Variant.create(price: null)
-</code></pre></div></div>
+</code></pre>
 
 <p>These are just for demonstration purposes. No real data was harmed in the writing of this blog post.</p>
 
-<p>The <code class="language-plaintext highlighter-rouge">price</code> column here doesn’t have a default value and it allows for null values. There’s data in here already which has <code class="language-plaintext highlighter-rouge">null</code> and that just won’t do, because we want prices to always be a decimal number to make it easy to manage in our code. Having to do <code class="language-plaintext highlighter-rouge">to_f</code> to convert <code class="language-plaintext highlighter-rouge">nil</code> to <code class="language-plaintext highlighter-rouge">0.0</code> is not that smart. We’re better than that!</p>
+<p>The <code>price</code> column here doesn’t have a default value and it allows for null values. There’s data in here already which has <code>null</code> and that just won’t do, because we want prices to always be a decimal number to make it easy to manage in our code. Having to do <code>to_f</code> to convert <code>nil</code> to <code>0.0</code> is not that smart. We’re better than that!</p>
 
-<p>So we’ll go ahead and create a new migration to do the the <code class="language-plaintext highlighter-rouge">default</code> and <code class="language-plaintext highlighter-rouge">null</code> modifications to this <code class="language-plaintext highlighter-rouge">price</code> column:</p>
+<p>So we’ll go ahead and create a new migration to do the the <code>default</code> and <code>null</code> modifications to this <code>price</code> column:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rails g migration add_default_to_variants_price
-</code></pre></div></div>
+<pre><code>rails g migration add_default_to_variants_price
+</code></pre>
 
 <p>Inside that migration, we write this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">AddDefaultToVariantsPrice</span> <span class="o">&lt;</span> <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Migration</span>
-  <span class="k">def</span> <span class="nf">change</span>
-    <span class="no">Variant</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">price: </span><span class="kp">nil</span><span class="p">).</span><span class="nf">update_all</span><span class="p">(</span><span class="s2">"price = 0"</span><span class="p">)</span>
-    <span class="n">change_column</span> <span class="ss">:variants</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:decimal</span><span class="p">,</span> <span class="ss">default: </span><span class="mf">0.0</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">class AddDefaultToVariantsPrice &lt; ActiveRecord::Migration
+  def change
+    Variant.where(price: nil).update_all("price = 0")
+    change_column :variants, :price, :decimal, default: 0.0, null: false
+  end
+end
+</code></pre>
 
-<p>Pretty simple stuff. We change all the variants where the price is <code class="language-plaintext highlighter-rouge">nil</code> (<code class="language-plaintext highlighter-rouge">null</code>) to have a price set to <code class="language-plaintext highlighter-rouge">0</code>. Then we set the <code class="language-plaintext highlighter-rouge">default</code> to be <code class="language-plaintext highlighter-rouge">0.0</code> and also tell it that we don’t want <code class="language-plaintext highlighter-rouge">null</code> values in this column. If we didn’t do the <code class="language-plaintext highlighter-rouge">update_all</code> call first, AR would bomb out because we tried to set <code class="language-plaintext highlighter-rouge">null: false</code> on a column which already had nulls.</p>
+<p>Pretty simple stuff. We change all the variants where the price is <code>nil</code> (<code>null</code>) to have a price set to <code>0</code>. Then we set the <code>default</code> to be <code>0.0</code> and also tell it that we don’t want <code>null</code> values in this column. If we didn’t do the <code>update_all</code> call first, AR would bomb out because we tried to set <code>null: false</code> on a column which already had nulls.</p>
 
-<p>We then run this migration (<code class="language-plaintext highlighter-rouge">rake db:migrate</code>), and this is where things go bad.</p>
+<p>We then run this migration (<code>rake db:migrate</code>), and this is where things go bad.</p>
 
-<p>To start with, let’s open <code class="language-plaintext highlighter-rouge">rails console</code> and run <code class="language-plaintext highlighter-rouge">Variant.first</code>. This is the variant that has a price set to <code class="language-plaintext highlighter-rouge">26.99</code>. Well, it’s not that any more:</p>
+<p>To start with, let’s open <code>rails console</code> and run <code>Variant.first</code>. This is the variant that has a price set to <code>26.99</code>. Well, it’s not that any more:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#&lt;Variant id: 1, price: 27,
-</code></pre></div></div>
+<pre><code>#&lt;Variant id: 1, price: 27,
+</code></pre>
 
 <p>Yes, it’s now 27.</p>
 
-<p>What happened? Let’s look at our <code class="language-plaintext highlighter-rouge">schema.rb</code>:</p>
+<p>What happened? Let’s look at our <code>schema.rb</code>:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Schema</span><span class="p">.</span><span class="nf">define</span><span class="p">(</span><span class="ss">version: </span><span class="mi">20151110061535</span><span class="p">)</span> <span class="k">do</span>
+<pre><code class="language-ruby">ActiveRecord::Schema.define(version: 20151110061535) do
 
-  <span class="n">create_table</span> <span class="s2">"variants"</span><span class="p">,</span> <span class="ss">force: :cascade</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-    <span class="n">t</span><span class="p">.</span><span class="nf">decimal</span>  <span class="s2">"price"</span><span class="p">,</span>      <span class="ss">precision: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">default: </span><span class="mi">0</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
-    <span class="n">t</span><span class="p">.</span><span class="nf">datetime</span> <span class="s2">"created_at"</span><span class="p">,</span>                            <span class="ss">null: </span><span class="kp">false</span>
-    <span class="n">t</span><span class="p">.</span><span class="nf">datetime</span> <span class="s2">"updated_at"</span><span class="p">,</span>                            <span class="ss">null: </span><span class="kp">false</span>
-  <span class="k">end</span>
+  create_table "variants", force: :cascade do |t|
+    t.decimal  "price",      precision: 10, default: 0, null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+  end
 
-<span class="k">end</span>
-</code></pre></div></div>
+end
+</code></pre>
 
-<p>Ok, that says it’s got a <code class="language-plaintext highlighter-rouge">precision: 10</code>, but where’s the scale from the first migration gone? It’s gone away.</p>
+<p>Ok, that says it’s got a <code>precision: 10</code>, but where’s the scale from the first migration gone? It’s gone away.</p>
 
 <p>Let’s confirm this in MySQL too:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; SHOW COLUMNS from variants;
+<pre><code>mysql&gt; SHOW COLUMNS from variants;
 +------------+---------------+------+-----+---------+----------------+
 | Field      | Type          | Null | Key | Default | Extra          |
 +------------+---------------+------+-----+---------+----------------+
@@ -150,7 +150,7 @@ Variant.create(price: null)
 | created_at | datetime      | NO   |     | NULL    |                |
 | updated_at | datetime      | NO   |     | NULL    |                |
 +------------+---------------+------+-----+---------+----------------+
-</code></pre></div></div>
+</code></pre>
 
 <p>The precision has stayed at 10, but the scale has changed to 0.</p>
 
@@ -160,13 +160,13 @@ Variant.create(price: null)
 
 <p>Instead of this line:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">change_column</span> <span class="ss">:variants</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:decimal</span><span class="p">,</span> <span class="ss">default: </span><span class="mf">0.0</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">change_column :variants, :price, :decimal, default: 0.0, null: false
+</code></pre>
 
 <p>We should have:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">change_column</span> <span class="ss">:variants</span><span class="p">,</span> <span class="ss">:price</span><span class="p">,</span> <span class="ss">:decimal</span><span class="p">,</span> <span class="ss">precision: </span><span class="mi">10</span><span class="p">,</span> <span class="ss">scale: </span><span class="mi">2</span><span class="p">,</span> <span class="ss">default: </span><span class="mf">0.0</span><span class="p">,</span> <span class="ss">null: </span><span class="kp">false</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">change_column :variants, :price, :decimal, precision: 10, scale: 2, default: 0.0, null: false
+</code></pre>
 
 <p>Otherwise, it defaults to a precision of 10 and scale of 0 <em>and</em> helpfully rounds up your prices for you.</p>
 

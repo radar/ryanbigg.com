@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -57,7 +57,7 @@
 
 <p>The Active Record pattern encourages you to throw everything into the model. Think: callbacks, validations, persistence, database logic (queries) and business logic.</p>
 
-<p>In contrast, the repository pattern (through ROM) leads to a cleaner separation between your database and your application. I <em>especially</em> like how validations are handled by <code class="language-plaintext highlighter-rouge">dry-validation</code>, a completely separate library to ROM. This <em>enforces</em> a separation between your models, persistence and validation layers, allowing you to pick and choose which ones you wish to use.</p>
+<p>In contrast, the repository pattern (through ROM) leads to a cleaner separation between your database and your application. I <em>especially</em> like how validations are handled by <code>dry-validation</code>, a completely separate library to ROM. This <em>enforces</em> a separation between your models, persistence and validation layers, allowing you to pick and choose which ones you wish to use.</p>
 
 <p>My <em>favourite</em> part about the repository pattern is that it’s incredibly difficult to make database queries from a view. This helps prevent things like N+1 queries.</p>
 
@@ -76,7 +76,7 @@
 
 <p>Rather than throwing all your actions into the same controller, they’re separated out into their own classes.  This helps keep each action isolated from one another, leading to overall a cleaner application architecture.</p>
 
-<p>If you want to share things across actions, it’s very easy to create a module for that functionality and to include it into those action classes. For instance, if you wanted a <code class="language-plaintext highlighter-rouge">find_post</code> method for <code class="language-plaintext highlighter-rouge">show</code>, <code class="language-plaintext highlighter-rouge">edit</code>, <code class="language-plaintext highlighter-rouge">update</code> and <code class="language-plaintext highlighter-rouge">destroy</code> actions, you can define this in a module and only include it in the actions you want.</p>
+<p>If you want to share things across actions, it’s very easy to create a module for that functionality and to include it into those action classes. For instance, if you wanted a <code>find_post</code> method for <code>show</code>, <code>edit</code>, <code>update</code> and <code>destroy</code> actions, you can define this in a module and only include it in the actions you want.</p>
 
 <p>A Rails controller is typically made messier by the addition of “helper” methods like this. It’s not uncommon to have Rails controllers of multiple hundreds of lines, due to the complexity of the actions and these helper methods. Separating out each action into its own class indeed makes them easier to work with.</p>
 
@@ -95,7 +95,7 @@
 
 <p>Somewhat related to the previous point:</p>
 
-<p>Actions in Hanami also use parameter validation (with the help of <code class="language-plaintext highlighter-rouge">dry-validation</code>, I think). This means that each action can uniquely validate the parameters. Rather than having <code class="language-plaintext highlighter-rouge">create_project_params</code> and <code class="language-plaintext highlighter-rouge">update_project_params</code> defined within a controller – as you might do in Rails – you can define what constitutes valid parameters right there in the action class.</p>
+<p>Actions in Hanami also use parameter validation (with the help of <code>dry-validation</code>, I think). This means that each action can uniquely validate the parameters. Rather than having <code>create_project_params</code> and <code>update_project_params</code> defined within a controller – as you might do in Rails – you can define what constitutes valid parameters right there in the action class.</p>
 
 <p>In my Hanami experiments, I’ve not found a use for this yet, but I can think of several places where I’ve needed this sort of thing in a Rails app.</p>
 

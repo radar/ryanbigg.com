@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -38,18 +38,18 @@
             </div>
             <p>Have you ever worked on a project that has tests? Probably. How about a project that has a test that runs fine by itself but fails when the whole suite runs? Maybe. That’s what I’m going to be talking about here today.</p>
 
-<p>You probably already know the story. You have a whole bunch of tests, perhaps hundreds of them, that take multiple minutes to run as a whole and about 32% of the way through <em>one</em> of the test fails. But that’s ok, because you’re running <code class="language-plaintext highlighter-rouge">rspec</code> with the <code class="language-plaintext highlighter-rouge">--fail-fast</code> option which will make RSpec quit the instant it comes across a failure, right?</p>
+<p>You probably already know the story. You have a whole bunch of tests, perhaps hundreds of them, that take multiple minutes to run as a whole and about 32% of the way through <em>one</em> of the test fails. But that’s ok, because you’re running <code>rspec</code> with the <code>--fail-fast</code> option which will make RSpec quit the instant it comes across a failure, right?</p>
 
 <p>Or maybe not. Well, now you know.</p>
 
 <p>Anyway, this one test is testing some piece of obscure, but required, functionality. Whenever you try thinking about when you worked on it – or even <em>if</em> you worked on it – your mind starts going fuzzy and the room starts to spin widdershins. You run the test by itself and RSpec reports this back:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+<pre><code>.
 
 1 example, 0 failures
-</code></pre></div></div>
+</code></pre>
 
-<p>You put on your “Challenge Accepted” face and re-run the tests again, perhaps this time with the <code class="language-plaintext highlighter-rouge">--fail-fast</code> option enabled. Sure enough, the test fails again.</p>
+<p>You put on your “Challenge Accepted” face and re-run the tests again, perhaps this time with the <code>--fail-fast</code> option enabled. Sure enough, the test fails again.</p>
 
 <p>Cool story.</p>
 
@@ -67,13 +67,13 @@
 
 <h3 id="step-2-build-a-list-of-suspects">Step 2: Build a list of suspects</h3>
 
-<p>You know those pretty little green dots / red Fs / yellow stars RSpec prints out? They’re all coming from a part of RSpec called the <a href="https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/formatters/progress_formatter.rb"><code class="language-plaintext highlighter-rouge">ProgressFormatter</code></a>. Look, sensible code! If the example passes, it calls <code class="language-plaintext highlighter-rouge">output.print green('.')</code>. You probably couldn’t get more sensible than this.</p>
+<p>You know those pretty little green dots / red Fs / yellow stars RSpec prints out? They’re all coming from a part of RSpec called the <a href="https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/formatters/progress_formatter.rb"><code>ProgressFormatter</code></a>. Look, sensible code! If the example passes, it calls <code>output.print green('.')</code>. You probably couldn’t get more sensible than this.</p>
 
 <p>My <em>point</em> is that RSpec uses this as a kind of reporting tool to show you that progress is actually being made. The <em>great</em> thing about this is that you can write your own! With your own tool, you’ll be able to output to a log what specs are being run and then use this as a base list of suspects.</p>
 
-<p>Create a new file called <code class="language-plaintext highlighter-rouge">spec/support/spec_logger.rb</code> and put this content in it:</p>
+<p>Create a new file called <code>spec/support/spec_logger.rb</code> and put this content in it:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require 'rspec/core/formatters/progress_formatter'
+<pre><code>require 'rspec/core/formatters/progress_formatter'
 class SpecLogger &lt; RSpec::Core::Formatters::ProgressFormatter
 
   def example_started(example)
@@ -83,25 +83,25 @@ class SpecLogger &lt; RSpec::Core::Formatters::ProgressFormatter
     end
   end
 end
-</code></pre></div></div>
+</code></pre>
 
-<p>What this does is that it inherits the standard green dots, red Fs and yellow stars from <code class="language-plaintext highlighter-rouge">RSpec::Core::Formatters::ProgressFormatter</code> and extends it with a bit of functionality that will log exactly what specs are being run during a test run.</p>
+<p>What this does is that it inherits the standard green dots, red Fs and yellow stars from <code>RSpec::Core::Formatters::ProgressFormatter</code> and extends it with a bit of functionality that will log exactly what specs are being run during a test run.</p>
 
-<p>To use this formatter in your next (fast failing) test run, run it using <code class="language-plaintext highlighter-rouge">bundle exec rspec spec --require spec/support/spec_logger -f SpecLogger --fail-fast</code>.</p>
+<p>To use this formatter in your next (fast failing) test run, run it using <code>bundle exec rspec spec --require spec/support/spec_logger -f SpecLogger --fail-fast</code>.</p>
 
-<p>Once this command completes, you’ll have a list of suspects in <code class="language-plaintext highlighter-rouge">specs.log</code> at the root of your project.</p>
+<p>Once this command completes, you’ll have a list of suspects in <code>specs.log</code> at the root of your project.</p>
 
 <hr />
 
 <h3 id="step-3-find-the-perp">Step 3: Find the perp</h3>
 
-<p>In this <code class="language-plaintext highlighter-rouge">specs.log</code> file you should have a list of specs that have been run just recently, with the final one being the one that is failing mysteriously. Now let’s assume that in the entire test suite there are exactly 100 tests total. With this failure occurring 32% of the way through, it should be failing at the #32 test. This number is important because it’s equally divisible by two.</p>
+<p>In this <code>specs.log</code> file you should have a list of specs that have been run just recently, with the final one being the one that is failing mysteriously. Now let’s assume that in the entire test suite there are exactly 100 tests total. With this failure occurring 32% of the way through, it should be failing at the #32 test. This number is important because it’s equally divisible by two.</p>
 
 <p>However, the locations listed in specs.log are going to have duplicate files, and RSpec only allows you to run multiple files at a time, and not multiple locations within multiple files. This list should be culled to only have one line for each file.</p>
 
-<p>Next, the trick is to take one half of these <em>plus</em> the file containing the failing test and run them together. If you take the first 15 tests and run them in an RSpec command like <code class="language-plaintext highlighter-rouge">bundle exec rspec spec &lt;file1&gt; &lt;file2&gt; ... &lt;file15&gt;</code> then you’ll be able to see a result.</p>
+<p>Next, the trick is to take one half of these <em>plus</em> the file containing the failing test and run them together. If you take the first 15 tests and run them in an RSpec command like <code>bundle exec rspec spec &lt;file1&gt; &lt;file2&gt; ... &lt;file15&gt;</code> then you’ll be able to see a result.</p>
 
-<p>This is <em>exactly</em> the process <code class="language-plaintext highlighter-rouge">git bisect</code> uses, or at least what I think it does.</p>
+<p>This is <em>exactly</em> the process <code>git bisect</code> uses, or at least what I think it does.</p>
 
 <p>If these tests are failing with these first fifteen, then the failure is most likely caused by one of those tests. If it’s not, then it’s in the other half. Re-run the test suite with that half and see if you get a failure there.</p>
 

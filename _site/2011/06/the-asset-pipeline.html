@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -41,14 +41,14 @@
 <p>So far, it’s looking good. I cover things like:</p>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">image_tag</code> generating a URL such as <code class="language-plaintext highlighter-rouge">/assets/image.png</code> which actually is served through Sprockets.</li>
-  <li>Assets can be at either <code class="language-plaintext highlighter-rouge">app/assets</code> or <code class="language-plaintext highlighter-rouge">vendor/assets</code>. No mention of <code class="language-plaintext highlighter-rouge">lib/assets</code> because I don’t think it’s sensible to put assets in <code class="language-plaintext highlighter-rouge">lib</code>. Maybe someone can explain that one to me.</li>
-  <li>By inheriting from <code class="language-plaintext highlighter-rouge">Rails::Engine</code> within a gem, that gem’s <code class="language-plaintext highlighter-rouge">app/assets</code> subdirectories are now added to the load path for Sprockets. When Sprockets goes looking for an asset, it will look there, providing the directories exist. Also, <code class="language-plaintext highlighter-rouge">vendor/assets</code>, ditto.</li>
+  <li><code>image_tag</code> generating a URL such as <code>/assets/image.png</code> which actually is served through Sprockets.</li>
+  <li>Assets can be at either <code>app/assets</code> or <code>vendor/assets</code>. No mention of <code>lib/assets</code> because I don’t think it’s sensible to put assets in <code>lib</code>. Maybe someone can explain that one to me.</li>
+  <li>By inheriting from <code>Rails::Engine</code> within a gem, that gem’s <code>app/assets</code> subdirectories are now added to the load path for Sprockets. When Sprockets goes looking for an asset, it will look there, providing the directories exist. Also, <code>vendor/assets</code>, ditto.</li>
   <li>Sprockets directives. Not even the <em>Sprockets README, Wiki or <a href="http://getsprockets.org/">site</a></em> cover this. You would have thought it’s kind of a, you know, <em>core behaviour that people would wet their pants over</em>, but obviously not given the lack of documentation.</li>
-  <li>Pre-compiled Sass, SCSS and CoffeeScript and how their relative gems (<code class="language-plaintext highlighter-rouge">sass-rails</code> and <code class="language-plaintext highlighter-rouge">coffeescript</code>) aid in that purpose, and how they’re served through Sprockets.</li>
+  <li>Pre-compiled Sass, SCSS and CoffeeScript and how their relative gems (<code>sass-rails</code> and <code>coffeescript</code>) aid in that purpose, and how they’re served through Sprockets.</li>
 </ul>
 
-<p>But the final thing that I want to cover is how it all works in the <code class="language-plaintext highlighter-rouge">production</code> environment. From what I can see, assets are given an MD5 identifier (<code class="language-plaintext highlighter-rouge">application.css</code> becomes <code class="language-plaintext highlighter-rouge">application-23daf...</code>) for some mysterious purpose and they are cached <em>somewhere</em>. So I went looking for information that explains it. Surely Sam Stephenson or <em>someone</em> else who’s worked on this <em>amazing new core feature</em> for Rails 3.1 has written <em>something</em> about it.</p>
+<p>But the final thing that I want to cover is how it all works in the <code>production</code> environment. From what I can see, assets are given an MD5 identifier (<code>application.css</code> becomes <code>application-23daf...</code>) for some mysterious purpose and they are cached <em>somewhere</em>. So I went looking for information that explains it. Surely Sam Stephenson or <em>someone</em> else who’s worked on this <em>amazing new core feature</em> for Rails 3.1 has written <em>something</em> about it.</p>
 
 <p>Right?</p>
 
@@ -60,7 +60,7 @@
 
 <p><em>[breath]</em></p>
 
-<p>So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was <a href="https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4">added by yours truly</a> earlier today. I also wrote up <a href="https://gist.github.com/1032696">some notes</a> just so I could understand how the <code class="language-plaintext highlighter-rouge">Sprockets::Railtie</code> works for myself. Thought others may find it useful too.</p>
+<p>So where do people who want to know about Sprockets go to learn about the rationale of why it is bundled with Rails 3.1? How about the location of any documentation about how to disable it or configure it any way? Well, that was <a href="https://github.com/lifo/docrails/commit/0fd52bb6c79f20b8dbd5c8afb774ef1dae155fc4">added by yours truly</a> earlier today. I also wrote up <a href="https://gist.github.com/1032696">some notes</a> just so I could understand how the <code>Sprockets::Railtie</code> works for myself. Thought others may find it useful too.</p>
 
 <p>Not documenting things makes it <em>incredibly</em> hard for anybody else to understand what the hell you’re trying to do and provides no justification for anybody viewing your project as to why they should use it. Any single person can throw code up online. It takes someone special to make people understand why it’s there and why they should <em>want</em> to use it.</p>
 

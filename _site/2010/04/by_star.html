@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -64,13 +64,13 @@
 
 <p><strong>Before by_star</strong></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> Post.all(:conditions =&gt; ["created_at &gt;= ? AND created_at &lt;= ?", "01/01/#{Time.now.year}".to_time, "31/01/#{Time.now.year}"])
-</code></pre></div></div>
+<pre><code> Post.all(:conditions =&gt; ["created_at &gt;= ? AND created_at &lt;= ?", "01/01/#{Time.now.year}".to_time, "31/01/#{Time.now.year}"])
+</code></pre>
 
 <p><strong>After by_star</strong></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Post.by_month(1)
-</code></pre></div></div>
+<pre><code>Post.by_month(1)
+</code></pre>
 
 <p>This is only a <strong>taste</strong> of the shiny things in by_star! Use it!</p>
 

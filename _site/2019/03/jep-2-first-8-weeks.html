@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -79,7 +79,7 @@
 
 <p>After covering browser and JS tooling tech, we then moved out to networking concepts, like hosts, ports and HTTP. We talked about how processes can listen on specific ports, and that when they listen, they communicate over established protocols like HTTP.</p>
 
-<p>To solidify that knowledge, we then made React applications talk to HTTP servers that served JSON data by using the <a href="https://github.com/axios/axios">axios</a> package. To serve a JSON API, we used <a href="https://github.com/typicode/json-server">the wonderful <code class="language-plaintext highlighter-rouge">json-server</code></a> package. To explain how these different routes within <code class="language-plaintext highlighter-rouge">json-server</code> worked, I wrote them up on a whiteboard:</p>
+<p>To solidify that knowledge, we then made React applications talk to HTTP servers that served JSON data by using the <a href="https://github.com/axios/axios">axios</a> package. To serve a JSON API, we used <a href="https://github.com/typicode/json-server">the wonderful <code>json-server</code></a> package. To explain how these different routes within <code>json-server</code> worked, I wrote them up on a whiteboard:</p>
 
 <p><img src="/images/jep/jep2-crud-whiteboard.jpg" alt="JEP 2 whiteboard" /></p>
 
@@ -87,13 +87,13 @@
 
 <p>We then took a week to do some coding exercises through <a href="https://www.codewars.com">CodeWars</a>, with some of the juniors completing <a href="https://www.codewars.com/kata/the-lift">a 3-kyu ranked coding problem called “The Lift”</a> in Ruby. During this week, I also set the juniors some homework of completing the Toy Robot exercise in either Ruby or TypeScript. The catch was that it had to be tested using RSpec. At the start of the week, we had our second guest lecturer: David Carlin. He ran through a short RSpec testing tutorial <a href="https://exercism.io/tracks/ruby/exercises/roman-numerals">based on the roman numerals exercise from Exercism</a>.</p>
 
-<p>The week after that, we rebuilt our own version of <code class="language-plaintext highlighter-rouge">json-server</code> with <a href="http://sinatrarb.com/intro.html">Ruby’s Sinatra web framework</a>. By using <code class="language-plaintext highlighter-rouge">json-server</code> first, then building the same thing in Sinatra, we would have a clear idea of what we were trying to accomplish. This application used a combination of <code class="language-plaintext highlighter-rouge">File.read</code>, <code class="language-plaintext highlighter-rouge">File.write</code> and <code class="language-plaintext highlighter-rouge">JSON.parse</code> to accomplish its task, giving the juniors experience working with one particular file format.</p>
+<p>The week after that, we rebuilt our own version of <code>json-server</code> with <a href="http://sinatrarb.com/intro.html">Ruby’s Sinatra web framework</a>. By using <code>json-server</code> first, then building the same thing in Sinatra, we would have a clear idea of what we were trying to accomplish. This application used a combination of <code>File.read</code>, <code>File.write</code> and <code>JSON.parse</code> to accomplish its task, giving the juniors experience working with one particular file format.</p>
 
 <p>During this time, I wrote a suite of tests in <a href="https://rspec.info">RSpec</a> that made requests to the Sinatra application to assert that it behaved correctly. These tests would assert that everyone’s Sinatra application was working correctly.</p>
 
 <p>Once we had the Sinatra application working and reading from a JSON file to serve data, we then converted it again to use a <a href="https://www.mongodb.com/">Mongo database</a>. Why Mongo? Simply, because it is what we use in our main application at Culture Amp and that application will be the first touch point for a lot of juniors once they reach their teams.</p>
 
-<p>We touched on Mongo database querying (through the <code class="language-plaintext highlighter-rouge">mongo</code> console) relatively quickly (less than an hour), before moving onto Mongoid and how to use that within a Sinatra application. We went quickly to <a href="https://rubygems.org/gems/mongoid">Mongoid</a> because that’s what we use most often to talk to our Mongo database, not direct queries in a <code class="language-plaintext highlighter-rouge">mongo</code> console.</p>
+<p>We touched on Mongo database querying (through the <code>mongo</code> console) relatively quickly (less than an hour), before moving onto Mongoid and how to use that within a Sinatra application. We went quickly to <a href="https://rubygems.org/gems/mongoid">Mongoid</a> because that’s what we use most often to talk to our Mongo database, not direct queries in a <code>mongo</code> console.</p>
 
 <p>We touched on what the Object-Document-Mapper (ODM) pattern was, and how it related to the Object-Relation-Mapper pattern (ORM) from Active Record. We replaced our Ruby code within the Sinatra application that read from a JSON file with one that read from a Mongoid model instead. This change made our Sinatra applications much easier to work with! The juniors were able to use the test suite to assert that their application was functioning correctly too.</p>
 

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,13 +40,13 @@
 
 <p>Instead of that filter, this is what I came up with to do the filtering:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">client</span> <span class="o">=</span> <span class="no">Elasticsearch</span><span class="p">.</span><span class="nf">new</span>
-<span class="n">client</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="ss">index: </span><span class="s2">"logstash-2014.12.03,logstash-2014.12.02..."</span><span class="p">,</span> <span class="ss">body: </span><span class="p">{</span>
-  <span class="ss">query: </span><span class="p">{</span>
-    <span class="o">...</span>
-  <span class="p">}</span>
-<span class="p">})</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">client = Elasticsearch.new
+client.search(index: "logstash-2014.12.03,logstash-2014.12.02...", body: {
+  query: {
+    ...
+  }
+})
+</code></pre>
 
 <p>I hope this post can help other people who are looking for the same thing.</p>
 

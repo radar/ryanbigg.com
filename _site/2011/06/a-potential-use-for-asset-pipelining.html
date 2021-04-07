@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,29 +40,29 @@
 
 <p>Anyway, asset pipelining! So I wanted to add theming support to forem because it’s butt-ugly right now and I can’t design for crap. Have you seen this blog? I wanted to make theming so dead-simple for forem that people just need to put one or two lines in their application and <em>BLAMMO</em> it would work.</p>
 
-<p>I have accomplished this goal tonight, in what was probably about 10 minutes of thinking, experimenting and saying “wow, I can’t believe it works” when it actually worked. To make theming work on forem, it’s as simple as putting this line in your <code class="language-plaintext highlighter-rouge">Gemfile</code> (<em>after</em> the <code class="language-plaintext highlighter-rouge">forem</code> gem, as it needs to be loaded first):</p>
+<p>I have accomplished this goal tonight, in what was probably about 10 minutes of thinking, experimenting and saying “wow, I can’t believe it works” when it actually worked. To make theming work on forem, it’s as simple as putting this line in your <code>Gemfile</code> (<em>after</em> the <code>forem</code> gem, as it needs to be loaded first):</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem 'forem-theme-base', :git =&gt; "git://github.com/radar/forem-theme-base"
-</code></pre></div></div>
+<pre><code>gem 'forem-theme-base', :git =&gt; "git://github.com/radar/forem-theme-base"
+</code></pre>
 
 <p>This gem is actually its own Rails engine, which means that it gets all the goodies that a Rails engine is bestowed, including the automatic hooks to the asset pipelining. This gem also contains this line:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Forem::Engine.theme = :base
-</code></pre></div></div>
+<pre><code>Forem::Engine.theme = :base
+</code></pre>
 
 <p>This (obviously) tells forem what theme to use, and can be overriden at your wish if you had multiple themes. I am considering having a settings panel for this in the backend.</p>
 
 <p>To actually style the forum you’ll need to put this line in the layout that forem uses:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;%= forum_theme_tag %&gt;
-</code></pre></div></div>
+<pre><code>&lt;%= forum_theme_tag %&gt;
+</code></pre>
 
-<p>I would make this happen automatically, but other people may wish to apply their site’s styles to the forum system without having to create another gem, and so I leave this as optional. This little tag generates a <code class="language-plaintext highlighter-rouge">stylesheet_link_tag</code> like this:</p>
+<p>I would make this happen automatically, but other people may wish to apply their site’s styles to the forum system without having to create another gem, and so I leave this as optional. This little tag generates a <code>stylesheet_link_tag</code> like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;%= stylesheet_link_tag "assets/forem/base/style.css" %&gt;
-</code></pre></div></div>
+<pre><code>&lt;%= stylesheet_link_tag "assets/forem/base/style.css" %&gt;
+</code></pre>
 
-<p>Rails then will know where to serve this from because <code class="language-plaintext highlighter-rouge">forem-theme-base</code> is an engine.</p>
+<p>Rails then will know where to serve this from because <code>forem-theme-base</code> is an engine.</p>
 
 <p>Dead simple, and utterly amazing. Rails 3.1 is awesome.</p>
 

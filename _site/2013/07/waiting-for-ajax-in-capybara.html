@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,24 +40,24 @@
 
 <p>Some of these test failures are that the tests just aren’t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more … bewildering:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>F
+<pre><code>F
 An error occurred in an after hook
   ActiveRecord::StatementInvalid: 
     SQLite3::BusyException:
     database is locked: DELETE FROM "spree_activators";
   occurred at ...lib/sqlite3/statement.rb:108:in `step'
-</code></pre></div></div>
+</code></pre>
 
 <p>This error happens when an AJAX request is still being processed by the server, but the test finishes and Database Cleaner attempts to wipe the database. The server has locked the database until it’s done what it needs to do, and during that lock Database Cleaner attempts to wipe all the data and can’t.</p>
 
-<p>To fix this, we just needed to wait for all AJAX requests to complete. This means replacing <code class="language-plaintext highlighter-rouge">sleep</code> with magic numbers, like this:</p>
+<p>To fix this, we just needed to wait for all AJAX requests to complete. This means replacing <code>sleep</code> with magic numbers, like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sleep(2)
-</code></pre></div></div>
+<pre><code>sleep(2)
+</code></pre>
 
 <p>With this method:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def wait_for_ajax
+<pre><code>def wait_for_ajax
   counter = 0
   while page.execute_script("return $.active").to_i &gt; 0
     counter += 1
@@ -65,11 +65,11 @@ An error occurred in an after hook
     raise "AJAX request took longer than 5 seconds." if counter &gt;= 50
   end
 end
-</code></pre></div></div>
+</code></pre>
 
-<p>This code will call <code class="language-plaintext highlighter-rouge">$.active</code> which is jQuery-code for “how many <code class="language-plaintext highlighter-rouge">$.ajax</code> requests are still active?”, and if that returns more than 0, then it will sleep for a moment, and check again. This code gives AJAX requests 5 seconds to wrap up before raising an exception and moving on.</p>
+<p>This code will call <code>$.active</code> which is jQuery-code for “how many <code>$.ajax</code> requests are still active?”, and if that returns more than 0, then it will sleep for a moment, and check again. This code gives AJAX requests 5 seconds to wrap up before raising an exception and moving on.</p>
 
-<p>Use this <code class="language-plaintext highlighter-rouge">wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
+<p>Use this <code>wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
 
 
           </article>

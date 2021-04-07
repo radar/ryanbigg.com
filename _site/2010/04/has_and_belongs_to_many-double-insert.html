@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -44,23 +44,23 @@
 
 <h3>Symptoms</h3>
 
-<p>We have two models whose names aren’t important so excuse me if I use the name <code class="language-plaintext highlighter-rouge">Person</code> and <code class="language-plaintext highlighter-rouge">Address</code> to represent them. They are nothing of the sort. In their purest form to replicate this issue, they are defined like this:</p>
+<p>We have two models whose names aren’t important so excuse me if I use the name <code>Person</code> and <code>Address</code> to represent them. They are nothing of the sort. In their purest form to replicate this issue, they are defined like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Address &lt; ActiveRecord::Base
+<pre><code>class Address &lt; ActiveRecord::Base
   has_and_belongs_to_many :people
 end
 
 class Person &lt; ActiveRecord::Base
   has_and_belongs_to_many :addresses
   accepts_nested_attributes_for :addresses    end
-</code></pre></div></div>
+</code></pre>
 
-<p>When we go to <code class="language-plaintext highlighter-rouge">create</code> a new <code class="language-plaintext highlighter-rouge">Person</code> record:</p>
+<p>When we go to <code>create</code> a new <code>Person</code> record:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Person.create(:addresses_attributes =&gt; { "0" =&gt; { :suburb =&gt; "Camperdown" } }) 
-</code></pre></div></div>
+<pre><code>Person.create(:addresses_attributes =&gt; { "0" =&gt; { :suburb =&gt; "Camperdown" } }) 
+</code></pre>
 
-<p>It inserts <strong>1</strong> <code class="language-plaintext highlighter-rouge">Person</code> record, <strong>1</strong> <code class="language-plaintext highlighter-rouge">Address</code> record but <strong>2</strong> join table records.</p>
+<p>It inserts <strong>1</strong> <code>Person</code> record, <strong>1</strong> <code>Address</code> record but <strong>2</strong> join table records.</p>
 
 <h3>So, wtf?</h3>
 
@@ -68,15 +68,15 @@ class Person &lt; ActiveRecord::Base
 
 <p><strong>Wrong!</strong></p>
 
-<p>I should know <a href="http://ryanbigg.com/2010/04/want-it-give/">how many bugs Rails <strong>could</strong> have</a>. I should have been more wary. I was not. And it bit me in the arse. So out of curiosity I googled the issue and saw that others came across it and then I tried checking out to <code class="language-plaintext highlighter-rouge">v2.3.4</code>, which <strong>worked!</strong>. So there was a regression between <code class="language-plaintext highlighter-rouge">v2.3.5</code> and <code class="language-plaintext highlighter-rouge">v2.3.4</code>. A simple <code class="language-plaintext highlighter-rouge">git bisect bad v2.3.5</code> with <code class="language-plaintext highlighter-rouge">git bisect good v2.3.4</code> put me on the way to finding out what this was. A couple of <code class="language-plaintext highlighter-rouge">bisect</code>s later, I found the offending commit was <code class="language-plaintext highlighter-rouge">6b2291f3</code>, by Eloy Duran.</p>
+<p>I should know <a href="http://ryanbigg.com/2010/04/want-it-give/">how many bugs Rails <strong>could</strong> have</a>. I should have been more wary. I was not. And it bit me in the arse. So out of curiosity I googled the issue and saw that others came across it and then I tried checking out to <code>v2.3.4</code>, which <strong>worked!</strong>. So there was a regression between <code>v2.3.5</code> and <code>v2.3.4</code>. A simple <code>git bisect bad v2.3.5</code> with <code>git bisect good v2.3.4</code> put me on the way to finding out what this was. A couple of <code>bisect</code>s later, I found the offending commit was <code>6b2291f3</code>, by Eloy Duran.</p>
 
 <h3>A "solution(?)"</h3>
 
-<p>So I <a href="http://github.com/radar/anaf">generated an application</a> to simply demonstrate that this was a 2.3.5 regression. As I say in the README, I suggest using 2-3-stable if this bothers you. Alternatively there’s always Rails 3, or simply specifying the <code class="language-plaintext highlighter-rouge">:uniq =&gt; true</code> option on your <code class="language-plaintext highlighter-rouge">has_and_belongs_to_many</code>.</p>
+<p>So I <a href="http://github.com/radar/anaf">generated an application</a> to simply demonstrate that this was a 2.3.5 regression. As I say in the README, I suggest using 2-3-stable if this bothers you. Alternatively there’s always Rails 3, or simply specifying the <code>:uniq =&gt; true</code> option on your <code>has_and_belongs_to_many</code>.</p>
 
 <p>That was a fun 7 hours.</p>
 
-<p>As I found out this (the next) morning and <a href="http://ryanbigg.com/2010/04/has_and_belongs_to_many-double-insert/#comment-36741">Tim Riley points out in the comments</a> the ticket for this bug is <a href="https://rails.lighthouseapp.com/projects/8994/tickets/3575-multiple-join-records-when-using-nested_attributes-in-habtm">#3575</a> and the related commit is <code class="language-plaintext highlighter-rouge">146a7505</code> by Eloy Duran also. Freezing rails to <code class="language-plaintext highlighter-rouge">v2.3.5</code> and <code class="language-plaintext highlighter-rouge">git cherry-pick</code>ing this commit into this frozen version fixes it.</p>
+<p>As I found out this (the next) morning and <a href="http://ryanbigg.com/2010/04/has_and_belongs_to_many-double-insert/#comment-36741">Tim Riley points out in the comments</a> the ticket for this bug is <a href="https://rails.lighthouseapp.com/projects/8994/tickets/3575-multiple-join-records-when-using-nested_attributes-in-habtm">#3575</a> and the related commit is <code>146a7505</code> by Eloy Duran also. Freezing rails to <code>v2.3.5</code> and <code>git cherry-pick</code>ing this commit into this frozen version fixes it.</p>
 
 
           </article>

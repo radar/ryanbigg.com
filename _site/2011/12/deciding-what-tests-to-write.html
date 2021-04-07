@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -49,7 +49,7 @@ functionality.</p>
 
 <p>In the example test (written in Capybara’s syntax) below, the user fills in the form (ignoring one of the required fields) and then should see that there’s an error on the page.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>visit root_path
+<pre><code>visit root_path
 click_link "Posts"
 click_link "New Post"
 
@@ -63,18 +63,18 @@ end
 within("#post_form .errors") do
   page.should have_content("Body cannot be blank")
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>Or if you prefer Cucumber:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a user is creating a new post
+<pre><code>Given a user is creating a new post
 And the user leaves the post text blank
 When the user clicks "Create Post"
 Then they should see a validation error:
   """
     Body cannot be blank
   """
-</code></pre></div></div>
+</code></pre>
 
 <p>You can imagine the steps that Cucumber would use, they’d use the Capybara methods just like the original example.</p>
 
@@ -85,7 +85,7 @@ presence of this field? <em>It doesn’t.</em></p>
 <p>Testing that the model contains the validation is a secondary thing, and is generally something I skip doing. The
 test for at least one of the form’s validations goes into the request spec. If I’m feeling pedantic I’ll write
 another for the other validations, but I can <em>assume</em> that dynamic_form (the thing that provides
-<code class="language-plaintext highlighter-rouge">error_messages_for</code> is doing the right thing when it comes to its own methods. If one error message is showing
+<code>error_messages_for</code> is doing the right thing when it comes to its own methods. If one error message is showing
 up, good chance the others are.</p>
 
 <p>In the case where validation error messages <em>don’t</em> show up then I write a specific test for that inside the
@@ -112,7 +112,7 @@ little parts it makes it slow to test the whole thing:</p>
 that when an order is placed in the system that the count on hand decreases by one. And so this is where a unit
 test would be better.</p>
 
-<p>This unit test would check that when an order is created, a method such as <code class="language-plaintext highlighter-rouge">unstock_items!</code> is called. There would then be another unit test for the actual function of the <code class="language-plaintext highlighter-rouge">unstock_items!</code>
+<p>This unit test would check that when an order is created, a method such as <code>unstock_items!</code> is called. There would then be another unit test for the actual function of the <code>unstock_items!</code>
 call, ensuring that it goes through the line items for the order and depletes the stock on the products as necessary.</p>
 
 <p>The unit test is going to be much lighter (and quicker to run!) than the request spec, which is just a massive win.</p>

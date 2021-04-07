@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,13 +40,13 @@
 repository while developing locally, and a remote Git repo when deploying. This
 feature means that you no longer have to <em>constantly</em> switch between local paths:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem 'spree', :path =&gt; "~/Projects/gems/spree"
-</code></pre></div></div>
+<pre><code>gem 'spree', :path =&gt; "~/Projects/gems/spree"
+</code></pre>
 
 <p>And remote paths:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
-</code></pre></div></div>
+<pre><code>gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
+</code></pre>
 
 <p>How does it work?</p>
 
@@ -55,13 +55,13 @@ feature means that you no longer have to <em>constantly</em> switch between loca
 <p>Well, what you can do instead is tell Bundler that you have a local copy of
 this repository by running a command like this in your terminal:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle config local.spree ~/Projects/gems/spree
-</code></pre></div></div>
+<pre><code>bundle config local.spree ~/Projects/gems/spree
+</code></pre>
 
 <p>Then in your Gemfile whenever you reference a Git repo for this gem, like this…</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
-</code></pre></div></div>
+<pre><code>gem 'spree', :github =&gt; 'spree/spree', :branch =&gt; 'master'
+</code></pre>
 
 <p>Bundler will use the local copy. When you deploy this application to your server, because the server is not configured to use a local copy of the repo, it will use the proper repo from GitHub.</p>
 

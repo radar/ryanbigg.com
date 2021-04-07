@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -54,35 +54,35 @@
 
 <p>First task was to take an SQL backup from the WordPress install that I had and move it over to my own system. Next, I imported this SQL into a local install of MySQL and made sure it was the latest-and-greatest. Sure, enough it was. Rohit had pointed me at the <a href="https://github.com/mojombo/jekyll/wiki/blog-migrations">Blog migrations wiki page</a> for Jekyll and it had what appeared to be clear instructions for WordPress there.</p>
 
-<p>So I cloned the <a href="http://github.com/mojombo/jekyll">Jekyll</a> project into my <code class="language-plaintext highlighter-rouge">~/Sites/gems</code> folder and ran just the wordpress commands because I have tunnel vision when reading documentation (note: not my real username and password):</p>
+<p>So I cloned the <a href="http://github.com/mojombo/jekyll">Jekyll</a> project into my <code>~/Sites/gems</code> folder and ran just the wordpress commands because I have tunnel vision when reading documentation (note: not my real username and password):</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ export DB=ryanbigg
+<pre><code>$ export DB=ryanbigg
 $ export USER=lolno 
 $ export PASS=nopass4u 
 $ ruby -r '~/Sites/gems/jekyll/lib/jekyll/migrators/wordpress' -e 'Jekyll::WordPress.process( "#{ENV["DB"]}", "#{ENV["USER"]}", "#{ENV["PASS"]}")'
-</code></pre></div></div>
+</code></pre>
 
-<p>To my surprise, it worked. I had a whole bunch of <code class="language-plaintext highlighter-rouge">_posts</code> files representing the posts in my system.</p>
+<p>To my surprise, it worked. I had a whole bunch of <code>_posts</code> files representing the posts in my system.</p>
 
 <h3 id="booting-jekyll">Booting Jekyll</h3>
 
-<p>I installed the <code class="language-plaintext highlighter-rouge">jekyll</code> gem itself using <code class="language-plaintext highlighter-rouge">gem install jekyll</code> and then ran <code class="language-plaintext highlighter-rouge">jekyll --server</code> and it threw up a ton of “errors”, which actually turned out to be warnings about my ability to sometimes intersperse invalid HTML / Markdown with valid Markdown (or the other way around). When I went to http://localhost:4000 I got a 403 error. So I checked out other Jekyll blogs like <a href="http://github.com/qrush/litanyagainstfear">Nick Quaranto’s litanyagainstfear repository</a> to see what I was missing. I instantly came across the <a href="https://github.com/qrush/litanyagainstfear/blob/master/index.html">index.html</a> file in this repository and “borrowed” it for my own blog, turning it into <a href="https://github.com/radar/ryanbigg.com/blob/master/index.html">what’s now here</a>. I choose to only show the last 25 posts because everything before that is ancient history. The links to them will still work, but I’m just not showing them in the archive list to conserve space.</p>
+<p>I installed the <code>jekyll</code> gem itself using <code>gem install jekyll</code> and then ran <code>jekyll --server</code> and it threw up a ton of “errors”, which actually turned out to be warnings about my ability to sometimes intersperse invalid HTML / Markdown with valid Markdown (or the other way around). When I went to http://localhost:4000 I got a 403 error. So I checked out other Jekyll blogs like <a href="http://github.com/qrush/litanyagainstfear">Nick Quaranto’s litanyagainstfear repository</a> to see what I was missing. I instantly came across the <a href="https://github.com/qrush/litanyagainstfear/blob/master/index.html">index.html</a> file in this repository and “borrowed” it for my own blog, turning it into <a href="https://github.com/radar/ryanbigg.com/blob/master/index.html">what’s now here</a>. I choose to only show the last 25 posts because everything before that is ancient history. The links to them will still work, but I’m just not showing them in the archive list to conserve space.</p>
 
 <h3 id="stylin">Stylin’</h3>
 
-<p>The next thing I needed to do was to create a <a href="https://github.com/radar/ryanbigg.com/blob/master/_layouts/default.html">default.html layout</a> file in the <code class="language-plaintext highlighter-rouge">_layouts</code> folder to style this new home page of mine. I created a <code class="language-plaintext highlighter-rouge">css</code> folder at the root of the project and put in <a href="https://github.com/radar/ryanbigg.com/blob/master/css/style.css"><code class="language-plaintext highlighter-rouge">style.css</code></a> and got to work styling it. I wanted something a little more lightweight than the old theme and I think what I came up with was alright. This morning I added a <a href="https://github.com/radar/ryanbigg.com/blob/master/css/mobile.css"><code class="language-plaintext highlighter-rouge">mobile.css</code></a> which should format the blog just fine for mobile screens. It looks great on my iPhone 4.</p>
+<p>The next thing I needed to do was to create a <a href="https://github.com/radar/ryanbigg.com/blob/master/_layouts/default.html">default.html layout</a> file in the <code>_layouts</code> folder to style this new home page of mine. I created a <code>css</code> folder at the root of the project and put in <a href="https://github.com/radar/ryanbigg.com/blob/master/css/style.css"><code>style.css</code></a> and got to work styling it. I wanted something a little more lightweight than the old theme and I think what I came up with was alright. This morning I added a <a href="https://github.com/radar/ryanbigg.com/blob/master/css/mobile.css"><code>mobile.css</code></a> which should format the blog just fine for mobile screens. It looks great on my iPhone 4.</p>
 
 <h3 id="comments">Comments</h3>
 
-<p>I wanted to keep the comments from the WordPress site and Rohit recommended Disqus as a way to do that. I installed the <a href="http://wordpress.org/extend/plugins/disqus-comment-system/">WordPress plugin</a> for it and followed the bouncing ball and had my comments exported to Disqus in no time. I needed to add the following to the <a href="https://github.com/radar/ryanbigg.com/blob/0c30ab8b5b9721b16fa125d94270d797d4eb556e/_layouts/post.html#L16-30">post layout</a> to support the Disqus comment system. The <code class="language-plaintext highlighter-rouge">wordpress_id</code> field is the “secret sauce” here for how Disqus knows which post links up to what comments. The only caveat I’ve been informed about for Disqus is that the comments won’t be indexed by Google because they’re loaded via a JavaScript request, but I can tolerate that. Any useful information I would put in a post, probably.</p>
+<p>I wanted to keep the comments from the WordPress site and Rohit recommended Disqus as a way to do that. I installed the <a href="http://wordpress.org/extend/plugins/disqus-comment-system/">WordPress plugin</a> for it and followed the bouncing ball and had my comments exported to Disqus in no time. I needed to add the following to the <a href="https://github.com/radar/ryanbigg.com/blob/0c30ab8b5b9721b16fa125d94270d797d4eb556e/_layouts/post.html#L16-30">post layout</a> to support the Disqus comment system. The <code>wordpress_id</code> field is the “secret sauce” here for how Disqus knows which post links up to what comments. The only caveat I’ve been informed about for Disqus is that the comments won’t be indexed by Google because they’re loaded via a JavaScript request, but I can tolerate that. Any useful information I would put in a post, probably.</p>
 
 <h3 id="wordpress-pages">WordPress pages</h3>
 
-<p>To convert over the pages from WordPress that weren’t posts I’ve copied the source of them (such as the <a href="http://ryanbigg.com/about-me.html">About me</a> page) and put them as static HTML files in the root of the project. When Jekyll compiles the site, these are copied over to the <code class="language-plaintext highlighter-rouge">_site</code> directory.</p>
+<p>To convert over the pages from WordPress that weren’t posts I’ve copied the source of them (such as the <a href="http://ryanbigg.com/about-me.html">About me</a> page) and put them as static HTML files in the root of the project. When Jekyll compiles the site, these are copied over to the <code>_site</code> directory.</p>
 
 <h3 id="deployment">Deployment</h3>
 
-<p>Currently going via the low-tech method of an SSH + <code class="language-plaintext highlighter-rouge">git pull</code> on the server, but hoping to switch to a commit hook in the future.</p>
+<p>Currently going via the low-tech method of an SSH + <code>git pull</code> on the server, but hoping to switch to a commit hook in the future.</p>
 
 <h3 id="benefits">Benefits</h3>
 

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -54,22 +54,22 @@
 
 <p>We configured RSpec to print out the slowest examples in a test run at the end of every test.</p>
 
-<p>This comes from this line in our <code class="language-plaintext highlighter-rouge">spec_helper.rb</code> file:</p>
+<p>This comes from this line in our <code>spec_helper.rb</code> file:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Print the 10 slowest examples and example groups at the</span>
-<span class="c1"># end of the spec run, to help surface which specs are running</span>
-<span class="c1"># particularly slow.</span>
-<span class="n">config</span><span class="p">.</span><span class="nf">profile_examples</span> <span class="o">=</span> <span class="mi">10</span>
-</code></pre></div></div>
+<pre><code class="language-ruby"># Print the 10 slowest examples and example groups at the
+# end of the spec run, to help surface which specs are running
+# particularly slow.
+config.profile_examples = 10
+</code></pre>
 
 <p>When our tests run, we can view this output and see trouble spots:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Top 10 slowest examples (13.85 seconds, 61.6% of total time):
+<pre><code>Top 10 slowest examples (13.85 seconds, 61.6% of total time):
     [TEST DESCRIPTION GOES HERE}
     2.08 seconds ./spec/models/report_spec.rb:134
-</code></pre></div></div>
+</code></pre>
 
-<p>One particular trouble spot that I saw was this <code class="language-plaintext highlighter-rouge">spec/models/report_spec.rb</code>. This whole file took about 1m20s to run locally, and only for 116 examples. This test used the survey factory extensively, which made the test slow.</p>
+<p>One particular trouble spot that I saw was this <code>spec/models/report_spec.rb</code>. This whole file took about 1m20s to run locally, and only for 116 examples. This test used the survey factory extensively, which made the test slow.</p>
 
 <p>This seemed to me like an easy target: a model test that was slow when it should be fast. So I set about fixing it.</p>
 
@@ -81,30 +81,30 @@
 
 <p>I went through the test and replaced each survey factory invocation with a basic_survey factory:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">factory</span> <span class="ss">:basic_survey</span><span class="p">,</span> <span class="ss">class: </span><span class="no">Survey</span> <span class="k">do</span>
-  <span class="n">sequence</span> <span class="ss">:name</span> <span class="k">do</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span>
-    <span class="s2">"Basic Survey </span><span class="si">#{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span>
-  <span class="k">end</span>
+<pre><code class="language-ruby">factory :basic_survey, class: Survey do
+  sequence :name do |n|
+    "Basic Survey #{n}"
+  end
 
-  <span class="c1"># some traits go here</span>
-<span class="k">end</span>
-</code></pre></div></div>
+  # some traits go here
+end
+</code></pre>
 
 <p>This creates the bare minimum survey in the database, and leads to ONE database query.</p>
 
-<p>I methodically went through every example in <code class="language-plaintext highlighter-rouge">spec/models/report_spec.rb</code> and attempted to replace this call:</p>
+<p>I methodically went through every example in <code>spec/models/report_spec.rb</code> and attempted to replace this call:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FactoryBot.create(:survey)
-</code></pre></div></div>
+<pre><code>FactoryBot.create(:survey)
+</code></pre>
 
 <p>With this one:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FactoryBot.build(:basic_survey)
-</code></pre></div></div>
+<pre><code>FactoryBot.build(:basic_survey)
+</code></pre>
 
-<p>Some methods within the <code class="language-plaintext highlighter-rouge">Report</code> class do not depend on a <em>persisted</em> <code class="language-plaintext highlighter-rouge">Survey</code> object, but just one configured in a particular way. So we can use <code class="language-plaintext highlighter-rouge">FactoryBot.build</code> to initialize a new <code class="language-plaintext highlighter-rouge">Survey</code> instance with the details from the factory, meaning no database calls are made for this factory invocation.</p>
+<p>Some methods within the <code>Report</code> class do not depend on a <em>persisted</em> <code>Survey</code> object, but just one configured in a particular way. So we can use <code>FactoryBot.build</code> to initialize a new <code>Survey</code> instance with the details from the factory, meaning no database calls are made for this factory invocation.</p>
 
-<p>For the ones that I could use <code class="language-plaintext highlighter-rouge">build</code> for, I investigated the reasons why the tests needed a persisted survey and when I was satisfied with the answer, I switched to using <code class="language-plaintext highlighter-rouge">FactoryBot.create(:basic_survey)</code>.</p>
+<p>For the ones that I could use <code>build</code> for, I investigated the reasons why the tests needed a persisted survey and when I was satisfied with the answer, I switched to using <code>FactoryBot.create(:basic_survey)</code>.</p>
 
 <p>This worked for the most part, but there were some tricky parts.</p>
 
@@ -112,50 +112,50 @@
 
 <p>The 2nd tip is that you should inspect database queries and know where they’re coming from.</p>
 
-<p>Sometimes, the tests in <code class="language-plaintext highlighter-rouge">spec/models/report_spec.rb</code> relied on the survey being setup in the very particular way that the survey factory did it. In most cases, I wasn’t able to jump through the code to see where certain records were being created or updated, as our factories are pretty large and complex.</p>
+<p>Sometimes, the tests in <code>spec/models/report_spec.rb</code> relied on the survey being setup in the very particular way that the survey factory did it. In most cases, I wasn’t able to jump through the code to see where certain records were being created or updated, as our factories are pretty large and complex.</p>
 
 <p>The first thing I did to track this down was to confirm that a database query was updating a record in a particular way. Turning on the Mongoid query logging with this line at the top of the spec file:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Mongoid</span><span class="p">.</span><span class="nf">logger</span><span class="p">.</span><span class="nf">level</span> <span class="o">=</span> <span class="mi">0</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">Mongoid.logger.level = 0
+</code></pre>
 
 <p>Meant that I could see <em>all</em> database queries that were being executed in this test.</p>
 
 <p>From here, I could see the database query that I thought was responsible:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>D, [&lt;timestamp&gt; &lt;pid&gt;] DEBUG -- : MONGODB | localhost:27017 | murmur_test.update | STARTED | {"update"=&gt;"surveys", ...
-</code></pre></div></div>
+<pre><code>D, [&lt;timestamp&gt; &lt;pid&gt;] DEBUG -- : MONGODB | localhost:27017 | murmur_test.update | STARTED | {"update"=&gt;"surveys", ...
+</code></pre>
 
 <p>But this output only tells me that the query is happening, not <em>where</em> it is happening. Fortunately, I’ve got a little piece of code that I wheel out for situations like this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LoggingSubscriber</span>
-  <span class="k">def</span> <span class="nf">started</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="nf">command</span><span class="p">[</span><span class="s2">"update"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"surveys"</span>
-      <span class="nb">puts</span> <span class="nb">caller</span><span class="p">.</span><span class="nf">select</span> <span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span> <span class="o">=~</span> <span class="sr">/murmur/</span> <span class="p">}.</span><span class="nf">join</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-      <span class="nb">puts</span> <span class="s2">"*"</span> <span class="o">*</span> <span class="mi">50</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+<pre><code class="language-ruby">class LoggingSubscriber
+  def started(event)
+    if event.command["update"] == "surveys"
+      puts caller.select { |c| c =~ /murmur/ }.join("\n")
+      puts "*" * 50
+    end
+  end
 
-  <span class="k">def</span> <span class="nf">succeeded</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-    <span class="c1"># p event</span>
-    <span class="c1"># p event.duration</span>
-  <span class="k">end</span>
+  def succeeded(event)
+    # p event
+    # p event.duration
+  end
 
-  <span class="k">def</span> <span class="nf">failed</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+  def failed(event)
+  end
+end
 
-<span class="n">subscriber</span> <span class="o">=</span> <span class="no">LoggingSubscriber</span><span class="p">.</span><span class="nf">new</span>
-<span class="no">Mongo</span><span class="o">::</span><span class="no">Monitoring</span><span class="o">::</span><span class="no">Global</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="no">Mongo</span><span class="o">::</span><span class="no">Monitoring</span><span class="o">::</span><span class="no">COMMAND</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">)</span>
-</code></pre></div></div>
+subscriber = LoggingSubscriber.new
+Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, subscriber)
+</code></pre>
 
-<p>I can put this code at the top of the test file. This code subscribes to <em>any</em>  Mongo database queries through the <code class="language-plaintext highlighter-rouge">Mongo::Monitoring</code> feature built into the <code class="language-plaintext highlighter-rouge">mongo</code> gem.</p>
+<p>I can put this code at the top of the test file. This code subscribes to <em>any</em>  Mongo database queries through the <code>Mongo::Monitoring</code> feature built into the <code>mongo</code> gem.</p>
 
-<p>When a query happens, the <code class="language-plaintext highlighter-rouge">started</code> method in this subscriber is called and passed the event. I can then inspect this event and make it show information about certain queries. In this example, I’m getting it to output stack trace information for queries that update the <code class="language-plaintext highlighter-rouge">surveys</code> collection. The “murmur” here is the name of our application; I’m using it here to only show stack trace lines from our application.</p>
+<p>When a query happens, the <code>started</code> method in this subscriber is called and passed the event. I can then inspect this event and make it show information about certain queries. In this example, I’m getting it to output stack trace information for queries that update the <code>surveys</code> collection. The “murmur” here is the name of our application; I’m using it here to only show stack trace lines from our application.</p>
 
 <p>With this code in my app, I can now see both the query <em>and</em> where it is coming from:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...murmur/spec/factories/common.rb:397:in `block (3 levels) in &lt;top (required)&gt;'
+<pre><code>...murmur/spec/factories/common.rb:397:in `block (3 levels) in &lt;top (required)&gt;'
 ...murmur/spec/models/report_spec.rb:907:in `create_new_survey'
 ...murmur/spec/models/report_spec.rb:551:in `create_new_survey'
 ...murmur/spec/models/report_spec.rb:4:in `block (2 levels) in &lt;top (required)&gt;'
@@ -164,7 +164,7 @@
 ...murmur/spec/models/report_spec.rb:118:in `block (4 levels) in &lt;top (required)&gt;'
 **************************************************
 D, [2018-06-15T08:44:49.977091 #11587] DEBUG -- : MONGODB | localhost:27017 | murmur_test.update | STARTED | {"update"=&gt;"surveys",
-</code></pre></div></div>
+</code></pre>
 
 <p>The stack trace shows me that this query is happening in a factory. With the stack trace lighting the way, I was able to see what the query was doing and then remove the need for it in the test.</p>
 

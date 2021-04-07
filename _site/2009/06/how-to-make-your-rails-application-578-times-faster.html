@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -46,12 +46,12 @@
 
 <h3>Enter, the Bench</h3>
 
-<p>To do this I used something that comes with Apache called Apache Bench (<code class="language-plaintext highlighter-rouge">ab</code> on the command-line). This lets you bench how well a webserver responds to a number of requests and you can set, among other things, the concurrency of these requests.</p>
+<p>To do this I used something that comes with Apache called Apache Bench (<code>ab</code> on the command-line). This lets you bench how well a webserver responds to a number of requests and you can set, among other things, the concurrency of these requests.</p>
 
-<p>So I did <code class="language-plaintext highlighter-rouge">ab -n 100 http://127.0.0.1:3000/sports/sport_name/leagues/league_name/games/scores</code> and got in the results this like:</p>
+<p>So I did <code>ab -n 100 http://127.0.0.1:3000/sports/sport_name/leagues/league_name/games/scores</code> and got in the results this like:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Requests per second:    5.52 [#/sec] (mean)
-</code></pre></div></div>
+<pre><code>Requests per second:    5.52 [#/sec] (mean)
+</code></pre>
 
 <p>Only 5 and a half requests a second! That’s nothing! So what’d I do?</p>
 
@@ -61,44 +61,44 @@
 
 <p>We used something like this example:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@sport = Sport.find(params[:sport_id])
+<pre><code>@sport = Sport.find(params[:sport_id])
 @league = @sport.leagues.find(params[:league_id])
 @season = @league.current_season
 @week = @season.current_week
 @competitions = @week.competitions 
-</code></pre></div></div>
+</code></pre>
 
-<p>In our app, sports are always going to have leagues and leagues are going to have seasons which are going to have weeks and weeks are going to have games, so we can use a <code class="language-plaintext highlighter-rouge">joins</code> option in our initial sport find in order to get it to cut down on the number of queries.</p>
+<p>In our app, sports are always going to have leagues and leagues are going to have seasons which are going to have weeks and weeks are going to have games, so we can use a <code>joins</code> option in our initial sport find in order to get it to cut down on the number of queries.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@sport = Sport.find(params[:sport_id], :joins =&gt; { :leagues =&gt; { :seasons =&gt; { :weeks =&gt; :competitions } } })
+<pre><code>@sport = Sport.find(params[:sport_id], :joins =&gt; { :leagues =&gt; { :seasons =&gt; { :weeks =&gt; :competitions } } })
 @league = @sport.leagues.find(params[:league_id])
 @season = @league.current_season
 @week = @season.current_week
 @competitions = @week.competitions 
-</code></pre></div></div>
+</code></pre>
 
 <p>At this stage we see a <strong>triple-fold</strong> increase plus a little bit more with our app now doing 17 requests per second! Woah!</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Requests per second:    17.43 [#/sec] (mean)
-</code></pre></div></div>
+<pre><code>Requests per second:    17.43 [#/sec] (mean)
+</code></pre>
 
 <h3>Caching</h3>
 
 <p>Since our action is most likely going to be hammered by a lot of users frantically refreshing to see the latest scores, caching is definitely the way to go here. Caching will store the page on disk and serve that file rather than going through the Rails stack which is, as we’ve seen, only serving 17 requests a second. How do we cache? Well, for development mode we’re going to have to turn on caching in <em>development.rb</em>:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>config.action_controller.perform_caching = true
-</code></pre></div></div>
+<pre><code>config.action_controller.perform_caching = true
+</code></pre>
 
 <p>And we’re going to have to put in our controller a method call to tell Rails to cache the page:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>caches_page :scores
-</code></pre></div></div>
+<pre><code>caches_page :scores
+</code></pre>
 
-<p>After this we’ll restart the Rails server (Mongrel) and access our scores action. For the first request we’ll see in our <em>log/development.log</em> that it says: <code class="language-plaintext highlighter-rouge">Cached page: /sports/sport_name/leagues/league_name/games/scores.json (1.6ms)</code> indicating that this page has been cached. Future requests to this page will not be logged in <em>development.log</em> because Rails is serving the file <em>sports/sport_name/leagues/league_name/games/score.json</em> directly from the <em>public</em> folder.</p>
+<p>After this we’ll restart the Rails server (Mongrel) and access our scores action. For the first request we’ll see in our <em>log/development.log</em> that it says: <code>Cached page: /sports/sport_name/leagues/league_name/games/scores.json (1.6ms)</code> indicating that this page has been cached. Future requests to this page will not be logged in <em>development.log</em> because Rails is serving the file <em>sports/sport_name/leagues/league_name/games/score.json</em> directly from the <em>public</em> folder.</p>
 
 <p>Running Apache Bench again and we get:</p>
 
-<p><code class="language-plaintext highlighter-rouge">Requests per second:    921.93 [#/sec] (mean)</code></p>
+<p><code>Requests per second:    921.93 [#/sec] (mean)</code></p>
 
 <p>That’s a 54 times increase! Now we’re talking! So if we have a single mongrel serving 921, almost 922, requests a second, surely we can only go so much faster, right?</p>
 
@@ -106,15 +106,15 @@
 
 <p>So I hooked up my app to run on Passenger using the ever-awesome <a href="http://www.fngtps.com/passenger-preference-pane">Passenger Preference Pane</a> which makes it a cinch to get your app running on passenger on your dev machine.</p>
 
-<p>So now we’ll change our <code class="language-plaintext highlighter-rouge">ab</code> call to point to our passenger app: <code class="language-plaintext highlighter-rouge">ab -n 1000 http://games.local/sports/sport_name/leagues/league_name/games/scores</code>. I snuck in the number 1000 just to really emphasise what you’re going to see next:</p>
+<p>So now we’ll change our <code>ab</code> call to point to our passenger app: <code>ab -n 1000 http://games.local/sports/sport_name/leagues/league_name/games/scores</code>. I snuck in the number 1000 just to really emphasise what you’re going to see next:</p>
 
-<p><code class="language-plaintext highlighter-rouge">Requests per second:    3184.45 [#/sec] (mean)</code></p>
+<p><code>Requests per second:    3184.45 [#/sec] (mean)</code></p>
 
 <p>This 578 times faster than our initial single-mongrel server!</p>
 
 <p>What’s also interesting in this output is right at the bottom:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Percentage of the requests served within a certain time (ms)
+<pre><code>Percentage of the requests served within a certain time (ms)
   50%      3
   66%      3
   75%      3
@@ -124,15 +124,15 @@
   98%      7
   99%      8
  100%     24 (longest request)
-</code></pre></div></div>
+</code></pre>
 
 <p>99% of our requests were served in less than 10 milliseconds and the longest only took just over double that. And this is on a Macbook Pro! Imagine what kind of speeds you can get on a super-server!</p>
 
 <h3>Nginx</h3>
 
-<p>So I installed nginx using <code class="language-plaintext highlighter-rouge">passenger-install-nginx-module</code> which’ll install nginx too if you don’t already have which is handy! It inserted some default config and I set it up to listen on port 81 so it wouldn’t conflict with Apache and let her rip. Running the same apache bench (with a different port for nginx) I get:</p>
+<p>So I installed nginx using <code>passenger-install-nginx-module</code> which’ll install nginx too if you don’t already have which is handy! It inserted some default config and I set it up to listen on port 81 so it wouldn’t conflict with Apache and let her rip. Running the same apache bench (with a different port for nginx) I get:</p>
 
-<p><code class="language-plaintext highlighter-rouge">Requests per second:    6461.48 [#/sec] (mean)</code></p>
+<p><code>Requests per second:    6461.48 [#/sec] (mean)</code></p>
 
 <p>This is a massive <strong><em>twice as fast</em></strong> improvement over Apache. Word on the street is that it uses less RAM too! That’s 1,235 times faster than what our original app was serving at.</p>
 

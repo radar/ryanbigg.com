@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -48,7 +48,7 @@
 
 <p>The final two chapters, “OTP” (Open Telecom Platform) and “Observer and Umbrellas” cover some of the real strengths of Elixir and its underlying foundation of Erlang. These two chapters get you to build a system which connects to Wolfram Alpha’s API, and then demonstrate how to keep this new system separate from the original application, while still being able to connect these two systems together and communicate between them. In the Ruby world, typically this would be done with HTTP calls, but in the Elixir world it is just a matter of communicating across Elixir processes. This inter-process communication is quite quick in comparison to HTTP because it doesn’t have that overhead.</p>
 
-<p>What I loved from these final chapters was seeing Elixir’s supervision capabilities in action. In one of those latter chapters, you create a small application (<code class="language-plaintext highlighter-rouge">Rumbl.Counter</code>) which dies after a couple of seconds. A Supervisor for the main application (<code class="language-plaintext highlighter-rouge">Rumbl</code>) restarts this smaller application automatically when it dies. Ruby doesn’t have that kind of capability; instead you need to rely on tools like upstart. It’s quite nice having it built into the language because then you don’t have to learn something completely different to ensure your servers don’t fall over.</p>
+<p>What I loved from these final chapters was seeing Elixir’s supervision capabilities in action. In one of those latter chapters, you create a small application (<code>Rumbl.Counter</code>) which dies after a couple of seconds. A Supervisor for the main application (<code>Rumbl</code>) restarts this smaller application automatically when it dies. Ruby doesn’t have that kind of capability; instead you need to rely on tools like upstart. It’s quite nice having it built into the language because then you don’t have to learn something completely different to ensure your servers don’t fall over.</p>
 
 <hr />
 
@@ -56,7 +56,7 @@
 
 <p>I am not sure if it is because the book has three authors, but there are some parts where I’m reading it and enjoying it. Then there are sections like “Anatomy of a Plug” which goes <em>way too deep</em> into what a Plug is and how it works, and “Exploring Ecto in the Console” which, again, goes rather deep but doesn’t tie that content <em>solidly</em> back to what we’re doing in the book at that present moment. It’d be like a fiction book <em>intricately</em> explaining what’s in the house of the neighbour of the protagonist, but then the neighbour is not mentioned any more past that.</p>
 
-<p>Like, why does it even matter that Ecto supports “search functions like <code class="language-plaintext highlighter-rouge">ilike</code> and <code class="language-plaintext highlighter-rouge">like</code>” or that Plug has <code class="language-plaintext highlighter-rouge">path_info</code> and <code class="language-plaintext highlighter-rouge">scheme</code> fields? Neither of those are relevant to the content at-hand at that point of time, and it feels disconnected. Those things should be mentioned in their respective guides, not in this book. Perhaps those sections will mysteriously disappear once this book reaches the production editing phase.</p>
+<p>Like, why does it even matter that Ecto supports “search functions like <code>ilike</code> and <code>like</code>” or that Plug has <code>path_info</code> and <code>scheme</code> fields? Neither of those are relevant to the content at-hand at that point of time, and it feels disconnected. Those things should be mentioned in their respective guides, not in this book. Perhaps those sections will mysteriously disappear once this book reaches the production editing phase.</p>
 
 <p>It feels like it would be better off showing what a Plug is within the context of the application… and they do that later on. Then after that go into the detail. But I could do without the pages and pages of extra seemingly “useless” info <em>before</em> I get hooked on what you’re trying to sell.</p>
 

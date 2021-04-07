@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -56,16 +56,16 @@
 
 <p>By the end of this guide, you will have these things installed and have some very, very easy ways to manage gem dependencies for your different applications / libraries, as well as having multiple Ruby versions installed and usable all at once.</p>
 
-<p>We assume you have <code class="language-plaintext highlighter-rouge">sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as “What is RubyGems?” and more importantly “How do I turn this computer-thing on?”. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
+<p>We assume you have <code>sudo</code> access to your machine, and that you have an understanding of the basic concepts of Ruby, such as “What is RubyGems?” and more importantly “How do I turn this computer-thing on?”. This knowledge can be garnered by reading the first chapter of <a href="https://manning.com/black2">any Ruby book</a>.</p>
 
 <h3 id="housekeeping">Housekeeping</h3>
 
-<p>First of all, we’re going to run <code class="language-plaintext highlighter-rouge">sudo apt-get update</code> so that we have the latest sources on our box so that we don’t run into any package-related issues, such as not being able to install some packages.</p>
+<p>First of all, we’re going to run <code>sudo apt-get update</code> so that we have the latest sources on our box so that we don’t run into any package-related issues, such as not being able to install some packages.</p>
 
 <p>Next, we’ll run another command which will install the essential building tools that will be used to install Ruby:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get install build-essential
-</code></pre></div></div>
+<pre><code>sudo apt-get install build-essential
+</code></pre>
 
 <p>And now we’re ready to install ruby-install.</p>
 
@@ -73,79 +73,79 @@
 
 <p>The installation instructions can be found <a href="https://github.com/postmodern/ruby-install#install">on the README of ruby-install</a>, but I’ll repeat them here so you don’t have to go over there:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget -O ruby-install-0.7.0.tar.gz \
+<pre><code>wget -O ruby-install-0.7.0.tar.gz \
   https://github.com/postmodern/ruby-install/archive/v0.7.0.tar.gz
 tar -xzvf ruby-install-0.7.0.tar.gz
 cd ruby-install-0.7.0/
 sudo make install
-</code></pre></div></div>
+</code></pre>
 
 <p>First we fetch the ruby-install file, extract it into a directory, then make it. You can verify that these steps have worked by running the following command:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ruby-install -V
-</code></pre></div></div>
+<pre><code>$ ruby-install -V
+</code></pre>
 
 <p>If you see this, then you’ve successfully installed ruby-install:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-install: 0.7.0
-</code></pre></div></div>
+<pre><code>ruby-install: 0.7.0
+</code></pre>
 
 <h3 id="ruby">Ruby</h3>
 
 <p>Our next step is to install Ruby itself, which we can do with this command:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-install ruby 2.7.1
-</code></pre></div></div>
+<pre><code>ruby-install ruby 2.7.1
+</code></pre>
 
 <p>This command will take a couple of minutes, so grab your $DRINKOFCHOICE and go outside or something. Once it’s done, we’ll have Ruby 2.7.1 installed. In order to use this Ruby version, we’ll need to install chruby as well. The instructions <a href="https://github.com/postmodern/chruby#install">can be found in chruby’s README</a> too, but I will reproduce them here:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget -O chruby-0.3.9.tar.gz \
+<pre><code>wget -O chruby-0.3.9.tar.gz \
   https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
 tar -xzvf chruby-0.3.9.tar.gz
 cd chruby-0.3.9/
 sudo make install
-</code></pre></div></div>
+</code></pre>
 
 <p>After this has been installed, we’ll need to load chruby automatically, which we can do by adding these lines to your shells configuration file using the following command:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat &gt;&gt; ~/.$(basename $SHELL)rc &lt;&lt;EOF
+<pre><code>cat &gt;&gt; ~/.$(basename $SHELL)rc &lt;&lt;EOF
 source /usr/local/share/chruby/chruby.sh
 source /usr/local/share/chruby/auto.sh
 EOF
-</code></pre></div></div>
+</code></pre>
 
 <p>In order for this to take effect, we’ll reload the shell</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exec $SHELL
-</code></pre></div></div>
+<pre><code>exec $SHELL
+</code></pre>
 
 <p>Alternatively, opening a new terminal tab/window will do the same thing.</p>
 
-<p>To verify that chruby is installed and has detected our Ruby installation, run <code class="language-plaintext highlighter-rouge">chruby</code>. If you see this, then it’s working:</p>
+<p>To verify that chruby is installed and has detected our Ruby installation, run <code>chruby</code>. If you see this, then it’s working:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-2.7.1
-</code></pre></div></div>
+<pre><code>ruby-2.7.1
+</code></pre>
 
-<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code class="language-plaintext highlighter-rouge">~/.ruby-version</code> with this content:</p>
+<p>Now we need to make that Ruby the default Ruby for our system, which we can do by creating a new file called <code>~/.ruby-version</code> with this content:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby-2.7.1
-</code></pre></div></div>
+<pre><code>ruby-2.7.1
+</code></pre>
 
-<p>This file tells <code class="language-plaintext highlighter-rouge">chruby</code> which Ruby we want to use by default. To change the ruby version that we’re using, we can run <code class="language-plaintext highlighter-rouge">chruby ruby-2.7.1</code> for example – assuming that we have Ruby 2.7.1 installed first!</p>
+<p>This file tells <code>chruby</code> which Ruby we want to use by default. To change the ruby version that we’re using, we can run <code>chruby ruby-2.7.1</code> for example – assuming that we have Ruby 2.7.1 installed first!</p>
 
-<p>Did this work? Let’s find out by running <code class="language-plaintext highlighter-rouge">ruby -v</code>:</p>
+<p>Did this work? Let’s find out by running <code>ruby -v</code>:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ruby 2.7.1p114 (2019-10-01 revision 67812) [x86_64-linux]
-</code></pre></div></div>
+<pre><code>ruby 2.7.1p114 (2019-10-01 revision 67812) [x86_64-linux]
+</code></pre>
 
 <h3 id="rails">Rails</h3>
 
-<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don’t need to use that nasty <code class="language-plaintext highlighter-rouge">sudo</code> to install things; we’ve got write-access! To install the Rails gem we’ll run this command:</p>
+<p>Now that we have a version of Ruby installed, we can install Rails. Because our Ruby is installed to our home directory, we don’t need to use that nasty <code>sudo</code> to install things; we’ve got write-access! To install the Rails gem we’ll run this command:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem install rails -v 6.0.0 --no-document
-</code></pre></div></div>
+<pre><code>gem install rails -v 6.0.0 --no-document
+</code></pre>
 
-<p>This will install the <code class="language-plaintext highlighter-rouge">rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
+<p>This will install the <code>rails</code> gem and the multitude of gems that it and its dependencies depend on, including Bundler.</p>
 
 <h3 id="rails-pre-requisites">Rails pre-requisites</h3>
 
@@ -155,29 +155,29 @@ EOF
 
 <p>Rails requires a JavaScript runtime to run Webpacker for its assets.</p>
 
-<p>To fix this error install <code class="language-plaintext highlighter-rouge">nodejs</code>, which comes with a JavaScript runtime:</p>
+<p>To fix this error install <code>nodejs</code>, which comes with a JavaScript runtime:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get install nodejs
-</code></pre></div></div>
+<pre><code>sudo apt-get install nodejs
+</code></pre>
 
-<p>On top of this, modern Rails uses <code class="language-plaintext highlighter-rouge">yarn</code>, a JavaScript package manager. We will need to install that too. The <a href="https://yarnpkg.com/lang/en/docs/install/#debian-stable">instructions are on the Yarn site</a> but here they are too:</p>
+<p>On top of this, modern Rails uses <code>yarn</code>, a JavaScript package manager. We will need to install that too. The <a href="https://yarnpkg.com/lang/en/docs/install/#debian-stable">instructions are on the Yarn site</a> but here they are too:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+<pre><code>curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 sudo apt-get update &amp;&amp; sudo apt-get install yarn
-</code></pre></div></div>
+</code></pre>
 
 <h4 id="sqlite3">SQLite3</h4>
 
-<p>First of all, we need to install <code class="language-plaintext highlighter-rouge">libsqlite3-dev</code>, which is the package for the development headers for SQLite3. We need this so that when <code class="language-plaintext highlighter-rouge">bundle install</code> runs as a part of <code class="language-plaintext highlighter-rouge">rails new</code>, it will be able to install the <code class="language-plaintext highlighter-rouge">sqlite3</code> gem that is a default dependency of Rails applications.</p>
+<p>First of all, we need to install <code>libsqlite3-dev</code>, which is the package for the development headers for SQLite3. We need this so that when <code>bundle install</code> runs as a part of <code>rails new</code>, it will be able to install the <code>sqlite3</code> gem that is a default dependency of Rails applications.</p>
 
 <p>(If you’re using MySQL or PostgreSQL instead, see the sections below.)</p>
 
 <h4 id="mysql">MySQL</h4>
 
-<p>If you’re planning on using the <code class="language-plaintext highlighter-rouge">mysql2</code> gem for your application then you’ll want to install the <code class="language-plaintext highlighter-rouge">libmysqlclient-dev</code> package before you do that. Without it, you’ll get an error when the gem tries to compile its native extensions:</p>
+<p>If you’re planning on using the <code>mysql2</code> gem for your application then you’ll want to install the <code>libmysqlclient-dev</code> package before you do that. Without it, you’ll get an error when the gem tries to compile its native extensions:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Building native extensions.  This could take a while...
+<pre><code>Building native extensions.  This could take a while...
 ERROR:  Error installing mysql2:
     ERROR: Failed to build gem native extension.
 
@@ -203,15 +203,15 @@ checking for mysql_query() in -lmysqlclient... no
 Could not create Makefile due to some reason, probably lack of necessary
 libraries and/or headers.  Check the mkmf.log file for more details.  You may
 need configuration options.
-</code></pre></div></div>
+</code></pre>
 
-<p>Install this package using <code class="language-plaintext highlighter-rouge">sudo apt-get install libmysqlclient-dev</code> and then the <code class="language-plaintext highlighter-rouge">mysql2</code> gem will install fine.</p>
+<p>Install this package using <code>sudo apt-get install libmysqlclient-dev</code> and then the <code>mysql2</code> gem will install fine.</p>
 
 <h4 id="postgresql">PostgreSQL</h4>
 
-<p>Similar to the <code class="language-plaintext highlighter-rouge">mysql2</code> gem’s error above, you’ll also get an error with the <code class="language-plaintext highlighter-rouge">pg</code> gem if you don’t have the <code class="language-plaintext highlighter-rouge">libpq-dev</code> package installed you’ll get this error:</p>
+<p>Similar to the <code>mysql2</code> gem’s error above, you’ll also get an error with the <code>pg</code> gem if you don’t have the <code>libpq-dev</code> package installed you’ll get this error:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Building native extensions.  This could take a while...
+<pre><code>Building native extensions.  This could take a while...
 ERROR:  Error installing pg:
     ERROR: Failed to build gem native extension.
 
@@ -225,9 +225,9 @@ Can't find the 'libpq-fe.h header
 Could not create Makefile due to some reason, probably lack of necessary
 libraries and/or headers.  Check the mkmf.log file for more details.  You may
 need configuration options.
-</code></pre></div></div>
+</code></pre>
 
-<p>Install this package using <code class="language-plaintext highlighter-rouge">sudo apt-get install libpq-dev</code>.</p>
+<p>Install this package using <code>sudo apt-get install libpq-dev</code>.</p>
 
 <h3 id="fin">Fin</h3>
 

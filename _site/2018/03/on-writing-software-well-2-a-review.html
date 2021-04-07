@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -49,7 +49,7 @@
 <h2 id="initial-reactions">Initial reactions</h2>
 
 <ul>
-  <li>Ew callbacks. I’ve been bitten enough times by these – mainly cases where callbacks are happening when I do not expect them to. Things like where I might call <code class="language-plaintext highlighter-rouge">create</code> on a model in a unit test and that causes some <em>other</em> behaviour via callback that isn’t relevant to the test. I’d prefer to be explicit in these cases to save surprises.</li>
+  <li>Ew callbacks. I’ve been bitten enough times by these – mainly cases where callbacks are happening when I do not expect them to. Things like where I might call <code>create</code> on a model in a unit test and that causes some <em>other</em> behaviour via callback that isn’t relevant to the test. I’d prefer to be explicit in these cases to save surprises.</li>
   <li>I’ve heard mention that these talks might include Rails concerns (modules being included to add behaviour to classes), so I’d suggest you stop right here, get out your favourite drink of choice and take a drink whenever you see a concern used in the Rails app.</li>
 </ul>
 
@@ -62,132 +62,132 @@
 <h2 id="213---messages-controller">2:13 - Messages Controller</h2>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">@bucket.record</code> takes <em>far</em> too many arguments. What is it doing with them all? And P.S. do you even newline your key / value pairs?</li>
+  <li><code>@bucket.record</code> takes <em>far</em> too many arguments. What is it doing with them all? And P.S. do you even newline your key / value pairs?</li>
 </ul>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vi">@bucket</span><span class="p">.</span><span class="nf">record</span><span class="p">(</span><span class="n">new_message</span><span class="p">,</span>
-  <span class="ss">parent: </span><span class="vi">@parent_recording</span><span class="p">,</span>
-  <span class="ss">status: </span><span class="n">status_param</span><span class="p">,</span>
-  <span class="ss">subscribers: </span><span class="n">find_subscribers</span><span class="p">,</span>
-  <span class="ss">category: </span><span class="n">find_category</span>
-<span class="p">)</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">@bucket.record(new_message,
+  parent: @parent_recording,
+  status: status_param,
+  subscribers: find_subscribers,
+  category: find_category
+)
+</code></pre>
 
-<p>I think that this reads a little better – and the Git diff would be neater if a new key was added and removed. It <em>feels</em> like <code class="language-plaintext highlighter-rouge">category</code> <em>might</em> one be of those things that was added recently and just chucked onto the end here.</p>
+<p>I think that this reads a little better – and the Git diff would be neater if a new key was added and removed. It <em>feels</em> like <code>category</code> <em>might</em> one be of those things that was added recently and just chucked onto the end here.</p>
 
-<p>TBH a little surprised here that he’s using <code class="language-plaintext highlighter-rouge">@parent_recording</code> which is setup as a  <code class="language-plaintext highlighter-rouge">before_action</code>,  but <code class="language-plaintext highlighter-rouge">find_subscribers</code> and <code class="language-plaintext highlighter-rouge">find_category</code> aren’t. They’re called explicitly here. I’d expect some sort of consistency… but maybe there’s a reason for that? The methods are folded at the bottom of the controller so I can’t get a good idea of what those are doing to really judge whether or not it’s a good choice.</p>
+<p>TBH a little surprised here that he’s using <code>@parent_recording</code> which is setup as a  <code>before_action</code>,  but <code>find_subscribers</code> and <code>find_category</code> aren’t. They’re called explicitly here. I’d expect some sort of consistency… but maybe there’s a reason for that? The methods are folded at the bottom of the controller so I can’t get a good idea of what those are doing to really judge whether or not it’s a good choice.</p>
 
-<h2 id="415---mention-model">4:15 - <code class="language-plaintext highlighter-rouge">Mention</code> model</h2>
+<h2 id="415---mention-model">4:15 - <code>Mention</code> model</h2>
 
 <ul>
-  <li>This model is pretty neat. I cringe a little (PTSD, I guess) on the sight of the <code class="language-plaintext highlighter-rouge">after_create</code> and <code class="language-plaintext highlighter-rouge">after_commit</code> uses.</li>
-  <li>Interesting that the model doesn’t inherit from <code class="language-plaintext highlighter-rouge">ApplicationModel</code>. Probably a legacy app thing.</li>
-  <li>Neat use of <code class="language-plaintext highlighter-rouge">casecmp</code> in <code class="language-plaintext highlighter-rouge">callsign_matches?</code>.</li>
-  <li>The <code class="language-plaintext highlighter-rouge">unless</code> in <code class="language-plaintext highlighter-rouge">after_commit :deliver</code> irks me a little, but maybe it’s due to me preferring to keep all the logic inside of methods? I’d write it like this:</li>
+  <li>This model is pretty neat. I cringe a little (PTSD, I guess) on the sight of the <code>after_create</code> and <code>after_commit</code> uses.</li>
+  <li>Interesting that the model doesn’t inherit from <code>ApplicationModel</code>. Probably a legacy app thing.</li>
+  <li>Neat use of <code>casecmp</code> in <code>callsign_matches?</code>.</li>
+  <li>The <code>unless</code> in <code>after_commit :deliver</code> irks me a little, but maybe it’s due to me preferring to keep all the logic inside of methods? I’d write it like this:</li>
 </ul>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">deliver</span>
- <span class="k">return</span> <span class="k">unless</span> <span class="n">mentioner</span> <span class="o">==</span> <span class="n">mentioned</span>
+<pre><code class="language-ruby">def deliver
+ return unless mentioner == mentioned
 
-<span class="o">...</span>
-<span class="k">end</span>
-</code></pre></div></div>
+...
+end
+</code></pre>
 
-<h2 id="555---recordingmentions-concern">5:55 - <code class="language-plaintext highlighter-rouge">Recording::Mentions</code> concern</h2>
+<h2 id="555---recordingmentions-concern">5:55 - <code>Recording::Mentions</code> concern</h2>
 <p><em>DRINK</em> – there’s a concern here. [bad joke about it being “concerning”]</p>
 
 <h3 id="callbacks">Callbacks</h3>
 
 <ul>
-  <li>Okay, so this is using more callbacks. I feel like <code class="language-plaintext highlighter-rouge">remember_to_eavesdrop</code> could be something set “further up” in the chain, probably in the controller. The controller itself could check to see if these things have changed, and then from there choose to send out the mentions.</li>
+  <li>Okay, so this is using more callbacks. I feel like <code>remember_to_eavesdrop</code> could be something set “further up” in the chain, probably in the controller. The controller itself could check to see if these things have changed, and then from there choose to send out the mentions.</li>
 </ul>
 
 <h3 id="current-attributes">Current Attributes</h3>
-<p>The other thing is <code class="language-plaintext highlighter-rouge">Current</code> – used in <code class="language-plaintext highlighter-rouge">eavesdrop_for_mentions</code> down the bottom of the code view here.</p>
+<p>The other thing is <code>Current</code> – used in <code>eavesdrop_for_mentions</code> down the bottom of the code view here.</p>
 
-<p>I already <a href="https://ryanbigg.com/2017/06/current-considered-harmful">wrote about CurrentAttributes at length</a>. Global variables magically being available <em>everywhere</em> in the application. Where is <code class="language-plaintext highlighter-rouge">Current.user</code> set? How can I be sure it’s set to a value here?</p>
+<p>I already <a href="https://ryanbigg.com/2017/06/current-considered-harmful">wrote about CurrentAttributes at length</a>. Global variables magically being available <em>everywhere</em> in the application. Where is <code>Current.user</code> set? How can I be sure it’s set to a value here?</p>
 
 <h3 id="abstracting-out-the-logic-for-triggering-the-job">Abstracting out the logic for triggering the job</h3>
 
 <p>This whole eavesdropping thing <em>feels</em> like it could be wrapped in some other logic (in a controller, perhaps). It’s practically begging for it. Basecamp probably doesn’t want to be persisting Messages to the database in its tests and having this job code run <em>every single time</em>, but that’s exactly what’s going to happen here. It’d probably slow down the tests due to these side-effects.</p>
 
-<p>It would be better abstracted out to a “service object” which creates the recording and then triggers this <code class="language-plaintext highlighter-rouge">EavesdroppingJob</code>. Bonus thing there is that you can pass <code class="language-plaintext highlighter-rouge">current_user</code> from the controller and hey look I just got rid of the <code class="language-plaintext highlighter-rouge">CurrentAttributes</code> global variable thing.</p>
+<p>It would be better abstracted out to a “service object” which creates the recording and then triggers this <code>EavesdroppingJob</code>. Bonus thing there is that you can pass <code>current_user</code> from the controller and hey look I just got rid of the <code>CurrentAttributes</code> global variable thing.</p>
 
 <p>An idea of what that might look like:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="nn">Mention</span>
-  <span class="k">class</span> <span class="nc">EavesdropForMentions</span>
-    <span class="nb">attr_reader</span> <span class="ss">:recording</span><span class="p">,</span> <span class="ss">:params</span><span class="p">,</span> <span class="n">user</span>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">recording</span><span class="p">:,</span> <span class="n">params</span><span class="p">:,</span> <span class="ss">user: </span><span class="p">)</span>
-      <span class="vi">@recording</span> <span class="o">=</span> <span class="n">recording</span>
-      <span class="vi">@params</span> <span class="o">=</span> <span class="n">params</span>
-      <span class="vi">@user</span> <span class="o">=</span> <span class="n">user</span>
-    <span class="k">end</span>
+<pre><code class="language-ruby">module Mention
+  class EavesdropForMentions
+    attr_reader :recording, :params, user
+    def initialize(recording:, params:, user: )
+      @recording = recording
+      @params = params
+      @user = user
+    end
 
-    <span class="k">def</span> <span class="nf">run</span>
-      <span class="k">return</span> <span class="k">unless</span> <span class="n">eavesdropping?</span>
+    def run
+      return unless eavesdropping?
 
-      <span class="no">Mention</span><span class="o">::</span><span class="no">EavesdroppingJob</span><span class="p">.</span><span class="nf">perform_later</span> <span class="n">recording</span><span class="p">,</span> <span class="ss">mentioner: </span><span class="n">user</span>
-    <span class="k">end</span>
+      Mention::EavesdroppingJob.perform_later recording, mentioner: user
+    end
 
-    <span class="kp">private</span>
+    private
 
-    <span class="k">def</span> <span class="nf">eavesdropping?</span>
-      <span class="p">(</span><span class="n">active_or_archived_recordable_changed?</span> <span class="o">||</span> <span class="n">draft_became_active?</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
-      <span class="o">!</span><span class="no">Mention</span><span class="o">::</span><span class="no">Eavesdropper</span><span class="p">.</span><span class="nf">suppressed?</span> <span class="o">&amp;&amp;</span>
-      <span class="n">recording</span><span class="p">.</span><span class="nf">has_mentions?</span>
-    <span class="k">end</span>
+    def eavesdropping?
+      (active_or_archived_recordable_changed? || draft_became_active?) &amp;&amp;
+      !Mention::Eavesdropper.suppressed? &amp;&amp;
+      recording.has_mentions?
+    end
 
-    <span class="k">def</span> <span class="nf">active_or_archived_recordable_changed?</span>
-      <span class="c1"># code here to check change using recordable + params</span>
-    <span class="k">end</span>
+    def active_or_archived_recordable_changed?
+      # code here to check change using recordable + params
+    end
 
-    <span class="k">def</span> <span class="nf">draft_became_active?</span>
-      <span class="c1"># code here to check change using recordable + params</span>
-    <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+    def draft_became_active?
+      # code here to check change using recordable + params
+    end
+end
+</code></pre>
 
-<p>I don’t have the big Basecamp app to play with, so i don’t know for certain if this code will or won’t work. What I do know is that it neatly encapsulates <em>potentially</em> performing the <code class="language-plaintext highlighter-rouge">Mention::EavesdroppingJob</code> later and avoids the issue where saving a <code class="language-plaintext highlighter-rouge">Recording</code> in <em>any</em> context might queue up a job as a side-effect.  My approach here decouples those two things, allowing them to happen independently.</p>
+<p>I don’t have the big Basecamp app to play with, so i don’t know for certain if this code will or won’t work. What I do know is that it neatly encapsulates <em>potentially</em> performing the <code>Mention::EavesdroppingJob</code> later and avoids the issue where saving a <code>Recording</code> in <em>any</em> context might queue up a job as a side-effect.  My approach here decouples those two things, allowing them to happen independently.</p>
 
 <p>Essentially, it accomplishes the same thing in (probably) as many lines, but disconnecting it from the saving of the model is the big win in my mind.</p>
 
 <h3 id="callback-suppression">Callback suppression</h3>
 
-<p>Yay more global state appearing out of the blue (<code class="language-plaintext highlighter-rouge">Mention::Eavesdropper.suppressed?</code>). What could possibly go wrong? How can I track down easily where this might be toggled in the codepath that leads to this method? This looks like it would make debugging hard.</p>
+<p>Yay more global state appearing out of the blue (<code>Mention::Eavesdropper.suppressed?</code>). What could possibly go wrong? How can I track down easily where this might be toggled in the codepath that leads to this method? This looks like it would make debugging hard.</p>
 
-<p>DHH himself says (at ~11mins) he thinks that there might be situations where you don’t want callbacks to happen. Okay, great. So make it so that it can be an optional part of your code (as above), rather than this spooky-action-at-a-distance <code class="language-plaintext highlighter-rouge">Mention::Eavesdropper.suppressed?</code>.</p>
+<p>DHH himself says (at ~11mins) he thinks that there might be situations where you don’t want callbacks to happen. Okay, great. So make it so that it can be an optional part of your code (as above), rather than this spooky-action-at-a-distance <code>Mention::Eavesdropper.suppressed?</code>.</p>
 
 <p>Re-organising the code to <em>optionally</em> trigger this eavesdropping behaviour would lead to a lower cognitive overhead for working with this code.</p>
 
-<h3 id="has_mentions"><code class="language-plaintext highlighter-rouge">has_mentions?</code></h3>
+<h3 id="has_mentions"><code>has_mentions?</code></h3>
 
-<p>Special mention (ha) of <code class="language-plaintext highlighter-rouge">has_mentions?</code> at the bottom of this module which does seem to at least abstract the behaviour of checking if something has mentions.</p>
+<p>Special mention (ha) of <code>has_mentions?</code> at the bottom of this module which does seem to at least abstract the behaviour of checking if something has mentions.</p>
 
-<h2 id="1323---mentioneavesdroppingjob">13:23 - <code class="language-plaintext highlighter-rouge">Mention::EavesdroppingJob</code></h2>
+<h2 id="1323---mentioneavesdroppingjob">13:23 - <code>Mention::EavesdroppingJob</code></h2>
 
-<p>It feels a lot like <code class="language-plaintext highlighter-rouge">Current.set</code> here is a cheap way of passing account through to <code class="language-plaintext highlighter-rouge">mention::Eavesdropper</code> and its associated things. I am not sure why this is wrapped this way, given that the account would be accessible in the <code class="language-plaintext highlighter-rouge">Eavesdropper</code> class – assuming it’s setup like this:</p>
+<p>It feels a lot like <code>Current.set</code> here is a cheap way of passing account through to <code>mention::Eavesdropper</code> and its associated things. I am not sure why this is wrapped this way, given that the account would be accessible in the <code>Eavesdropper</code> class – assuming it’s setup like this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Mention</span>
-  <span class="k">class</span> <span class="nc">Eavesdropper</span>
-    <span class="nb">attr_reader</span> <span class="ss">:recording</span>
+<pre><code class="language-ruby">class Mention
+  class Eavesdropper
+    attr_reader :recording
 
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">recording</span><span class="p">)</span>
-      <span class="vi">@recording</span> <span class="o">=</span> <span class="n">recording</span>
-    <span class="k">end</span>
+    def initialize(recording)
+      @recording = recording
+    end
 
-    <span class="o">...</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+    ...
+  end
+end
+</code></pre>
 
-<p>But at least, this <code class="language-plaintext highlighter-rouge">Eavesdropper</code> class is abstracted away and isn’t a concern. There feels to me like concerns are used as a bit of a “golden hammer” in this application.</p>
+<p>But at least, this <code>Eavesdropper</code> class is abstracted away and isn’t a concern. There feels to me like concerns are used as a bit of a “golden hammer” in this application.</p>
 
 <h2 id="1345---run-through-of-all-the-parts">13:45 - run-through of all the parts</h2>
 
-<p>DHH jumps straight from the controller to the <code class="language-plaintext highlighter-rouge">Recording::Mentions</code> concern here. (DRINK)</p>
+<p>DHH jumps straight from the controller to the <code>Recording::Mentions</code> concern here. (DRINK)</p>
 
-<p>My initial thought here was: how is someone unfamiliar with this application supposed to know that the <code class="language-plaintext highlighter-rouge">Recording::Mentions</code> concern is where to look for this eavesdropping behaviour if they were to go about debugging it?</p>
+<p>My initial thought here was: how is someone unfamiliar with this application supposed to know that the <code>Recording::Mentions</code> concern is where to look for this eavesdropping behaviour if they were to go about debugging it?</p>
 
 <p>This is spooky-action-at-a-distance and it’s the kind of code that I might’ve written a few years ago and felt very smart <em>at the time</em>, but then months later when I’ve gone back to visit it I’ve asked myself: “wtf was past-Ryan taking?”</p>
 
@@ -195,7 +195,7 @@
 
 <p>It is “clever code” and that is dangerous because future-you will come back and look at the code in a few months time and wonder how it all fit together again.</p>
 
-<h2 id="1420---mentioneavesdropper">14:20 - <code class="language-plaintext highlighter-rouge">Mention::Eavesdropper</code></h2>
+<h2 id="1420---mentioneavesdropper">14:20 - <code>Mention::Eavesdropper</code></h2>
 
 <p>And now we get to a class which actually has an idea of what the Single Responsibility Principle is.</p>
 
@@ -203,19 +203,19 @@
 
 <p>I’ve already talked about CurrentAttributes before, so what I’ll do here is just sigh longingly, wishing wistfully for the death of global state in any and all applications.</p>
 
-<p>“Globals is not something that you should just litter over your application” – MY MAN! This is what you’re doing here. “Passing around this stuff isn’t helpful”. Ok, here’s the #2 thing I disagree with. When passing things around, you gain an inkling for <em>where</em> the thing came from and if you followed the chain high enough you might find where it was originally defined. This <code class="language-plaintext highlighter-rouge">Current.person</code> mumbojumbo hides all of that for no real good reason.</p>
+<p>“Globals is not something that you should just litter over your application” – MY MAN! This is what you’re doing here. “Passing around this stuff isn’t helpful”. Ok, here’s the #2 thing I disagree with. When passing things around, you gain an inkling for <em>where</em> the thing came from and if you followed the chain high enough you might find where it was originally defined. This <code>Current.person</code> mumbojumbo hides all of that for no real good reason.</p>
 
 <p>Not sure I can state my thoughts clearer than this: <em>DEATH TO GLOBAL STATE.</em></p>
 
-<h2 id="1624---mentionscanner">16:24 - <code class="language-plaintext highlighter-rouge">Mention::Scanner</code></h2>
+<h2 id="1624---mentionscanner">16:24 - <code>Mention::Scanner</code></h2>
 
-<p>Ok so that <code class="language-plaintext highlighter-rouge">Mention::Scanner</code> approach looks pretty good. It’s great that this code wasn’t just thrown into <code class="language-plaintext highlighter-rouge">Eavesdropper</code> because it was <em>somewhat</em> related. It’s a separate concern, and moving that logic into <code class="language-plaintext highlighter-rouge">Mention::Scanner</code> is a good approach.</p>
+<p>Ok so that <code>Mention::Scanner</code> approach looks pretty good. It’s great that this code wasn’t just thrown into <code>Eavesdropper</code> because it was <em>somewhat</em> related. It’s a separate concern, and moving that logic into <code>Mention::Scanner</code> is a good approach.</p>
 
-<h2 id="1810---mention-after_commit-hook">18:10 - <code class="language-plaintext highlighter-rouge">Mention</code> <code class="language-plaintext highlighter-rouge">after_commit</code> hook</h2>
-<p>I still feel strongly that this could just be a method call in the controller after the <code class="language-plaintext highlighter-rouge">@bucket.record</code> is called.</p>
+<h2 id="1810---mention-after_commit-hook">18:10 - <code>Mention</code> <code>after_commit</code> hook</h2>
+<p>I still feel strongly that this could just be a method call in the controller after the <code>@bucket.record</code> is called.</p>
 
-<h2 id="1920---projectcopier--suppression">19:20 - <code class="language-plaintext highlighter-rouge">ProjectCopier</code> + suppression</h2>
-<p>The suppression chain underneath <code class="language-plaintext highlighter-rouge">suppress_events_and_deliveries</code> wouldn’t be necessary if this code previously opted-in explicitly to making these “events” and “deliveries”. It <em>still</em> feels like a poor work around for something that could be tidied up with half an hour’s worth of effort.</p>
+<h2 id="1920---projectcopier--suppression">19:20 - <code>ProjectCopier</code> + suppression</h2>
+<p>The suppression chain underneath <code>suppress_events_and_deliveries</code> wouldn’t be necessary if this code previously opted-in explicitly to making these “events” and “deliveries”. It <em>still</em> feels like a poor work around for something that could be tidied up with half an hour’s worth of effort.</p>
 
 <p>And at the ~20:10 mark, DHH can’t find where the suppressible behaviour is brought in. This thing where the code is hard-to-navigate  is a massive code smell. Again: if the “callbacks” were explicit rather than implicit, the suppression wouldn’t be needed. The overall code footprint would be smaller, more explicit, and therefore easier to understand. The code does A, B, and C. No magic.</p>
 
@@ -234,24 +234,24 @@
 
 <p>Another approach would be to use <a href="http://dry-rb.org/gems/dry-transaction/">dry-transaction</a>. This gem provides a very neat DSL for setting up such a thing. I’d imagine it would go like this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CreateRecording</span>
+<pre><code class="language-ruby">class CreateRecording
 
-<span class="n">step</span> <span class="ss">:create</span>
-<span class="n">step</span> <span class="ss">:scan_for_mentions</span>
-<span class="n">step</span> <span class="ss">:deliver_notifications</span>
+step :create
+step :scan_for_mentions
+step :deliver_notifications
 
-<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="ss">bucket: </span><span class="n">bucket</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-  <span class="c1"># @bucket.record code goes here</span>
-<span class="k">end</span>
+def create(bucket: bucket, ...)
+  # @bucket.record code goes here
+end
 
-<span class="k">def</span> <span class="nf">scan_for_mentions</span>
-  <span class="c1"># MentionScanner goes here</span>
-<span class="k">end</span>
+def scan_for_mentions
+  # MentionScanner goes here
+end
 
-<span class="k">def</span> <span class="nf">deliver_notifications</span>
-  <span class="c1"># Delivery code goes here</span>
-<span class="k">end</span>
-</code></pre></div></div>
+def deliver_notifications
+  # Delivery code goes here
+end
+</code></pre>
 
 <p>It’ll all be wrapped up neatly in the one class. <em>This</em> is where it should go. Not a controller. Not a service object. But a transaction object, that clearly delineates the steps involved in the transaction. There’s no magic here. The steps are run in the order they are specified in. And it’s possible to abort the transaction at each step.</p>
 

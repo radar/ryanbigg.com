@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -38,17 +38,17 @@
             </div>
             <p>In my work on Spree, sometimes I’ve been wanting to know <em>where</em> queries are coming from. Just like any large codebase, the “magic” that goes on inside it to make the cogs spin the right way can be a bit complex.</p>
 
-<p>Active Support’s Notifications feature is really handy for this. All I need to do is subscribe to the <code class="language-plaintext highlighter-rouge">sql.active_record</code> event and get it to output the stacktrace of where the query is generated, like this:</p>
+<p>Active Support’s Notifications feature is really handy for this. All I need to do is subscribe to the <code>sql.active_record</code> event and get it to output the stacktrace of where the query is generated, like this:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">Notifications</span><span class="p">.</span><span class="nf">subscribe</span><span class="p">(</span><span class="s2">"sql.active_record"</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">details</span><span class="o">|</span>
-  <span class="k">if</span> <span class="n">details</span><span class="p">[</span><span class="ss">:sql</span><span class="p">]</span> <span class="o">=~</span> <span class="sr">/INSERT INTO "spree_inventory_units"/</span>
-    <span class="nb">puts</span> <span class="nb">caller</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-    <span class="nb">puts</span> <span class="s2">"*"</span> <span class="o">*</span> <span class="mi">50</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">ActiveSupport::Notifications.subscribe("sql.active_record") do |_, _, _, _, details|
+  if details[:sql] =~ /INSERT INTO "spree_inventory_units"/
+    puts caller.join("\n")
+    puts "*" * 50
+  end
+end
+</code></pre>
 
-<p>Whenever a query that inserts a new record into the <code class="language-plaintext highlighter-rouge">spree_inventory_units</code> table is issued through Active Record, this code will give me a complete stacktrace of where that came from.</p>
+<p>Whenever a query that inserts a new record into the <code>spree_inventory_units</code> table is issued through Active Record, this code will give me a complete stacktrace of where that came from.</p>
 
           </article>
         </div>

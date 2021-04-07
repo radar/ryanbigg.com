@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -72,14 +72,14 @@ Right now you should have a prompt like this: <span class="term">you@server:~$ _
 
 <p>After that’s all done, head over to the <a href="http://rubyforge.org/frs/?group_id=126">the rubygems download page</a> and get Rubygems 1.3.1, unpack it and install it yourself. Alternatively, you could use this command and it’ll download it, unpack and install it for you and do some clean up after:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://rubyforge.org/frs/download.php/38646/rubygems-1.3.1.tgz &amp;&amp;
+<pre><code>wget http://rubyforge.org/frs/download.php/38646/rubygems-1.3.1.tgz &amp;&amp;
 gunzip rubygems-1.3.1.tgz &amp;&amp;
 tar xf rubygems-1.3.1.tar &amp;&amp;
 cd rubygems-1.3.1 &amp;&amp;
 sudo ruby setup.rb &amp;&amp;
 cd .. &amp;&amp;
 rm -r rubygems-1.3.1*
-</code></pre></div></div>
+</code></pre>
 
 <p>Rubygems installs an executable called gem1.8, which again is more typing than what we need. We’ll just symbolically link this one too: <span class="term">sudo ln -s /usr/bin/gem1.8 /usr/bin/gem</span></p>
 
@@ -90,14 +90,14 @@ rm -r rubygems-1.3.1*
 
 <p>After this is done, run <span class="term">sudo passenger-install-apache2-module</span> and follow the instructions there. After it’s done pay attention to the last three lines it tells you to put into your apache configuration file:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
+<pre><code>LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
 PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6
 PassengerRuby /usr/bin/ruby1.8
-</code></pre></div></div>
+</code></pre>
 
 <p>For that last line, you can use either /usr/bin/ruby1.8 or /usr/bin/ruby, since we symbolically linked them all that time ago. We’re going to put these lines into /etc/apache2/sites-enabled/000-default at the top of the file and change a few things in the file and our end result should look like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
+<pre><code>LoadModule passenger_module /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6/ext/apache2/mod_passenger.so
 PassengerRoot /usr/lib/ruby/gems/1.8/gems/passenger-2.0.6
 PassengerRuby /usr/bin/ruby1.8
 
@@ -109,13 +109,13 @@ ErrorLog /var/log/apache2/error.log
 LogLevel warn
 CustomLog /var/log/apache2/access.log combined
 ServerSignature On
-</code></pre></div></div>
+</code></pre>
 
 <p>After editing this file you’ll need to restart Apache by typing: <span class="term">sudo /etc/init.d/apache2 restart</span>. Also, you may want to remove the index.html file currently residing in /var/www by tpying <span class="term">sudo rm /var/www/index.html</span></p>
 <h2>Capistrano</h2>
 <p>Now you want to deploy your uber-mega-ultra-hyper application to the server! To do this we can use Capistrano. If you haven’t already, on your development machine install Capistrano by typing <span class="term">sudo gem install capistrano</span>. When Capistrano is installed go into your uber-mega-ultra-hyper application’s root directory and type <span class="term">capify  .</span>. This will capify (say it out loud in an announcer-style voice, oh yeah) your application by creating a <em>Capfile</em> in the root path and a <em>deploy.rb</em> file in the <em>config</em> folder. What we’re really interested in here is the <em>config/deploy.rb</em> file which now looks kind of sparse:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set :application, "set your application name here"
+<pre><code>set :application, "set your application name here"
 set :repository,  "set your repository location here"
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -130,11 +130,11 @@ set :repository,  "set your repository location here"
 role :app, "your app-server here"
 role :web, "your web-server here"
 role :db,  "your db-server here", :primary =&gt; true
-</code></pre></div></div>
+</code></pre>
 
 <p>But we’ll give it some lovin’:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>set :application, "uber-mega-ultra-hyper"
+<pre><code>set :application, "uber-mega-ultra-hyper"
 set :repository, "git://github.com/you/uber-mega-ultra-hyper"
 
 set :deploy_to, "/home/deploy/app"
@@ -157,7 +157,7 @@ namespace :deploy do
  end
 
 after :deploy, "passenger:restart"
-</code></pre></div></div>
+</code></pre>
 
 <p><br /><br /></p>
 <div>

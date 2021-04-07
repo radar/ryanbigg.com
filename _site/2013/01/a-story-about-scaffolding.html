@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -38,20 +38,20 @@
             </div>
             <p>When Rails was released, one of the “showy” features in it was the ability to get up and running quickly. That’s always been the focus for Rails.</p>
 
-<p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code class="language-plaintext highlighter-rouge">rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code class="language-plaintext highlighter-rouge">scaffold</code>. In later Rails releases (can’t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
+<p>One of the things that allowed you to get up and running so quickly was the scaffold feature of Rails. You would run <code>rails generate scaffold posts</code> and there you would then have a scaffold for posts that would allow you to perform CRUD (Create, Read, Update and Destroy) actions on these posts. Back in Rails 1 days, it was a simple one line in your controller: <code>scaffold</code>. In later Rails releases (can’t remember right now which one specifically), this was changed to generating the familiar scaffold controllers you see today that provide a HTML and XML response, or even more recently, a HTML and JSON response.</p>
 
-<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we’re sticking with the Post scaffold idea. So you do that, but then you don’t realise that you need to add the field to the <code class="language-plaintext highlighter-rouge">attr_accessible</code> list<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote">1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you’d need to add it to the form partial as well. Newbies don’t learn how to do these very, very basic things first off <em>if they’re using scaffolding</em> and that’s why it’s a bad thing.</p>
+<p>Scaffolding is great for getting something that will allow you to perform those CRUD actions on it. However, the moment you need to step outside that safe cocoon, you run into trouble. You want to add a new field to your database, say an author field if we’re sticking with the Post scaffold idea. So you do that, but then you don’t realise that you need to add the field to the <code>attr_accessible</code> list<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote">1</a></sup> (which you had no idea about until someone told you about it in the Rails channel), and you’d need to add it to the form partial as well. Newbies don’t learn how to do these very, very basic things first off <em>if they’re using scaffolding</em> and that’s why it’s a bad thing.</p>
 
 <p>If you begin using scaffolding, you can indeed see exactly what functionality Rails is capable of. Goodo, you can create, read, update and delete things. The problem, however, is that you end up not learning how any of it works, and it seems like “a wizard did it”. Of course, as you get more knowledgeable about Rails you’ll know that there’s no such thing as wizards.</p>
 
-<p>Learning from the ground up that in order to be able to display even a list of posts on a page that you need a <code class="language-plaintext highlighter-rouge">Post</code> model, that the model responds to an <code class="language-plaintext highlighter-rouge">all</code> method, that is then called in a thing called <code class="language-plaintext highlighter-rouge">PostsController</code> and then that information is stored in an instance variable which is then accessed by this thing called a “view” which has the same name as your action… that may seem like hard work at first (hint: it is), but it’s worth it. That is because the moment you want to step outside the cocoon of a CRUD resource and do something differently, you’ll probably know how to.</p>
+<p>Learning from the ground up that in order to be able to display even a list of posts on a page that you need a <code>Post</code> model, that the model responds to an <code>all</code> method, that is then called in a thing called <code>PostsController</code> and then that information is stored in an instance variable which is then accessed by this thing called a “view” which has the same name as your action… that may seem like hard work at first (hint: it is), but it’s worth it. That is because the moment you want to step outside the cocoon of a CRUD resource and do something differently, you’ll probably know how to.</p>
 
 <p>Scaffolding doesn’t teach you the extreme basics of Rails development. Building things from scratch does. This foundation is absolutely critical to understanding how Rails works.</p>
 
 <div class="footnotes" role="doc-endnotes">
   <ol>
     <li id="fn:1" role="doc-endnote">
-      <p><code class="language-plaintext highlighter-rouge">attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+      <p><code>attr_accessible</code> is going away in Rails 4, being replaced by https://github.com/rails/strong_parameters <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
     </li>
   </ol>
 </div>

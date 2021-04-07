@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -42,29 +42,29 @@
 
 <p>I dislike that I don’t know much about Go still at this stage. That probably boils down to me not really having a proper use for it until recent. It could also be because a lot of the Go documentation out there is similar to a cookbook that only explains the properties of the ingredients, rather than having recipes. I enjoy learning by example and I think other people do also, because they bought <a href="https://manning.com/bigg2">a book that I wrote</a> that’s all about the examples.</p>
 
-<p>I like that the Go packages themselves are pretty well-documented. I especially like that I know what <em>type</em> of object I’m supposed to be passing in. Take <a href="http://golang.org/pkg/time/#Unix"><code class="language-plaintext highlighter-rouge">time.Unix</code></a> for example. It works similarly to <code class="language-plaintext highlighter-rouge">Time.at(unix_time)</code> in Ruby. The Go documentation for <code class="language-plaintext highlighter-rouge">time.Unix</code> clearly indicates that it takes two arguments, both of which are of the <code class="language-plaintext highlighter-rouge">int64</code> type, and that it returns a Time “instance”. That’s something that I didn’t think I would like, given that I’ve been doing Ruby for so long and it has a little thing called duck-typing where methods can be defined on anything and everything. A Ruby motto could perhaps be: “If it quacks like a duck, let’s pretend it is a duck for fear of finding out what it truly is.” In Ruby, methods can return whatever they want and more often than not, to know what a method returns you have to look at how that method is defined. Oh, and in Go methods can return multiple values, like <code class="language-plaintext highlighter-rouge">json.Marshal</code> (like <code class="language-plaintext highlighter-rouge">to_json</code> in Ruby) which will return the marshalled JSON (as an array of bytes) as well as (possibly) an error if that marshalling fails for some reason.</p>
+<p>I like that the Go packages themselves are pretty well-documented. I especially like that I know what <em>type</em> of object I’m supposed to be passing in. Take <a href="http://golang.org/pkg/time/#Unix"><code>time.Unix</code></a> for example. It works similarly to <code>Time.at(unix_time)</code> in Ruby. The Go documentation for <code>time.Unix</code> clearly indicates that it takes two arguments, both of which are of the <code>int64</code> type, and that it returns a Time “instance”. That’s something that I didn’t think I would like, given that I’ve been doing Ruby for so long and it has a little thing called duck-typing where methods can be defined on anything and everything. A Ruby motto could perhaps be: “If it quacks like a duck, let’s pretend it is a duck for fear of finding out what it truly is.” In Ruby, methods can return whatever they want and more often than not, to know what a method returns you have to look at how that method is defined. Oh, and in Go methods can return multiple values, like <code>json.Marshal</code> (like <code>to_json</code> in Ruby) which will return the marshalled JSON (as an array of bytes) as well as (possibly) an error if that marshalling fails for some reason.</p>
 
-<p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code class="language-plaintext highlighter-rouge">go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go’s built-in tool: <code class="language-plaintext highlighter-rouge">go build</code>.</p>
+<p>I like that you can compile your program down to a binary file very easily and then deploy it to a server. For instance, on the <code>go-lifx</code> project, we can (and do) provide some very simple binaries that are compiled from the code within that project using Go’s built-in tool: <code>go build</code>.</p>
 
-<p>I also enjoy the <code class="language-plaintext highlighter-rouge">go get</code> tool. It took me a while to figure out that if I structured my <code class="language-plaintext highlighter-rouge">~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
+<p>I also enjoy the <code>go get</code> tool. It took me a while to figure out that if I structured my <code>~/Projects/go</code> directory properly, that my Go experience would be more fluid. The proper way to structure it is:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Projects/go
+<pre><code>Projects/go
   -&gt; src
     -&gt; github.com
       -&gt; bjeanes
         -&gt; go-lifx
-</code></pre></div></div>
+</code></pre>
 
-<p>I’ve set <code class="language-plaintext highlighter-rouge">GOPATH</code> to <code class="language-plaintext highlighter-rouge">~/Projects/go</code> and so then when I type <code class="language-plaintext highlighter-rouge">go get github.com/codegangsta/cli</code> it will install it into <code class="language-plaintext highlighter-rouge">~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
+<p>I’ve set <code>GOPATH</code> to <code>~/Projects/go</code> and so then when I type <code>go get github.com/codegangsta/cli</code> it will install it into <code>~/Projects/go/src/github.com/codegangsta/cli</code>. I can then reference it in my Go program very simply:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import (
+<pre><code>import (
   "github.com/codegangsta/cli"
 )
-</code></pre></div></div>
+</code></pre>
 
 <p>That way, if I want to use it in another project then I can do it in exactly the same way.</p>
 
-<p>Finally, the <code class="language-plaintext highlighter-rouge">go fmt</code> tool is the tool to end all (most?) coding syntax debates. It enforces tab-indentation, and blank spaces for alignment. It does a couple more things, which are <a href="http://golang.org/cmd/gofmt/">explained in gofmt’s documentation</a>.</p>
+<p>Finally, the <code>go fmt</code> tool is the tool to end all (most?) coding syntax debates. It enforces tab-indentation, and blank spaces for alignment. It does a couple more things, which are <a href="http://golang.org/cmd/gofmt/">explained in gofmt’s documentation</a>.</p>
 
 <p>Overall, I enjoy the language and look forward to learning more about it, as well as finding other situations where we can use it at LIFX.</p>
 

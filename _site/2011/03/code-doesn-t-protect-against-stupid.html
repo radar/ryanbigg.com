@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,15 +40,15 @@
 
 <p>I’ve been developing <a href="http://github.com/radar/forem">forum engine</a> for the past week or so as part of my research for the engines chapter on Rails 3 in Action. It’s been an interesting experience.</p>
 
-<p>This afternoon, I was contacted by Adam McDonald who’s working with me on it as part of a learning exercise for him and free labour for myself. He asked questions about how to get the engine running so that he could see it and I told him to run <code class="language-plaintext highlighter-rouge">bundle exec rails s</code> and go to <code class="language-plaintext highlighter-rouge">http://localhost:3000/forem</code>. Only one of those two things worked. So I told him to instead just run the tests and I’d take a look at the issue later on, as I was completing Chapter 13 of the book.</p>
+<p>This afternoon, I was contacted by Adam McDonald who’s working with me on it as part of a learning exercise for him and free labour for myself. He asked questions about how to get the engine running so that he could see it and I told him to run <code>bundle exec rails s</code> and go to <code>http://localhost:3000/forem</code>. Only one of those two things worked. So I told him to instead just run the tests and I’d take a look at the issue later on, as I was completing Chapter 13 of the book.</p>
 
-<p>So now (actually, just previous to this post) I remembered the issue and tried it myself. It was still broken! This was simply because we didn’t have a <code class="language-plaintext highlighter-rouge">root</code> route defined in the routes file, like <a href="https://github.com/radar/forem/commit/f0d9f261d1ad4af2350c5c074b4767761f467070">this commit adds</a>. So I added one.</p>
+<p>So now (actually, just previous to this post) I remembered the issue and tried it myself. It was still broken! This was simply because we didn’t have a <code>root</code> route defined in the routes file, like <a href="https://github.com/radar/forem/commit/f0d9f261d1ad4af2350c5c074b4767761f467070">this commit adds</a>. So I added one.</p>
 
-<p>Then I saw <code class="language-plaintext highlighter-rouge">uninitialized constant Forem::ForumsController</code>.</p>
+<p>Then I saw <code>uninitialized constant Forem::ForumsController</code>.</p>
 
-<p>WHAT?! How <em>dare</em> code be broken on my watch! The tests passed, so this code had absolutely no reason to be broken. I thought it may have been because the engine wasn’t loading the controllers in that special mode of <code class="language-plaintext highlighter-rouge">bundle exec rails s</code>. It turns out I was almost right.</p>
+<p>WHAT?! How <em>dare</em> code be broken on my watch! The tests passed, so this code had absolutely no reason to be broken. I thought it may have been because the engine wasn’t loading the controllers in that special mode of <code>bundle exec rails s</code>. It turns out I was almost right.</p>
 
-<p>So I got hacky and ended up doing a <code class="language-plaintext highlighter-rouge">require ENGINE_ROOT + "app/controllers/forem/forums_controller"</code> which just <em>didn’t</em> work. I checked that <code class="language-plaintext highlighter-rouge">ENGINE_ROOT + "app/controllers/forem"</code> was indeed the right path by using <code class="language-plaintext highlighter-rouge">File.expand_path</code> and then copy+pasting it to the command line and <code class="language-plaintext highlighter-rouge">cd</code>‘ing into the directory. That god damned file was there.</p>
+<p>So I got hacky and ended up doing a <code>require ENGINE_ROOT + "app/controllers/forem/forums_controller"</code> which just <em>didn’t</em> work. I checked that <code>ENGINE_ROOT + "app/controllers/forem"</code> was indeed the right path by using <code>File.expand_path</code> and then copy+pasting it to the command line and <code>cd</code>‘ing into the directory. That god damned file was there.</p>
 
 <p>A moment of swearing took place where I ranted in IRC and to Adam about the lack of documentation on engines making things impossible.</p>
 
@@ -56,15 +56,15 @@
 
 <p><img src="https://img.skitch.com/20110306-dgugwhpaij8h38fjqifxbg42se.png" alt="Only one l" /></p>
 
-<p>The well-trained eye (not mine) would see quite immediately that <code class="language-plaintext highlighter-rouge">forums_controler.rb</code> is missing an l.</p>
+<p>The well-trained eye (not mine) would see quite immediately that <code>forums_controler.rb</code> is missing an l.</p>
 
 <h3 id="so-why-did-this-work-in-the-first-place">So why did this work in the first place?</h3>
 
 <p>Oh my God. I was stunned. How could I be so stupid? I corrected it and sure enough the route worked. Major “oh durr” moment was had.</p>
 
-<p>This has worked all this time because I’ve been running only the tests (<code class="language-plaintext highlighter-rouge">bundle exec rspec spec</code>, for the curious), which run in the <code class="language-plaintext highlighter-rouge">test</code> environment. This environment dutifully duplicates the <code class="language-plaintext highlighter-rouge">production</code> environment habit of loading all the files in <code class="language-plaintext highlighter-rouge">app/**/*</code>, regardless of the names. That way when requests are made to the application, it doesn’t need to go looking for the files containing the right classes; everything should (and is) loaded by that point.</p>
+<p>This has worked all this time because I’ve been running only the tests (<code>bundle exec rspec spec</code>, for the curious), which run in the <code>test</code> environment. This environment dutifully duplicates the <code>production</code> environment habit of loading all the files in <code>app/**/*</code>, regardless of the names. That way when requests are made to the application, it doesn’t need to go looking for the files containing the right classes; everything should (and is) loaded by that point.</p>
 
-<p>When I run <code class="language-plaintext highlighter-rouge">bundle exec rails s</code>, Rails starts up in <code class="language-plaintext highlighter-rouge">development</code> mode instead! When we make a request to a route, Rails will go looking for the proper controller (in this case, <code class="language-plaintext highlighter-rouge">app/controllers/forem/forums_controller.rb</code>, with TWO l’s) and if it can’t find it then it will scream at you, claiming that you treated it wrong.</p>
+<p>When I run <code>bundle exec rails s</code>, Rails starts up in <code>development</code> mode instead! When we make a request to a route, Rails will go looking for the proper controller (in this case, <code>app/controllers/forem/forums_controller.rb</code>, with TWO l’s) and if it can’t find it then it will scream at you, claiming that you treated it wrong.</p>
 
 <p>Well, that was a fun experience. I don’t think I’ll ever do that again and I’ll be checking the dark corners of my applications for this little furry beast.</p>
 

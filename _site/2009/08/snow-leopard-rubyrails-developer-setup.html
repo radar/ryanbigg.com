@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -48,19 +48,19 @@
 <h4>MacPorts</h4>
 <p>I installed this from <a href="http://distfiles.macports.org/MacPorts/MacPorts-1.8.0.tar.gz">source</a> and then installed curl with it. Apparently all the “important” packages are available and compatible, but you may find an edge case. Curl installed fine with this.</p>
 <h4>curl</h4>
-<p>Useful for retrieving websites or that odd XML feed from a provider. Installed via <code class="language-plaintext highlighter-rouge">sudo port install curl</code></p>
+<p>Useful for retrieving websites or that odd XML feed from a provider. Installed via <code>sudo port install curl</code></p>
 <h4>Git</h4>
 <p>To install Git I used the <a href="http://code.google.com/p/git-osx-installer/">git-osx-installer</a>, specifically the <a href="http://git-osx-installer.googlecode.com/files/git-1.6.4.1-intel-leopard.dmg">1.6.4.1 version</a>.</p>
 
 <h4><a href="http://www.icoretech.org/2009/08/install-mysql-and-mysql-ruby-gem-on-snow-leopard-64-bit/">MySQL</a></h4>
 <p>Installing MySQL from package didn’t work for me (I don’t remember the error, or even if it was with the package or the gem, but it was a showstopper) so it <a href="http://www.icoretech.org/2009/08/install-mysql-and-mysql-ruby-gem-on-snow-leopard-64-bit/">was suggested via Google</a> that I compile it from source. That I did and it worked out fine for me.</p>
 
-<p>Other people have suggested to install the <a href="http://dev.mysql.com/downloads/mysql/5.1.html#macosx-dmg">Mac OS X 10.5 (x86_64) version</a> and to install the mysql gem using <code class="language-plaintext highlighter-rouge">sudo env ARCHFLAGS="-arch x86_64" gem install mysql -- -with-mysql-config=/usr/local/mysql/bin/mysql_config</code>.</p>
+<p>Other people have suggested to install the <a href="http://dev.mysql.com/downloads/mysql/5.1.html#macosx-dmg">Mac OS X 10.5 (x86_64) version</a> and to install the mysql gem using <code>sudo env ARCHFLAGS="-arch x86_64" gem install mysql -- -with-mysql-config=/usr/local/mysql/bin/mysql_config</code>.</p>
 
 <h4>PostgreSQL</h4>
 <p>Installed from source, the package complains that I do not have an appropriate version of Mac OS X installed. I tend to disagree. Installing the gem is possible, again <a href="http://www.icoretech.org/2009/08/how-to-install-pg-postgresql-gem-on-snow-leopard-64-bit/">suggested via Google</a> and then promptly ignored and then <a href="http://twitter.com/EckyPro/status/3601280926">brought up on Twitter</a>.</p>
 <h4><a href="http://sphinxsearch.org">Sphinx</a></h4>
-<p>When you go about installing this you probably want to configure it with BOTH MySQL support and PostgreSQL support. Just specify the <code class="language-plaintext highlighter-rouge">--with-mysql</code> and <code class="language-plaintext highlighter-rouge">--with-pgsql</code> options to <code class="language-plaintext highlighter-rouge">./configure</code>.</p>
+<p>When you go about installing this you probably want to configure it with BOTH MySQL support and PostgreSQL support. Just specify the <code>--with-mysql</code> and <code>--with-pgsql</code> options to <code>./configure</code>.</p>
 <h4><a href="http://abyssoft.com/software/teleport/">Teleport</a></h4>
 <p><a href="http://abyssoft.com/software/teleport/">Teleport</a> is an awesome app that allows you to send the keyboard and mouse from one computer to another to control it. Really awesome for when you’re pairing because you can both connect to one machine and then if you need to go off and do something independently the other person can continue working whilst you do that. To change screens move the mouse to the edge and keep it moving like you’re using dual-displays. Then you’ll have a teleport icon appear in the middle identifying what computer you’re on.</p>
 <h4><a href="http://www.versiontracker.com/dyn/moreinfo/macosx/31941">Caffeine</a></h4>
@@ -105,7 +105,7 @@ SMC Fan Control. This little app speeds up your fans so your laptop can keep coo
 <h4><a href="http://github.com/timcharper/rubyamp/tree/master">RubyAMP</a></h4>
 <p>Used to jump to class / method definitions throughout applications, contains other features too.</p>
 <h3>Gem Stuff</h3>
-<p>First of all you’re going to want to run <code class="language-plaintext highlighter-rouge">gem update --system</code> to get the latest and greatest RubyGems and then just about immediately after that you’re going to want <code class="language-plaintext highlighter-rouge">gem source -a http://gems.github.com</code>. If you’re upgrading rather than doing a fresh install it’s <a href="http://twitter.com/wycats/status/3653873791">recommended by wycats</a> to run <code class="language-plaintext highlighter-rouge">gem pristine --all</code> to recompile all natives.</p>
+<p>First of all you’re going to want to run <code>gem update --system</code> to get the latest and greatest RubyGems and then just about immediately after that you’re going to want <code>gem source -a http://gems.github.com</code>. If you’re upgrading rather than doing a fresh install it’s <a href="http://twitter.com/wycats/status/3653873791">recommended by wycats</a> to run <code>gem pristine --all</code> to recompile all natives.</p>
 
 <p>Then you’re going to want to install:</p>
 <ul>

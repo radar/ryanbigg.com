@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -40,49 +40,49 @@
 
 <p>Sometimes, developers can get carried away when they make commits. For instance, take <a href="https://github.com/radar/twist-v2/commit/19a513a6ae33ed0de3fb8ce426e7c7ec99449f0d">this commit</a> from yours truly. It <em>claims</em> to be fixing a particular issue, but there’s <em>a lot</em> of code there to fix that issue. Is all of it really necessary?</p>
 
-<p>I’ll save you the spelunking: just the <code class="language-plaintext highlighter-rouge">frontend/src/styles.css</code> and <code class="language-plaintext highlighter-rouge">frontend/src/tailwind.css</code> files are the only things required to fix this issue. This commit <em>really</em> should’ve just been changes to those two files. The storybook changes should’ve been in a <em>separate</em> commit.</p>
+<p>I’ll save you the spelunking: just the <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code> files are the only things required to fix this issue. This commit <em>really</em> should’ve just been changes to those two files. The storybook changes should’ve been in a <em>separate</em> commit.</p>
 
 <p>But the work has been done! Isn’t it now set in stone? No, this is Git! We can rewrite history.</p>
 
 <p>So let’s pretend like this commit <em>hasn’t been committed to master yet</em>. I can do this by checking out a new branch to the commit before that one:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout 19a513a6~1 -b tidy-up-git-example
-</code></pre></div></div>
+<pre><code>git checkout 19a513a6~1 -b tidy-up-git-example
+</code></pre>
 
-<p>Here, <code class="language-plaintext highlighter-rouge">~1</code> means “1 before”. You could put any number here. You can see what this branch looks like <a href="https://github.com/radar/twist-v2/tree/tidy-up-git-example">on GitHub</a>. The latest commit will be <code class="language-plaintext highlighter-rouge">bb36d9b</code>, “Add back image missing”.</p>
+<p>Here, <code>~1</code> means “1 before”. You could put any number here. You can see what this branch looks like <a href="https://github.com/radar/twist-v2/tree/tidy-up-git-example">on GitHub</a>. The latest commit will be <code>bb36d9b</code>, “Add back image missing”.</p>
 
-<p>We now want to apply that <code class="language-plaintext highlighter-rouge">19a513a6</code> commit, the one that fixes Issue #22, to this branch. To do this, we’ll open a pull request against this <code class="language-plaintext highlighter-rouge">tidy-up-git-example</code> branch.</p>
+<p>We now want to apply that <code>19a513a6</code> commit, the one that fixes Issue #22, to this branch. To do this, we’ll open a pull request against this <code>tidy-up-git-example</code> branch.</p>
 
 <p>First, we need to switch to a new branch:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git switch -c fix/issue-22
-</code></pre></div></div>
+<pre><code class="language-plaintext">git switch -c fix/issue-22
+</code></pre>
 
-<p><code class="language-plaintext highlighter-rouge">switch</code> is a recent sub-command of Git, and <a href="https://github.blog/2019-08-16-highlights-from-git-2-23/">was added in 2.23.0</a>. You can think of it behaving like <code class="language-plaintext highlighter-rouge">checkout</code>.</p>
+<p><code>switch</code> is a recent sub-command of Git, and <a href="https://github.blog/2019-08-16-highlights-from-git-2-23/">was added in 2.23.0</a>. You can think of it behaving like <code>checkout</code>.</p>
 
-<p>We’ll now bring in that commit to this branch, applying it on top of the current history with <code class="language-plaintext highlighter-rouge">cherry-pick</code>:</p>
+<p>We’ll now bring in that commit to this branch, applying it on top of the current history with <code>cherry-pick</code>:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git cherry-pick 19a513a6
-</code></pre></div></div>
+<pre><code class="language-bash">git cherry-pick 19a513a6
+</code></pre>
 
-<p>When we run <code class="language-plaintext highlighter-rouge">git log --oneline</code>, we’ll see this:</p>
+<p>When we run <code>git log --oneline</code>, we’ll see this:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f20de41 (HEAD -&gt; fix/issue-22) Fixes #22
+<pre><code class="language-text">f20de41 (HEAD -&gt; fix/issue-22) Fixes #22
 bb36d9b (origin/tidy-up-git-example) Add back image missing
-</code></pre></div></div>
+</code></pre>
 
-<p>This shows us that the top-most / latest commit is that one we just cherry picked, and that the next most recent commit is the latest from the <code class="language-plaintext highlighter-rouge">origin/tidy-up-git-example</code> branch.</p>
+<p>This shows us that the top-most / latest commit is that one we just cherry picked, and that the next most recent commit is the latest from the <code>origin/tidy-up-git-example</code> branch.</p>
 
 <p>Next, you’ll need to push this branch up to GitHub:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push origin fix/issue-22
-</code></pre></div></div>
+<pre><code class="language-text">git push origin fix/issue-22
+</code></pre>
 
 <p>If you don’t have permission to push to this repository (and most of you won’t!), you’ll need to fork it on GitHub first, then:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote add your-username git@github.com:your-username/twist-v2.git
+<pre><code class="language-text">git remote add your-username git@github.com:your-username/twist-v2.git
 git push your-username fix/issue-22
-</code></pre></div></div>
+</code></pre>
 
 <p>When this branch has been pushed to GitHub, you should now be able to create a pull request from that branch. You can do this by going to https://github.com/your-username/twist-v2/pull/new/fix/issue-22. On this page, under “Open a pull request” you’ll see two dropdowns: one for a “base” branch and one for “compare” branch:</p>
 
@@ -100,41 +100,41 @@ git push your-username fix/issue-22
 
 <h2 id="separating-out-issue-22">Separating out Issue #22</h2>
 
-<p>Let’s start with just the CSS changes from <code class="language-plaintext highlighter-rouge">frontend/src/styles.css</code> and <code class="language-plaintext highlighter-rouge">frontend/src/tailwind.css</code>. We want just these changes to be in the PR’s commit. To do that, we need to <em>undo</em> and <em>redo</em> this commit.</p>
+<p>Let’s start with just the CSS changes from <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code>. We want just these changes to be in the PR’s commit. To do that, we need to <em>undo</em> and <em>redo</em> this commit.</p>
 
 <p>To <em>undo</em> a commit, we use a Git operation called a <em>soft reset</em>:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git reset --soft HEAD~1
-</code></pre></div></div>
+<pre><code class="language-text">git reset --soft HEAD~1
+</code></pre>
 
-<p>You can think of this like the opposite of <code class="language-plaintext highlighter-rouge">git commit</code>; it resets the Git repository’s state back to how it was right before <code class="language-plaintext highlighter-rouge">git commit</code> was run. All of changes from this commit will be staged for commit:</p>
+<p>You can think of this like the opposite of <code>git commit</code>; it resets the Git repository’s state back to how it was right before <code>git commit</code> was run. All of changes from this commit will be staged for commit:</p>
 
 <p><img src="/images/tidy-up-github/staged-for-commit.png" alt="Staged for commit" /></p>
 
-<p>But our latest commit will show up as the one from <code class="language-plaintext highlighter-rouge">tidy-up-git-example</code>:</p>
+<p>But our latest commit will show up as the one from <code>tidy-up-git-example</code>:</p>
 
-<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git log --oneline
-</code></pre></div></div>
+<pre><code class="language-text">git log --oneline
+</code></pre>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bb36d9b (HEAD -&gt; fix/issue-22, origin/tidy-up-git-example) Add back image missing
-</code></pre></div></div>
+<pre><code>bb36d9b (HEAD -&gt; fix/issue-22, origin/tidy-up-git-example) Add back image missing
+</code></pre>
 
-<p>Now that we’re back to our pre-<code class="language-plaintext highlighter-rouge">git commit</code> stage, we need to go back one more step, back to before <code class="language-plaintext highlighter-rouge">git add</code> was run to stage these files. To do that, we need to run:</p>
+<p>Now that we’re back to our pre-<code>git commit</code> stage, we need to go back one more step, back to before <code>git add</code> was run to stage these files. To do that, we need to run:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git reset HEAD
-</code></pre></div></div>
+<pre><code>git reset HEAD
+</code></pre>
 
 <p>This command will unstage all the changes in our repository:</p>
 
 <p><img src="/images/tidy-up-github/unstaged-files.png" alt="Unstaged files" /></p>
 
-<p>Now we want to just add the changes from <code class="language-plaintext highlighter-rouge">frontend/src/styles.css</code> and <code class="language-plaintext highlighter-rouge">frontend/src/tailwind.css</code>. We can do this with:</p>
+<p>Now we want to just add the changes from <code>frontend/src/styles.css</code> and <code>frontend/src/tailwind.css</code>. We can do this with:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git add frontend/src/styles.css
+<pre><code>git add frontend/src/styles.css
 git add frontend/src/tailwind.css
-</code></pre></div></div>
+</code></pre>
 
-<p>(Or if we were wanting to pick-and-choose changes from these files, we could do <code class="language-plaintext highlighter-rouge">git add -p &lt;file&gt;</code> instead)</p>
+<p>(Or if we were wanting to pick-and-choose changes from these files, we could do <code>git add -p &lt;file&gt;</code> instead)</p>
 
 <p>This will stage these two files:</p>
 
@@ -142,13 +142,13 @@ git add frontend/src/tailwind.css
 
 <p>Next, we can commit these changes:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git commit -m "Fixes #22"
-</code></pre></div></div>
+<pre><code>git commit -m "Fixes #22"
+</code></pre>
 
-<p>We’ve now re-written the history of the <code class="language-plaintext highlighter-rouge">fix/issue-22</code> branch. The latest commit on this branch, according to our local computer, is different to the latest one on GitHub. We need to tell GitHub that our history is correct, and we can do this with:</p>
+<p>We’ve now re-written the history of the <code>fix/issue-22</code> branch. The latest commit on this branch, according to our local computer, is different to the latest one on GitHub. We need to tell GitHub that our history is correct, and we can do this with:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push &lt;your username&gt; fix/issue-22 --force-with-lease
-</code></pre></div></div>
+<pre><code>git push &lt;your username&gt; fix/issue-22 --force-with-lease
+</code></pre>
 
 <p>This option will force-push your changes to GitHub, updating GitHub with the simpler changes.</p>
 
@@ -168,13 +168,13 @@ git add frontend/src/tailwind.css
 
 <p>We can check out to a new branch for these changes, add these files, make a new commit and push these changes to GitHub:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git switch -c update-storybook
+<pre><code>git switch -c update-storybook
 git add .
 git commit -m "Update Storybook + separate stories"
 git push origin update-storybook
-</code></pre></div></div>
+</code></pre>
 
-<p>We can then go about creating a pull request for these changes if we like by going to https://github.com/your-username/twist-v2/pull/new/update-storybook. Remember to change the base branch here to <code class="language-plaintext highlighter-rouge">tidy-up-git-example</code>!</p>
+<p>We can then go about creating a pull request for these changes if we like by going to https://github.com/your-username/twist-v2/pull/new/update-storybook. Remember to change the base branch here to <code>tidy-up-git-example</code>!</p>
 
 <p>Once the PR is created, we can choose to merge it to that base branch. The base branch will then have both sets of changes on it: one (small one) to fix Issue #22, and one (large one) to upgrade storybook.</p>
 

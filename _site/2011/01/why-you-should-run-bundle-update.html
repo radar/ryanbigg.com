@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -38,9 +38,9 @@
             </div>
             <h3 id="prelude">Prelude</h3>
 
-<p><code class="language-plaintext highlighter-rouge">bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code class="language-plaintext highlighter-rouge">Gemfile.lock</code> pre-existing, running <code class="language-plaintext highlighter-rouge">bundle install</code> will only install the versions specified in the <code class="language-plaintext highlighter-rouge">Gemfile.lock</code> and will complain that you have incompatible versions:</p>
+<p><code>bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code>Gemfile.lock</code> pre-existing, running <code>bundle install</code> will only install the versions specified in the <code>Gemfile.lock</code> and will complain that you have incompatible versions:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Bundler could not find compatible versions for gem "activesupport":
+<pre><code>Bundler could not find compatible versions for gem "activesupport":
   In snapshot (Gemfile.lock):
     activesupport (3.0.0)
 
@@ -50,45 +50,45 @@
 
 Running `bundle update` will rebuild your snapshot from scratch, using only
 the gems in your Gemfile, which may resolve the conflict.
-</code></pre></div></div>
+</code></pre>
 
-<p>This command advises you to run <code class="language-plaintext highlighter-rouge">bundle update</code> which “will rebuild your snapshot from scratch”, or in layman’s terms: throw out the <code class="language-plaintext highlighter-rouge">Gemfile.lock</code> file and start again, finding <em>newer</em> versions of gems if they are available and building a bundle for those.</p>
+<p>This command advises you to run <code>bundle update</code> which “will rebuild your snapshot from scratch”, or in layman’s terms: throw out the <code>Gemfile.lock</code> file and start again, finding <em>newer</em> versions of gems if they are available and building a bundle for those.</p>
 
 <p>Beneath is an example of just this happening, and an argument as to why you should run it, but carefully.</p>
 
 <h3 id="alexs-tale">Alex’s Tale</h3>
 
-<p>There’s <a href="http://optimisdev.com/posts/don-t-ever-run-bundle-update">a post by Alex from OptimisDev</a> that basically says: “Don’t even run bundle update”. That’s even the title of the post. His argument is that by running <code class="language-plaintext highlighter-rouge">bundle update</code> his I18n version changed from <code class="language-plaintext highlighter-rouge">0.4.0</code> to <code class="language-plaintext highlighter-rouge">0.5.0</code> which caused his translations to break. This is because in <code class="language-plaintext highlighter-rouge">i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code class="language-plaintext highlighter-rouge">\{\{key\}\}</code> <em>to</em> <code class="language-plaintext highlighter-rouge">%{key}</code>. Why did this happen? He was using the <a href="http://rubygems.org/gems/formtastic/versions/1.2.3.beta"><code class="language-plaintext highlighter-rouge">formtastic</code> gem</a> which had specified a dependency on <code class="language-plaintext highlighter-rouge">i18n</code> of <code class="language-plaintext highlighter-rouge">&gt;= 0.4.0</code> which will install any version of i18n that is <code class="language-plaintext highlighter-rouge">0.4.0</code> or greater, a category that <code class="language-plaintext highlighter-rouge">i18n 0.5.0</code> with its breaking API changes falls into.</p>
+<p>There’s <a href="http://optimisdev.com/posts/don-t-ever-run-bundle-update">a post by Alex from OptimisDev</a> that basically says: “Don’t even run bundle update”. That’s even the title of the post. His argument is that by running <code>bundle update</code> his I18n version changed from <code>0.4.0</code> to <code>0.5.0</code> which caused his translations to break. This is because in <code>i18n 0.5.0</code> the translation syntax has changed <em>from</em> <code>\{\{key\}\}</code> <em>to</em> <code>%{key}</code>. Why did this happen? He was using the <a href="http://rubygems.org/gems/formtastic/versions/1.2.3.beta"><code>formtastic</code> gem</a> which had specified a dependency on <code>i18n</code> of <code>&gt;= 0.4.0</code> which will install any version of i18n that is <code>0.4.0</code> or greater, a category that <code>i18n 0.5.0</code> with its breaking API changes falls into.</p>
 
 <h3 id="a-story-on-gem-versioning">A story on gem versioning</h3>
 
-<p>Generally speaking, there’s three parts of a version for a gem: the major, the minor and the tiny. For example, Rails right now has a major version of 3, a minor version of 0 and a tiny version of 3, making the full version <code class="language-plaintext highlighter-rouge">3.0.3</code> currently.</p>
+<p>Generally speaking, there’s three parts of a version for a gem: the major, the minor and the tiny. For example, Rails right now has a major version of 3, a minor version of 0 and a tiny version of 3, making the full version <code>3.0.3</code> currently.</p>
 
-<p>The “rule” (or perhaps it’s more of a guideline) of gem versioning is that any subsequent releases for the <em>same</em> minor version, but a newer, higher tiny version number should fix any bugs that existed in the previous version, without breaking any functionality. Therefore you should be able to have a gem dependency like this in your <code class="language-plaintext highlighter-rouge">Gemfile</code> without any fear that it would break:</p>
+<p>The “rule” (or perhaps it’s more of a guideline) of gem versioning is that any subsequent releases for the <em>same</em> minor version, but a newer, higher tiny version number should fix any bugs that existed in the previous version, without breaking any functionality. Therefore you should be able to have a gem dependency like this in your <code>Gemfile</code> without any fear that it would break:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem 'rails', '~&gt; 3.0.0'
-</code></pre></div></div>
+<pre><code>gem 'rails', '~&gt; 3.0.0'
+</code></pre>
 
-<p>The <code class="language-plaintext highlighter-rouge">~&gt;</code> part of the version indicates that we want the latest version in the series that we’ve specified. Because we’ve specified a major, minor and tiny version here, we’ll get the latest tiny release of the <code class="language-plaintext highlighter-rouge">3.0</code> series (<code class="language-plaintext highlighter-rouge">3.0.3</code> at current writing) when we run <code class="language-plaintext highlighter-rouge">bundle install</code>. In a new tiny release, there should be <em>no breaking changes</em>, only patches. Therefore, specifying versions like this is considered the safest method.</p>
+<p>The <code>~&gt;</code> part of the version indicates that we want the latest version in the series that we’ve specified. Because we’ve specified a major, minor and tiny version here, we’ll get the latest tiny release of the <code>3.0</code> series (<code>3.0.3</code> at current writing) when we run <code>bundle install</code>. In a new tiny release, there should be <em>no breaking changes</em>, only patches. Therefore, specifying versions like this is considered the safest method.</p>
 
 <p>For minor and major releases, things can be broken and so developers should take care when running any kind of task that updates their gems to the latest version.</p>
 
 <h3 id="when-gem-dependencies-go-bad">When gem dependencies go bad</h3>
 
-<p>In Alex’s case, formtastic has declared it depends on <code class="language-plaintext highlighter-rouge">i18n &gt;= 0.4.0</code> which is how <em>gem dependencies go bad</em>. In new minor or major releases of <code class="language-plaintext highlighter-rouge">i18n</code>, it’s just about guaranteed that shit will be broke, and that’s exactly what’s going to be installed when an unwitting person runs <code class="language-plaintext highlighter-rouge">bundle update</code>. As gem authors (and I’m probably guilty of this myself), we should be specifying <code class="language-plaintext highlighter-rouge">~&gt;</code> for their own gem dependencies. And we as application developers should be doing for our own gem dependencies in our <code class="language-plaintext highlighter-rouge">Gemfile</code> files. This is the way to be safe against breaking changes from a new minor or major gem version. I’m not saying that <em>every</em> new major/minor release has breaking changes, but rather to be wary when you’re upgrading.</p>
+<p>In Alex’s case, formtastic has declared it depends on <code>i18n &gt;= 0.4.0</code> which is how <em>gem dependencies go bad</em>. In new minor or major releases of <code>i18n</code>, it’s just about guaranteed that shit will be broke, and that’s exactly what’s going to be installed when an unwitting person runs <code>bundle update</code>. As gem authors (and I’m probably guilty of this myself), we should be specifying <code>~&gt;</code> for their own gem dependencies. And we as application developers should be doing for our own gem dependencies in our <code>Gemfile</code> files. This is the way to be safe against breaking changes from a new minor or major gem version. I’m not saying that <em>every</em> new major/minor release has breaking changes, but rather to be wary when you’re upgrading.</p>
 
 <h3 id="staying-safe">Staying safe</h3>
 
 <p>If we follow these simple guidelines then we can live a peaceful life of Gem Dependency Heaven instead of Gem Dependency Hell (think pre-Bundler days).</p>
 
-<p>Whilst it’s probably not a good idea to run <code class="language-plaintext highlighter-rouge">bundle update</code> (and Alex used stronger wording with the “ever” word), it’s still useful in some contexts. Recently, David Chelimsky released a new tiny version of rspec-rails (2.4.1) which fixed a single bug. If I had <code class="language-plaintext highlighter-rouge">gem 'rspec-rails', '~&gt; 2.4.0'</code> and had <code class="language-plaintext highlighter-rouge">rspec-rails 2.4.0</code> installed but wanted to use the newest gem, I could update it by running a simple command:</p>
+<p>Whilst it’s probably not a good idea to run <code>bundle update</code> (and Alex used stronger wording with the “ever” word), it’s still useful in some contexts. Recently, David Chelimsky released a new tiny version of rspec-rails (2.4.1) which fixed a single bug. If I had <code>gem 'rspec-rails', '~&gt; 2.4.0'</code> and had <code>rspec-rails 2.4.0</code> installed but wanted to use the newest gem, I could update it by running a simple command:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle update rspec-rails
-</code></pre></div></div>
+<pre><code>bundle update rspec-rails
+</code></pre>
 
-<p>This command updates the <code class="language-plaintext highlighter-rouge">rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
+<p>This command updates the <code>rspec-rails</code> gem and its dependencies to satisfy their latest version specifications, leaving every other gem untouched.</p>
 
-<p>So it’s <em>almost always unsafe</em> to run <code class="language-plaintext highlighter-rouge">bundle update</code> because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.</p>
+<p>So it’s <em>almost always unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.</p>
 
           </article>
         </div>

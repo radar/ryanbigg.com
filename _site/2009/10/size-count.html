@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -36,7 +36,7 @@
               <a href="/2009/10/size-count"><h2>Size != Count</h2></a>
               <small>30 Oct 2009</small>
             </div>
-            <p>When using a has_many :through in Rails with a counter_cache an interesting thing can occur. When you call <code class="language-plaintext highlighter-rouge">size</code> on the association, it can return a seemingly incorrect number. This is caused by the following code in <em>activerecord/lib/has_many_through_association.rb</em>:</p>
+            <p>When using a has_many :through in Rails with a counter_cache an interesting thing can occur. When you call <code>size</code> on the association, it can return a seemingly incorrect number. This is caused by the following code in <em>activerecord/lib/has_many_through_association.rb</em>:</p>
 
 <pre>
 def size

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -50,7 +50,7 @@
 
 <p>However, 2.3.6 broke HAML <a href="http://twitter.com/nex3/status/14549663207">which Nathan Weizenbaum tweeted about</a>. He later said he had worked around it <a href="http://twitter.com/nex3/status/14551076330"> and contributed back to Rails in <a href="http://github.com/rails/rails/commit/e3f14d12cdad03a2294c8f7d4e170bbaecefe098">these</a> <a href="http://github.com/rails/rails/commit/e53791f8c06cad94f69789143e442e9866f9dfe0">three</a> <a href="http://github.com/rails/rails/commit/48fbe7b0d8fcecce200ea35f46a8716077e13aea">commits</a>. Jeremy Kemper (bitsweat) then thought that there should be a 2.3.7 release.</a></p>
 
-<p>Unfortunately this <a href="http://github.com/rails/rails/commit/e3f14d12cdad03a2294c8f7d4e170bbaecefe098">first commit</a> broke Rails view helpers – such as <code class="language-plaintext highlighter-rouge">form_tag</code> – for those who didn’t have the <em>rails-xss</em> plugin installed.  Jeremy missed this, and I spoke with him earlier and from what I could determine he missed the bug because he had <em>rails-xss</em> installed. When people upgraded to 2.3.7, there was <a href="http://weblog.rubyonrails.org/2010/5/24/ruby-on-rails-2-3-7-released">an outcry</a> started. A few people announced this issue, and therefore 2.3.7 was broken.</p>
+<p>Unfortunately this <a href="http://github.com/rails/rails/commit/e3f14d12cdad03a2294c8f7d4e170bbaecefe098">first commit</a> broke Rails view helpers – such as <code>form_tag</code> – for those who didn’t have the <em>rails-xss</em> plugin installed.  Jeremy missed this, and I spoke with him earlier and from what I could determine he missed the bug because he had <em>rails-xss</em> installed. When people upgraded to 2.3.7, there was <a href="http://weblog.rubyonrails.org/2010/5/24/ruby-on-rails-2-3-7-released">an outcry</a> started. A few people announced this issue, and therefore 2.3.7 was broken.</p>
 
 <p>Whilst Rails is pretty exceptionally tested, it’s not 100%-watertight. Would this have happened if there was a pre-release? Yes and no.</p>
 

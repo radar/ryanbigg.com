@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -43,56 +43,56 @@ ultimately didn’t get accepted. Nevertheless…</p>
 
 <h3 id="drawing-routes">Drawing routes</h3>
 
-<p>The first thing that I <a href="https://twitter.com/ryanbigg/status/194501115524554754">can recall disagreeing</a> with is Andy’s suggestion to draw routes for the engine on the <code class="language-plaintext highlighter-rouge">Rails.application.routes</code> object, by putting
-this code inside the <code class="language-plaintext highlighter-rouge">config/routes.rb</code> file of the engine:</p>
+<p>The first thing that I <a href="https://twitter.com/ryanbigg/status/194501115524554754">can recall disagreeing</a> with is Andy’s suggestion to draw routes for the engine on the <code>Rails.application.routes</code> object, by putting
+this code inside the <code>config/routes.rb</code> file of the engine:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Rails.application.routes.draw do
+<pre><code>Rails.application.routes.draw do
   resources :people
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>The problem with this is that if the application’s routes file has a catch-all route at the bottom, the route for the engine won’t get matched because it is
 drawn after the application.</p>
 
 <p>This leads to additional complexity as well, as by drawing these routes on the application like this, they would also correspond to a controller that’s at the
-top-level of the namespace, i.e. <code class="language-plaintext highlighter-rouge">PeopleController</code>. This can lead to confusion as to where the controller is located. How can someone know if <code class="language-plaintext highlighter-rouge">PeopleController</code> is inside the engine or is inside the application? Furthermore, the more engines that get added to this application, the more confusing such a thing would get.</p>
+top-level of the namespace, i.e. <code>PeopleController</code>. This can lead to confusion as to where the controller is located. How can someone know if <code>PeopleController</code> is inside the engine or is inside the application? Furthermore, the more engines that get added to this application, the more confusing such a thing would get.</p>
 
 <p>By namespacing the routes <em>properly</em> (as we do in <a href="https://spreecommerce.com">Spree</a> and <a href="http://github.com/radar/forem">Forem</a>) , like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Spree::Core::Engine.routes.draw do
+<pre><code>Spree::Core::Engine.routes.draw do
   resources :products
 end
-</code></pre></div></div>
+</code></pre>
 
-<p>And by using <code class="language-plaintext highlighter-rouge">isolate_namespace</code> inside your engine, the routes will be a completely separate entity for each engine, rather than one big “ball o’ mud”. In
-Spree this namespace isolation is to the <code class="language-plaintext highlighter-rouge">Spree</code> module (i.e. <code class="language-plaintext highlighter-rouge">isolate_namespace Spree</code>), so that the controllers will be <code class="language-plaintext highlighter-rouge">Spree::ProductsController</code> and not
-<code class="language-plaintext highlighter-rouge">Spree::Core::ProductsController</code> and the like.</p>
+<p>And by using <code>isolate_namespace</code> inside your engine, the routes will be a completely separate entity for each engine, rather than one big “ball o’ mud”. In
+Spree this namespace isolation is to the <code>Spree</code> module (i.e. <code>isolate_namespace Spree</code>), so that the controllers will be <code>Spree::ProductsController</code> and not
+<code>Spree::Core::ProductsController</code> and the like.</p>
 
 <p>By using a completely isolated namespace like this, your controller would end up being correctly namespaced and then there’s no confusion as to which engine
 the controller is located within. You can then mount your engine at whatever path you want inside your application by explicitly defining the mount point
-inside <code class="language-plaintext highlighter-rouge">config/application.rb</code> like this:</p>
+inside <code>config/application.rb</code> like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount Spree::Core::Engine, :at =&gt; "/"
-</code></pre></div></div>
+<pre><code>mount Spree::Core::Engine, :at =&gt; "/"
+</code></pre>
 
 <p>By mounting it at root, it will seem as if the engine were a part of the application itself. If you wanted to change where the engine was mounted, it’s a
-simple matter of changing the <code class="language-plaintext highlighter-rouge">:at</code>: option and you can carry on like normal.</p>
+simple matter of changing the <code>:at</code>: option and you can carry on like normal.</p>
 
-<p>There’s a whole bunch of other stuff that <code class="language-plaintext highlighter-rouge">isolate_namespace</code> does as well, like namespacing of models and tables. It’s absolutely important that you namespace
+<p>There’s a whole bunch of other stuff that <code>isolate_namespace</code> does as well, like namespacing of models and tables. It’s absolutely important that you namespace
 your engine to avoid confusion.</p>
 
 <p>Oh, and one more thing: by doing this namespacing, if you want to get to an engine route from inside the application, you’ll need to call the engine’s routing
 proxy method, like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>spree.products_path
-</code></pre></div></div>
+<pre><code>spree.products_path
+</code></pre>
 
-<p>If you attempted to do <code class="language-plaintext highlighter-rouge">products_path</code> it would go to the application’s <code class="language-plaintext highlighter-rouge">products_path</code>, which may be undefined.</p>
+<p>If you attempted to do <code>products_path</code> it would go to the application’s <code>products_path</code>, which may be undefined.</p>
 
-<p>Similarly, to get to the application’s routes from inside the engine, use <code class="language-plaintext highlighter-rouge">main_app</code>:</p>
+<p>Similarly, to get to the application’s routes from inside the engine, use <code>main_app</code>:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>main_app.people_path
-</code></pre></div></div>
+<pre><code>main_app.people_path
+</code></pre>
 
 <h3 id="switching-back-and-forth">Switching back and forth</h3>
 
@@ -101,50 +101,50 @@ between the application and the engine. This is simply not true. If you are deve
 isolation from a real application and instead depend on a dummy application. It should not be a requirement for you to have two separate projects coupled
 together like this so you can test one or the other.</p>
 
-<p>How we do it in Forem is that we have a dummy application inside <code class="language-plaintext highlighter-rouge">spec/dummy</code> which is generated by running <code class="language-plaintext highlighter-rouge">bundle exec rake forem:dummy_app</code>. This
+<p>How we do it in Forem is that we have a dummy application inside <code>spec/dummy</code> which is generated by running <code>bundle exec rake forem:dummy_app</code>. This
 command <a href="https://github.com/radar/forem/blob/master/spec/lib/generators/forem/dummy/dummy_generator.rb">creates a new dummy application</a> with things like
-<code class="language-plaintext highlighter-rouge">User</code> model already set up inside it. Inside Spree, there’s a similar command called <code class="language-plaintext highlighter-rouge">bundle exec rake test_app</code> which <a href="https://github.com/spree/spree/blob/master/core/lib/generators/spree/dummy/dummy_generator.rb">does basically the same thing</a>.</p>
+<code>User</code> model already set up inside it. Inside Spree, there’s a similar command called <code>bundle exec rake test_app</code> which <a href="https://github.com/spree/spree/blob/master/core/lib/generators/spree/dummy/dummy_generator.rb">does basically the same thing</a>.</p>
 
 <p>With the dummy application inside the engine, the engine is mounted onto that application and the tests are then run against that application. No need to
 switch back and forth from application to engine.</p>
 
 <p>If you have modifications for the engine inside your application, there’s also a way to test that. With Spree, we provide a module called
-<code class="language-plaintext highlighter-rouge">Spree::Core::UrlHelpers</code> that you can include into your <code class="language-plaintext highlighter-rouge">RSpec.configure</code> block like this:</p>
+<code>Spree::Core::UrlHelpers</code> that you can include into your <code>RSpec.configure</code> block like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require 'spree/core/url_helpers'
+<pre><code>require 'spree/core/url_helpers'
 RSpec.configure do |c|
   c.include Spree::Core::UrlHelpers, :type =&gt; :integration
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>Then in your integration tests it’s simply a matter of referencing the Spree routes like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>visit spree.products_path
-</code></pre></div></div>
+<pre><code>visit spree.products_path
+</code></pre>
 
 <p>Now for when you want to test that a customization to a Spree controller is behaving as intended, we’ve got a module for that too. It’s called
-<code class="language-plaintext highlighter-rouge">Spree::Core::TestingSupport::ControllerRequests</code> and you can include it like this:</p>
+<code>Spree::Core::TestingSupport::ControllerRequests</code> and you can include it like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>require 'spree/core/testing_support/controller_requests'
+<pre><code>require 'spree/core/testing_support/controller_requests'
 RSpec.configure do |c|
   c.include Spree::Core::TestingSupport::ControllerRequests, :type =&gt; :controller
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>Then you can write your controller specs like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>describe Spree::ProductsController do
+<pre><code>describe Spree::ProductsController do
   it "can see all the products" do
     spree_get :index
   end
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>This will then allow you to make requests to the Spree engine from inside your application’s tests.</p>
 
 <h3 id="conclusion">Conclusion</h3>
 
-<p>There’s absolutely no reason to mount engine routes directly on <code class="language-plaintext highlighter-rouge">Rails.application.routes</code>, nor is there a requirement to switch back and forth. Integration
+<p>There’s absolutely no reason to mount engine routes directly on <code>Rails.application.routes</code>, nor is there a requirement to switch back and forth. Integration
 testing an engine is extremely easy once you know how to do it.</p>
 
           </article>

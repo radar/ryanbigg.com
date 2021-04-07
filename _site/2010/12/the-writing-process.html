@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -71,7 +71,7 @@
 &lt;/informalexample&gt;
 </pre>
 
-<p>I’ve got TextMate macros for that so I just type <code class="language-plaintext highlighter-rouge">in[tab]</code> for it to generate the <code>informalexample</code> and nested <code>programlisting</code> tags, with the <code>id</code> attributes filled in at a later time by <a href="https://gist.github.com/737322">a script I’ve written myself</a>.  That in itself was an interesting problem to solve. Each and every single element in the document needs a unique ID, but you can’t just go ahead and number every single element in order: you have to be considerate of the fact that some elements may already have ids. If that’s the case, then you find the “biggest” id and just add +1 to that for every single new element.</p>
+<p>I’ve got TextMate macros for that so I just type <code>in[tab]</code> for it to generate the <code>informalexample</code> and nested <code>programlisting</code> tags, with the <code>id</code> attributes filled in at a later time by <a href="https://gist.github.com/737322">a script I’ve written myself</a>.  That in itself was an interesting problem to solve. Each and every single element in the document needs a unique ID, but you can’t just go ahead and number every single element in order: you have to be considerate of the fact that some elements may already have ids. If that’s the case, then you find the “biggest” id and just add +1 to that for every single new element.</p>
 
 <p>Why do these elements need IDs? Because of how Manning’s review tool works. My editor and I both have access to a tool that we can log into and leave notes for the book. These notes relate to an element based on that element’s ID so even if the <em>content</em> of the element changes after the note has been left, we still know what element that refers to. The IDs for that particular system are something like <code>_432_4125_3843</code>, where the first number is the book id, the second number the chapter id and the third number the element number for that chapter. I prefer my naming schema, to be perfectly honest.</p>
 

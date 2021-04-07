@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -44,14 +44,14 @@
 
 <p>The script initializes a new JavaScript array, like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var variant_prices = new Array();
-</code></pre></div></div>
+<pre><code>var variant_prices = new Array();
+</code></pre>
 
-<p>Fairly innocuous. We would’ve also accepted <code class="language-plaintext highlighter-rouge">var variant_prices = [];</code>.</p>
+<p>Fairly innocuous. We would’ve also accepted <code>var variant_prices = [];</code>.</p>
 
-<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant’s id <em>as an index in the array</em>. If a variant has an <code class="language-plaintext highlighter-rouge">id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code class="language-plaintext highlighter-rouge">variant_prices[0]</code> being undefined, and <code class="language-plaintext highlighter-rouge">variant_prices[1]</code> being whatever value is assigned.</p>
+<p>Next, it uses some ERB to go through all the inventory units for an order and then assigns each variant to the array, using the variant’s id <em>as an index in the array</em>. If a variant has an <code>id</code> of say, 1, this is not a problem. Why? Because JavaScript is smart enough to know that it should create a two element with <code>variant_prices[0]</code> being undefined, and <code>variant_prices[1]</code> being whatever value is assigned.</p>
 
-<p><em>However</em>, if the variant’s <code class="language-plaintext highlighter-rouge">id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
+<p><em>However</em>, if the variant’s <code>id</code> is something a little higher, like 1,013,589,413, then you start to run into problems. In that case, JavaScript would create a <strong>one billion, thirteen million, five hundred and eighty-nine thousand, four hundred and fourteen element</strong> array. All to store <em>one</em> value in, right at the end.</p>
 
 <p>Obviously, this is not very efficient and would lead to some performance degredations. Smart browsers would detect this early on and show a vague warning screen and dumber browsers would ask politely if you’d like to stop the script. Which script? Well, they won’t tell you that. You have to play guessing games, like most of the time with the beautiful language that is JavaScript.</p>
 
@@ -59,8 +59,8 @@
 
 <p>The <em>now obvious</em> solution to this problem is to <em>not</em> use a JavaScript Array for creating what is obviously a key-value store. Instead, the variable should be initialised like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var variant_prices = {};
-</code></pre></div></div>
+<pre><code>var variant_prices = {};
+</code></pre>
 
 <p>Then you would be assigning keys to the JS object, rather than values at specific indexes in an Array which could have a billion elements.</p>
 

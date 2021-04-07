@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -111,7 +111,7 @@ application should be organised in order to increase its maintainability.</p>
   <li>Mapping database rows to Ruby objects</li>
   <li>Containing validation rules for those objects</li>
   <li>Managing the CRUD operations of those objects in the database (through
-inheritance from <code class="language-plaintext highlighter-rouge">ActiveRecord::Base</code>)</li>
+inheritance from <code>ActiveRecord::Base</code>)</li>
   <li>Providing a place to put code to run before those CRUD operations (callbacks)</li>
   <li>Containing complicated database queries</li>
   <li>Containing business logic for your application</li>
@@ -132,25 +132,25 @@ that is working with plain-Ruby objects.</p>
 
 <p>For instance, if you saw this code:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Project &lt; ApplicationRecord
+<pre><code>class Project &lt; ApplicationRecord
 has_many :tickets
 
   def contributors
     tickets.map(&amp;:user).uniq
   end
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>You might know <em>instinctively</em> that this code is going to make a database call
-to the <code class="language-plaintext highlighter-rouge">tickets</code> association for the <code class="language-plaintext highlighter-rouge">Project</code> instance, and then for each of
-these <code class="language-plaintext highlighter-rouge">Ticket</code> objects it’s going to call its <code class="language-plaintext highlighter-rouge">user</code> method, which will load a
-<code class="language-plaintext highlighter-rouge">User</code> record from the database.</p>
+to the <code>tickets</code> association for the <code>Project</code> instance, and then for each of
+these <code>Ticket</code> objects it’s going to call its <code>user</code> method, which will load a
+<code>User</code> record from the database.</p>
 
 <p>Someone unfamiliar with Rails – like, say, a junior Ruby developer with very
 little prior Rails exposure – might think this is bog-standard Ruby code
 because that’s <em>exactly</em> what it looks like. That is what Rails is designed to look like. There’s something called
-<code class="language-plaintext highlighter-rouge">tickets</code>, and you’re calling a <code class="language-plaintext highlighter-rouge">map</code> method on it, so they might guess that
-<code class="language-plaintext highlighter-rouge">tickets</code> is an array. Then <code class="language-plaintext highlighter-rouge">uniq</code> further indicates that. But <code class="language-plaintext highlighter-rouge">tickets</code> is an
+<code>tickets</code>, and you’re calling a <code>map</code> method on it, so they might guess that
+<code>tickets</code> is an array. Then <code>uniq</code> further indicates that. But <code>tickets</code> is an
 association method, and so a database query is made to load all the associated
 tickets.</p>
 
@@ -159,10 +159,10 @@ Rails applications are intentionally designed to be easy. <a href="http://youtu.
 things I’m <em>not</em> doing”</a> and <a href="http://rubyonrails.org/doctrine/#provide-sharp-knives">“provide sharp
 knives”</a> and all that.</p>
 
-<p>However, this code executes one query to load all the <code class="language-plaintext highlighter-rouge">tickets</code>, and then one
+<p>However, this code executes one query to load all the <code>tickets</code>, and then one
 query <em>per ticket</em> to fetch its users. If we called this method in the console, then the query output might look like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Project Load (0.2ms)  SELECT  "projects".* FROM "projects" ORDER BY "projects"."id" ASC LIMIT ?  [["LIMIT", 1]]
+<pre><code>Project Load (0.2ms)  SELECT  "projects".* FROM "projects" ORDER BY "projects"."id" ASC LIMIT ?  [["LIMIT", 1]]
 Ticket Load (0.1ms)  SELECT "tickets".* FROM "tickets" WHERE "tickets"."project_id" = ?  [["project_id", 1]]
 User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
 User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
@@ -170,12 +170,12 @@ User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?
 User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
 User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
 User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 3], ["LIMIT", 1]]
-</code></pre></div></div>
+</code></pre>
 
 <p>This is a classic N+1 query, which Rails does not stop you from doing. It’s a
 classic Active Record footgun / sharp knife. And this is all because Active Record makes it
 <em>much</em> too easy to call out to the database. This code
-for <code class="language-plaintext highlighter-rouge">Project#contributors</code> combines business logic intent (“find me all the
+for <code>Project#contributors</code> combines business logic intent (“find me all the
 contributors to this project”) with database querying and it’s <em>the</em> major
 problem with Active Record’s design.</p>
 
@@ -200,20 +200,20 @@ Relic</a> that point directly at the “smoking guns” of
 performance hits in a Rails application. Tools like these are invaluable. It
 would be nice to not need them so much in the first place, however.</p>
 
-<p>The intention here with the <code class="language-plaintext highlighter-rouge">contributors</code> method is very innocent: get all the
+<p>The intention here with the <code>contributors</code> method is very innocent: get all the
 users who have contributed to the project by iterating through all the tickets
-and finding their users. If we had a <code class="language-plaintext highlighter-rouge">Project</code> instance (<a href="https://github.com/rails/rails">with thousands of
+and finding their users. If we had a <code>Project</code> instance (<a href="https://github.com/rails/rails">with thousands of
 tickets</a>), running that contributors method
 would cause thousands of database queries to be executed against our database.</p>
 
 <p>Of course, there is a way to make this all into two queries through Rails:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Project &lt; ApplicationRecord
+<pre><code>class Project &lt; ApplicationRecord
   def contributors
     tickets.includes(:user).map(&amp;:user).uniq
   end
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>This will load all the tickets <em>and</em> their users in two separate queries,
 rather than one for tickets and then one for each ticket’s user, thanks to the
@@ -223,18 +223,18 @@ guide</a>.)</p>
 
 <p>The queries look like this:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ticket Load (0.4ms)  SELECT "tickets".* FROM "tickets" WHERE "tickets"."project_id" = ?  [["project_id", 1]]
+<pre><code>Ticket Load (0.4ms)  SELECT "tickets".* FROM "tickets" WHERE "tickets"."project_id" = ?  [["project_id", 1]]
 User Load (0.4ms)  SELECT "users".* FROM "users" WHERE "users"."id" IN (1, 5)
-</code></pre></div></div>
+</code></pre>
 
 <p>Active Record loads all the ticket objects that it needs to, and then it issues
-a query to find all the users that match the <code class="language-plaintext highlighter-rouge">user_id</code> values from all the
+a query to find all the users that match the <code>user_id</code> values from all the
 tickets.</p>
 
 <p>You can of course not load all the tickets at the start either, you could load
 only the 100 most recent tickets:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Project &lt; ApplicationRecord
+<pre><code>class Project &lt; ApplicationRecord
   def contributors
     tickets.recent.includes(:user).map(&amp;:user).uniq
   end
@@ -243,7 +243,7 @@ end
 class Ticket &lt; ApplicationRecord
   scope :recent, -&gt; { limit(100) }
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>But I think this is still too much of a mish-mash of database querying and
 business logic. Where is the clear line between database querying and business
@@ -255,31 +255,31 @@ Active Record’s tentacles with our business logic.</p>
 
 <p>Views in a typical Rails application are used to define logic for how to present data from models once this data has been fetched by controllers.</p>
 
-<p>We’ve already discussed how Active Record allows you to execute additional queries in any context that a model is used. Typically additional queries like the <code class="language-plaintext highlighter-rouge">tickets</code> and <code class="language-plaintext highlighter-rouge">contributors</code> ones above will be executed in a view. There’s no clear barrier between models and views to prevent this from happening.</p>
+<p>We’ve already discussed how Active Record allows you to execute additional queries in any context that a model is used. Typically additional queries like the <code>tickets</code> and <code>contributors</code> ones above will be executed in a view. There’s no clear barrier between models and views to prevent this from happening.</p>
 
 <p>This sort of “leakage” makes it very hard for views to be used in complete isolation from a database. The moment a view uses a model is the moment that the view is now potentially tied to a database. For example: could you look at a view and quickly know how many, if any, database queries were being executed? Probably not.</p>
 
 <p>To define any sort of Ruby logic for views, Rails recommends using view helpers. Perhaps we want to render a particular avatar for users:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module UsersHelper
+<pre><code>module UsersHelper
   def avatar
     image_tag(user.avatar_url || "anonymous.png")
   end
 end
-</code></pre></div></div>
+</code></pre>
 
-<p>And then we were to use this in our view over at <code class="language-plaintext highlighter-rouge">app/views/projects/show.html.erb</code>:</p>
+<p>And then we were to use this in our view over at <code>app/views/projects/show.html.erb</code>:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ul&gt;
+<pre><code>&lt;ul&gt;
   &lt;% @project.tickets.each do |ticket| %&gt;
     &lt;li&gt;&lt;%= avatar(ticket.author) %&gt;&lt;/li&gt;
   &lt;% end %&gt;
 &lt;/ul&gt;
-</code></pre></div></div>
+</code></pre>
 
-<p>This code is defined in a helper file at <code class="language-plaintext highlighter-rouge">app/helpers/users_helper.rb</code>, but is used in a completely separate directory, under a completely different namespace. The distance between where the code is <em>defined</em> and where it is <em>used</em> is very far apart.</p>
+<p>This code is defined in a helper file at <code>app/helpers/users_helper.rb</code>, but is used in a completely separate directory, under a completely different namespace. The distance between where the code is <em>defined</em> and where it is <em>used</em> is very far apart.</p>
 
-<p>On top of all that, helpers are then shared across <em>all</em> views. So while the helper is defined in <code class="language-plaintext highlighter-rouge">UsersHelper</code>, it will be available for <em>all</em> views. If you define a helper in <code class="language-plaintext highlighter-rouge">UsersHelper</code>, then it is also available under views at <code class="language-plaintext highlighter-rouge">app/views/tickets</code>, or <code class="language-plaintext highlighter-rouge">app/views/projects</code>, too.</p>
+<p>On top of all that, helpers are then shared across <em>all</em> views. So while the helper is defined in <code>UsersHelper</code>, it will be available for <em>all</em> views. If you define a helper in <code>UsersHelper</code>, then it is also available under views at <code>app/views/tickets</code>, or <code>app/views/projects</code>, too.</p>
 
 <p>Because of this “wide sharing” of view helpers, we don’t know if changing it is going to have ramifications elsewhere in our application. If we change it for this <em>one</em> context, will it potentially break other areas? We cannot know without looking through our code diligently.</p>
 
@@ -287,43 +287,43 @@ end
 
 <p>A common way to approach solving this problem is through the <em>presenter</em> pattern. Presenters define classes that then “accentuate” models. They’re typically used to include presentational logic for models – things that would be “incorrect” to put in a model, but okay to put in a view.</p>
 
-<p>By using a presenter, we have a clear indicator of where the presenter’s method is used: look for things like <code class="language-plaintext highlighter-rouge">UserPresenter.new(user)</code>, and then that’ll be where it is used.</p>
+<p>By using a presenter, we have a clear indicator of where the presenter’s method is used: look for things like <code>UserPresenter.new(user)</code>, and then that’ll be where it is used.</p>
 
-<p>Here’s our <code class="language-plaintext highlighter-rouge">avatar</code> example, but this time in a presenter:</p>
+<p>Here’s our <code>avatar</code> example, but this time in a presenter:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class UserPresenter
+<pre><code>class UserPresenter
   def avatar
     image_tag(user.avatar_url || "anonymous.png")
   end
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>To use this, we would then need to initialize a new instance of this presenter per user object:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ul&gt;
+<pre><code>&lt;ul&gt;
   &lt;% @project.tickets.each do |ticket| %&gt;
     &lt;li&gt;&lt;%= UserPresenter.new(ticket.author).avatar %&gt;&lt;/li&gt;
   &lt;% end %&gt;
 &lt;/ul&gt;
-</code></pre></div></div>
+</code></pre>
 
 <p>This then muddles together the Ruby and HTML code of our view. A way to solve this could be to move that preparation of the data into a helper:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module TicketsHelper
+<pre><code>module TicketsHelper
   def author_avatar(author)
     UserPresenter.new(author).avatar
   end
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>Then in the view:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;ul&gt;
+<pre><code>&lt;ul&gt;
   &lt;% @project.tickets.each do |ticket| %&gt;
     &lt;li&gt;&lt;%= author_avatar(ticket.author) %&gt;&lt;/li&gt;
   &lt;% end %&gt;
 &lt;/ul&gt;
-</code></pre></div></div>
+</code></pre>
 
 <p>We have now got the logic for rendering an avatar spread over three different points:</p>
 

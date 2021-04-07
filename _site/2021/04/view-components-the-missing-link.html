@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -36,10 +36,10 @@
               <a href="/2021/04/view-components-the-missing-link"><h2>View Components: The Missing Link</h2></a>
               <small>07 Apr 2021</small>
             </div>
-            <p>There has been an uptick in making Rails play nice with React recently, made possible by gems such as <a href="https://github.com/reactjs/react-rails">react-rails</a>. The <code class="language-plaintext highlighter-rouge">react-rails</code> gem allows you to inject React components into your Rails views like this:</p>
+            <p>There has been an uptick in making Rails play nice with React recently, made possible by gems such as <a href="https://github.com/reactjs/react-rails">react-rails</a>. The <code>react-rails</code> gem allows you to inject React components into your Rails views like this:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"HelloWorld"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">greeting: </span><span class="s2">"Hello from react-rails."</span> <span class="p">})</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
+<pre><code class="language-erb">&lt;%= react_component("HelloWorld", { greeting: "Hello from react-rails." }) %&gt;
+</code></pre>
 
 <p>The first argument here is the component name, and the hash at the end is the props that get passed down to the component.</p>
 
@@ -49,58 +49,58 @@
 
 <p>Sometimes, we want to pass a bunch of props through to a React component. Maybe it starts out as one prop and then grows to ten props. This can get really messy:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"UserPicker"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">users: </span><span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span> <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}}</span> <span class="p">},</span> <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span> <span class="p">})</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
+<pre><code class="language-erb">&lt;%= react_component("UserPicker", { users: @users.map { |user| { value: user.id, label: user.name }} }, selectedUserIds: @selected_user_ids }) %&gt;
+</code></pre>
 
 <p>As a component grows in complexity, the amount of Ruby in the view continues to grow and grow. Views are sometimes treated like a dumping ground: “well, this <em>can’t</em> go in the model and it <em>shouldn’t</em> go in the controller… guess I’ll just leave it here in the view!”</p>
 
 <p>Yes, this could be more clearly written with some line breaks:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"UserPicker"</span><span class="p">,</span> <span class="p">{</span>
-  <span class="ss">users: </span><span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
-    <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}</span>
-  <span class="k">end</span><span class="p">,</span>
-  <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span>
-<span class="p">})</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
+<pre><code class="language-erb">&lt;%= react_component("UserPicker", {
+  users: @users.map do |user|
+    { value: user.id, label: user.name }
+  end,
+  selectedUserIds: @selected_user_ids
+}) %&gt;
+</code></pre>
 
 <p>But that still feels quite clunky!</p>
 
 <h3 id="enter-view-components">Enter, view components</h3>
 
-<p>GitHub, has released a gem called <a href="https://github.com/github/view_component/">view_component</a> which aims to solve this problem in a neat way. The <code class="language-plaintext highlighter-rouge">view_component</code> gem defines new classes where you can put complicated view logic, and separates those views into their own directory too.</p>
+<p>GitHub, has released a gem called <a href="https://github.com/github/view_component/">view_component</a> which aims to solve this problem in a neat way. The <code>view_component</code> gem defines new classes where you can put complicated view logic, and separates those views into their own directory too.</p>
 
-<p>Let’s take our <code class="language-plaintext highlighter-rouge">UserPicker</code> component from above. This now becomes a class called <code class="language-plaintext highlighter-rouge">UserPickerComponent</code>, and lives at <code class="language-plaintext highlighter-rouge">app/components</code>:</p>
+<p>Let’s take our <code>UserPicker</code> component from above. This now becomes a class called <code>UserPickerComponent</code>, and lives at <code>app/components</code>:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UserPickerComponent</span> <span class="o">&lt;</span> <span class="no">ViewComponent</span><span class="o">::</span><span class="no">Base</span>
-  <span class="nb">attr_reader</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:selected_user_ids</span>
+<pre><code class="language-ruby">class UserPickerComponent &lt; ViewComponent::Base
+  attr_reader :users, :selected_user_ids
 
-  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">users</span><span class="p">:,</span> <span class="n">selected_user_ids</span><span class="p">:)</span>
-    <span class="vi">@users</span> <span class="o">=</span> <span class="n">users</span>
-    <span class="vi">@selected_user_ids</span> <span class="o">=</span> <span class="n">selected_user_ids</span>
-  <span class="k">end</span>
+  def initialize(users:, selected_user_ids:)
+    @users = users
+    @selected_user_ids = selected_user_ids
+  end
 
-  <span class="k">def</span> <span class="nf">props</span>
-    <span class="n">user_props</span> <span class="o">=</span> <span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span> <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}</span> <span class="p">}</span>
+  def props
+    user_props = @users.map { |user| { value: user.id, label: user.name } }
 
-    <span class="p">{</span>
-      <span class="ss">users: </span><span class="n">user_props</span><span class="p">,</span>
-      <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span>
-    <span class="p">}</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-</code></pre></div></div>
+    {
+      users: user_props,
+      selectedUserIds: @selected_user_ids
+    }
+  end
+end
+</code></pre>
 
-<p>That’s much nicer! Our Ruby code is now where it belongs: in a <em>Ruby</em> file. The code that converts the users to an array-of-hashes with <code class="language-plaintext highlighter-rouge">value</code> and <code class="language-plaintext highlighter-rouge">label</code> key now feels at home in this file and has stopped clogging up our ERB file.</p>
+<p>That’s much nicer! Our Ruby code is now where it belongs: in a <em>Ruby</em> file. The code that converts the users to an array-of-hashes with <code>value</code> and <code>label</code> key now feels at home in this file and has stopped clogging up our ERB file.</p>
 
-<p>But where’s our ERB code that renders this React component? Isn’t that back over in <code class="language-plaintext highlighter-rouge">app/views</code>? Well, yeah it is! But we can move that code now into the <em>other half</em> of <code class="language-plaintext highlighter-rouge">view_component</code>, a special view component ERB file at <code class="language-plaintext highlighter-rouge">app/components/user_picker.html.erb</code>:</p>
+<p>But where’s our ERB code that renders this React component? Isn’t that back over in <code>app/views</code>? Well, yeah it is! But we can move that code now into the <em>other half</em> of <code>view_component</code>, a special view component ERB file at <code>app/components/user_picker.html.erb</code>:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">helpers</span><span class="p">.</span><span class="nf">react_component</span> <span class="s2">"UserPicker"</span><span class="p">,</span> <span class="o">**</span><span class="n">props</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
+<pre><code class="language-erb">&lt;%= helpers.react_component "UserPicker", **props %&gt;
+</code></pre>
 
 <p>View component renders components using a combination of the Ruby class and the ERB template, both named the smae.</p>
 
-<p>To access the <code class="language-plaintext highlighter-rouge">react_component</code> helper, we need to use the <code class="language-plaintext highlighter-rouge">helpers</code> method provided by <code class="language-plaintext highlighter-rouge">view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
+<p>To access the <code>react_component</code> helper, we need to use the <code>helpers</code> method provided by <code>view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
 
 <p>The main thing to note is that our Ruby code now lives in a Ruby file, and the code to render the React component lives over in the component’s view. If we had any additional HTML that was required to be wrapped around this component, this is where it would belong too. I’ve left that out to make things simple here.</p>
 
@@ -108,18 +108,18 @@
 
 <p>With the Ruby and ERB nicely separated into a view <em>component</em>, it’s time to add that code back to our view. We will first need to initialize the component in the controller action:</p>
 
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">new</span>
-  <span class="vi">@user_picker_component</span> <span class="o">=</span> <span class="no">UserPickerComponent</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
-    <span class="ss">users: </span><span class="vi">@users</span><span class="p">,</span>
-    <span class="ss">selected_user_ids: </span><span class="vi">@selected_user_ids</span><span class="p">,</span>
-  <span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div></div>
+<pre><code class="language-ruby">def new
+  @user_picker_component = UserPickerComponent.new(
+    users: @users,
+    selected_user_ids: @selected_user_ids,
+  )
+end
+</code></pre>
 
-<p>Then we can render the component, just like we would render a partial, by calling <code class="language-plaintext highlighter-rouge">render</code> in the view for the action:</p>
+<p>Then we can render the component, just like we would render a partial, by calling <code>render</code> in the view for the action:</p>
 
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">render</span><span class="p">(</span><span class="vi">@user_picker_component</span><span class="p">)</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
+<pre><code class="language-erb">&lt;%= render(@user_picker_component) %&gt;
+</code></pre>
 
 <p>And there you have it, a clear separation between the responsibilities for rendering a React component within a Rails application. We now have:</p>
 

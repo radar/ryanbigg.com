@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+  <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -36,20 +36,20 @@
               <a href="/2009/10/connecting-to-multiple-databases-using-activerecord"><h2>Connecting to Multiple Databases Using ActiveRecord</h2></a>
               <small>17 Oct 2009</small>
             </div>
-            <p>You can call <code class="language-plaintext highlighter-rouge">establish_connection</code> with the key that points to another database config in your <code class="language-plaintext highlighter-rouge">config/database.yml</code></p>
+            <p>You can call <code>establish_connection</code> with the key that points to another database config in your <code>config/database.yml</code></p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Person &lt; ActiveRecord::Base
+<pre><code>class Person &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
 class Ticket &lt; ActiveRecord::Base
   establish_connection(:bug_tracker)
 end
-</code></pre></div></div>
+</code></pre>
 
 <p>If you have a whole bunch of models that need to connect to another database:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class HR &lt; ActiveRecord::Base
+<pre><code>class HR &lt; ActiveRecord::Base
   establish_connection(:hr)
 end
 
@@ -60,7 +60,7 @@ end
 class Resource &lt; HR
   # ...
 end
-</code></pre></div></div>
+</code></pre>
 
           </article>
         </div>
