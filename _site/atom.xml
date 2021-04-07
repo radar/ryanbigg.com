@@ -4,13 +4,112 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2021-03-30T09:24:24+11:00</updated>
+ <updated>2021-04-07T20:11:10+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>View Components: The Missing Link</title>
+   <link href="http://ryanbigg.com/2021/04/view-components-the-missing-link"/>
+   <updated>2021-04-07T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2021/04/view-components-the-missing-link</id>
+   <content type="html"><![CDATA[<p>There has been an uptick in making Rails play nice with React recently, made possible by gems such as <a href="https://github.com/reactjs/react-rails">react-rails</a>. The <code class="language-plaintext highlighter-rouge">react-rails</code> gem allows you to inject React components into your Rails views like this:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"HelloWorld"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">greeting: </span><span class="s2">"Hello from react-rails."</span> <span class="p">})</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>The first argument here is the component name, and the hash at the end is the props that get passed down to the component.</p>
+
+<p>This gem serves a very useful purpose, but I think there’s a missing link here and I want to show you what that link is, and how best to leverage it.</p>
+
+<h3 id="complicated-props-crowd-up-the-view">Complicated props crowd up the view</h3>
+
+<p>Sometimes, we want to pass a bunch of props through to a React component. Maybe it starts out as one prop and then grows to ten props. This can get really messy:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"UserPicker"</span><span class="p">,</span> <span class="p">{</span> <span class="ss">users: </span><span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span> <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}}</span> <span class="p">},</span> <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span> <span class="p">})</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>As a component grows in complexity, the amount of Ruby in the view continues to grow and grow. Views are sometimes treated like a dumping ground: “well, this <em>can’t</em> go in the model and it <em>shouldn’t</em> go in the controller… guess I’ll just leave it here in the view!”</p>
+
+<p>Yes, this could be more clearly written with some line breaks:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">react_component</span><span class="p">(</span><span class="s2">"UserPicker"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="ss">users: </span><span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span>
+    <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}</span>
+  <span class="k">end</span><span class="p">,</span>
+  <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span>
+<span class="p">})</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>But that still feels quite clunky!</p>
+
+<h3 id="enter-view-components">Enter, view components</h3>
+
+<p>GitHub, has released a gem called <a href="https://github.com/github/view_component/">view_component</a> which aims to solve this problem in a neat way. The <code class="language-plaintext highlighter-rouge">view_component</code> gem defines new classes where you can put complicated view logic, and separates those views into their own directory too.</p>
+
+<p>Let’s take our <code class="language-plaintext highlighter-rouge">UserPicker</code> component from above. This now becomes a class called <code class="language-plaintext highlighter-rouge">UserPickerComponent</code>, and lives at <code class="language-plaintext highlighter-rouge">app/components</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UserPickerComponent</span> <span class="o">&lt;</span> <span class="no">ViewComponent</span><span class="o">::</span><span class="no">Base</span>
+  <span class="nb">attr_reader</span> <span class="ss">:users</span><span class="p">,</span> <span class="ss">:selected_user_ids</span>
+
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">users</span><span class="p">:,</span> <span class="n">selected_user_ids</span><span class="p">:)</span>
+    <span class="vi">@users</span> <span class="o">=</span> <span class="n">users</span>
+    <span class="vi">@selected_user_ids</span> <span class="o">=</span> <span class="n">selected_user_ids</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">props</span>
+    <span class="n">user_props</span> <span class="o">=</span> <span class="vi">@users</span><span class="p">.</span><span class="nf">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">user</span><span class="o">|</span> <span class="p">{</span> <span class="ss">value: </span><span class="n">user</span><span class="p">.</span><span class="nf">id</span><span class="p">,</span> <span class="ss">label: </span><span class="n">user</span><span class="p">.</span><span class="nf">name</span> <span class="p">}</span> <span class="p">}</span>
+
+    <span class="p">{</span>
+      <span class="ss">users: </span><span class="n">user_props</span><span class="p">,</span>
+      <span class="ss">selectedUserIds: </span><span class="vi">@selected_user_ids</span>
+    <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>That’s much nicer! Our Ruby code is now where it belongs: in a <em>Ruby</em> file. The code that converts the users to an array-of-hashes with <code class="language-plaintext highlighter-rouge">value</code> and <code class="language-plaintext highlighter-rouge">label</code> key now feels at home in this file and has stopped clogging up our ERB file.</p>
+
+<p>But where’s our ERB code? That now lives in a separate view component file at <code class="language-plaintext highlighter-rouge">app/components/user_picker.html.erb</code>:</p>
+
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">helpers</span><span class="p">.</span><span class="nf">react_component</span> <span class="s2">"UserPicker"</span><span class="p">,</span> <span class="o">**</span><span class="n">props</span> <span class="cp">%&gt;</span>
+</code></pre></div></div>
+
+<p>To access the <code class="language-plaintext highlighter-rouge">react_component</code> helper, we need to use the <code class="language-plaintext highlighter-rouge">helpers</code> method provided by <code class="language-plaintext highlighter-rouge">view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
+
+<p>The main thing to note is that our Ruby code now lives in a Ruby file, and the code to render the React component lives over in the component’s view. If we had any additional HTML that was required to be wrapped around this component, this is where it would belong too. I’ve left that out to make things simple here.</p>
+
+<h3 id="rendering-a-view-component">Rendering a view component</h3>
+
+<p>With the Ruby and ERB nicely separated into a view <em>component</em>, it’s time to add that code back to our view. We will first need to initialize the component in the controller action:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">new</span>
+  <span class="vi">@user_picker_component</span> <span class="o">=</span> <span class="no">UserPickerComponent</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span>
+    <span class="ss">users: </span><span class="vi">@users</span><span class="p">,</span>
+    <span class="ss">selected_user_ids: </span><span class="vi">@selected_user_ids</span><span class="p">,</span>
+  <span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Then we can render the component, just like we would render a partial, by calling <code class="language-plaintext highlighter-rouge">render</code> in the view for the action:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;%= render(@user_picker_component) %&gt;
+</code></pre></div></div>
+
+<p>And there you have it, a clear separation between the responsibilities for rendering a React component within a Rails application. We now have:</p>
+
+<ul>
+  <li>The controller action: responsible for collection information based on the request, and prepares the component</li>
+  <li>The view: tells Rails where we want to put the component</li>
+  <li>The component Ruby class: container for any Ruby code that we need to run <em>before</em> rendering our React component, but <em>after</em> the controller has done its duty</li>
+  <li>The component view file: a clearly separated file that concerns itself with only rendering a React component</li>
+</ul>
+]]></content>
+ </entry>
  
  <entry>
    <title>The Bikeshed</title>
@@ -6178,259 +6277,6 @@ SyntaxError ((irb):4: syntax error, unexpected !~)
 <p>So in the future, I am setting aside <em>at least</em> 5 hours a week in sessions that I’m calling “None-on-Ones”. They’re booked in my calendar as regular meetings (where I’m marked as “busy”), except I am the only one invited. I hope this will convince myself to focus on clearing out those small-but-important tasks that I never seemed to have spare time to get around to.</p>
 
 <p>Maybe this is a management trick I wasn’t taught yet. I think it’ll be useful.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Polymorphic Routes</title>
-   <link href="http://ryanbigg.com/2018/12/polymorphic-routes"/>
-   <updated>2018-12-13T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2018/12/polymorphic-routes</id>
-   <content type="html"><![CDATA[<p>Really early on in Rails, you would write routes like this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">redirect_to</span> <span class="ss">:controller</span> <span class="o">=&gt;</span> <span class="s2">"posts"</span><span class="p">,</span> <span class="ss">:action</span> <span class="o">=&gt;</span> <span class="s2">"show"</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="vi">@post</span><span class="p">.</span><span class="nf">id</span>
-</code></pre></div></div>
-
-<p>What this would do is dutifully redirect to the <code class="language-plaintext highlighter-rouge">show</code> action inside the <code class="language-plaintext highlighter-rouge">PostsController</code> and pass along the <code class="language-plaintext highlighter-rouge">id</code> parameter with a
-value of whatever <code class="language-plaintext highlighter-rouge">@post.id</code> returns. Typical 302 response.</p>
-
-<p>Then Rails 1.2 came along and allowed you to use routing helpers, like this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">redirect_to</span> <span class="n">post_path</span><span class="p">(</span><span class="vi">@post</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p>And the people rejoiced.</p>
-
-<p>This would do effectively the same thing. <code class="language-plaintext highlighter-rouge">post_path</code> here would build a route using the <code class="language-plaintext highlighter-rouge">@post</code> object that would look something
-like <code class="language-plaintext highlighter-rouge">/posts/1</code> and then <code class="language-plaintext highlighter-rouge">redirect_to</code> would send back a 302 response to that route and the browser would follow it.</p>
-
-<p>Then later versions (I can’t remember which one), allowed syntax like this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">redirect_to</span> <span class="vi">@post</span>
-</code></pre></div></div>
-
-<p>And the people rejoiced a second time.</p>
-
-<h3 id="magic-but-not-really">Magic, but not really</h3>
-
-<blockquote>
-  <p>Any sufficiently advanced technology is indistinguishable from magic.</p>
-</blockquote>
-
-<p>While this seems like magic, it’s not. What this is doing is actually very, very neat. The <code class="language-plaintext highlighter-rouge">redirect_to</code> method, much like its cousins <code class="language-plaintext highlighter-rouge">link_to</code> and <code class="language-plaintext highlighter-rouge">form_for</code> all use a common method to build URLs, called <code class="language-plaintext highlighter-rouge">url_for</code>. The <code class="language-plaintext highlighter-rouge">url_for</code> method takes many different varieties of objects, such as strings, hashes or even instances of models, like in the example above and then uses whatever’s input to build a URL. <code class="language-plaintext highlighter-rouge">url_for</code> does this in conjunction with another method called <code class="language-plaintext highlighter-rouge">polymorphic_url</code> too.</p>
-
-<p>Let’s look at what <code class="language-plaintext highlighter-rouge">redirect_to</code>, <code class="language-plaintext highlighter-rouge">url_for</code> and <code class="language-plaintext highlighter-rouge">polymorphic_url</code> does with these objects. In the case of the <code class="language-plaintext highlighter-rouge">redirect_to @post</code> call above, it inspects the <code class="language-plaintext highlighter-rouge">@post</code>
-object, sees that it is an object of the <code class="language-plaintext highlighter-rouge">Post</code> class (we assume, anyway) and checks to see if that object has been persisted in a
-database somewhere by calling <code class="language-plaintext highlighter-rouge">persisted?</code> on it.</p>
-
-<p>By “persisted”, I mean that a Ruby object has a matching record in the database somewhere. The <code class="language-plaintext highlighter-rouge">persisted?</code> method in Active Record is implemented like this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">persisted?</span>
-  <span class="o">!</span><span class="p">(</span><span class="n">new_record?</span> <span class="o">||</span> <span class="n">destroyed?</span><span class="p">)</span>
-<span class="k">end</span>
-</code></pre></div></div>
-
-<p>If the object wasn’t created through a call such as <code class="language-plaintext highlighter-rouge">Model.new</code> then it won’t be a new record, and if it hasn’t had the <code class="language-plaintext highlighter-rouge">destroy</code> method called on it won’t be
-destroyed either. If both of these cases are true, then that makes the object has most likely been <em>persisted</em> to the database in the form of a record.</p>
-
-<p>If it has been persisted, then <code class="language-plaintext highlighter-rouge">url_for</code> knows that this object can be found
-somewhere, and that the place it can be found is most likely under a method called <code class="language-plaintext highlighter-rouge">post_path</code>. It infers the “post” part of this method from the name of the model: <code class="language-plaintext highlighter-rouge">Post</code>. Rails then calls this method, and passes in whatever <code class="language-plaintext highlighter-rouge">to_param</code> on the model returns. By default, <code class="language-plaintext highlighter-rouge">to_param</code> is configured to return the <code class="language-plaintext highlighter-rouge">id</code>, but you can override this method in your model to return something else, like a permalink instead:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">to_param</span>
-  <span class="n">permalink</span>
-<span class="k">end</span>
-</code></pre></div></div>
-<p>In short, Rails is effectively building a method call like this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#{@post.class.downcase}_path(@post.to_param)</span>
-</code></pre></div></div>
-
-<p>Which comes out to being this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">post_path</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p>And when that method is called you would get this little string:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"/posts/1"
-</code></pre></div></div>
-
-<p>Lovely!</p>
-
-<p>This is called <em>polymorphic routing</em>. You can pass an object to methods like <code class="language-plaintext highlighter-rouge">redirect_to</code>, <code class="language-plaintext highlighter-rouge">link_to</code>, <code class="language-plaintext highlighter-rouge">form_for</code> and <code class="language-plaintext highlighter-rouge">form_with</code> and Rails will
-attempt to work out the correct URL of what to use.</p>
-
-<h3 id="the-form-of-form_form">The form of form_form</h3>
-
-<p>Now, when you’re coding Rails you may have used <code class="language-plaintext highlighter-rouge">form_for</code> like this a very long time ago:</p>
-
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%</span> <span class="n">form_for</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:controller</span> <span class="o">=&gt;</span> <span class="s2">"posts"</span><span class="p">,</span> <span class="ss">:action</span> <span class="o">=&gt;</span> <span class="s2">"create"</span> <span class="p">}</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
-
-<p>Of course, with advancements in Rails you could simplify it to this:</p>
-
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%</span> <span class="n">form_for</span> <span class="vi">@post</span><span class="p">,</span> <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="n">posts_path</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
-
-<p>Because the form is going to default to having a <code class="language-plaintext highlighter-rouge">POST</code> HTTP method and therefore a request to <code class="language-plaintext highlighter-rouge">posts_path</code> is going to go to the
-<code class="language-plaintext highlighter-rouge">create</code> action of <code class="language-plaintext highlighter-rouge">PostsController</code>, rather than the <code class="language-plaintext highlighter-rouge">index</code> action, which is what would result if it were a <code class="language-plaintext highlighter-rouge">GET</code> request.</p>
-
-<p>But why stop there? Why not just write this?</p>
-
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_for</span> <span class="vi">@post</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
-
-<p>Personally, I see no reason not to… if it’s something as simple as this. The <code class="language-plaintext highlighter-rouge">form_for</code> method uses <code class="language-plaintext highlighter-rouge">url_for</code> underneath, just like
-<code class="language-plaintext highlighter-rouge">redirect_to</code> to work out where the form should go. It knows that the <code class="language-plaintext highlighter-rouge">@post</code> object is of the <code class="language-plaintext highlighter-rouge">Post</code> class (again, we assume) and it
-checks to see if the object is persisted. If it is, then it will use <code class="language-plaintext highlighter-rouge">post_path(@post)</code>. If it’s not, then <code class="language-plaintext highlighter-rouge">posts_path</code>.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">form_for</code> method itself checks to see if the object passed in is persisted also, and if it is then it’ll default to a <code class="language-plaintext highlighter-rouge">PUT</code> HTTP
-method, otherwise a <code class="language-plaintext highlighter-rouge">POST</code>.</p>
-
-<p>So this is how <code class="language-plaintext highlighter-rouge">form_for</code> can be flexible enough to have an identical syntax on both a <code class="language-plaintext highlighter-rouge">new</code> and <code class="language-plaintext highlighter-rouge">edit</code> view. It’s becoming more and
-more common these days for people to even put their whole <code class="language-plaintext highlighter-rouge">form_for</code> tags into a single partial and include it in both the <code class="language-plaintext highlighter-rouge">new</code> and
-<code class="language-plaintext highlighter-rouge">edit</code> pages.</p>
-
-<h3 id="a-more-complex-form">A more complex form</h3>
-
-<p>So <code class="language-plaintext highlighter-rouge">form_for</code> is fairly simple for when you pass a normal object, but what happens if you pass an array of objects? Like this, for
-instance:</p>
-
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_for</span> <span class="p">[</span><span class="vi">@post</span><span class="p">,</span> <span class="vi">@comment</span><span class="p">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
-
-<p>Well, both <code class="language-plaintext highlighter-rouge">url_for</code> and <code class="language-plaintext highlighter-rouge">form_for</code> have you covered there too.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">url_for</code> method detects that this is an array and separates out each part and inspects them individually. First, what is this
-<code class="language-plaintext highlighter-rouge">@post</code> thing? Well, in this case let’s assume it’s a <code class="language-plaintext highlighter-rouge">Post</code> instance that <em>is</em> persisted and has the id of 1. Second, what is this
-<code class="language-plaintext highlighter-rouge">@comment</code> object? It’s a <code class="language-plaintext highlighter-rouge">Comment</code> instance that has not yet been persisted to the database.</p>
-
-<p>What <code class="language-plaintext highlighter-rouge">url_for</code> will do here is build up the URL helper method piece by piece by placing each part in an array, joining it into a routing method and then calling that routing method with the necessary arguments.</p>
-
-<p>First, it knows that the <code class="language-plaintext highlighter-rouge">@post</code> object is of the <code class="language-plaintext highlighter-rouge">Post</code> class and is persisted, therefore the URL helper will begin with <code class="language-plaintext highlighter-rouge">post</code>. Second, it knows that the <code class="language-plaintext highlighter-rouge">@comment</code> object is of the <code class="language-plaintext highlighter-rouge">Comment</code> class and is <em>not</em> persisted, and therefore <code class="language-plaintext highlighter-rouge">comments</code> will follow <code class="language-plaintext highlighter-rouge">post</code> in the URL helper build. The parts that <code class="language-plaintext highlighter-rouge">url_for</code> now knows about are <code class="language-plaintext highlighter-rouge">[:post, :comments]</code>.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">url_for</code> method combines these individual parts with an underscore, so that it becomes <code class="language-plaintext highlighter-rouge">post_comments</code> and then appends <code class="language-plaintext highlighter-rouge">_path</code>
-to the end of that, resulting in <code class="language-plaintext highlighter-rouge">post_comments_path</code>. Then it passes in just the persisted objects to the call to that method, resulting in a call like this:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>post_comments_path(@post)
-</code></pre></div></div>
-
-<p>Calling that method results in this:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"/posts/1/comments"
-</code></pre></div></div>
-
-<p>Best part? <code class="language-plaintext highlighter-rouge">form_for</code> will still know to use <code class="language-plaintext highlighter-rouge">POST</code> if the <code class="language-plaintext highlighter-rouge">@comment</code> object is not a persisted object, and <code class="language-plaintext highlighter-rouge">PUT</code> if it is. A good
-thing to remember is that the <code class="language-plaintext highlighter-rouge">form_for</code> is always for the <em>last</em> object specified in the array. The objects prior to it are just its
-nesting, nothing more.</p>
-
-<p>The more objects that are added, the more times <code class="language-plaintext highlighter-rouge">url_for</code> will do the hard yards and build the path out… although I recommend that
-you keep it to just two parts.</p>
-
-<h3 id="a-symbolic-form">A symbolic form</h3>
-
-<p>Now that we’ve covered using an array containing objects for <code class="language-plaintext highlighter-rouge">form_for</code>, let’s take a look at another common use. An array containing
-at least one Symbol object, like this:</p>
-
-<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">form_for</span> <span class="p">[</span><span class="ss">:admin</span><span class="p">,</span> <span class="vi">@post</span><span class="p">,</span> <span class="vi">@comment</span><span class="p">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="cp">%&gt;</span>
-</code></pre></div></div>
-
-<p>What the <code class="language-plaintext highlighter-rouge">url_for</code> method does here is very simple. It sees that there’s a <code class="language-plaintext highlighter-rouge">Symbol</code> and takes it as it is. The first part of the
-<code class="language-plaintext highlighter-rouge">url</code> will simply be the same as the symbol: <code class="language-plaintext highlighter-rouge">admin</code>. The URL that <code class="language-plaintext highlighter-rouge">url_for</code> knows of at this point is just <code class="language-plaintext highlighter-rouge">[:admin]</code>.</p>
-
-<p>Then <code class="language-plaintext highlighter-rouge">url_for</code> goes through the remaining parts of the array. In this case, let’s assume both <code class="language-plaintext highlighter-rouge">@post</code> and <code class="language-plaintext highlighter-rouge">@comment</code> are persisted
-and that they have the ids of 1 and 2 respectively. Same classes as before. <code class="language-plaintext highlighter-rouge">url_for</code> then adds <code class="language-plaintext highlighter-rouge">post</code> to the URL that it’s building,
-and <code class="language-plaintext highlighter-rouge">comment</code> too, resulting in <code class="language-plaintext highlighter-rouge">[:admin, :post, :comment]</code>.</p>
-
-<p>Then the joining happens, resulting in a method of <code class="language-plaintext highlighter-rouge">admin_post_comment_path</code>, and because both <code class="language-plaintext highlighter-rouge">@post</code> and <code class="language-plaintext highlighter-rouge">@comment</code> are persisted here,
-they’re passed in, resulting in this method call:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">admin_post_comment_path</span><span class="p">(</span><span class="vi">@post</span><span class="p">,</span> <span class="vi">@comment</span><span class="p">)</span>
-</code></pre></div></div>
-
-<p>Which (usually) turns into this path:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/admin/posts/1/comments/2
-</code></pre></div></div>
-
-<h3 id="testing-routes-in-the-rails-console">Testing routes in the Rails console</h3>
-
-<p>Rails provides a way to test out these routes in the <code class="language-plaintext highlighter-rouge">rails console</code>, through its <code class="language-plaintext highlighter-rouge">app</code> helper.</p>
-
-<p>If we want to test out our <code class="language-plaintext highlighter-rouge">post_path</code> helper, we can do it with this call in the <code class="language-plaintext highlighter-rouge">rails console</code>:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">app</span><span class="p">.</span><span class="nf">post_path</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># =&gt; /posts/1</span>
-</code></pre></div></div>
-
-<p>If we wanted to test out something more complex, like what <code class="language-plaintext highlighter-rouge">redirect_to @post</code> might return, we can invoke <code class="language-plaintext highlighter-rouge">url_for</code>:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">first</span>
-<span class="n">app</span><span class="p">.</span><span class="nf">url_for</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
-<span class="c1"># =&gt; /posts/1</span>
-</code></pre></div></div>
-
-<p>This will also work with an array of objects:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">first</span>
-<span class="n">comment</span> <span class="o">=</span> <span class="n">post</span><span class="p">.</span><span class="nf">comments</span><span class="p">.</span><span class="nf">first</span>
-<span class="n">app</span><span class="p">.</span><span class="nf">url_for</span><span class="p">([</span><span class="n">post</span><span class="p">,</span> <span class="n">comment</span><span class="p">])</span>
-<span class="c1"># =&gt; /posts/1/comments/2</span>
-</code></pre></div></div>
-
-<p>And also if we use the array with a symbol inside it:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">first</span>
-<span class="n">comment</span> <span class="o">=</span> <span class="n">post</span><span class="p">.</span><span class="nf">comments</span><span class="p">.</span><span class="nf">first</span>
-<span class="n">app</span><span class="p">.</span><span class="nf">url_for</span><span class="p">([</span><span class="ss">:admin</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">comment</span><span class="p">])</span>
-<span class="c1"># =&gt; /admin/posts/1/comments/2</span>
-</code></pre></div></div>
-
-<h3 id="working-with-weirdly-named-routes">Working with weirdly named routes</h3>
-
-<p>If you have routes that do not match their model names within the application, then you’re going to run into trouble with <code class="language-plaintext highlighter-rouge">url_for</code> and friends.</p>
-
-<p>Let’s imagine you’ve got routes like this:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resources</span> <span class="ss">:posts</span><span class="p">,</span> <span class="ss">as: :articles</span>
-</code></pre></div></div>
-
-<p>You will not be able to use things like:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">link_to</span> <span class="vi">@post</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span> <span class="vi">@post</span>
-</code></pre></div></div>
-
-<p>Or:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">redirect_to</span> <span class="vi">@post</span>
-</code></pre></div></div>
-
-<p>This is because the routing helper that we will need for this is called <code class="language-plaintext highlighter-rouge">article_path</code>, and not <code class="language-plaintext highlighter-rouge">post_path</code>. The inferrence of the route from the model name will break in this particular usage of <code class="language-plaintext highlighter-rouge">link_to</code>.</p>
-
-<p>If you are unable to change the routes themselves to correct this difference, the way around it is to use a different syntax. This one:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">link_to</span> <span class="vi">@post</span><span class="p">.</span><span class="nf">title</span><span class="p">,</span> <span class="p">[</span><span class="ss">:article</span><span class="p">,</span> <span class="ss">id: </span><span class="vi">@post</span><span class="p">.</span><span class="nf">id</span><span class="p">]</span>
-</code></pre></div></div>
-
-<p>We can test this in our console too by using <code class="language-plaintext highlighter-rouge">app.url_for</code> again:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">post</span> <span class="o">=</span> <span class="no">Post</span><span class="p">.</span><span class="nf">first</span>
-<span class="n">app</span><span class="p">.</span><span class="nf">url_for</span><span class="p">([</span><span class="ss">:article</span><span class="p">,</span> <span class="ss">id: </span><span class="n">post</span><span class="p">.</span><span class="nf">id</span><span class="p">])</span>
-</code></pre></div></div>
-
-<p>The way this work is that it sees that the first element is a symbol called <code class="language-plaintext highlighter-rouge">:article</code>, and so it infers that the start of the routing helper is <code class="language-plaintext highlighter-rouge">article_</code>. Then, given that there’s no more symbols, it builds a routing helper called <code class="language-plaintext highlighter-rouge">article_url</code>. The final element of the array is then passed as an argument to this method, finishing up as this method call:</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">article_url</span><span class="p">(</span><span class="ss">id: </span><span class="n">post</span><span class="p">.</span><span class="nf">id</span><span class="p">)</span>
-</code></pre></div></div>
-
-<h3 id="conclusion">Conclusion</h3>
-
-<p>You can use the array form of polymorphic routing with the <code class="language-plaintext highlighter-rouge">redirect_to</code>, <code class="language-plaintext highlighter-rouge">link_to</code>, <code class="language-plaintext highlighter-rouge">form_for</code> and <code class="language-plaintext highlighter-rouge">form_with</code> methods. There’s probably other
-methods that I’m not remembering right now that can do it too… it’s generally anything in Rails that would normally take a URL.</p>
-
-<p>There’s no need to build your URLs in any Rails version greater-than 2 using hashes; that’s pretty old school. If you see cases like this in your applications, attempt a refactoring!</p>
-
-<p>Experiment with your new knowledge of polymorphic routing and use it to the best of your advantage.</p>
 ]]></content>
  </entry>
  
