@@ -102,3 +102,58 @@ And there you have it, a clear separation between the responsibilities for rende
 * The view: tells Rails where we want to put the component
 * The component Ruby class: container for any Ruby code that we need to run _before_ rendering our React component, but _after_ the controller has done its duty
 * The component view file: a clearly separated file that concerns itself with only rendering a React component
+
+### Translations
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">How are people taking i18n translations and making them available to React components these days?</p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/status/1379259002731646979?ref_src=twsrc%5Etfw">April 6, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+A few days ago, I started experimenting with the right ways to pass translations down to these React components from Ruby.
+
+A few replies to the above tweet were along the lines of "just load all 644kb of JSONified I18n translations on every page load! Your users will love you!" and if this is supposed to be the latest-and-greatest of web development please let me off this wild ride.
+
+Having a view component means that we have somewhere that we can run calls to `I18n.t`, and then pass these as strings through to our React component. Here, let's have a look:
+
+```ruby
+class UserPickerComponent < ViewComponent::Base
+  attr_reader :users, :selected_user_ids
+
+  def initialize(users:, selected_user_ids:)
+    @users = users
+    @selected_user_ids = selected_user_ids
+  end
+
+  def props
+    user_props = @users.map { |user| { value: user.id, label: user.name } }
+
+    {
+      users: user_props,
+      selectedUserIds: @selected_user_ids
+      translations: translations
+    }
+  end
+
+  private
+
+  def translations
+    scope = "users.picker"
+
+    {
+      selectAUser: helpers.t("select_a_user", scope: scope)
+    }
+  end
+end
+```
+
+In the component file, we're now defining an extra method called `translations`. This is then going to add one extra prop to our React component, and definitely _won't_ be sending 664kb of JSONified I18n translations to our users.
+
+To access these translations in the component, we access them the same as any other property:
+
+```tsx
+const UserPicker = ({ translations, users, seelectedUserIds}) => {
+
+  return (
+    // ...
+    <p>{translations.selectAUser}</p>
+  )
+}
+```
