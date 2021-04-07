@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2021-04-07T20:11:10+10:00</updated>
+ <updated>2021-04-07T20:14:50+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -74,10 +74,12 @@
 
 <p>That’s much nicer! Our Ruby code is now where it belongs: in a <em>Ruby</em> file. The code that converts the users to an array-of-hashes with <code class="language-plaintext highlighter-rouge">value</code> and <code class="language-plaintext highlighter-rouge">label</code> key now feels at home in this file and has stopped clogging up our ERB file.</p>
 
-<p>But where’s our ERB code? That now lives in a separate view component file at <code class="language-plaintext highlighter-rouge">app/components/user_picker.html.erb</code>:</p>
+<p>But where’s our ERB code that renders this React component? Isn’t that back over in <code class="language-plaintext highlighter-rouge">app/views</code>? Well, yeah it is! But we can move that code now into the <em>other half</em> of <code class="language-plaintext highlighter-rouge">view_component</code>, a special view component ERB file at <code class="language-plaintext highlighter-rouge">app/components/user_picker.html.erb</code>:</p>
 
 <div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">helpers</span><span class="p">.</span><span class="nf">react_component</span> <span class="s2">"UserPicker"</span><span class="p">,</span> <span class="o">**</span><span class="n">props</span> <span class="cp">%&gt;</span>
 </code></pre></div></div>
+
+<p>View component renders components using a combination of the Ruby class and the ERB template, both named the smae.</p>
 
 <p>To access the <code class="language-plaintext highlighter-rouge">react_component</code> helper, we need to use the <code class="language-plaintext highlighter-rouge">helpers</code> method provided by <code class="language-plaintext highlighter-rouge">view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
 
@@ -97,7 +99,7 @@
 
 <p>Then we can render the component, just like we would render a partial, by calling <code class="language-plaintext highlighter-rouge">render</code> in the view for the action:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;%= render(@user_picker_component) %&gt;
+<div class="language-erb highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;%=</span> <span class="n">render</span><span class="p">(</span><span class="vi">@user_picker_component</span><span class="p">)</span> <span class="cp">%&gt;</span>
 </code></pre></div></div>
 
 <p>And there you have it, a clear separation between the responsibilities for rendering a React component within a Rails application. We now have:</p>

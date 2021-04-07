@@ -65,11 +65,13 @@ end
 
 That's much nicer! Our Ruby code is now where it belongs: in a _Ruby_ file. The code that converts the users to an array-of-hashes with `value` and `label` key now feels at home in this file and has stopped clogging up our ERB file.
 
-But where's our ERB code? That now lives in a separate view component file at `app/components/user_picker.html.erb`:
+But where's our ERB code that renders this React component? Isn't that back over in `app/views`? Well, yeah it is! But we can move that code now into the _other half_ of `view_component`, a special view component ERB file at `app/components/user_picker.html.erb`:
 
 ```erb
 <%= helpers.react_component "UserPicker", **props %>
 ```
+
+View component renders components using a combination of the Ruby class and the ERB template, both named the smae.
 
 To access the `react_component` helper, we need to use the `helpers` method provided by `view_component`. But there's not much difference here to what we had earlier in a view.
 
@@ -90,7 +92,7 @@ end
 
 Then we can render the component, just like we would render a partial, by calling `render` in the view for the action:
 
-```
+```erb
 <%= render(@user_picker_component) %>
 ```
 
