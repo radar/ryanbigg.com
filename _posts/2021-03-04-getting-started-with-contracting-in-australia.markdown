@@ -2,10 +2,12 @@
 wordpress_id: RB-1614848792
 layout: post
 title: Contracting as a developer in Australia
-published: false
+published: true
 ---
 
 (All advice in this blog post is of a general nature and comes with the regular disclaimers, such as: "I am not a lawyer / tax agent", etc. etc. If you have questions about the law or your tax obligations, talk to real lawyers, tax agents or even the people at the ATO.)
+
+(This blog post will be updated as I find out more things about contracting -- there is definitely more to learn!)
 
 After working as a developer full-time for a number of years, I've decided to give that a break. And instead I'm now working full-time as a sole-trader contractor instead.
 
@@ -21,7 +23,7 @@ Here's my (slightly edited) answers to those questions, and I'll add a bit extra
 
 ## ABN
 
-If you're working as a contractor within Australia it's likely that you'll need an ABN. You can [check your ABN eligibilty here](https://abr.gov.au/ABRWeb/Default.aspx?Target=CheckAbnEntitlement&pid=71). I have an ABN. You can look it up!
+If you're working as a contractor within Australia it's likely that you'll need an ABN. You can [check your ABN eligibility here](https://abr.gov.au/ABRWeb/Default.aspx?Target=CheckAbnEntitlement&pid=71). I have an ABN. You can look it up!
 
 An ABN helps identify transactions between businesses within Australia. The government will _probably_ require you to have one, so I would suggest getting one as a first point of call. But! Check your eligibility first.
 
@@ -31,7 +33,7 @@ An ABN helps identify transactions between businesses within Australia. The gove
 
 I contract out at a daily rate that was worked out based on what I was previously paid ($150k as a senior Ruby / JavaScript dev), plus a bit of extra padding to account for things like 1) making my own tax + super contributions 2) giving myself annual leave and sick leave.
 
-I am now charging out at [redacted] as a contractor, working 8 hour days. This works out to [redacted]/day, which is a nice round number that makes me happy.
+I am now charging out at [redacted] as a contractor, working 8 hour days (with an hour lunch break somewhere in there, unpaid). This works out to [redacted]/day, which is a nice round number that makes me happy.
 
 This base-hour number is a point-in-time sample and may vary, depending on circumstances. Someone else on that same Slack group gave this advice:
 
@@ -61,21 +63,34 @@ Xero has a great automatic tool for calculating BAS.
 
 Once I've invoiced the client, received the money and correctly set aside the GST amount, it's math time.
 
-For the sole-tradership that I operate, there are business expenses that need to be taken of on usually a recurring rate. These provide me with a baseline cost of what it's going to take to run the business this month.
+For the sole-tradership that I operate, there are business expenses that need to be taken of on usually a monthly recurring rate. There are some that are _yearly_ as well. These provide me with a baseline cost of what it's going to take to run the business this month. The yearly ones get divided by 12 and treated like a monthly cost, except the money is transferred into the business savings account.
 
 ### Pay yourself
 
-Using that base number, I can then work out that my tax rate is somewhere in the range of 37c-45c in the dollar, depending on if I end up making more than $180k this year or not. This depends on how many weeks I can work this year. This is impossible to predict, given the nature of contracting work. Tide goes in, tide goes out.
+Using that base number, I can then work out that my [income tax rate](https://www.ato.gov.au/rates/individual-income-tax-rates/) is somewhere in the range of 37c-45c in the dollar (after certain amounts), depending on if I end up making more than $180k this year or not. This depends on how many weeks I can work this year. This is impossible to predict, given the nature of contracting work. Tide goes in, tide goes out.
 
-So I err on the side of it being 45c instead of 37c. To make the mental math easy, I take whatever I get paid and put away half (50%) of that into a savings account that is then, essentially, untouchable. That then goes to paying my quarterly tax bills that I get from the government. Previously, I was on a Pay-as-you-go quarterly payment plan with the government thanks to my [Leanpub royalties](https://leanpub.com) -- but that'll be changing to a quarterly Business Activity Statement soon due to the increased nature of my "business's" earnings.
+So I err on the side of it being 45c instead of 37c. To make the mental math easy, I take whatever I get paid and put away half (50%) of that into a savings account that is then, essentially, untouchable. That then goes to paying my quarterly BAS bills that I get from the government with the money set aside for tax reasons listed in the BAS as a "tax withheld" amount.
 
-By the time tax time comes around and I talk to my tax agent (below) -- if there's still leftover money in the savings account then that gets rolled into the general transaction account for the business and I'll spend it on things that I need, or transfer it into my family's accounts.
+Previously, I was on a Pay-as-you-go quarterly payment plan with the government thanks to my [Leanpub royalties](https://leanpub.com) -- but that'll be changing to a quarterly Business Activity Statement soon due to the increased nature of my "business's" earnings.
 
-I then take 9.5% of whatever I get paid and put that directly into my superannuation. This leaves me with 40% to split up according to my family's budget. Some of that goes into a savings account to provide a buffer for when I take annual leave or sick leave. Thinking more about the salary split: I should probably take ~11% of the total and put it purposefully aside to cover sick leave / annual leave. Calculated as 6 weeks of the year (6/52), so ~11%. That would probably make more sense than taking it out of the family's joint savings account.
+By the time tax time comes around and I talk to my tax agent (below) -- if there's still leftover money in the savings account then that gets rolled into the general transaction account for the business and I'll spend it on things that I need, or transfer it into my family's accounts as an extra bonus.
 
-Money, it's hard!
+I then take 9.5% of whatever I get paid and put that directly into my superannuation. When I retire, I want money to be able to live, so this is a sensible choice. I could contribute more here.
+
+I also take 5% out of this total amount for leave entitlements. I am (unfortunately) not invulnerable, so I will need paid sick leave from _somewhere_, and occasionally I might like to leave my computer so annual leave needs to be accounted for too. This really should be somewhere in the range of 11-12%, as annual + sick leave entitlements are usually in the range of 6 weeks of the year (11.5% of the year)... but I'm bootstrapping my consulting business now and I'm choosing to take fewer leave days for the moment.
+
+By this point I've deducted these things from my business's income:
+
+* Running the business expenses
+* Tax obligations (both GST + personal income tax)
+* Superannuation
+* Leave entitlements
+
+The rest of this money then goes into my family's bank accounts.
 
 ## Get it in writing
+
+Next up: contracts!
 
 My wife is an ex-lawyer and read over a contract that I drafted using my significant (read: completely lacking) legal expertise.
 
@@ -92,7 +107,7 @@ The contract is designed to answer the who, what, why, where, when, how question
 
 Get a contract. Get it signed.
 
-You cannot be a contractor without a contract. You will be an "or". Nobody wants an "or". Get it in writing. Get it signed. Dated. As the wise Jeff Casimir once said, contracts are written while in love, but only ever used in hate. You will want a good one for when shit hits the fan. And it will hit the fan.
+**You cannot be a contractor without a contract. You will be an "or". Nobody wants an "or"**. Get it in writing. Get it signed. Dated. As the wise Jeff Casimir once said, contracts are written while in love, but only ever used in hate. You will want a good one for when shit hits the fan. And it will hit the fan.
 
 If you agree to some work, it's in writing _in your personal email account, not in their company's Slack_. It's timestamped, filed away and easily accessible. Can you find that documentation with minimal effort? You better be able to.
 
