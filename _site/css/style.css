@@ -104,7 +104,15 @@ footer { color: #fefefe; font-size: 5px; min-height: 3rem; }
 
 @media (prefers-color-scheme: dark) { footer { color: #343434; } }
 
-.EmbeddedTweet { background: blue; }
+.two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 10rem; }
+
+@media only screen and (max-width: 1000px) { .two-column { grid-template-columns: 1fr; } }
+
+.two-column h2 { font-size: 250%; text-align: center; }
+
+.one-column, .history { margin: 0 12.5%; }
+
+.history h2 { font-size: 250%; text-align: center; }
 
 header.topbar { background: #181a1c; color: #30c472; border-bottom: 3px solid #30c472; display: flex; justify-content: space-between; padding: 10px; }
 

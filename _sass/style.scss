@@ -244,6 +244,29 @@ footer {
   min-height: 3rem;
 }
 
-.EmbeddedTweet {
-  background: blue;
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  @media only screen and (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+  gap: 10rem;
+
+  h2 {
+    font-size: 250%;
+    text-align: center;
+  }
+}
+
+.one-column {
+  margin: 0 12.5%;
+}
+
+.history {
+  @extend .one-column;
+
+  h2 {
+    font-size: 250%;
+    text-align: center;
+  }
 }
