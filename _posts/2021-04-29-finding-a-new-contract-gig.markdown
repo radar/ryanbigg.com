@@ -41,6 +41,9 @@ So then what I need to do is actually _talk to people_. If you're a developer an
 
 What I find out here is a few things:
 
+* Are you okay with me working only 4 days a week?
+* Are you okay with me working remotely from Warrnambool, Victoria?
+* Are you okay with me not being able to come into your office, ever?
 * What's the project?
 * How is it helping to improve the world?
 * What's the potential duration of our engagement?
@@ -50,6 +53,10 @@ What I find out here is a few things:
 * How's the code deployed to production?
 * How's the work managed / triaged / approved?
 * (And if I'm feeling cheeky) What's hard about working there?
+
+The first 3 questions here are big deal-breakers. I enjoy spending a day of my week free to do writing and chores and then spending the weekend doing things with my family. The Warrnambool thing is... well, it's where I live. And commuting _ever_ into an office is a dealbreaker as I'm solo-parenting a 4-year-old, 4-days-a-week and I need to be there for kindergarten drop-off in the morning and pickup in the evening. I really don't think she'll want to be waiting for daddy's train to get back at 10pm at night, do you?
+
+These initial questions were not okay for some clients, and them's the breaks. Some people want full-time, some people want hybrid-remote. That's okay, we can talk about it and say "not yet" and go no further.
 
 This time around I've put a bit of an emphasis on the team composition + size, as I want to spend more time working with more people than I have done thus far for my contracting gig. A bigger team "ranked higher" in my scoring for this round.
 
