@@ -20,7 +20,7 @@ So I started my hunt about 2 weeks ago, putting messages out on Twitter, Linked 
 >
 > Happy to talk in DM or via email: me@ryanbigg.com
 
-**Within those 2-and-a-bit weeks, I received 10 offers for future contracts.**
+**Within those 2-and-a-bit weeks, I received 12 offers for future contracts.**
 
 See? Sellers' market.
 
