@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1619652890
 layout: post
-title: Finding a new contract gig
+title: How I found a new contract gig
 ---
 
 I've resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.
