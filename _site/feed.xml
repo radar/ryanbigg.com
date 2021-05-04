@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-05-03T21:18:12+10:00</updated><id>/feed.xml</id><entry><title type="html">How I found a new contract gig</title><link href="/2021/04/finding-a-new-contract-gig" rel="alternate" type="text/html" title="How I found a new contract gig" /><published>2021-04-29T00:00:00+10:00</published><updated>2021-04-29T00:00:00+10:00</updated><id>/2021/04/finding-a-new-contract-gig</id><content type="html" xml:base="/2021/04/finding-a-new-contract-gig">&lt;p&gt;I’ve resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-05-04T15:32:17+10:00</updated><id>/feed.xml</id><entry><title type="html">How I found a new contract gig</title><link href="/2021/04/finding-a-new-contract-gig" rel="alternate" type="text/html" title="How I found a new contract gig" /><published>2021-04-29T00:00:00+10:00</published><updated>2021-04-29T00:00:00+10:00</updated><id>/2021/04/finding-a-new-contract-gig</id><content type="html" xml:base="/2021/04/finding-a-new-contract-gig">&lt;p&gt;I’ve resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.&lt;/p&gt;
 
 &lt;p&gt;As a “mercenary developer wizard”, I talk to people, we agree to work together for a period of time, we do the work, we make sure everyone’s happy with the work, then they pay me money. Sometimes I’ll tweet the odd rant about how Rails is bad, even though it pays all my bills. It’s a neat arrangement.&lt;/p&gt;
 
@@ -820,39 +820,109 @@ return (
 
 &lt;p&gt;This means that in the Capybara test, I can now use these to interact with this React Select component, like this:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def within_tags(&amp;amp;block)
-  within(&quot;.tags__control&quot;, &amp;amp;block)
-end
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;# spec/support/filter_helpers.rb
+module FilterHelpers
+  class SelectControl
+    include Capybara::DSL
 
-def expect_selected_tag(tag)
-  within_tags do
-    expect(page).to have_selector(&quot;.tags__multi-value&quot;, text: tag)
+    attr_reader :prefix
+
+    def initialize(prefix:)
+      @prefix = prefix
+    end
+
+    def select(option)
+      within_control do
+        find(&quot;input&quot;).fill_in(with: option)
+      end
+
+      find(&quot;.#{prefix}__option&quot;, text: option).click
+    end
+
+    def value
+      find(single_value_selector).text
+    end
+
+    def blank?
+      page.has_no_selector?(single_value_selector)
+    end
+
+    def values
+      all(multi_value_selector).map(&amp;amp;:text)
+    end
+
+    def remove(label)
+      value = find(multi_value_selector, text: label)
+      within(value) do
+        find(&quot;#{multi_value_selector}__remove&quot;).click
+      end
+    end
+
+    def visible?
+      page.has_selector?(control_selector)
+    end
+
+    def hidden?
+      !visible?
+    end
+
+    private
+
+    def single_value_selector
+      &quot;.#{prefix}__single-value&quot;
+    end
+
+    def multi_value_selector
+      &quot;.#{prefix}__multi-value&quot;
+    end
+
+    def control_selector
+      &quot;.#{prefix}__control&quot;
+    end
+
+    def within_control(&amp;amp;block)
+      within(control_selector, &amp;amp;block)
+    end
   end
-end
 
-def add_new_tag(tag)
-  within_tags do
-    find(&quot;input&quot;).fill_in(with: tag)
-  end
+  module TagFilterControl
+    def tag_filter_control
+      SelectControl.new(prefix: &quot;tags&quot;)
+    end
 
-  find(&quot;.tags__option&quot;, text: tag).click
-end
+    def add_new_tag(tag)
+      tags_control.select(tags)
+    end
 
-def remove_tag(tag)
-  within_tags do
-    within(&quot;.tags__multi-value&quot;, text: tag) do
-      find(&quot;.tags__multi-value__remove&quot;).click
+    def expect_tags_selected(tags)
+      expect(tags_control.value).to eq(tags)
+    end
+
+    def expect_no_tags_selected
+      expect(tags_control).to be_blank
+    end
+
+    def remove_tags(*tags)
+      tags.each do |tag|
+        tags_control.remove(tag)
+      end
     end
   end
 end
 
-scenario &quot;Can update a User's tags&quot;, js: true do
-  visit edit_admin_user_path(user)
+# spec/features/updating_tags_spec.rb
 
-  expect_selected_tag(&quot;Existing tag&quot;)
-  remove_tag(&quot;HIU&quot;)
-  add_new_tag(&quot;Paid&quot;)
-  add_new_tag(&quot;Custom tag&quot;)
+RSpec.describe &quot;Updating tags&quot; do
+  include TagFilterControl
+
+  scenario &quot;Can update a User's tags&quot;, js: true do
+    visit edit_admin_user_path(user)
+
+    expect_tags_selected(&quot;Existing tag&quot;)
+    remove_tag(&quot;HIU&quot;)
+    add_new_tag(&quot;Paid&quot;)
+    add_new_tag(&quot;Custom tag&quot;)
+  end
 end
 &lt;/code&gt;&lt;/pre&gt;
 

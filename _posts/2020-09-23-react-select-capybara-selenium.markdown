@@ -42,39 +42,109 @@ This prop adds additional classes to the React Select component, such as `.tags_
 This means that in the Capybara test, I can now use these to interact with this React Select component, like this:
 
 ```ruby
-def within_tags(&block)
-  within(".tags__control", &block)
-end
+# spec/support/filter_helpers.rb
+module FilterHelpers
+  class SelectControl
+    include Capybara::DSL
 
-def expect_selected_tag(tag)
-  within_tags do
-    expect(page).to have_selector(".tags__multi-value", text: tag)
+    attr_reader :prefix
+
+    def initialize(prefix:)
+      @prefix = prefix
+    end
+
+    def select(option)
+      within_control do
+        find("input").fill_in(with: option)
+      end
+
+      find(".#{prefix}__option", text: option).click
+    end
+
+    def value
+      find(single_value_selector).text
+    end
+
+    def blank?
+      page.has_no_selector?(single_value_selector)
+    end
+
+    def values
+      all(multi_value_selector).map(&:text)
+    end
+
+    def remove(label)
+      value = find(multi_value_selector, text: label)
+      within(value) do
+        find("#{multi_value_selector}__remove").click
+      end
+    end
+
+    def visible?
+      page.has_selector?(control_selector)
+    end
+
+    def hidden?
+      !visible?
+    end
+
+    private
+
+    def single_value_selector
+      ".#{prefix}__single-value"
+    end
+
+    def multi_value_selector
+      ".#{prefix}__multi-value"
+    end
+
+    def control_selector
+      ".#{prefix}__control"
+    end
+
+    def within_control(&block)
+      within(control_selector, &block)
+    end
   end
-end
 
-def add_new_tag(tag)
-  within_tags do
-    find("input").fill_in(with: tag)
-  end
+  module TagFilterControl
+    def tag_filter_control
+      SelectControl.new(prefix: "tags")
+    end
 
-  find(".tags__option", text: tag).click
-end
+    def add_new_tag(tag)
+      tags_control.select(tags)
+    end
 
-def remove_tag(tag)
-  within_tags do
-    within(".tags__multi-value", text: tag) do
-      find(".tags__multi-value__remove").click
+    def expect_tags_selected(tags)
+      expect(tags_control.value).to eq(tags)
+    end
+
+    def expect_no_tags_selected
+      expect(tags_control).to be_blank
+    end
+
+    def remove_tags(*tags)
+      tags.each do |tag|
+        tags_control.remove(tag)
+      end
     end
   end
 end
 
-scenario "Can update a User's tags", js: true do
-  visit edit_admin_user_path(user)
+# spec/features/updating_tags_spec.rb
 
-  expect_selected_tag("Existing tag")
-  remove_tag("HIU")
-  add_new_tag("Paid")
-  add_new_tag("Custom tag")
+RSpec.describe "Updating tags" do
+  include TagFilterControl
+
+  scenario "Can update a User's tags", js: true do
+    visit edit_admin_user_path(user)
+
+    expect_tags_selected("Existing tag")
+    remove_tag("HIU")
+    add_new_tag("Paid")
+    add_new_tag("Custom tag")
+  end
 end
 ```
 
