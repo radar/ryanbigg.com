@@ -25,7 +25,7 @@ h3 {
 }
 
 a {
-  @apply text-green-500;
+  @apply dark:text-green-300 text-green-500;
 }
 
 .landing-page {
@@ -62,8 +62,16 @@ article blockquote {
   @apply border-l-4 border-green-500 pl-4 ml-4;
 }
 
+article ul, article ol {
+  @apply list-inside mb-4;
+}
+
 article ul {
-  @apply list-disc list-inside mb-4;
+  @apply list-disc;
+}
+
+article ol {
+  @apply list-decimal;
 }
 
 article hr {
@@ -81,4 +89,20 @@ article hr {
 .book .image img {
   max-height: 33vh;
   @apply m-auto;
+}
+
+article code {
+  font-size: 0.875rem;
+  padding: 3px;
+  @apply dark:bg-gray-700 bg-gray-100;
+}
+
+article pre {
+  font-size: 0.875rem;
+
+  @apply mb-4;
+}
+
+article pre code {
+  font-size: 0.875rem;
 }

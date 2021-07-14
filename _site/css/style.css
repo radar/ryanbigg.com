@@ -711,6 +711,13 @@ a {
   color: rgba(16, 185, 129, var(--tw-text-opacity));
 }
 
+@media (prefers-color-scheme: dark) {
+  a {
+    --tw-text-opacity: 1;
+    color: rgba(110, 231, 183, var(--tw-text-opacity));
+  }
+}
+
 .landing-page {
   margin: 1rem;
   display: grid;
@@ -811,10 +818,17 @@ article blockquote {
   padding-left: 1rem;
 }
 
-article ul {
+article ul, article ol {
   margin-bottom: 1rem;
   list-style-position: inside;
+}
+
+article ul {
   list-style-type: disc;
+}
+
+article ol {
+  list-style-type: decimal;
 }
 
 article hr {
@@ -862,6 +876,29 @@ article hr {
 .book .image img {
   max-height: 33vh;
   margin: auto;
+}
+
+article code {
+  font-size: 0.875rem;
+  padding: 3px;
+  --tw-bg-opacity: 1;
+  background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
+}
+
+@media (prefers-color-scheme: dark) {
+  article code {
+    --tw-bg-opacity: 1;
+    background-color: rgba(55, 65, 81, var(--tw-bg-opacity));
+  }
+}
+
+article pre {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+article pre code {
+  font-size: 0.875rem;
 }
 
 @media (min-width: 640px) {
