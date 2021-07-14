@@ -1,42 +1,34 @@
 <!DOCTYPE HTML>
 <html lang="en">
-  <head>
+<head>
   <meta charset="UTF-8">
   <title>Rails' CurrentAttributes considered harmful - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
-  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap"
+    rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
   <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-  <body>
-    <header class="topbar">
-  <h1><a href="/">Ryan Bigg</a></h1>
 
-  <div class='items'>
-    <a href="/">Who?</a> &middot;
-    <a href="/books">Books</a> &middot;
-    <a href="/blog">Blog</a> &middot;
-    <a href="/setup">Setup</a> &middot;
-    <a href="/work">Work</a> &middot;
-    <a href="/now">Now</a> &middot;
-    <a href="/mentoring">Mentoring</a>
-  </div>
-</header>
-
-    <div class="main">
-      <div class='content'>
-        <div class='content-inner'>
-          <article>
-            <div class='center'>
-              <a href="/2017/06/current-considered-harmful"><h2>Rails' CurrentAttributes considered harmful</h2></a>
-              <small>22 Jun 2017</small>
-            </div>
-            <p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2017_08_01/43810">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
+<body>
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article>
+          <div class='text-center mb-8'>
+            <a href="/blog">&#x27F5; Posts</a>
+            <a href="/2017/06/current-considered-harmful">
+              <h2>Rails' CurrentAttributes considered harmful</h2>
+            </a>
+            <small>22 Jun 2017</small>
+          </div>
+          <p>This blog post has been <a href="https://techracho.bpsinc.jp/hachi8833/2017_08_01/43810">translated into Japanese</a>, thanks to <a href="https://twitter.com/hachi8833">@hachi8833</a>!</p>
 
 <p>I was made aware of <a href="https://github.com/rails/rails/commit/24a864437e845febe91e3646ca008e8dc7f76b56">this commit</a> recently (thanks to Rebecca Skinner) to Rails which introduces what is effectively a global state to Rails applications.</p>
 
@@ -284,24 +276,26 @@ end
 
 <p>Introducing a global state to Rails seems like a terrible idea and while I deeply, deeply wish this change is reverted, that is very likely not going to happen because it’s DHH’s change and it’s his framework. DHH is allowed to be a footgun merchant if he wishes to be. I am just sad to see that, despite evidence that this is a genuinely bad idea, DHH carried on with it. I thought with his years of experience he would know better by now.</p>
 
-          </article>
-        </div>
+        </article>
       </div>
     </div>
-    <footer>
-    01101110 01101111 01110100 01101000 01101001 01101110 01100111 00100000 01110100 01101111 00100000 01110011 01100101 01100101 00100000 01101000 01100101 01110010 01100101 0001010 0001010 0001010 0001010 0001010 01100010 01110010 01100001 01110110 01101111 00100000 01100110 01101111 01111000 01110100 01110010 01101111 01110100 00100000 01110101 01101110 01101001 01100110 01101111 01110010 01101101
+  </div>
+  <footer>
 </footer>
 
 
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-      ga('create', 'UA-60556315-1', 'auto');
-      ga('send', 'pageview');
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
 
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

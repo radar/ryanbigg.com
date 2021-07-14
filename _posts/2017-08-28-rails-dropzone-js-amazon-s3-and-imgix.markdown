@@ -98,10 +98,10 @@ To let users upload to our application, we'll need to use an S3 feature called a
 
 This feature will allow us to generate a URL and some fields for our upload form. The combination of this URL and these fields will allow regular users of our application to upload files straight to our S3 bucket.
 
-To use any AWS feature in our application, we first need to add the `aws-sdk` gem to our Gemfile:
+To use any AWS feature in our application, we first need to add the `aws-sdk-s3` gem to our Gemfile:
 
 ```ruby
-gem 'aws-sdk', '~> 2'
+gem 'aws-sdk-s3', '~> 1.96'
 ```
 
 We can use this gem to generate a presigned post, but before that we need to setup some credentials within our application. I like to use the [dotenv-rails](https://rubygems.org/gems/dotenv-rails) gem for this purpose:
@@ -479,8 +479,3 @@ Or large images on the `show` template:
 Dropzone, S3 and imgix allow us to upload and host our images very easily, without the need of the paperclip gem. By uploading directly to S3, we avoid tying up our application's processes with lengthy file uploads too.
 
 If you found this post helpful, chuck a few bucks my way on PayPal: [https://paypal.me/ryanbigg](https://paypal.me/ryanbigg).
-
-
-
-
-

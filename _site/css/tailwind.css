@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  font-size: 18px;
+}
+
+body {
+  font-family: "Nunito Sans";
+
+  @apply dark:bg-gray-900 dark:text-gray-50 text-base;
+}
+
+h1 {
+  @apply text-4xl font-bold mb-4;
+}
+
+h2 {
+  @apply text-3xl font-bold mb-4;
+}
+
+h3 {
+  @apply text-2xl font-bold mb-4;
+}
+
+a {
+  @apply text-green-500;
+}
+
+.landing-page {
+  @apply grid grid-cols-1 md:grid-cols-2 m-4 md:m-32 lg:m-48 xl:mx-64 2xl:mx-96;
+}
+
+.landing-page .photo {
+  @apply mb-16 md:mb-0 md:mr-16
+}
+
+
+.landing-page .photo img {
+  @apply m-auto;
+  border-radius: 250px;
+}
+
+.landing-page .blurb {
+  @apply text-center md:text-left my-auto;
+}
+
+.landing-page .blurb p {
+  @apply mb-4;
+}
+
+article {
+  @apply my-4 md:my-16 mx-8 md:mx-32 lg:mx-48
+}
+
+article p {
+  @apply mb-4;
+}
+
+article blockquote {
+  @apply border-l-4 border-green-500 pl-4 ml-4;
+}
+
+article ul {
+  @apply list-disc list-inside mb-4;
+}
+
+article hr {
+  @apply mb-4;
+}
+
+.books {
+  @apply my-4 md:my-16 mx-8 md:mx-32 lg:mx-48
+}
+
+.book {
+  @apply grid grid-cols-1 mb-32 md:mb-8 md:grid-cols-2 gap-8 p-8;
+}
+
+.book .image img {
+  max-height: 33vh;
+  @apply m-auto;
+}
