@@ -1,4 +1,53 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-07-21T10:43:36+10:00</updated><id>/feed.xml</id><entry><title type="html">Job Hunt Q2 2021</title><link href="/2021/07/job-hunt-q2-2021" rel="alternate" type="text/html" title="Job Hunt Q2 2021" /><published>2021-07-19T00:00:00+10:00</published><updated>2021-07-19T00:00:00+10:00</updated><id>/2021/07/job-hunt-q2-2021</id><content type="html" xml:base="/2021/07/job-hunt-q2-2021">&lt;p&gt;After &lt;a href=&quot;https://ryanbigg.com/2021/04/finding-a-new-contract-gig&quot;&gt;wrapping up a contract&lt;/a&gt; earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that &lt;em&gt;that&lt;/em&gt; job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-07-22T09:25:44+10:00</updated><id>/feed.xml</id><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-22T00:00:00+10:00</published><updated>2021-07-22T00:00:00+10:00</updated><id>/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new.call(book_params)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;CreateBook&lt;/code&gt; class itself might look like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class CreateBook
+  include Dry::Monads[:do, :result]
+
+  def call(params)
+    ...
+
+    book_params = yield validate(params)
+    create_book(book_params)
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In order to access that instance &lt;code&gt;call&lt;/code&gt; method from the controller, we must first create an instance of this &lt;code&gt;CreateBook&lt;/code&gt; class. This makes our code &lt;em&gt;slightly&lt;/em&gt; messy because we must always &lt;code&gt;new&lt;/code&gt; before we &lt;code&gt;call&lt;/code&gt;. The &lt;code&gt;call&lt;/code&gt; here &lt;em&gt;must&lt;/em&gt; be an instance method because we’ve included &lt;code&gt;Dry::Monads&lt;/code&gt; methods within instances of this class, as per the best-practices when using that gem.&lt;/p&gt;
+
+&lt;p&gt;However, we can tidy things up here by using Ruby 2.7’s new triple-dot syntax. This syntax is another special type of argument, used in the same place you might use positional or keyword arguments. We can use triple-dots to pass arguments from a class method down to an instance method, like in this example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class CreateBook
+  include Dry::Monads[:do, :result]
+
+  def self.call(...)
+    new.call(...)
+  end
+
+  def call(params)
+    ...
+
+    book_params = yield validate(params)
+    create_book(book_params)
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Anytime the &lt;code&gt;call&lt;/code&gt; method on the &lt;em&gt;class&lt;/em&gt; is called, a new &lt;code&gt;CreateBook&lt;/code&gt; &lt;em&gt;instance&lt;/em&gt; is created, then those arguments from the class-level &lt;code&gt;call&lt;/code&gt; are passed to the instance-level &lt;code&gt;call&lt;/code&gt;. By defining this new &lt;code&gt;call&lt;/code&gt; method on the class itself, we can then change our controller to this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.call(book_params)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This makes our code out to the &lt;code&gt;CreateBook&lt;/code&gt; class from wherever we’re using it slightly easier, while still allowing us to create &amp;amp; use instances of &lt;code&gt;CreateBook&lt;/code&gt; if we wish. One particular case where that might come in handy is if you wanted to inject a dependency here:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new(book_repository: book_repo).call(book_params)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But that’s a story for another day.&lt;/p&gt;</content><author><name></name></author><summary type="html">In big Rails projects there’s been a bit of a push to move things out to service objects. You might recognise these from their appearance in things like controllers:</summary></entry><entry><title type="html">Job Hunt Q2 2021</title><link href="/2021/07/job-hunt-q2-2021" rel="alternate" type="text/html" title="Job Hunt Q2 2021" /><published>2021-07-19T00:00:00+10:00</published><updated>2021-07-19T00:00:00+10:00</updated><id>/2021/07/job-hunt-q2-2021</id><content type="html" xml:base="/2021/07/job-hunt-q2-2021">&lt;p&gt;After &lt;a href=&quot;https://ryanbigg.com/2021/04/finding-a-new-contract-gig&quot;&gt;wrapping up a contract&lt;/a&gt; earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that &lt;em&gt;that&lt;/em&gt; job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.&lt;/p&gt;
 
 &lt;p&gt;Last time I pitched myself as a “mercenary developer wizard”. While I enjoy developing code, nothing brings more joy than developing &lt;em&gt;people&lt;/em&gt;. Running the Culture Amp JEP was some of the most fun-at-work I’ve had. I would love to do that stuff again. So I’ve been pitching myself this time as someone who would rather be developing people, than developing code. I could definitely do both!&lt;/p&gt;
 
@@ -1064,146 +1113,4 @@ session.driver.browser.switch_to.alert.accept
 session.visit '/'
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;It’s the third-to-last and second-to-last lines here that will work around the issue here – we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.&lt;/p&gt;</content><author><name></name></author><summary type="html">A few days ago, we started seeing this exception happening for some of our Capybara feature tests:</summary></entry><entry><title type="html">How to tidy up Git Pull Requests</title><link href="/2020/04/how-to-tidy-up-git-pull-requests" rel="alternate" type="text/html" title="How to tidy up Git Pull Requests" /><published>2020-04-23T00:00:00+10:00</published><updated>2020-04-23T00:00:00+10:00</updated><id>/2020/04/how-to-tidy-up-git-pull-requests</id><content type="html" xml:base="/2020/04/how-to-tidy-up-git-pull-requests">&lt;p&gt;&lt;strong&gt;This post will cover how to break up a commit on a Git branch into two separate commits all from the terminal.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Sometimes, developers can get carried away when they make commits. For instance, take &lt;a href=&quot;https://github.com/radar/twist-v2/commit/19a513a6ae33ed0de3fb8ce426e7c7ec99449f0d&quot;&gt;this commit&lt;/a&gt; from yours truly. It &lt;em&gt;claims&lt;/em&gt; to be fixing a particular issue, but there’s &lt;em&gt;a lot&lt;/em&gt; of code there to fix that issue. Is all of it really necessary?&lt;/p&gt;
-
-&lt;p&gt;I’ll save you the spelunking: just the &lt;code&gt;frontend/src/styles.css&lt;/code&gt; and &lt;code&gt;frontend/src/tailwind.css&lt;/code&gt; files are the only things required to fix this issue. This commit &lt;em&gt;really&lt;/em&gt; should’ve just been changes to those two files. The storybook changes should’ve been in a &lt;em&gt;separate&lt;/em&gt; commit.&lt;/p&gt;
-
-&lt;p&gt;But the work has been done! Isn’t it now set in stone? No, this is Git! We can rewrite history.&lt;/p&gt;
-
-&lt;p&gt;So let’s pretend like this commit &lt;em&gt;hasn’t been committed to master yet&lt;/em&gt;. I can do this by checking out a new branch to the commit before that one:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git checkout 19a513a6~1 -b tidy-up-git-example
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Here, &lt;code&gt;~1&lt;/code&gt; means “1 before”. You could put any number here. You can see what this branch looks like &lt;a href=&quot;https://github.com/radar/twist-v2/tree/tidy-up-git-example&quot;&gt;on GitHub&lt;/a&gt;. The latest commit will be &lt;code&gt;bb36d9b&lt;/code&gt;, “Add back image missing”.&lt;/p&gt;
-
-&lt;p&gt;We now want to apply that &lt;code&gt;19a513a6&lt;/code&gt; commit, the one that fixes Issue #22, to this branch. To do this, we’ll open a pull request against this &lt;code&gt;tidy-up-git-example&lt;/code&gt; branch.&lt;/p&gt;
-
-&lt;p&gt;First, we need to switch to a new branch:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-plaintext&quot;&gt;git switch -c fix/issue-22
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;switch&lt;/code&gt; is a recent sub-command of Git, and &lt;a href=&quot;https://github.blog/2019-08-16-highlights-from-git-2-23/&quot;&gt;was added in 2.23.0&lt;/a&gt;. You can think of it behaving like &lt;code&gt;checkout&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;We’ll now bring in that commit to this branch, applying it on top of the current history with &lt;code&gt;cherry-pick&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;git cherry-pick 19a513a6
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;When we run &lt;code&gt;git log --oneline&lt;/code&gt;, we’ll see this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;f20de41 (HEAD -&amp;gt; fix/issue-22) Fixes #22
-bb36d9b (origin/tidy-up-git-example) Add back image missing
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This shows us that the top-most / latest commit is that one we just cherry picked, and that the next most recent commit is the latest from the &lt;code&gt;origin/tidy-up-git-example&lt;/code&gt; branch.&lt;/p&gt;
-
-&lt;p&gt;Next, you’ll need to push this branch up to GitHub:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;git push origin fix/issue-22
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If you don’t have permission to push to this repository (and most of you won’t!), you’ll need to fork it on GitHub first, then:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;git remote add your-username git@github.com:your-username/twist-v2.git
-git push your-username fix/issue-22
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;When this branch has been pushed to GitHub, you should now be able to create a pull request from that branch. You can do this by going to https://github.com/your-username/twist-v2/pull/new/fix/issue-22. On this page, under “Open a pull request” you’ll see two dropdowns: one for a “base” branch and one for “compare” branch:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/base-and-compare.png&quot; alt=&quot;Base &amp;amp; Compare&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The base branch is the branch you will be applying your pull request to. The changes in your pull request come from the compare branch. The “Able to merge” here indicates that there are no conflicts between the branches, and so this PR would be mergeable onto the base branch without trouble.&lt;/p&gt;
-
-&lt;p&gt;If we go ahead and create this PR now, we’ll see this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/big-diff.png&quot; alt=&quot;Big Diff&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;How many lines?! If I was reviewing a PR of this length I would make sure to grab at least &lt;em&gt;one&lt;/em&gt; cup of coffee and have slept well the night before too. Does this PR need to be so &lt;em&gt;massive&lt;/em&gt;? We answered that before: no.&lt;/p&gt;
-
-&lt;p&gt;So we now have got ourselves a little bit stuck. We want to have the changes to fix Issue #22, but we also care about the storybook changes too. Let’s now work on how we can separate these two into two separate PRs.&lt;/p&gt;
-
-&lt;h2 id=&quot;separating-out-issue-22&quot;&gt;Separating out Issue #22&lt;/h2&gt;
-
-&lt;p&gt;Let’s start with just the CSS changes from &lt;code&gt;frontend/src/styles.css&lt;/code&gt; and &lt;code&gt;frontend/src/tailwind.css&lt;/code&gt;. We want just these changes to be in the PR’s commit. To do that, we need to &lt;em&gt;undo&lt;/em&gt; and &lt;em&gt;redo&lt;/em&gt; this commit.&lt;/p&gt;
-
-&lt;p&gt;To &lt;em&gt;undo&lt;/em&gt; a commit, we use a Git operation called a &lt;em&gt;soft reset&lt;/em&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;git reset --soft HEAD~1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You can think of this like the opposite of &lt;code&gt;git commit&lt;/code&gt;; it resets the Git repository’s state back to how it was right before &lt;code&gt;git commit&lt;/code&gt; was run. All of changes from this commit will be staged for commit:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/staged-for-commit.png&quot; alt=&quot;Staged for commit&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;But our latest commit will show up as the one from &lt;code&gt;tidy-up-git-example&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;git log --oneline
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;bb36d9b (HEAD -&amp;gt; fix/issue-22, origin/tidy-up-git-example) Add back image missing
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now that we’re back to our pre-&lt;code&gt;git commit&lt;/code&gt; stage, we need to go back one more step, back to before &lt;code&gt;git add&lt;/code&gt; was run to stage these files. To do that, we need to run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git reset HEAD
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This command will unstage all the changes in our repository:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/unstaged-files.png&quot; alt=&quot;Unstaged files&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Now we want to just add the changes from &lt;code&gt;frontend/src/styles.css&lt;/code&gt; and &lt;code&gt;frontend/src/tailwind.css&lt;/code&gt;. We can do this with:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git add frontend/src/styles.css
-git add frontend/src/tailwind.css
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;(Or if we were wanting to pick-and-choose changes from these files, we could do &lt;code&gt;git add -p &amp;lt;file&amp;gt;&lt;/code&gt; instead)&lt;/p&gt;
-
-&lt;p&gt;This will stage these two files:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/two-staged-files.png&quot; alt=&quot;Two staged files&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Next, we can commit these changes:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git commit -m &quot;Fixes #22&quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We’ve now re-written the history of the &lt;code&gt;fix/issue-22&lt;/code&gt; branch. The latest commit on this branch, according to our local computer, is different to the latest one on GitHub. We need to tell GitHub that our history is correct, and we can do this with:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git push &amp;lt;your username&amp;gt; fix/issue-22 --force-with-lease
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This option will force-push your changes to GitHub, updating GitHub with the simpler changes.&lt;/p&gt;
-
-&lt;p&gt;If you refresh the GitHub pull request window, you’ll now see a much, much smaller diff number:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/small-diff.png&quot; alt=&quot;Small Diff&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Much better! Our PR is now just focussed on the small changes that we needed to make to fix Issue #22.&lt;/p&gt;
-
-&lt;p&gt;We can then merge this PR to the branch, confident that the commit is small.&lt;/p&gt;
-
-&lt;h2 id=&quot;storybook&quot;&gt;Storybook&lt;/h2&gt;
-
-&lt;p&gt;Next up, we still need to pull in those storybook changes. Because we’ve reset and unstaged all the changes, those storybook changes will still be tracked as unstaged in our Git repository:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/tidy-up-github/unstaged-storybook-files.png&quot; alt=&quot;Unstaged storybook files&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;We can check out to a new branch for these changes, add these files, make a new commit and push these changes to GitHub:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git switch -c update-storybook
-git add .
-git commit -m &quot;Update Storybook + separate stories&quot;
-git push origin update-storybook
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We can then go about creating a pull request for these changes if we like by going to https://github.com/your-username/twist-v2/pull/new/update-storybook. Remember to change the base branch here to &lt;code&gt;tidy-up-git-example&lt;/code&gt;!&lt;/p&gt;
-
-&lt;p&gt;Once the PR is created, we can choose to merge it to that base branch. The base branch will then have both sets of changes on it: one (small one) to fix Issue #22, and one (large one) to upgrade storybook.&lt;/p&gt;
-
-&lt;p&gt;The storybook changes &lt;em&gt;could&lt;/em&gt; probably be split out into smaller commits too, but I’ll leave that one as an exercise to the reader.&lt;/p&gt;</content><author><name></name></author><summary type="html">This post will cover how to break up a commit on a Git branch into two separate commits all from the terminal.</summary></entry></feed>
+&lt;p&gt;It’s the third-to-last and second-to-last lines here that will work around the issue here – we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.&lt;/p&gt;</content><author><name></name></author><summary type="html">A few days ago, we started seeing this exception happening for some of our Capybara feature tests:</summary></entry></feed>

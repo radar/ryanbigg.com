@@ -4,13 +4,71 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2021-07-21T10:43:36+10:00</updated>
+ <updated>2021-07-22T09:25:44+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Using Ruby 2.7's new triple-dot syntax to clean up service objects</title>
+   <link href="http://ryanbigg.com/2021/07/ruby-27s-new-triple-dot-syntax"/>
+   <updated>2021-07-22T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2021/07/ruby-27s-new-triple-dot-syntax</id>
+   <content type="html"><![CDATA[<p>In big Rails projects there’s been a bit of a push to move things out to <em>service objects</em>. You might recognise these from their appearance in things like controllers:</p>
+
+<pre><code class="language-ruby">CreateBook.new.call(book_params)
+</code></pre>
+
+<p>The <code>CreateBook</code> class itself might look like this:</p>
+
+<pre><code class="language-ruby">class CreateBook
+  include Dry::Monads[:do, :result]
+
+  def call(params)
+    ...
+
+    book_params = yield validate(params)
+    create_book(book_params)
+  end
+end
+</code></pre>
+
+<p>In order to access that instance <code>call</code> method from the controller, we must first create an instance of this <code>CreateBook</code> class. This makes our code <em>slightly</em> messy because we must always <code>new</code> before we <code>call</code>. The <code>call</code> here <em>must</em> be an instance method because we’ve included <code>Dry::Monads</code> methods within instances of this class, as per the best-practices when using that gem.</p>
+
+<p>However, we can tidy things up here by using Ruby 2.7’s new triple-dot syntax. This syntax is another special type of argument, used in the same place you might use positional or keyword arguments. We can use triple-dots to pass arguments from a class method down to an instance method, like in this example:</p>
+
+<pre><code class="language-ruby">class CreateBook
+  include Dry::Monads[:do, :result]
+
+  def self.call(...)
+    new.call(...)
+  end
+
+  def call(params)
+    ...
+
+    book_params = yield validate(params)
+    create_book(book_params)
+  end
+end
+</code></pre>
+
+<p>Anytime the <code>call</code> method on the <em>class</em> is called, a new <code>CreateBook</code> <em>instance</em> is created, then those arguments from the class-level <code>call</code> are passed to the instance-level <code>call</code>. By defining this new <code>call</code> method on the class itself, we can then change our controller to this:</p>
+
+<pre><code class="language-ruby">CreateBook.call(book_params)
+</code></pre>
+
+<p>This makes our code out to the <code>CreateBook</code> class from wherever we’re using it slightly easier, while still allowing us to create &amp; use instances of <code>CreateBook</code> if we wish. One particular case where that might come in handy is if you wanted to inject a dependency here:</p>
+
+<pre><code class="language-ruby">CreateBook.new(book_repository: book_repo).call(book_params)
+</code></pre>
+
+<p>But that’s a story for another day.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Job Hunt Q2 2021</title>
@@ -6041,37 +6099,6 @@ of hard work to ensure that our companies and this community continues to thrive
 <p>We can do this. Hiring juniors is the right thing to do.</p>
 
 <p>We can be developers developing developers.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>The 2018 MacBook Pro Keyboard Drives Me Crazy</title>
-   <link href="http://ryanbigg.com/2019/08/can-apple-please-design-a-laptop-that-has-a-functional-keyboard-for-the-love-of-all-that-is-precious"/>
-   <updated>2019-08-29T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2019/08/can-apple-please-design-a-laptop-that-has-a-functional-keyboard-for-the-love-of-all-that-is-precious</id>
-   <content type="html"><![CDATA[<p>I recently upgraded from a 2015 MacBook Pro to a 2018 MacBook Pro. And by
-“recently”, I mean back at the start of June. I wanted a new MacBook Pro because of the faster performance that a new computer would give me. Work (Culture Amp) was also upgrading their fleet of Macs and I was one of the lucky people to get a new one.</p>
-
-<p>So I’ve been using this computer as a work computer for almost 3 months now and, my god, the keyboard <em>drives me mental</em>. Even writing this blog post now on the train and there’s:</p>
-
-<ul>
-  <li>duplicated “o’s” that I’ve had to go back and fix, or missing ones – guess how fun it is to write <a href="https://leanpub.com/elixir-toyrobot">a book about a Toy Robot</a> with this particular problem</li>
-  <li>double spaces – or no spaces</li>
-  <li>a Command key that registers 9 out of every 10 times</li>
-  <li>words like “times” that inexplicably get spelled like “timies”, or “about” that gets spelled like “abouot”</li>
-</ul>
-
-<p>Apple is <em>all about</em> the thinness of their laptops. I do not particularly care about the thinness of this device. For the most part, it sits on one of two desks that I use or it sits on my lap on the train. <em>Maybe</em> I use it on the couch from time-to-time. I do not care about the thinness of this device <em>while I am using it</em>. I only care about it when I store it away, in my backpack.</p>
-
-<p>This keyboard has a key travel distance that, I am sure, is measured in microns or perhaps nanometers. It feels like I am typing on a concrete slab. Key presses inexplicably duplicate. Or don’t register at all. All for <em>thinness</em>.</p>
-
-<p>This keyboard is a catastrophic engineering failure, designed by a company that should know better. A company with more money in the bank than several countries <em>combined</em>. This keyboard would be, by far, the part of the MacBook Pro that is used the <em>most</em> by everybody who owns one, and it is so poorly engineered for the pursuit of <em>thinness</em>.</p>
-
-<p>Apple <em>must</em> fix this problem in their upcoming MacBook Pro releases. I want a <em>fat</em> MacBook pro keyboard, one that has a travel distance of the older wireless keyboards and doesn’t have that “concrete slab” feel. I want to be able to type <em>an entire paragraph</em> without having to go back and correct things because the keyboard failed.</p>
-
-<p>I am tired of having to correct what I type because of this keyboard’s faults. I am tired of having to use external keyboards to actually <em>enjoy</em> using this computer. I love the Mac and it’s software and how things <em>just</em> work. But I will leave if this keyboard farce continues.</p>
-
-<p>If Apple releases their new Macs with an <em>identical</em> keyboard, then I’m ditching Macs and will pick up a Microsoft Surface Book or something similar. Whatever it is, I’ll make sure to pick a laptop that has <em>a god damned functional keyboard</em>.</p>
 ]]></content>
  </entry>
  
