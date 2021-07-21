@@ -565,6 +565,10 @@ video {
   display: table;
 }
 
+.grid {
+  display: grid;
+}
+
 @-webkit-keyframes spin {
   to {
     transform: rotate(360deg);
@@ -629,6 +633,14 @@ video {
     -webkit-animation-timing-function: cubic-bezier(0,0,0.2,1);
             animation-timing-function: cubic-bezier(0,0,0.2,1);
   }
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.gap-8 {
+  gap: 2rem;
 }
 
 .text-center {
@@ -909,6 +921,9 @@ article pre code {
 }
 
 @media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1280px) {
