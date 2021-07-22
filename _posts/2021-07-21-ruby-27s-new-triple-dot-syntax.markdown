@@ -18,8 +18,6 @@ class CreateBook
   include Dry::Monads[:do, :result]
 
   def call(params)
-    ...
-
     book_params = yield validate(params)
     create_book(book_params)
   end
@@ -40,8 +38,6 @@ class CreateBook
   end
 
   def call(params)
-    ...
-
     book_params = yield validate(params)
     create_book(book_params)
   end
