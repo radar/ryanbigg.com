@@ -2,6 +2,7 @@
 wordpress_id: RB-1627367950
 layout: post
 title: On coding tests
+description: On coding tests
 ---
 
 As you might know, I've been [job hunting recently](https://ryanbigg.com/2021/07/job-hunt-q2-2021). I'm at the part of this step for some companies where we've had our initial conversation and now they want me to do a coding test.
