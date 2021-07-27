@@ -1,4 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-07-22T10:13:37+10:00</updated><id>/feed.xml</id><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-07-27T16:52:09+10:00</updated><id>/feed.xml</id><entry><title type="html">On coding tests</title><link href="/2021/07/on-coding-tests" rel="alternate" type="text/html" title="On coding tests" /><published>2021-07-27T00:00:00+10:00</published><updated>2021-07-27T00:00:00+10:00</updated><id>/2021/07/on-coding-tests</id><content type="html" xml:base="/2021/07/on-coding-tests">&lt;p&gt;As you might know, I’ve been &lt;a href=&quot;https://ryanbigg.com/2021/07/job-hunt-q2-2021&quot;&gt;job hunting recently&lt;/a&gt;. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.&lt;/p&gt;
+
+&lt;p&gt;But that’s okay, because it “should only take up to 3 hours to do”. Now let’s theoretically say that I’m talking with 5 companies now. That’s &lt;em&gt;15 hours&lt;/em&gt; of my time, that I have to pull out of work, life or sleep, to do these coding tests. All to prove to them that I can code!&lt;/p&gt;
+
+&lt;p&gt;This strikes me as odd because I’m pretty sure I can code.&lt;/p&gt;
+
+&lt;p&gt;I’ve been employed as a developer in one way or another since 2004. That’s 17 years! I’ve had to pass other coding tests in the past to get some of those jobs. I had a lot more free time in my youth and wasn’t such a crotchety old man like I am now.&lt;/p&gt;
+
+&lt;p&gt;I’ve &lt;a href=&quot;https://ryanbigg.com/books&quot;&gt;written books&lt;/a&gt; where I try to teach other people how to code. If I don’t know how to code, how could I teach other people to code? Mystery!&lt;/p&gt;
+
+&lt;p&gt;I’ve recently &lt;a href=&quot;https://www.youtube.com/watch?v=qWdyo3icsjU&quot;&gt;released a 6-part screencast series&lt;/a&gt; where I demonstrate my ability to code in not one, but THREE different languages &lt;strong&gt;AT THE SAME TIME&lt;/strong&gt;! I’m clearly not a 10x developer. Maybe a 3x developer?&lt;/p&gt;
+
+&lt;p&gt;But no, these things don’t count for &lt;em&gt;anything&lt;/em&gt; in the interview process. Maybe I’ve gone too far down the path of tying my self-worth up in these things. The way I feel is: if you don’t value these things I’ve &lt;em&gt;already done&lt;/em&gt;, then you do not value me.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;I can read the replies now:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;but how do we know that you really know how to code, according to our 100% bias-free baseline?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We have subjected our other developers to this antiquated hazing ritual so why shouldn’t we subject you to the same?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Fact is, you don’t. Some people can code really well in interviews and have had lots of practice answering how exactly you go about reversing a purple linked list uphill both ways in the snow. Some people struggle with the pressure of developing something &lt;em&gt;completely solo&lt;/em&gt; and then having that scruitinised in an hour-long live-code-review session.&lt;/p&gt;
+
+&lt;p&gt;I’m personally &lt;em&gt;done&lt;/em&gt; with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.&lt;/p&gt;
+
+&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new.call(book_params)
 &lt;/code&gt;&lt;/pre&gt;
@@ -1001,116 +1031,4 @@ end
   &lt;li&gt;&lt;code&gt;add_new_tag&lt;/code&gt;: Used to add either a tag from the list of options, or to create a brand new tag.&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;With these helpers, I can effectively test React Select within Capybara and Selenium.&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I was adding a React Select element to a page, and I really wanted to test it.</summary></entry><entry><title type="html">Selenium, Capybara, ChromeDriver: connection refused error debugging</title><link href="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging" rel="alternate" type="text/html" title="Selenium, Capybara, ChromeDriver: connection refused error debugging" /><published>2020-08-29T00:00:00+10:00</published><updated>2020-08-29T00:00:00+10:00</updated><id>/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging</id><content type="html" xml:base="/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging">&lt;p&gt;A few days ago, we started seeing this exception happening for &lt;em&gt;some&lt;/em&gt; of our Capybara feature tests:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;1.1) Failure/Error: visit(sign_out_path)
-
-      Selenium::WebDriver::Error::UnknownError:
-        java.net.ConnectException: Connection refused (Connection refused)
-      # [remote server] org.openqa.selenium.remote.server.WebDriverServlet(WebDriverServlet.java):240:in `lambda$handle$0'
-      # [remote server] java.util.concurrent.Executors$RunnableAdapter(Executors.java):511:in `call'
-      # [remote server] java.util.concurrent.FutureTask(FutureTask.java):266:in `run'
-      # [remote server] java.util.concurrent.ThreadPoolExecutor(ThreadPoolExecutor.java):1149:in `runWorker'
-      # [remote server] java.util.concurrent.ThreadPoolExecutor$Worker(ThreadPoolExecutor.java):624:in `run'
-      # [remote server] java.lang.Thread(Thread.java):748:in `run'
-      # ./spec/support/pages/login.rb:5:in `login'
-      # ./spec/concepts/extraction/keyboard_shortcuts_spec.rb:84:in `block (2 levels) in &amp;lt;main&amp;gt;'
-      # ./spec/spec_helper.rb:69:in `block (2 levels) in &amp;lt;main&amp;gt;'
-      # ./spec/support/elasticsearch_spec_helper.rb:42:in `block (3 levels) in &amp;lt;main&amp;gt;'
-      # ./spec/support/elasticsearch_spec_helper.rb:38:in `block (2 levels) in &amp;lt;main&amp;gt;'
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Connection refused, fine. But connection refused to &lt;em&gt;what&lt;/em&gt;? This error message doesn’t give us much to go on.&lt;/p&gt;
-
-&lt;p&gt;Seemingly nothing that we changed had caused this issue – it was one of those types of issues that just popped up spontaneously.&lt;/p&gt;
-
-&lt;p&gt;It turns out that this is due to a bug within Google ChromeDriver &lt;code&gt;85.0.4183.83&lt;/code&gt;. Here’s the bug report for ChromeDriver: &lt;a href=&quot;https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578&quot;&gt;Issue 3578&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;debugging-steps&quot;&gt;Debugging steps&lt;/h2&gt;
-
-&lt;p&gt;After quite a lot of playing around with our Docker container setup, building EC2 instances and testing things out there… I was able to track it down to this issue by adding this line to the configuration for our tests:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Selenium::WebDriver.logger.level = Logger::DEBUG
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I knew of this trick by having to debug Selenium issues in the past – it’s a very helpful trick to get messages out of Selenium WebDriver that you wouldn’t otherwise see.&lt;/p&gt;
-
-&lt;p&gt;When I did this, I saw these messages come through:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;2020-08-30 08:39:15 INFO Selenium &amp;lt;- {&quot;value&quot;:{&quot;data&quot;:{&quot;text&quot;:&quot;{Alert text : &quot;},&quot;error&quot;:&quot;unexpected alert open&quot;,&quot;message&quot;:&quot;unexpected alert open: {Alert text : }\n  (Session info: chrome=85.0.4183.83)&quot;,&quot;stacktrace&quot;:&quot;0   chromedriver                        0x000000010a9261b9 chromedriver + 4911545\n1   chromedriver                        0x000000010a8c5e03 chromedriver + 4517379\n2   chromedriver                        0x000000010a533da6 chromedriver + 773542\n3   chromedriver                        0x000000010a4c4072 chromedriver + 315506\n4   chromedriver                        0x000000010a4b7c23 chromedriver + 265251\n5   chromedriver                        0x000000010a491720 chromedriver + 108320\n6   chromedriver                        0x000000010a492693 chromedriver + 112275\n7   chromedriver                        0x000000010a8eef72 chromedriver + 4685682\n8   chromedriver                        0x000000010a8fcb3a chromedriver + 4741946\n9   chromedriver                        0x000000010a8fc801 chromedriver + 4741121\n10  chromedriver                        0x000000010a8d225e chromedriver + 4567646\n11  chromedriver                        0x000000010a8fd061 chromedriver + 4743265\n12  chromedriver                        0x000000010a8e3d0a chromedriver + 4640010\n13  chromedriver                        0x000000010a9160ba chromedriver + 4845754\n14  chromedriver                        0x000000010a92c387 chromedriver + 4936583\n15  libsystem_pthread.dylib             0x00007fff67652109 _pthread_start + 148\n16  libsystem_pthread.dylib             0x00007fff6764db8b thread_start + 15\n&quot;}}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Well that looks like a crash!&lt;/p&gt;
-
-&lt;p&gt;An unexpected alert open? What does that mean?&lt;/p&gt;
-
-&lt;p&gt;This lead me to look through the issue logs for Capybara first, as these were tests using Capybara. The final “exit” point from our code uses Capybara code. When I looked on Capybara’s issue tracker I saw that there’s an issue for this problem: &lt;a href=&quot;https://github.com/teamcapybara/capybara/issues/2382&quot;&gt;Capybara Issue #2382&lt;/a&gt;. This then links to a Selenium issue: &lt;a href=&quot;https://github.com/SeleniumHQ/selenium/issues/8638&quot;&gt;Selenium Issue #8638&lt;/a&gt;, which itself then links to &lt;a href=&quot;https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578&quot;&gt;Issue 3578&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;These are pretty good pieces of evidence that indicate it was a chromedriver issue. I then recalled that a colleague of mine, Luiz, mentioned that Chrome had updated a few days ago. An update of Chrome leads to an update in Chromedriver, and since it was Chromedriver that was breaking, I thought to check that.&lt;/p&gt;
-
-&lt;p&gt;On the Capybara issue, there are some good steps to reproduce the issue with a minimal test case. I used this to lock Chromedriver to the more modern version:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Webdrivers::Chromedriver.required_version = '85.0.4183.87'
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The issue reported on Capybara wasn’t happening with that &lt;code&gt;.87&lt;/code&gt; release, but it &lt;em&gt;does&lt;/em&gt; happen with this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Webdrivers::Chromedriver.required_version = '85.0.4183.83'
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So this then indicates that it’s a particular version of Chromedriver that causes the issue.&lt;/p&gt;
-
-&lt;p&gt;There are at least two ways to fix this issue.&lt;/p&gt;
-
-&lt;p&gt;The first is to lock Chromedriver using &lt;code&gt;Webdrivers::Chromedriver.required_version&lt;/code&gt; to a particular version. But that means we need to remember to update that.&lt;/p&gt;
-
-&lt;p&gt;The second way is to dismiss the alert before finishing the test:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require 'bundler/inline'
-
-gemfile do
-  source 'https://rubygems.org'
-  gem 'capybara'
-  gem 'puma'
-  gem 'selenium-webdriver'
-  gem 'webdrivers'
-  gem 'byebug'
-  gem 'pry'
-end
-
-require 'selenium-webdriver'
-require 'capybara/dsl'
-
-Webdrivers::Chromedriver.required_version = '85.0.4183.83'
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-html = &amp;lt;&amp;lt;~HTML
-&amp;lt;!DOCTYPE html&amp;gt;
-&amp;lt;html lang=&quot;en&quot;&amp;gt;
-  &amp;lt;head&amp;gt;
-    &amp;lt;title&amp;gt;Hello World&amp;lt;/title&amp;gt;
-    &amp;lt;meta charset=&quot;utf-8&quot;&amp;gt;
-
-    &amp;lt;script type=&quot;text/javascript&quot;&amp;gt;
-      window.addEventListener('beforeunload', (event) =&amp;gt; {
-        event.preventDefault();
-        event.returnValue = '';
-      });
-    &amp;lt;/script&amp;gt;
-  &amp;lt;/head&amp;gt;
-  &amp;lt;body&amp;gt;
-    &amp;lt;h1&amp;gt;&amp;lt;a href=&quot;https://google.com&quot;&amp;gt;Hello World&amp;lt;/a&amp;gt;&amp;lt;/h1&amp;gt;
-  &amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
-HTML
-
-app = proc { |env| [200, { &quot;Content-Type&quot; =&amp;gt; &quot;text/html&quot; }, [html] ] }
-
-session = Capybara::Session.new(:selenium_chrome, app)
-session.visit '/'
-session.click_on 'Hello World' # interact with the page, to get Chrome to fire `beforeunload`
-session.driver.browser.switch_to.alert.accept
-session.visit '/'
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It’s the third-to-last and second-to-last lines here that will work around the issue here – we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.&lt;/p&gt;</content><author><name></name></author><summary type="html">A few days ago, we started seeing this exception happening for some of our Capybara feature tests:</summary></entry></feed>
+&lt;p&gt;With these helpers, I can effectively test React Select within Capybara and Selenium.&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I was adding a React Select element to a page, and I really wanted to test it.</summary></entry></feed>
