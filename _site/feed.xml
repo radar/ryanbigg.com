@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-07-27T16:52:09+10:00</updated><id>/feed.xml</id><entry><title type="html">On coding tests</title><link href="/2021/07/on-coding-tests" rel="alternate" type="text/html" title="On coding tests" /><published>2021-07-27T00:00:00+10:00</published><updated>2021-07-27T00:00:00+10:00</updated><id>/2021/07/on-coding-tests</id><content type="html" xml:base="/2021/07/on-coding-tests">&lt;p&gt;As you might know, I’ve been &lt;a href=&quot;https://ryanbigg.com/2021/07/job-hunt-q2-2021&quot;&gt;job hunting recently&lt;/a&gt;. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2021-07-27T17:09:08+10:00</updated><id>/feed.xml</id><entry><title type="html">On coding tests</title><link href="/2021/07/on-coding-tests" rel="alternate" type="text/html" title="On coding tests" /><published>2021-07-27T00:00:00+10:00</published><updated>2021-07-27T00:00:00+10:00</updated><id>/2021/07/on-coding-tests</id><content type="html" xml:base="/2021/07/on-coding-tests">&lt;p&gt;As you might know, I’ve been &lt;a href=&quot;https://ryanbigg.com/2021/07/job-hunt-q2-2021&quot;&gt;job hunting recently&lt;/a&gt;. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.&lt;/p&gt;
 
 &lt;p&gt;But that’s okay, because it “should only take up to 3 hours to do”. Now let’s theoretically say that I’m talking with 5 companies now. That’s &lt;em&gt;15 hours&lt;/em&gt; of my time, that I have to pull out of work, life or sleep, to do these coding tests. All to prove to them that I can code!&lt;/p&gt;
 
@@ -28,7 +28,7 @@
 
 &lt;p&gt;I’m personally &lt;em&gt;done&lt;/em&gt; with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.&lt;/p&gt;
 
-&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
+&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new.call(book_params)
 &lt;/code&gt;&lt;/pre&gt;
@@ -39,8 +39,6 @@
   include Dry::Monads[:do, :result]
 
   def call(params)
-    ...
-
     book_params = yield validate(params)
     create_book(book_params)
   end
@@ -59,8 +57,6 @@ end
   end
 
   def call(params)
-    ...
-
     book_params = yield validate(params)
     create_book(book_params)
   end

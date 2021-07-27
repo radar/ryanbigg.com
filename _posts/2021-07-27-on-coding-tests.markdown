@@ -31,4 +31,4 @@ Fact is, you don't. Some people can code really well in interviews and have had 
 
 I'm personally _done_ with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I've put out in the world.
 
-Let's just get down to business. I'll happily trade labour for dollars. Hold the haze.
+Let's just get down to business. I'll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I've already put out in order to judge my abilities.
