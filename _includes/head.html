@@ -13,12 +13,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {% if page.title %}
-  <meta content="RyanBigg.com - {{ page.title }}" property="og:title">
+  <meta content="Ryan Bigg - {{ page.title }}" property="og:title">
   {% else %}
   <meta content="{{ site.title }}" property="og:title">
   {% endif %}
   <meta property="og:site_name" content="Ryan Bigg">
-  <meta property="og:url" content="https://ryanbigg.com">
+  {% if page.url %}
+  <meta content="https://ryanbigg.com{{ page.url }}" property="og:url">
+  {% endif %}
   {% if page.description %}
   <meta content="{{ page.description }}" property="og:description">
   {% else %}
