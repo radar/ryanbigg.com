@@ -17,6 +17,8 @@ I've [written books](https://ryanbigg.com/books) where I try to teach other peop
 
 I've recently [released a 6-part screencast series](https://www.youtube.com/watch?v=qWdyo3icsjU) where I demonstrate my ability to code in not one, but THREE different languages **AT THE SAME TIME**! I'm clearly not a 10x developer. Maybe a 3x developer?
 
+I've even made the [codebase from that screencast series completely open source](https://github.com/radar/twist-v2).
+
 But no, these things don't count for _anything_ in the interview process. Maybe I've gone too far down the path of tying my self-worth up in these things. The way I feel is: if you don't value these things I've _already done_, then you do not value me.
 
 ---
