@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "recruiters";
 
 html {
   font-size: 18px;
@@ -28,6 +29,10 @@ a {
   @apply dark:text-green-300 text-green-500;
 }
 
+.topbar a {
+  @apply dark:text-gray-800
+}
+
 .landing-page {
   @apply grid grid-cols-1 md:grid-cols-2 m-4 md:m-32 lg:m-48 xl:mx-64 2xl:mx-96;
 }
@@ -35,7 +40,6 @@ a {
 .landing-page .photo {
   @apply mb-16 md:mb-0 md:mr-16
 }
-
 
 .landing-page .photo img {
   @apply m-auto;
@@ -107,4 +111,20 @@ article pre {
 
 article pre code {
   font-size: 0.875rem;
+}
+
+.recruiters h1 {
+  @apply mb-8;
+  transform: rotate(-5deg) translateY(-2.5rem);
+
+}
+
+.recruiters .big {
+  font-size: 200%;
+  line-height: 175%;
+  @apply px-16;
+}
+
+hr {
+  @apply border-2 dark:border-gray-800
 }
