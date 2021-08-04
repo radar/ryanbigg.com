@@ -19,6 +19,8 @@ I've recently [released a 6-part screencast series](https://www.youtube.com/watc
 
 I've even made the [codebase from that screencast series completely open source](https://github.com/radar/twist-v2).
 
+I'm also responsible for maintaining the [12th-most-downloaded Ruby Gem -- i18n](https://github.com/ruby-i18n/i18n). Yeah, this is code that I've (unlikely) written or (likely) vetted & approved that's _probably running in your Rails application right now_.
+
 But no, these things don't count for _anything_ in the interview process. Maybe I've gone too far down the path of tying my self-worth up in these things. The way I feel is: if you don't value these things I've _already done_, then you do not value me.
 
 ---
