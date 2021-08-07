@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2021-08-04T14:24:45+10:00</updated>
+ <updated>2021-08-07T19:11:20+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -2826,6 +2826,7 @@ end
 ruby '2.7.0'
 
 gem 'dry-system'
+gem 'zeitwerk'
 gem 'rom'
 gem 'rom-sql'
 gem 'pg'
@@ -2874,22 +2875,35 @@ Dotenv.load(".env", ".env.#{ENV["APP_ENV"]}")
 <pre><code class="language-ruby">require_relative "boot"
 
 require "dry/system/container"
+require "dry/system/loader/autoloading"
 
 module Bix
   class Application &lt; Dry::System::Container
     configure do |config|
       config.root = File.expand_path('..', __dir__)
-      config.default_namespace = 'bix'
 
-      config.auto_register = 'lib'
+      config.component_dirs.loader = Dry::System::Loader::Autoloading
+      config.component_dirs.add_to_load_path = false
+
+      config.component_dirs.add "lib" do |dir|
+        dir.default_namespace = 'bix'
+      end
     end
-
-    load_paths!('lib')
   end
 end
+
+loader = Zeitwerk::Loader.new
+loader.push_dir Bix::Application.config.root.join("lib").realpath
+loader.setup
 </code></pre>
 
 <p>This code is responsible for loading our <code>boot.rb</code> file and defining a <code>Bix::Application</code> <em>container</em>. This container is responsible for automatically loading dependencies in from <code>lib</code> (when we have them!). This container is also responsible for handling how system-level dependencies for our application are loaded – like how our application connects to a database.</p>
+
+<p>This container handles autoloading by delegating that responsibility to another gem called Zeitwerk. Whenever we reference a constant in our application, Zeitwerk will load that constant for us. You can read more about how Zeitwerk works <a href="https://github.com/fxn/zeitwerk#introduction">in that project’s README</a></p>
+
+<p>The <code>component_dirs</code> configuration here would allow us to split our application up into smaller components. Instead of requiring just <code>lib</code> here, we might split our application up into different components, such as <code>core</code> or <code>api</code>. To keep this guide simple, we’ll just be loading things from the <code>lib</code> directory.</p>
+
+<h2 id="database-configuration-setup">Database configuration setup</h2>
 
 <p>To set that database connection up, we’re going to create a new file over in <code>system/boot/db.rb</code>:</p>
 
@@ -2979,8 +2993,8 @@ ROM::SQL.migration do
       column :last_name, String
       column :age, Integer
 
-      column :created_at, :datetime, null: false
-      column :updated_at, :datetime, null: false
+      column :created_at, DateTime, null: false
+      column :updated_at, DateTime, null: false
     end
   end
 end
@@ -3214,9 +3228,11 @@ user_repo.all
 <p>To be able to define custom methods like <code>full_name</code> for users, we’re going to need a class. For this, ROM has a feature called <em>entities</em>. These are simple classes that can be considered as super-powered structs. Let’s build a new one by creating it in a new directory called <code>lib/bix/entities</code>, and calling it <code>user.rb</code>:</p>
 
 <pre><code class="language-ruby">module Bix
-  class User &lt; ROM::Struct
-    def full_name
-      "#{first_name} #{last_name}"
+  module Entities
+    class User &lt; ROM::Struct
+      def full_name
+        "#{first_name} #{last_name}"
+      end
     end
   end
 end
@@ -3224,12 +3240,14 @@ end
 
 <p>Ignoring <a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/">the falsehoods programmers believe about names</a>, this method will combine a user’s <code>first_name</code> and <code>last_name</code> attributes.</p>
 
+<p>It’s important to consider how this class is loaded at this point. We’ve called this class <code>Bix::Entities::User</code>, and placed it at <code>lib/bix/entities/user.rb</code>. This class will be autoloaded by Zeitwerk the moment any part of our code attempts to reference this constant. That way, we won’t have to require it ourselves anywhere.</p>
+
 <p>To use this class though, we need to configure the repository further over in <code>lib/bix/repos/user_repo.rb</code>:</p>
 
 <pre><code class="language-ruby">module Bix
   module Repos
     class UserRepo &lt; ROM::Repository[:users]
-      struct_namespace Bix
+      struct_namespace Bix::Entities
 
       ...
     end
@@ -3237,7 +3255,7 @@ end
 end
 </code></pre>
 
-<p>This <code>struct_namespace</code> method tells the repository that when it builds structs, it can use the <code>Bix</code> namespace for those structs. The class name will be the singularised version of the relation specified in the <code>ROM::Repository</code> class inheritance: <code>Bix::User</code>.</p>
+<p>This <code>struct_namespace</code> method tells the repository that when it builds structs, it can use the <code>Bix::Entities</code> namespace for those structs. The class name will be the singularised version of the relation specified in the <code>ROM::Repository</code> class inheritance: <code>Bix::Entities::User</code>.</p>
 
 <p>Let’s go back into <code>bin/console</code> and try this out:</p>
 
@@ -3311,6 +3329,41 @@ user_repo.all.first.full_name
 </code></pre>
 
 <p>Everything seems to be working correctly!</p>
+
+<p>In order to make this so we don’t have to import this container into <em>every</em> repository that we create in this application, we can also approach this problem by adding a <code>Repository</code> class to our application, putting the file at <code>lib/bix/repository.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bix
+  class Repository &lt; ROM::Repository::Root
+    include Import["container"]
+
+    struct_namespace Bix::Entities
+  end
+end
+</code></pre>
+
+<p>Then, we can change the <code>UserRepository</code> class to inherit from this class:</p>
+
+<pre><code class="language-ruby">module Bix
+  module Repos
+    class UserRepo &lt; Bix::Repository
+
+      commands :create,
+        use: :timestamps,
+        plugins_options: {
+          timestamps: {
+            timestamps: %i(created_at updated_at)
+          }
+        }
+
+      def all
+        users.to_a
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>Note here that because the <code>Repository</code> class defines both the <code>container</code> and the <code>struct_namespace</code>, we no longer need to do that in this repository either. That will lead to our code being a little bit cleaner.</p>
 
 <h3 id="summary">Summary</h3>
 

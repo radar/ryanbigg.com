@@ -48,6 +48,7 @@ source 'https://rubygems.org'
 ruby '2.7.0'
 
 gem 'dry-system'
+gem 'zeitwerk'
 gem 'rom'
 gem 'rom-sql'
 gem 'pg'
@@ -100,22 +101,35 @@ To setup our application's environment and use this database configuration, we'r
 require_relative "boot"
 
 require "dry/system/container"
+require "dry/system/loader/autoloading"
 
 module Bix
   class Application < Dry::System::Container
     configure do |config|
       config.root = File.expand_path('..', __dir__)
-      config.default_namespace = 'bix'
 
-      config.auto_register = 'lib'
+      config.component_dirs.loader = Dry::System::Loader::Autoloading
+      config.component_dirs.add_to_load_path = false
+
+      config.component_dirs.add "lib" do |dir|
+        dir.default_namespace = 'bix'
+      end
     end
-
-    load_paths!('lib')
   end
 end
+
+loader = Zeitwerk::Loader.new
+loader.push_dir Bix::Application.config.root.join("lib").realpath
+loader.setup
 ```
 
 This code is responsible for loading our `boot.rb` file and defining a `Bix::Application` _container_. This container is responsible for automatically loading dependencies in from `lib` (when we have them!). This container is also responsible for handling how system-level dependencies for our application are loaded -- like how our application connects to a database.
+
+This container handles autoloading by delegating that responsibility to another gem called Zeitwerk. Whenever we reference a constant in our application, Zeitwerk will load that constant for us. You can read more about how Zeitwerk works [in that project's README](https://github.com/fxn/zeitwerk#introduction)
+
+The `component_dirs` configuration here would allow us to split our application up into smaller components. Instead of requiring just `lib` here, we might split our application up into different components, such as `core` or `api`. To keep this guide simple, we'll just be loading things from the `lib` directory.
+
+## Database configuration setup
 
 To set that database connection up, we're going to create a new file over in `system/boot/db.rb`:
 
@@ -211,8 +225,8 @@ ROM::SQL.migration do
       column :last_name, String
       column :age, Integer
 
-      column :created_at, :datetime, null: false
-      column :updated_at, :datetime, null: false
+      column :created_at, DateTime, null: false
+      column :updated_at, DateTime, null: false
     end
   end
 end
@@ -462,9 +476,11 @@ To be able to define custom methods like `full_name` for users, we're going to n
 
 ```ruby
 module Bix
-  class User < ROM::Struct
-    def full_name
-      "#{first_name} #{last_name}"
+  module Entities
+    class User < ROM::Struct
+      def full_name
+        "#{first_name} #{last_name}"
+      end
     end
   end
 end
@@ -472,13 +488,15 @@ end
 
 Ignoring [the falsehoods programmers believe about names](https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/), this method will combine a user's `first_name` and `last_name` attributes.
 
+It's important to consider how this class is loaded at this point. We've called this class `Bix::Entities::User`, and placed it at `lib/bix/entities/user.rb`. This class will be autoloaded by Zeitwerk the moment any part of our code attempts to reference this constant. That way, we won't have to require it ourselves anywhere.
+
 To use this class though, we need to configure the repository further over in `lib/bix/repos/user_repo.rb`:
 
 ```ruby
 module Bix
   module Repos
     class UserRepo < ROM::Repository[:users]
-      struct_namespace Bix
+      struct_namespace Bix::Entities
 
       ...
     end
@@ -486,7 +504,7 @@ module Bix
 end
 ```
 
-This `struct_namespace` method tells the repository that when it builds structs, it can use the `Bix` namespace for those structs. The class name will be the singularised version of the relation specified in the `ROM::Repository` class inheritance: `Bix::User`.
+This `struct_namespace` method tells the repository that when it builds structs, it can use the `Bix::Entities` namespace for those structs. The class name will be the singularised version of the relation specified in the `ROM::Repository` class inheritance: `Bix::Entities::User`.
 
 Let's go back into `bin/console` and try this out:
 
@@ -568,6 +586,43 @@ user_repo.all.first.full_name
 ```
 
 Everything seems to be working correctly!
+
+In order to make this so we don't have to import this container into _every_ repository that we create in this application, we can also approach this problem by adding a `Repository` class to our application, putting the file at `lib/bix/repository.rb`:
+
+```ruby
+module Bix
+  class Repository < ROM::Repository::Root
+    include Import["container"]
+
+    struct_namespace Bix::Entities
+  end
+end
+```
+
+Then, we can change the `UserRepository` class to inherit from this class:
+
+```ruby
+module Bix
+  module Repos
+    class UserRepo < Bix::Repository
+
+      commands :create,
+        use: :timestamps,
+        plugins_options: {
+          timestamps: {
+            timestamps: %i(created_at updated_at)
+          }
+        }
+
+      def all
+        users.to_a
+      end
+    end
+  end
+end
+```
+
+Note here that because the `Repository` class defines both the `container` and the `struct_namespace`, we no longer need to do that in this repository either. That will lead to our code being a little bit cleaner.
 
 ### Summary
 
