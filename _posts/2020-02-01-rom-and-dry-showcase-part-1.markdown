@@ -9,7 +9,7 @@ The [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) sets of gems
 In this _series_ of blog posts, I am going to show you how to build a simple application that I'm calling "Bix" using some of these gems. By the end of this series, the application will:
 
 - Part 1 (you are here) - Interact with a database using ROM
-- [Part 2 - Have validation and transaction classes](/2020/02/rom-and-dry-showcase-part-2)
+- [Part 2 - Validations & Operations](/2020/02/rom-and-dry-showcase-part-2)
 - [Part 3 - Test our application with RSpec](/2020/02/rom-and-dry-showcase-part-3)
 - [Part 4 - Have a router and a series of actions](/2020/02/rom-and-dry-showcase-part-4)
 

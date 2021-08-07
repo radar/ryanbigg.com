@@ -8,15 +8,15 @@ published: true
 This is the 3rd part of a 4 part series covering the [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) suites of gems.
 
 * Part 1: [Application + Database setup](/2020/02/rom-and-dry-showcase-part-1)
-* Part 2: [Validations + Transactions](/2020/02/rom-and-dry-showcase-part-2)
+* Part 2: [Validations + Operations](/2020/02/rom-and-dry-showcase-part-2)
 
 In this 3rd part, we're going to look at how we can test the application that we've built so far. In particular, we'll test three classes:
 
 * The contract -- to ensure it validates input correctly
 * The repository -- to ensure we can insert data into our database correctly and that we could find data once it is inserted
-* The transaction -- to ensure that we can process the whole transaction correctly
+* The operation -- to ensure that we can process the whole operation correctly
 
-When we get up to the transaction part, we'll see how we can use one more feature of `dry-auto_inject` to stub out the repository dependency in this particular test. Why would we want to stub out this dependency? Because we already have tests that make sure that our repository works! We don't need to test it again a second time in the transaction class.
+When we get up to the operation part, we'll see how we can use one more feature of `dry-auto_inject` to stub out the repository dependency in this particular test. Why would we want to stub out this dependency? Because we already have tests that make sure that our repository works! We don't need to test it again a second time in the operation class.
 
 Let's get started!
 
@@ -267,7 +267,7 @@ If we run this test, we'll see that it's already working:
 
 This means that our `all` method now has some test coverage. If this method was to break _somehow_, then our test would indicate that the method was faulty and then we wwould know to fix it.
 
-## Testing the transaction
+## Testing the operation
 
 So far, our testing of contracts and repositories has been very straightforward Ruby class tests. We have relied on `subject` from RSpec which is a method that behaves like this:
 
@@ -277,16 +277,16 @@ def subject
 end
 ```
 
-Now we're going to look at how to test a transaction, and here's where things are going to get more interesting. Rather than relying on RSpec's own `subject`, we're going to define our own. And when we define our own, we're going to use a feature of `dry_auto-inject`, called _dependency injection_. This feature will allow us to inject a stubbed repository into our transaction, so that we don't have to hit the database for our transaction's test.
+Now we're going to look at how to test a operation, and here's where things are going to get more interesting. Rather than relying on RSpec's own `subject`, we're going to define our own. And when we define our own, we're going to use a feature of `dry_auto-inject`, called _dependency injection_. This feature will allow us to inject a stubbed repository into our operation, so that we don't have to hit the database for our operation's test.
 
-Not hitting the database means that we will save time on this test: there's no need to make a request to a system outside of our Ruby code, and that'll also mean that `database_cleaner` will not need to clean anything from the database. Ultimately, by injecting the repository dependency into our application's transactions when we're testing them means that we can have fast transcation tests.
+Not hitting the database means that we will save time on this test: there's no need to make a request to a system outside of our Ruby code, and that'll also mean that `database_cleaner` will not need to clean anything from the database. Ultimately, by injecting the repository dependency into our application's operations when we're testing them means that we can have fast transaction tests.
 
-Let's look at how to do this by creating a new file at `spec/transactions/users/create_user_spec.rb`:
+Let's look at how to do this by creating a new file at `spec/operations/users/create_user_spec.rb`:
 
 ```ruby
 require 'spec_helper'
 
-RSpec.describe Bix::Transactions::Users::CreateUser do
+RSpec.describe Bix::Operations::Users::CreateUser do
   let(:user_repo) { double("UserRepo") }
   let(:user) { Bix::User.new(id: 1, first_name: "Ryan") }
 
@@ -311,7 +311,7 @@ RSpec.describe Bix::Transactions::Users::CreateUser do
 end
 ```
 
-In this test, we define our own `subject` block, which will override RSpec's default. We inject the `user_repo` dependency into the transaction object by passing a `user_repo` key in the `new` method. This works because `dry-auto_inject` re-defines `initialize` for classes when we use this syntax:
+In this test, we define our own `subject` block, which will override RSpec's default. We inject the `user_repo` dependency into the operation object by passing a `user_repo` key in the `new` method. This works because `dry-auto_inject` re-defines `initialize` for classes when we use this syntax:
 
 ```ruby
 include Import[
@@ -345,7 +345,7 @@ Let's look at that test again:
 ```ruby
 require 'spec_helper'
 
-RSpec.describe Bix::Transactions::Users::CreateUser do
+RSpec.describe Bix::Operations::Users::CreateUser do
   let(:user_repo) { double(Bix::Repos::UserRepo) }
   let(:user) { Bix::User.new(id: 1, first_name: "Ryan") }
 
@@ -378,13 +378,13 @@ Let's run this test and we'll see how it goes:
 6 examples, 0 failures
 ```
 
-Success! We're able to test our transaction without it hitting the database at all. This means that our transaction test is isolated from the database, leading to it being quick. While we only have one transaction test _now_, as this application grows and we add further transaction tests this quickness will quickly pile-up to a big benefit.
+Success! We're able to test our operation without it hitting the database at all. This means that our operation test is isolated from the database, leading to it being quick. While we only have one operation test _now_, as this application grows and we add further operation tests this quickness will quickly pile-up to a big benefit.
 
 There's also another benefit of this isolation: if we had database constraints then we would have to cater for those in this test.  Imagine for instance that when we created users that they had to be associated with a "Group" and that Groups had to be associated with an "Account". In a normal application to test such a thing, we would need to create three separate objects our database: an account, a group, and a user.
 
-For one test, it won't matter too much. But if accounts, groups and users are the _core_ of our application, it would quickly stack up to lots of database calls. By stubbing out the user repository dependency while testing this transaction, we have isolated that test from any database concern. A better place to test that sort of database concern would be in the repository test, anyway.
+For one test, it won't matter too much. But if accounts, groups and users are the _core_ of our application, it would quickly stack up to lots of database calls. By stubbing out the user repository dependency while testing this operation, we have isolated that test from any database concern. A better place to test that sort of database concern would be in the repository test, anyway.
 
-To finish up, let's add one more test for what happens when this transaction fails due to invalid input:
+To finish up, let's add one more test for what happens when this operation fails due to invalid input:
 
 ```ruby
 context "with invalid input" do
@@ -404,7 +404,7 @@ context "with invalid input" do
 end
 ```
 
-This `input` is missing a `first_name` key, and so our transaction should fail. This means that the `user_repo` should _never_ receive a `create` method, because our transaction will only call that if the `validate` step passes. When the validation fails, we would expect the result from this transaction to be a failure, and that failure to contain errors indicating what went wrong.
+This `input` is missing a `first_name` key, and so our operation should fail. This means that the `user_repo` should _never_ receive a `create` method, because our operation will only call that if the `validate` step passes. When the validation fails, we would expect the result from this operation to be a failure, and that failure to contain errors indicating what went wrong.
 
 When we run this test with `bundle exec rspec`, we'll see it pass:
 
@@ -418,6 +418,6 @@ In this 3rd part of the ROM and Dry showcase, we've seen how easy it is to add t
 
 We saw that in order to test a contract and a repository, we can initialize either class and call the methods we want to test. There's nothing particularly special that we've had to do to test these classes; we treat them like the plain Ruby classes they are.
 
-When testing the transaction, we've chosen to isolate those tests from the database by injecting a stubbed `UserRepo` object in place of the real thing. This isolation will mean that our tests will not have to concern themselves with setting up database state -- for instance, if we had foreign key constraints -- and over time it will mean that our transaction tests will be lightning fast.
+When testing the operation, we've chosen to isolate those tests from the database by injecting a stubbed `UserRepo` object in place of the real thing. This isolation will mean that our tests will not have to concern themselves with setting up database state -- for instance, if we had foreign key constraints -- and over time it will mean that our operation tests will be lightning fast.
 
 In the next part of this series, we'll add the final piece of our application to our stack: a way to make HTTP requests. And we'll _definitely_ be adding tests for this too!

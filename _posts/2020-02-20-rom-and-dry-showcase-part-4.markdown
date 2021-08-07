@@ -7,7 +7,7 @@ title: "ROM and Dry Showcase: Part 4"
 This is the 4th (and final) part of a 4 part series covering the [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) suites of gems.
 
 * Part 1: [Application + Database setup](/2020/02/rom-and-dry-showcase-part-1)
-* Part 2: [Validations + Transactions](/2020/02/rom-and-dry-showcase-part-2)
+* Part 2: [Validations + Operations](/2020/02/rom-and-dry-showcase-part-2)
 * Part 3: [Testing](/2020/02/rom-and-dry-showcase-part-3)
 
 In this last part, we're going to make it so that our application can receive and respond to HTTP requests.

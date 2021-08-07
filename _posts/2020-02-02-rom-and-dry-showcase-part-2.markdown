@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1580704900
 layout: post
-title: "ROM + Dry Showcase: Part 2 - Validations & Transactions"
+title: "ROM + Dry Showcase: Part 2 - Validations & Operations"
 ---
 
 This is the 2nd part of a 4 part series covering the [rom-rb](https://rom-rb.org/) and [dry-rb](https://dry-rb.org/) suites of gems.
@@ -18,7 +18,9 @@ When we're done here, we'll have a class that encapsulates all the actions of cr
 2. If they aren't present, returns an error.
 3. If they are present, the user data is persisted to the database
 
-We'll call this class a _transaction_, as it will contain all the logic for performing a particular _transaction_ with our system; the transaction of creating a new user.
+We'll call this class a _operation_, as it will contain all the logic for performing a particular _operation_ with our system; the operation of creating a new user.
+
+This part of the guide previously called this type of class a _transaction_, but in order to not conflate these with _database transactions_, a different name has been used. Other people might call these _service objects_ or _interactors_.
 
 If you'd like to see the code for this application, it's at [github.com/radar/bix](https://github.com/radar/bix), and each part of this series has its own branch.
 
@@ -218,11 +220,11 @@ When our code sees a `Failure` Result Monad returned, it will not execute the re
 
 ### Do Notation
 
-The Result Monad is used in conjunction with that other feature of `dry-monads` I mentioned earlier: Do Notation. Let's take the above `CreateUser` class and re-write it using `dry-monads`' Do Notation. We'll put this class at `lib/bix/transactions/users/create_user.rb`:
+The Result Monad is used in conjunction with that other feature of `dry-monads` I mentioned earlier: Do Notation. Let's take the above `CreateUser` class and re-write it using `dry-monads`' Do Notation. We'll put this class at `lib/bix/operations/users/create_user.rb`:
 
 ```ruby
 module Bix
-  module Transactions
+  module Operations
     module Users
       class CreateUser
         include Dry::Monads[:result]
@@ -261,7 +263,7 @@ This code is a bit longer than the code we had previously. However, it comes wit
   </p>
 
   <p>
-    This is a common trap for developers who adopt this kind of <em>transaction</em> (or "service") pattern. They split out a class from a controller, and then dump everything into the <code>call</code> method! The code is no cleaner when you've done this, it has simply been swept under the proverbial rug.
+    This is a common trap for developers who adopt this kind of <em>operation</em> (or "service") pattern. They split out a class from a controller, and then dump everything into the <code>call</code> method! The code is no cleaner when you've done this, it has simply been swept under the proverbial rug.
   </p>
 
   <p>
@@ -269,7 +271,7 @@ This code is a bit longer than the code we had previously. However, it comes wit
   </p>
 </aside>
 
-The `call` method here is responsible for ordering the steps of our transaction. It takes our initial `input` for this transaction and runs it through the validator. All of that validation logic is neatly gathered together in the `validate` method:
+The `call` method here is responsible for ordering the steps of our operation. It takes our initial `input` for this operation and runs it through the validator. All of that validation logic is neatly gathered together in the `validate` method:
 
 ```ruby
 def validate(input)
@@ -282,9 +284,9 @@ In this method, we use our contract that we built earlier. When we call this con
 
 If the validation succeeds, we'll get back a `Success(validated_input)` result monad, otherwise a `Failure(validation_result)` result monad will be returned.
 
-If it fails at this point, the transaction will stop and return the validation failure.
+If it fails at this point, the operation will stop and return the validation failure.
 
-If it succeeds however, the transaction to the next step: `create_user`:
+If it succeeds however, the operation to the next step: `create_user`:
 
 ```ruby
 def create_user(result)
@@ -298,34 +300,34 @@ This step takes a `result` argument, which will be the `validated_input` returne
 Let's try using this class now in `bin/console`:
 
 ```ruby
-create_user = Bix::Transactions::Users::CreateUser.new
+create_user = Bix::Operations::Users::CreateUser.new
 result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: 32)
 # => Success(#<Bix::User id=4 first_name="Ryan" last_name="Bigg" age=32 ...>)
 ```
 
-When we use this transaction, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a `Success` result monad.
+When we use this operation, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a `Success` result monad.
 
-Let's see what happens if the validation fails in this transaction:
+Let's see what happens if the validation fails in this operation:
 
 ```ruby
-create_user = Bix::Transactions::Users::CreateUser.new
+create_user = Bix::Operations::Users::CreateUser.new
 result = create_user.call(first_name: "Ryan", last_name: "", age: 32)
 # => Failure(#<Dry::Validation::Result{:first_name=>"Ryan", :last_name=>"", :age=>32} errors={:last_name=>["must be filled"]}>)
 ```
 
 This time, we get back a `Failure` result monad, which is wrapping our `Dry::Validation::Result`. This will mean that the persistence won't happen at all.
 
-Our transaction class so far has only two methods, but _could_ be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they've signed up?
+Our operation class so far has only two methods, but _could_ be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they've signed up?
 
-Or what if we had a transaction class that handled account signup, where both an account _and_ a user had to be created? A flowchart for that transaction class would look like this:
+Or what if we had a operation class that handled account signup, where both an account _and_ a user had to be created? A flowchart for that operation class would look like this:
 
-![More complex transaction diagram](/images/rom/dry-monads-complex.png)
+![More complex operation diagram](/images/rom/dry-monads-complex.png)
 
-A transaction class is a great way of grouping together all these steps into small, discrete methods.
+A operation class is a great way of grouping together all these steps into small, discrete methods.
 
 ## Handling success or failure
 
-Let's now think about how we would actually use this `CreateUser` transaction class in a real context, something a bit more specialised than a simple `bin/console` session. For this section, we'll create a new file at the root of the Bix application, called `transaction_test.rb`. In this file, we'll put this content:
+Let's now think about how we would actually use this `CreateUser` operation class in a real context, something a bit more specialised than a simple `bin/console` session. For this section, we'll create a new file at the root of the Bix application, called `operation_test.rb`. In this file, we'll put this content:
 
 ```ruby
 require_relative "config/application"
@@ -340,7 +342,7 @@ input = {
   age: 32
 }
 
-create_user = Bix::Transactions::Users::CreateUser.new
+create_user = Bix::Operations::Users::CreateUser.new
 case create_user.call(input)
 when Success
   puts "User created successfully!"
@@ -354,19 +356,19 @@ This file starts out the same way as `bin/console`: we require `config/applicati
 
 Next up, we include `Dry::Monads[:result]`. This gives us access to the `Success` and `Failure` result monad classes that we use at the end of this file.
 
-Once we've set everything up, we define an input hash for our transaction, and the transaction itself. When we call the transaction, we can use a `case` to match on the outcome of the transaction. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a `Dry::Validation::Result` failure), we output the validation error messages.
+Once we've set everything up, we define an input hash for our operation, and the operation itself. When we call the operation, we can use a `case` to match on the outcome of the operation. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a `Dry::Validation::Result` failure), we output the validation error messages.
 
-Here we've seen a very simple way of handling the success or failure of a transaction. This code is very similar to how we would use the transaction in another context, such as a controller. The great thing about a transaction is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it.
+Here we've seen a very simple way of handling the success or failure of a operation. This code is very similar to how we would use the operation in another context, such as a controller. The great thing about a operation is that we aren't limited to using it just within a controller -- we could use it anywhere we pleased. This example is just a small one showing us how we could use it.
 
-In Part 4 of this guide, we'll re-visit how to use this transaction in a different context.
+In Part 4 of this guide, we'll re-visit how to use this operation in a different context.
 
 ## Automatically injecting dependencies
 
-Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let's re-visit our transaction's code:
+Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let's re-visit our operation's code:
 
 ```ruby
 module Bix
-  module Transactions
+  module Operations
     module Users
       class CreateUser
         include Dry::Monads[:result]
@@ -418,13 +420,13 @@ module Bix
 end
 ```
 
-We saw earlier that we could refer to the ROM container with the syntax `include Import["container"]` within our `UserRepo` class. Well, we can do the same thing with our contract and repository in this transaction class too.
+We saw earlier that we could refer to the ROM container with the syntax `include Import["container"]` within our `UserRepo` class. Well, we can do the same thing with our contract and repository in this operation class too.
 
 Here's how we'll do it. At the top of the class, we'll put these two `include` lines:
 
 ```ruby
 module Bix
-  module Transactions
+  module Operations
     module Users
       class CreateUser
         include Dry::Monads[:result]
@@ -435,7 +437,7 @@ module Bix
 ...
 ```
 
-By using `include` like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our `validate` and `persist` methods in this transaction to this:
+By using `include` like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our `validate` and `persist` methods in this operation to this:
 
 ```ruby
 def validate(params)
@@ -447,22 +449,22 @@ def persist(result)
 end
 ```
 
-That's a lot cleaner, isn't it? We're now able to refer to the contract as simply `create_user`, and the repository as `user_repo`, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this transaction has, right at the top of the class. We don't need to scan through the class to figure out what they are anymore.
+That's a lot cleaner, isn't it? We're now able to refer to the contract as simply `create_user`, and the repository as `user_repo`, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this operation has, right at the top of the class. We don't need to scan through the class to figure out what they are anymore.
 
-To make sure that things are working again, let's try running `ruby transaction_test.rb` again. If the `input` hash at the top of this file contains valid input, then we should see the successful message still:
+To make sure that things are working again, let's try running `ruby operation_test.rb` again. If the `input` hash at the top of this file contains valid input, then we should see the successful message still:
 
 ```
 User created successfully!
 ```
 
-If this transaction class went on to use other classes from our application, we could import them with very little effort, thanks to the `dry-system` and `dry-auto_inject` gems.
+If this operation class went on to use other classes from our application, we could import them with very little effort, thanks to the `dry-system` and `dry-auto_inject` gems.
 
 ## Summary
 
 In this 2nd part of the ROM and Dry showcase, we have used the `dry-validation` gem to add a  _contract_ to our application. A contract is a class that contains validation logic. It's a way of saying that incoming data must meet some criteria before our application can use it.
 
-In the second half of this guide, we used `dry-monads` to define a _transaction_ class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: `validate` and `persist`. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.
+In the second half of this guide, we used `dry-monads` to define a _operation_ class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: `validate` and `persist`. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.
 
-In the final part of this guide, we used `dry-auto_inject` once more to automatically inject the repository and contract into our transaction class, allowing us to tidy up the code very slightly, but still noticeably.
+In the final part of this guide, we used `dry-auto_inject` once more to automatically inject the repository and contract into our operation class, allowing us to tidy up the code very slightly, but still noticeably.
 
 In the next part, we're going to look at how we can test the parts of the application that we've built so far by using the RSpec testing framework. We'll also see _another_ advantage of `dry-auto_inject` in this part.
