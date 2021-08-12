@@ -25,6 +25,8 @@ In this post I cover:
 
 To cover what Twist does in a nutshell: Twist receives webhook notifications from GitHub after new commits are pushed to a book's GitHub repository. Twist then reads a book's Markdown or AsciiDoc files and converts those formats into HTML and stores it in a database. Later on, that HTML is served out through a GraphQL endpoint in the form of books, chapters, and elements. Readers can then read the book and leave notes on the book as they go. I use these notes to improve the quality of the books I write.
 
+If you want to get an idea of what working on this app is like, I've live streamed about 10 hours of active development on this project. [The first episode is on Youtube here](https://www.youtube.com/watch?v=qWdyo3icsjU).
+
 ## The application container
 
 The application starts off in a similar way to a Rails application. There's a `config.ru` file that goes off and loads `config/boot.rb`. That sets up Bundler and Dotenv, configuring the gems and environment necessary for running the application. After that, we come to the application _container_.
