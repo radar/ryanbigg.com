@@ -657,19 +657,26 @@ video {
   line-height: 1rem;
 }
 
+.text-gray-300 {
+  --tw-text-opacity: 1;
+  color: rgba(209, 213, 219, var(--tw-text-opacity));
+}
+
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgba(156, 163, 175, var(--tw-text-opacity));
 }
 
-.text-gray-700 {
-  --tw-text-opacity: 1;
-  color: rgba(55, 65, 81, var(--tw-text-opacity));
-}
-
 .text-green-500 {
   --tw-text-opacity: 1;
   color: rgba(16, 185, 129, var(--tw-text-opacity));
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark\:text-gray-700 {
+    --tw-text-opacity: 1;
+    color: rgba(55, 65, 81, var(--tw-text-opacity));
+  }
 }
 
 *, ::before, ::after {
@@ -941,16 +948,21 @@ article pre code {
 }
 
 .recruiters h1 {
-  margin-bottom: 2rem;
-  transform: rotate(-5deg) translateY(-2.5rem);
+  transform: rotate(-5deg) translateY(-0.5rem);
+  width: 50%;
 }
 
 .recruiters .big {
   font-size: 200%;
   line-height: 133%;
   margin-bottom: 2rem;
-  padding-left: 4rem;
-  padding-right: 4rem;
+}
+
+@media (min-width: 1536px) {
+  .recruiters .big {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
 }
 
 hr {
