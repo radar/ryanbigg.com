@@ -76,7 +76,7 @@ In short, Rails is effectively building a method call like this:
 #{@post.class.downcase}_path(@post.to_param)
 ```
 
-Which comes out to being this:
+Which comes out to being this by default:
 
 ```ruby
 post_path(1)
@@ -85,6 +85,8 @@ post_path(1)
 And when that method is called you would get this little string:
 
     "/posts/1"
+
+Or if you overrode `to_param`, you would see `/posts/your-permalink-goes-here` instead.
 
 Lovely!
 
