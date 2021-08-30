@@ -61,8 +61,16 @@ def to_param
   permalink
 end
 ```
-In short, Rails is effectively building a method call like this:
 
+If you were to do this override, your URLs would look like `/posts/polymorphic-routes` instead of `/posts/1`. Pretty useful if you want human-friendly routes! Keeping in mind of course that you would need to update your controller to find by permalinks rather than IDs too:
+
+```
+def show
+  Post = Post.find_by(permalink: params[:id])
+end
+```
+
+In short, Rails is effectively building a method call like this:
 
 ```ruby
 #{@post.class.downcase}_path(@post.to_param)
@@ -83,7 +91,7 @@ Lovely!
 This is called _polymorphic routing_. You can pass an object to methods like `redirect_to`, `link_to`, `form_for` and `form_with` and Rails will
 attempt to work out the correct URL of what to use.
 
-### The form of form\_form
+### The form of form_form
 
 Now, when you're coding Rails you may have used `form_for` like this a very long time ago:
 
@@ -179,7 +187,6 @@ Which (usually) turns into this path:
 
     /admin/posts/1/comments/2
 
-
 ### Testing routes in the Rails console
 
 Rails provides a way to test out these routes in the `rails console`, through its `app` helper.
@@ -259,7 +266,6 @@ The way this work is that it sees that the first element is a symbol called `:ar
 ```ruby
 article_url(id: post.id)
 ```
-
 
 ### Conclusion
 
