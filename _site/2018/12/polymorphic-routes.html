@@ -102,12 +102,20 @@ somewhere, and that the place it can be found is most likely under a method call
   permalink
 end
 </code></pre>
+
+<p>If you were to do this override, your URLs would look like <code>/posts/polymorphic-routes</code> instead of <code>/posts/1</code>. Pretty useful if you want human-friendly routes! Keeping in mind of course that you would need to update your controller to find by permalinks rather than IDs too:</p>
+
+<pre><code>def show
+  Post = Post.find_by(permalink: params[:id])
+end
+</code></pre>
+
 <p>In short, Rails is effectively building a method call like this:</p>
 
 <pre><code class="language-ruby">#{@post.class.downcase}_path(@post.to_param)
 </code></pre>
 
-<p>Which comes out to being this:</p>
+<p>Which comes out to being this by default:</p>
 
 <pre><code class="language-ruby">post_path(1)
 </code></pre>
@@ -116,6 +124,8 @@ end
 
 <pre><code>"/posts/1"
 </code></pre>
+
+<p>Or if you overrode <code>to_param</code>, you would see <code>/posts/your-permalink-goes-here</code> instead.</p>
 
 <p>Lovely!</p>
 
