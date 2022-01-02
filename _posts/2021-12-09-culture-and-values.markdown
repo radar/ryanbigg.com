@@ -52,7 +52,7 @@ Then I found a job with a company whose values I very strongly aligned with. A c
 
 Then a little thing called a pandemic hit. I'm sure you've heard of it by now. The parent company of the one I joined relied on international students for a large majority of its income. A pandemic in Australia meant closed borders (easy to enforce, as we're a _giant island_), and closed borders meant no international students, which ultimately meant little-to-no money for that company.
 
-I, along with the entire company, were told about potential redundancies happening in a staff-wide email on a _Monday_ at the end of March. I got that dreaded call back on _Friday_ at 3pm. That was a particularly unproductive week, let me tell you. This time again it wasn't my boss, or even a long-term colleague. It was some high-up HR woman who sounded absolutely exhausted.
+I, along with the entire company, were told about potential redundancies happening in a staff-wide email on a _Monday_ at the end of March. During this week we found out it was going to be 235 people across the whole company. I got that dreaded call back on _Friday_ at 3pm. That was a particularly unproductive week, let me tell you. This time again it wasn't my boss, or even a long-term colleague. It was some high-up HR woman who sounded absolutely exhausted.
 
 About 5 minutes after this phone call, I was locked out of Slack, GitHub, and email. It was clinical and effective. I went into the office the next week and collected my things. That was the last time I was in an office.
 
