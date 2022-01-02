@@ -6,13 +6,19 @@ title: "Culture and Values"
 
 It's been one year since I was fired.
 
-The Big Boss at the time wanted everyone to work out of an office in Melbourne (because by the end of 2020, everyone thought that The Pandemic was _over_), and I was moving 250km further away. What's more, is that I was an opinionated asshole who cared too much about things and got angry about it. The whole pandemic thing didn't help.
+The Big Boss at the time wanted everyone to work out of an office in Melbourne (because by the end of 2020, everyone thought that The Pandemic was _over_), and I was moving 250km to the west.
+
+What's more, is that I was an opinionated asshole who cared too much about things and got angry about it. The whole pandemic thing didn't help.
 
 It was the third time I had been let go from a job in just over a year. I was made redundant in November 2019 and again in April 2020. In 13 months, I had left 3 jobs. That doesn't look so good on a resume.
 
-So I thought I should change things this year -- usher in a new era of stability for myself and my family... and instead undertook consultancy work which has meant that I've had _at least_ 4 on-the-books jobs this year. But why go into consultancy after so many years of working full-time? And _especially_ why go into consultancy work despite wanting all that precious stability? And in the same year that I got a mortgage? Sure, the money's good, but there's a simpler answer: burnout.
+So I thought I should change things this year -- usher in a new era of stability for myself and my family... and instead undertook consultancy work which has meant that I've had _at least_ 4 on-the-books jobs this year. But why go into consultancy after so many years of working full-time? And _especially_ why go into consultancy work despite wanting all that precious stability? And in the same year that I got a mortgage?
 
-I was burned out on companies, especially when it came to the culture and values they espoused. I became too invested in those companies, and when it was time to wrap things up there, it was traumatic. There's no nice way to sugar-coat things.
+Sure, the consulting money's good (like, really good), but there's a simpler answer: burnout.
+
+I was burned out on companies, especially when it came to the culture and values they espoused. _Especially_ the "F" word: "family".
+
+I became too invested in those companies, and when it was time to wrap things up there, it was traumatic and devastating. There's no nice way to sugar-coat things.
 
 I want to share a bit about the history of that trauma today, as (I guess) a way of coping with it.
 
