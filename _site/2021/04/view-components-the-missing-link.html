@@ -110,11 +110,13 @@ end
 <pre><code class="language-erb">&lt;%= helpers.react_component "UserPicker", **props %&gt;
 </code></pre>
 
-<p>View component renders components using a combination of the Ruby class and the ERB template, both named the smae.</p>
+<p>View component renders components using a combination of the Ruby class and the ERB template, both named the same.</p>
 
 <p>To access the <code>react_component</code> helper, we need to use the <code>helpers</code> method provided by <code>view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
 
 <p>The main thing to note is that our Ruby code now lives in a Ruby file, and the code to render the React component lives over in the component’s view. If we had any additional HTML that was required to be wrapped around this component, this is where it would belong too. I’ve left that out to make things simple here.</p>
+
+<p>If this is the only line of code that would be in our view, we can instead define a <code>call</code> method on the component class:</p>
 
 <h3 id="rendering-a-view-component">Rendering a view component</h3>
 

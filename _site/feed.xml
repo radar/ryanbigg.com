@@ -1,4 +1,141 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-01-03T09:09:12+11:00</updated><id>/feed.xml</id><entry><title type="html">Culture and Values</title><link href="/2021/12/culture-and-values" rel="alternate" type="text/html" title="Culture and Values" /><published>2021-12-09T00:00:00+11:00</published><updated>2021-12-09T00:00:00+11:00</updated><id>/2021/12/culture-and-values</id><content type="html" xml:base="/2021/12/culture-and-values">&lt;p&gt;It’s been one year since I was fired.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-03-08T16:46:35+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Typed View Components with dry-types</title><link href="http://localhost:4000/2022/03/typed-view-components" rel="alternate" type="text/html" title="Typed View Components with dry-types" /><published>2022-03-08T00:00:00+11:00</published><updated>2022-03-08T00:00:00+11:00</updated><id>http://localhost:4000/2022/03/typed-view-components</id><content type="html" xml:base="http://localhost:4000/2022/03/typed-view-components">&lt;p&gt;This post was originally inspired by &lt;a href=&quot;https://twitter.com/RogersKonnor&quot;&gt;Konnor Rogers&lt;/a&gt;, and &lt;a href=&quot;https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011&quot;&gt;this gist from him&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Last year, I wrote about &lt;a href=&quot;https://ryanbigg.com/2021/04/view-components-the-missing-link&quot;&gt;View Components&lt;/a&gt; for the first time. That post demonstrated how you could use View Components to bridge the gap between Ruby and React by using a View Component to build up the props for a React component.&lt;/p&gt;
+
+&lt;p&gt;Since then, I’ve joined &lt;a href=&quot;https://fatzebra.com&quot;&gt;Fat Zebra&lt;/a&gt; and we’re doing a lot of work involving Rails, React and View Components.&lt;/p&gt;
+
+&lt;p&gt;One thing we’ve discovered that helps with using View Components is adding types by using the &lt;code&gt;dry-initializer&lt;/code&gt; and &lt;code&gt;dry-types&lt;/code&gt; to those View Components. While we have the protection of types in TypeScript, we do not have the same level of protection in Ruby. And since TypeScript only does compile-time checking, it means that we could pass a property from these Ruby View Components down to our React components where that property’s type is incorrect.&lt;/p&gt;
+
+&lt;p&gt;Take for (contrived) example, this simple component that takes in a &lt;code&gt;standalone&lt;/code&gt; property.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class RefundComponent &amp;lt; ViewComponent::Base
+  attr_reader :standalone
+
+  def initialize(standalone:)
+    @standalone = standalone
+  end
+
+  def props
+    {
+      standalone: standalone,
+      # ...
+    }
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There’s nothing in this component that dictates the type for &lt;code&gt;standalone&lt;/code&gt;. It should be a boolean. It &lt;em&gt;could be&lt;/em&gt; a string, or a number, or literally any valid object in Ruby. So when this component is used in this way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;render RefundComponent.new(standalone: params[:standalone])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;What’s going to happen here?&lt;/p&gt;
+
+&lt;p&gt;Well, if we &lt;em&gt;think&lt;/em&gt; standalone is a boolean, we can expect &lt;code&gt;params[:standalone]&lt;/code&gt; is going to be either &lt;code&gt;&quot;true&quot;&lt;/code&gt; or &lt;code&gt;&quot;false&quot;&lt;/code&gt; ,given that Rails parameters are stringified.&lt;/p&gt;
+
+&lt;p&gt;Inside our React component, we might have code like this.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;{standalone ? &quot;Standalone&quot; : &quot;Not Standalone&quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The string &lt;code&gt;&quot;true&quot;&lt;/code&gt; does the same as the boolean &lt;code&gt;true&lt;/code&gt;. The string &lt;code&gt;&quot;false&quot;&lt;/code&gt; does not do the same as the boolean &lt;code&gt;&quot;false&quot;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This is completely innocent code, and the kind that we might write any old day. Nothing stopped us from writing it. In fact, TypeScript gave us &lt;em&gt;two&lt;/em&gt; thumbs up when we compiled our React code. Ruby doesn’t care. Ruby’s fine as long as the syntax is correct.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;To prevent a mistake like this, we can use the &lt;code&gt;dry-initializer&lt;/code&gt; and &lt;code&gt;dry-types&lt;/code&gt; gems like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class RefundComponent &amp;lt; ViewComponent::Base
+  extend Dry::Initializer
+  Types = Dry.Types()
+
+  option :standalone, Types::Bool
+
+  def props
+    {
+      standalone: standalone,
+      # ...
+    }
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;Types&lt;/code&gt; constant here is usually defined on a more “global” level. For example, you might define it at &lt;code&gt;lib/types.rb&lt;/code&gt; for your entire application. I’ve just included it in the class here for brevity.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;option&lt;/code&gt; method here defines a keyword argument initializer for &lt;code&gt;RefundComponent&lt;/code&gt;, so this means our component will still be able to be rendered in the same way:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;render RefundComponent.new(standalone: params[:standalone])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But this time, if we pass it a stringly-typed &lt;code&gt;standalone&lt;/code&gt; here, it will show us an error:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&quot;false&quot; violates constraints (type?(FalseClass, &quot;false&quot;) failed) (Dry::Types::ConstraintError)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The error message is wordy, but with enough practice (just like TypeScript!) we can learn to read these. The error message here says that the type of &lt;code&gt;FalseClass&lt;/code&gt;, is not the same type as &lt;code&gt;&quot;false&quot;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We cannot pass the stringly-typed &lt;code&gt;params[:standalone]&lt;/code&gt; here anymore.&lt;/p&gt;
+
+&lt;p&gt;Instead, we would have to convert this parameter to a boolean so that our code would work:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;render RefundComponent.new(standalone: params[:standalone] == &apos;true&apos;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;but-wait-theres-more&quot;&gt;But wait, there’s more…&lt;/h3&gt;
+
+&lt;p&gt;We can also use &lt;code&gt;dry-types&lt;/code&gt; to define the types for our properties too, in case we had some complicated logic there.  Perhaps we have an amount that is returned, and we want to guarantee it’s a float by the time it gets to our React library. To spice things up, for legacy reasons the &lt;code&gt;amount&lt;/code&gt; arrives at our component as a string, not a float. With this amount also comes a currency property, which is also a string.&lt;/p&gt;
+
+&lt;p&gt;Here’s how we would handle that by using another &lt;code&gt;dry-rb&lt;/code&gt; library, &lt;code&gt;dry-struct&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class RefundComponent &amp;lt; ViewComponent::Base
+  extend Dry::Initializer
+  Types = Dry.Types()
+
+  option :standalone, Types::Bool
+  option :amount, Types::String
+  option :currency, Types::String
+
+  class Props &amp;lt; Dry::Struct
+    schema schema.strict
+
+    attribute :standalone, Types::Bool
+    attribute :amount, Types::Float
+    attribute :currency, Types::String
+  end
+
+  def props
+    Props.new(
+      standalone: standalone,
+      amount: amount.to_money(currency).to_f,
+      currency: currency,
+      # ...
+    ).to_h
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This way, we can call &lt;code&gt;RefundComponent&lt;/code&gt; with a stringified &lt;code&gt;amount&lt;/code&gt;, and have &lt;code&gt;props&lt;/code&gt; be the correct type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; component = RefundComponent.new(standalone: params[:standalone] == &apos;true&apos;, amount: &quot;1234&quot;, currency: &quot;AUD&quot;)
+=&amp;gt; #&amp;lt;RefundComponent:0x000000013e6a76a8 @amount=&quot;1234&quot;, @currency=&quot;AUD&quot;, @standalone=true&amp;gt;
+&amp;gt;&amp;gt; component.props
+=&amp;gt; {:standalone=&amp;gt;true, :amount=&amp;gt;1234.0, :currency=&amp;gt;&quot;AUD&quot;}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If the type of &lt;code&gt;Props#amount&lt;/code&gt; (once it has been coerced) wasn’t a float and instead was an integer, like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;amount: amount.to_money(currency).to_i,
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This code would cause this error:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1234 (Integer) has invalid type for :amount violates constraints (type?(Float, 1234) failed) (Dry::Types::SchemaError)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This helps alert us to a typing issue earlier on in our code, before it even reaches our React code.&lt;/p&gt;</content><author><name></name></author><summary type="html">This post was originally inspired by Konnor Rogers, and this gist from him.</summary></entry><entry><title type="html">Culture and Values</title><link href="http://localhost:4000/2021/12/culture-and-values" rel="alternate" type="text/html" title="Culture and Values" /><published>2021-12-09T00:00:00+11:00</published><updated>2021-12-09T00:00:00+11:00</updated><id>http://localhost:4000/2021/12/culture-and-values</id><content type="html" xml:base="http://localhost:4000/2021/12/culture-and-values">&lt;p&gt;It’s been one year since I was fired.&lt;/p&gt;
 
 &lt;p&gt;The Big Boss at the time wanted everyone to work out of an office in Melbourne (because by the end of 2020, everyone thought that The Pandemic was &lt;em&gt;over&lt;/em&gt;), and I was moving 250km to the west.&lt;/p&gt;
 
@@ -118,7 +255,7 @@
 
 &lt;p&gt;I guess that’s an indicator of personal growth. While trauma does happen, we can always &lt;em&gt;grow around&lt;/em&gt; it. To come up against adversarial situations is a part of what makes us human. We are not alone in these situations, as much as it can feel this way sometimes.&lt;/p&gt;
 
-&lt;p&gt;I hope that sharing a little bit about my history and how I’ve worked through it helps you, either today or into the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">It’s been one year since I was fired.</summary></entry><entry><title type="html">A tour of Twist</title><link href="/2021/08/a-tour-of-twist" rel="alternate" type="text/html" title="A tour of Twist" /><published>2021-08-11T00:00:00+10:00</published><updated>2021-08-11T00:00:00+10:00</updated><id>/2021/08/a-tour-of-twist</id><content type="html" xml:base="/2021/08/a-tour-of-twist">&lt;p&gt;When I’m writing &lt;a href=&quot;/books&quot;&gt;my books&lt;/a&gt;, it’s more often than not that reviewers read and review these books on an application that I built myself called &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;Twist&lt;/a&gt;. It looks like this:&lt;/p&gt;
+&lt;p&gt;I hope that sharing a little bit about my history and how I’ve worked through it helps you, either today or into the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">It’s been one year since I was fired.</summary></entry><entry><title type="html">A tour of Twist</title><link href="http://localhost:4000/2021/08/a-tour-of-twist" rel="alternate" type="text/html" title="A tour of Twist" /><published>2021-08-11T00:00:00+10:00</published><updated>2021-08-11T00:00:00+10:00</updated><id>http://localhost:4000/2021/08/a-tour-of-twist</id><content type="html" xml:base="http://localhost:4000/2021/08/a-tour-of-twist">&lt;p&gt;When I’m writing &lt;a href=&quot;/books&quot;&gt;my books&lt;/a&gt;, it’s more often than not that reviewers read and review these books on an application that I built myself called &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;Twist&lt;/a&gt;. It looks like this:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/radar/twist-v2/master/preview.png&quot; alt=&quot;Twist&quot; /&gt;&lt;/p&gt;
 
@@ -148,10 +285,10 @@
 
 &lt;p&gt;An application container is a concept from the &lt;code&gt;dry-system&lt;/code&gt; gem. It’s a space to define the components of your application and how they’re loaded. Twist does this with the following code:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require 'dry/system/container'
-require 'dry/auto_inject'
-require 'dry/system/loader/autoloading'
-require 'zeitwerk'
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require &apos;dry/system/container&apos;
+require &apos;dry/auto_inject&apos;
+require &apos;dry/system/loader/autoloading&apos;
+require &apos;zeitwerk&apos;
 
 module Twist
   class Container &amp;lt; Dry::System::Container
@@ -159,11 +296,11 @@ module Twist
 
     config.component_dirs.loader = Dry::System::Loader::Autoloading
     config.component_dirs.add_to_load_path = false
-    config.component_dirs.default_namespace = 'twist'
+    config.component_dirs.default_namespace = &apos;twist&apos;
 
     config.component_dirs.add &quot;lib&quot; do |dir|
       dir.auto_register = true
-      dir.default_namespace = 'twist'
+      dir.default_namespace = &apos;twist&apos;
     end
   end
 
@@ -218,14 +355,14 @@ Twist::Container.boot(:core, namespace: true) do
   use :persistence
 
   init do
-    require 'babosa'
-    require 'redcarpet'
-    require 'nokogiri'
-    require 'pygments'
-    require 'sidekiq'
+    require &apos;babosa&apos;
+    require &apos;redcarpet&apos;
+    require &apos;nokogiri&apos;
+    require &apos;pygments&apos;
+    require &apos;sidekiq&apos;
 
-    require 'dry/monads'
-    require 'dry/monads/do'
+    require &apos;dry/monads&apos;
+    require &apos;dry/monads/do&apos;
   end
 
 end
@@ -243,7 +380,7 @@ end
   end
 
   start do
-    container = ROM.container(:sql, Sequel.connect(ENV['DATABASE_URL']), extensions: [:pg_json]) do |config|
+    container = ROM.container(:sql, Sequel.connect(ENV[&apos;DATABASE_URL&apos;]), extensions: [:pg_json]) do |config|
       config.auto_registration(File.expand_path(&quot;lib/twist&quot;))
 
       # config.gateways[:default].use_logger Logger.new(STDOUT)
@@ -435,18 +572,18 @@ instance variables: @attributes
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
   module Web
     Router = Hanami::Router.new do
-      if ENV['APP_ENV'] == &quot;development&quot;
-        require 'sidekiq/web'
-        mount Sidekiq::Web, at: '/sidekiq'
+      if ENV[&apos;APP_ENV&apos;] == &quot;development&quot;
+        require &apos;sidekiq/web&apos;
+        mount Sidekiq::Web, at: &apos;/sidekiq&apos;
       end
 
-      post '/graphql', to: Controllers::GraphQL::Run.new
-      options '/graphql', to: Controllers::GraphQL::Run.new
+      post &apos;/graphql&apos;, to: Controllers::GraphQL::Run.new
+      options &apos;/graphql&apos;, to: Controllers::GraphQL::Run.new
 
-      post '/books/:permalink/receive', to: Controllers::Books::Receive.new
+      post &apos;/books/:permalink/receive&apos;, to: Controllers::Books::Receive.new
 
-      get '/oauth/authorize', to: Controllers::Oauth::Authorize.new
-      get '/oauth/callback', to: Controllers::Oauth::Callback.new
+      get &apos;/oauth/authorize&apos;, to: Controllers::Oauth::Authorize.new
+      get &apos;/oauth/callback&apos;, to: Controllers::Oauth::Callback.new
     end
   end
 end
@@ -504,7 +641,7 @@ end
 
 &lt;p&gt;The benefit here of using &lt;code&gt;dry-auto_inject&lt;/code&gt; is that we can quickly include dependencies from across our application into other classes. &lt;code&gt;dry-auto_inject&lt;/code&gt; works by re-defining the &lt;code&gt;initialize&lt;/code&gt; method wherever it is used to something similar to this:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def initialize(find_book: Twist::Container['transactions.books.find'], find_or_create_branch: Twist::Container['transactions.branches.find_or_create'])
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def initialize(find_book: Twist::Container[&apos;transactions.books.find&apos;], find_or_create_branch: Twist::Container[&apos;transactions.branches.find_or_create&apos;])
   @find_book = find_book
   @find_or_create_branch = find_or_create_branch
 end
@@ -562,7 +699,7 @@ end
           token = token.split.last
           return Failure(&quot;no token specified&quot;) unless token
 
-          payload, _headers = JWT.decode token, ENV.fetch('AUTH_TOKEN_SECRET'), true, algorithm: 'HS256'
+          payload, _headers = JWT.decode token, ENV.fetch(&apos;AUTH_TOKEN_SECRET&apos;), true, algorithm: &apos;HS256&apos;
           user = user_repo.find_by_email(payload[&quot;email&quot;])
           user ? Success(user) : Failure(&quot;no user found&quot;)
         end
@@ -788,7 +925,7 @@ GraphQL::RakeTask.new(
 
 &lt;hr /&gt;
 
-&lt;p&gt;If you like what you see in this post, you might also like to read my book &lt;a href=&quot;https://leanpub.com/maintain-rails/c/opinions&quot;&gt;Maintainable Rails&lt;/a&gt; which is just $5 at the moment. This book demonstrates how to bring the concepts shown in this post into a brand new Rails application, ultimately leading to an application that is easier to maintain in the long-term.&lt;/p&gt;</content><author><name></name></author><summary type="html">When I’m writing my books, it’s more often than not that reviewers read and review these books on an application that I built myself called Twist. It looks like this:</summary></entry><entry><title type="html">On coding tests</title><link href="/2021/07/on-coding-tests" rel="alternate" type="text/html" title="On coding tests" /><published>2021-07-27T00:00:00+10:00</published><updated>2021-07-27T00:00:00+10:00</updated><id>/2021/07/on-coding-tests</id><content type="html" xml:base="/2021/07/on-coding-tests">&lt;p&gt;As you might know, I’ve been &lt;a href=&quot;https://ryanbigg.com/2021/07/job-hunt-q2-2021&quot;&gt;job hunting recently&lt;/a&gt;. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.&lt;/p&gt;
+&lt;p&gt;If you like what you see in this post, you might also like to read my book &lt;a href=&quot;https://leanpub.com/maintain-rails/c/opinions&quot;&gt;Maintainable Rails&lt;/a&gt; which is just $5 at the moment. This book demonstrates how to bring the concepts shown in this post into a brand new Rails application, ultimately leading to an application that is easier to maintain in the long-term.&lt;/p&gt;</content><author><name></name></author><summary type="html">When I’m writing my books, it’s more often than not that reviewers read and review these books on an application that I built myself called Twist. It looks like this:</summary></entry><entry><title type="html">On coding tests</title><link href="http://localhost:4000/2021/07/on-coding-tests" rel="alternate" type="text/html" title="On coding tests" /><published>2021-07-27T00:00:00+10:00</published><updated>2021-07-27T00:00:00+10:00</updated><id>http://localhost:4000/2021/07/on-coding-tests</id><content type="html" xml:base="http://localhost:4000/2021/07/on-coding-tests">&lt;p&gt;As you might know, I’ve been &lt;a href=&quot;https://ryanbigg.com/2021/07/job-hunt-q2-2021&quot;&gt;job hunting recently&lt;/a&gt;. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.&lt;/p&gt;
 
 &lt;p&gt;But that’s okay, because it “should only take up to 3 hours to do”. Now let’s theoretically say that I’m talking with 5 companies now. That’s &lt;em&gt;15 hours&lt;/em&gt; of my time, that I have to pull out of work, life or sleep, to do these coding tests. All to prove to them that I can code!&lt;/p&gt;
 
@@ -822,7 +959,7 @@ GraphQL::RakeTask.new(
 
 &lt;p&gt;I’m personally &lt;em&gt;done&lt;/em&gt; with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.&lt;/p&gt;
 
-&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
+&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="http://localhost:4000/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>http://localhost:4000/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="http://localhost:4000/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new.call(book_params)
 &lt;/code&gt;&lt;/pre&gt;
@@ -867,7 +1004,7 @@ end
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new(book_repository: book_repo).call(book_params)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;But that’s a story for another day.&lt;/p&gt;</content><author><name></name></author><summary type="html">In big Rails projects there’s been a bit of a push to move things out to service objects. You might recognise these from their appearance in things like controllers:</summary></entry><entry><title type="html">Job Hunt Q2 2021</title><link href="/2021/07/job-hunt-q2-2021" rel="alternate" type="text/html" title="Job Hunt Q2 2021" /><published>2021-07-19T00:00:00+10:00</published><updated>2021-07-19T00:00:00+10:00</updated><id>/2021/07/job-hunt-q2-2021</id><content type="html" xml:base="/2021/07/job-hunt-q2-2021">&lt;p&gt;After &lt;a href=&quot;https://ryanbigg.com/2021/04/finding-a-new-contract-gig&quot;&gt;wrapping up a contract&lt;/a&gt; earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that &lt;em&gt;that&lt;/em&gt; job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.&lt;/p&gt;
+&lt;p&gt;But that’s a story for another day.&lt;/p&gt;</content><author><name></name></author><summary type="html">In big Rails projects there’s been a bit of a push to move things out to service objects. You might recognise these from their appearance in things like controllers:</summary></entry><entry><title type="html">Job Hunt Q2 2021</title><link href="http://localhost:4000/2021/07/job-hunt-q2-2021" rel="alternate" type="text/html" title="Job Hunt Q2 2021" /><published>2021-07-19T00:00:00+10:00</published><updated>2021-07-19T00:00:00+10:00</updated><id>http://localhost:4000/2021/07/job-hunt-q2-2021</id><content type="html" xml:base="http://localhost:4000/2021/07/job-hunt-q2-2021">&lt;p&gt;After &lt;a href=&quot;https://ryanbigg.com/2021/04/finding-a-new-contract-gig&quot;&gt;wrapping up a contract&lt;/a&gt; earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that &lt;em&gt;that&lt;/em&gt; job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.&lt;/p&gt;
 
 &lt;p&gt;Last time I pitched myself as a “mercenary developer wizard”. While I enjoy developing code, nothing brings more joy than developing &lt;em&gt;people&lt;/em&gt;. Running the Culture Amp JEP was some of the most fun-at-work I’ve had. I would love to do that stuff again. So I’ve been pitching myself this time as someone who would rather be developing people, than developing code. I could definitely do both!&lt;/p&gt;
 
@@ -885,7 +1022,7 @@ end
 
 &lt;p&gt;I’m disheartened by the current outcomes from the current iteration of the job hunting process, but things have changed before and might change again.&lt;/p&gt;
 
-&lt;p&gt;Always the next step.&lt;/p&gt;</content><author><name></name></author><summary type="html">After wrapping up a contract earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that that job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.</summary></entry><entry><title type="html">How I found a new contract gig</title><link href="/2021/04/finding-a-new-contract-gig" rel="alternate" type="text/html" title="How I found a new contract gig" /><published>2021-04-29T00:00:00+10:00</published><updated>2021-04-29T00:00:00+10:00</updated><id>/2021/04/finding-a-new-contract-gig</id><content type="html" xml:base="/2021/04/finding-a-new-contract-gig">&lt;p&gt;I’ve resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.&lt;/p&gt;
+&lt;p&gt;Always the next step.&lt;/p&gt;</content><author><name></name></author><summary type="html">After wrapping up a contract earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that that job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.</summary></entry><entry><title type="html">How I found a new contract gig</title><link href="http://localhost:4000/2021/04/finding-a-new-contract-gig" rel="alternate" type="text/html" title="How I found a new contract gig" /><published>2021-04-29T00:00:00+10:00</published><updated>2021-04-29T00:00:00+10:00</updated><id>http://localhost:4000/2021/04/finding-a-new-contract-gig</id><content type="html" xml:base="http://localhost:4000/2021/04/finding-a-new-contract-gig">&lt;p&gt;I’ve resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.&lt;/p&gt;
 
 &lt;p&gt;As a “mercenary developer wizard”, I talk to people, we agree to work together for a period of time, we do the work, we make sure everyone’s happy with the work, then they pay me money. Sometimes I’ll tweet the odd rant about how Rails is bad, even though it pays all my bills. It’s a neat arrangement.&lt;/p&gt;
 
@@ -985,7 +1122,7 @@ end
 
 &lt;p&gt;And that really helped me make the final decision and to know that this was the right decision to make.&lt;/p&gt;
 
-&lt;p&gt;So on May 10th, I’ll start working at a new gig, still writing Rails (and tweeting about it) and some TypeScript / React for the next 3 months, working on a mid-sized team, helping everyone get to where we need to be. And possibly longer than that!&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.</summary></entry><entry><title type="html">View Components: The Missing Link</title><link href="/2021/04/view-components-the-missing-link" rel="alternate" type="text/html" title="View Components: The Missing Link" /><published>2021-04-07T00:00:00+10:00</published><updated>2021-04-07T00:00:00+10:00</updated><id>/2021/04/view-components-the-missing-link</id><content type="html" xml:base="/2021/04/view-components-the-missing-link">&lt;p&gt;There has been an uptick in making Rails play nice with React recently, made possible by gems such as &lt;a href=&quot;https://github.com/reactjs/react-rails&quot;&gt;react-rails&lt;/a&gt;. The &lt;code&gt;react-rails&lt;/code&gt; gem allows you to inject React components into your Rails views like this:&lt;/p&gt;
+&lt;p&gt;So on May 10th, I’ll start working at a new gig, still writing Rails (and tweeting about it) and some TypeScript / React for the next 3 months, working on a mid-sized team, helping everyone get to where we need to be. And possibly longer than that!&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve resolved this year to work as a developer-for-hire / contractor / sole-trader / mercenary developer wizard. This decision came after what was frankly an unmitigated disaster of a year-and-a-bit with two redundancies in a row topped off with being fired. Thanks, 2020. Go fuck yourself.</summary></entry><entry><title type="html">View Components: The Missing Link</title><link href="http://localhost:4000/2021/04/view-components-the-missing-link" rel="alternate" type="text/html" title="View Components: The Missing Link" /><published>2021-04-07T00:00:00+10:00</published><updated>2021-04-07T00:00:00+10:00</updated><id>http://localhost:4000/2021/04/view-components-the-missing-link</id><content type="html" xml:base="http://localhost:4000/2021/04/view-components-the-missing-link">&lt;p&gt;There has been an uptick in making Rails play nice with React recently, made possible by gems such as &lt;a href=&quot;https://github.com/reactjs/react-rails&quot;&gt;react-rails&lt;/a&gt;. The &lt;code&gt;react-rails&lt;/code&gt; gem allows you to inject React components into your Rails views like this:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= react_component(&quot;HelloWorld&quot;, { greeting: &quot;Hello from react-rails.&quot; }) %&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
@@ -1047,11 +1184,13 @@ end
 &lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= helpers.react_component &quot;UserPicker&quot;, **props %&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;View component renders components using a combination of the Ruby class and the ERB template, both named the smae.&lt;/p&gt;
+&lt;p&gt;View component renders components using a combination of the Ruby class and the ERB template, both named the same.&lt;/p&gt;
 
 &lt;p&gt;To access the &lt;code&gt;react_component&lt;/code&gt; helper, we need to use the &lt;code&gt;helpers&lt;/code&gt; method provided by &lt;code&gt;view_component&lt;/code&gt;. But there’s not much difference here to what we had earlier in a view.&lt;/p&gt;
 
 &lt;p&gt;The main thing to note is that our Ruby code now lives in a Ruby file, and the code to render the React component lives over in the component’s view. If we had any additional HTML that was required to be wrapped around this component, this is where it would belong too. I’ve left that out to make things simple here.&lt;/p&gt;
+
+&lt;p&gt;If this is the only line of code that would be in our view, we can instead define a &lt;code&gt;call&lt;/code&gt; method on the component class:&lt;/p&gt;
 
 &lt;h3 id=&quot;rendering-a-view-component&quot;&gt;Rendering a view component&lt;/h3&gt;
 
@@ -1131,7 +1270,7 @@ end
     &amp;lt;p&amp;gt;{translations.selectAUser}&amp;lt;/p&amp;gt;
   )
 }
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">There has been an uptick in making Rails play nice with React recently, made possible by gems such as react-rails. The react-rails gem allows you to inject React components into your Rails views like this:</summary></entry><entry><title type="html">The Bikeshed</title><link href="/2021/03/the-bikeshed" rel="alternate" type="text/html" title="The Bikeshed" /><published>2021-03-29T00:00:00+11:00</published><updated>2021-03-29T00:00:00+11:00</updated><id>/2021/03/the-bikeshed</id><content type="html" xml:base="/2021/03/the-bikeshed">&lt;p&gt;Hello.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">There has been an uptick in making Rails play nice with React recently, made possible by gems such as react-rails. The react-rails gem allows you to inject React components into your Rails views like this:</summary></entry><entry><title type="html">The Bikeshed</title><link href="http://localhost:4000/2021/03/the-bikeshed" rel="alternate" type="text/html" title="The Bikeshed" /><published>2021-03-29T00:00:00+11:00</published><updated>2021-03-29T00:00:00+11:00</updated><id>http://localhost:4000/2021/03/the-bikeshed</id><content type="html" xml:base="http://localhost:4000/2021/03/the-bikeshed">&lt;p&gt;Hello.&lt;/p&gt;
 
 &lt;p&gt;This is a meeting to discuss the bike shed project. I called this 2.5hr long meeting (running until 1pm) on a Monday so we can start the week by deciding the way forward for the bike shed project.&lt;/p&gt;
 
@@ -1145,7 +1284,7 @@ end
 
 &lt;p&gt;Dave 3 estimates the rebuild of the bike shed will take approximately 3 months, which coincidentally is two weeks longer than our contract lasts for. We will talk to the management here about renewing our contract for another 12 months.&lt;/p&gt;
 
-&lt;p&gt;Are there any questions before we begin?&lt;/p&gt;</content><author><name></name></author><summary type="html">Hello.</summary></entry><entry><title type="html">Maintainable Rails</title><link href="/2021/03/maintainable-rails" rel="alternate" type="text/html" title="Maintainable Rails" /><published>2021-03-23T00:00:00+11:00</published><updated>2021-03-23T00:00:00+11:00</updated><id>/2021/03/maintainable-rails</id><content type="html" xml:base="/2021/03/maintainable-rails">&lt;p&gt;&lt;em&gt;This is the Preface from my book, &lt;a href=&quot;https://leanpub.com/maintain-rails&quot;&gt;Maintainable Rails&lt;/a&gt;, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Are there any questions before we begin?&lt;/p&gt;</content><author><name></name></author><summary type="html">Hello.</summary></entry><entry><title type="html">Maintainable Rails</title><link href="http://localhost:4000/2021/03/maintainable-rails" rel="alternate" type="text/html" title="Maintainable Rails" /><published>2021-03-23T00:00:00+11:00</published><updated>2021-03-23T00:00:00+11:00</updated><id>http://localhost:4000/2021/03/maintainable-rails</id><content type="html" xml:base="http://localhost:4000/2021/03/maintainable-rails">&lt;p&gt;&lt;em&gt;This is the Preface from my book, &lt;a href=&quot;https://leanpub.com/maintain-rails&quot;&gt;Maintainable Rails&lt;/a&gt;, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.&lt;/em&gt;&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1505,150 +1644,4 @@ change, but at least &lt;em&gt;fewer&lt;/em&gt; reasons to change than Active Re
 
 &lt;hr /&gt;
 
-&lt;p&gt;_If you want to find out how to build maintainable Rails applications, read my book: &lt;a href=&quot;https://leanpub.com/maintain-rails&quot;&gt;Maintainable Rails&lt;/a&gt;, available on Leanpub for $10 for the next month.&lt;/p&gt;</content><author><name></name></author><summary type="html">This is the Preface from my book, Maintainable Rails, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.</summary></entry><entry><title type="html">Contracting as a developer in Australia</title><link href="/2021/03/getting-started-with-contracting-in-australia" rel="alternate" type="text/html" title="Contracting as a developer in Australia" /><published>2021-03-04T00:00:00+11:00</published><updated>2021-03-04T00:00:00+11:00</updated><id>/2021/03/getting-started-with-contracting-in-australia</id><content type="html" xml:base="/2021/03/getting-started-with-contracting-in-australia">&lt;p&gt;(All advice in this blog post is of a general nature and comes with the regular disclaimers, such as: “I am not a lawyer / tax agent”, etc. etc. If you have questions about the law or your tax obligations, talk to real lawyers, tax agents or even the people at the ATO.)&lt;/p&gt;
-
-&lt;p&gt;(This blog post will be updated as I find out more things about contracting – there is definitely more to learn!)&lt;/p&gt;
-
-&lt;p&gt;After working as a developer full-time for a number of years, I’ve decided to give that a break. And instead I’m now working full-time as a sole-trader contractor instead.&lt;/p&gt;
-
-&lt;p&gt;Maybe it was the two redundancies and then being fired. Maybe it was the “ride or die” / undying loyalty that companies want from their employees now. Who knows what truly led to this ridiculous decision to work as a solo contractor.&lt;/p&gt;
-
-&lt;p&gt;It wasn’t supposed to be full-time – but having two months off work does &lt;em&gt;nasty&lt;/em&gt; things to your bank account. Alas. So I’m working full-time (for now) as a contractor, hoping to reduce that to 4 days in the near future.&lt;/p&gt;
-
-&lt;p&gt;Another developer by the name of Susan Pan asked these questions on an Australian web developer Slack group recently:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Hey everyone, was wondering if there are any people here with contracting experience? I’m new to the industry and also new to contracting so I have no idea about the logistics of it all (working out a salary, need an abn?, legal protections, etc). I’d be super appreciative if anyone has any time to chat/dm about their experience? Thanks!&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Here’s my (slightly edited) answers to those questions, and I’ll add a bit extra here too that I didn’t include there. Just for you!&lt;/p&gt;
-
-&lt;h2 id=&quot;abn&quot;&gt;ABN&lt;/h2&gt;
-
-&lt;p&gt;If you’re working as a contractor within Australia it’s likely that you’ll need an ABN. You can &lt;a href=&quot;https://abr.gov.au/ABRWeb/Default.aspx?Target=CheckAbnEntitlement&amp;amp;pid=71&quot;&gt;check your ABN eligibility here&lt;/a&gt;. I have an ABN. You can look it up!&lt;/p&gt;
-
-&lt;p&gt;An ABN helps identify transactions between businesses within Australia. The government will &lt;em&gt;probably&lt;/em&gt; require you to have one, so I would suggest getting one as a first point of call. But! Check your eligibility first.&lt;/p&gt;
-
-&lt;h2 id=&quot;money&quot;&gt;Money&lt;/h2&gt;
-
-&lt;h3 id=&quot;working-out-a-daily-rate&quot;&gt;Working out a daily rate&lt;/h3&gt;
-
-&lt;p&gt;I contract out at a daily rate that was worked out based on what I was previously paid ($150k as a senior Ruby / JavaScript dev), plus a bit of extra padding to account for things like 1) making my own tax + super contributions 2) giving myself annual leave and sick leave.&lt;/p&gt;
-
-&lt;p&gt;I am now charging out at [redacted] as a contractor, working 8 hour days (with an hour lunch break somewhere in there, unpaid). This works out to [redacted]/day, which is a nice round number that makes me happy.&lt;/p&gt;
-
-&lt;p&gt;This base-hour number is a point-in-time sample and may vary, depending on circumstances. Someone else on that same Slack group gave this advice:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The best advice I ever got for setting your rate is “think of the highest number you can say with a straight face, then say that number”&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;That’s essentially how I work out my number, too. What I will say is that if I was working full-time at this rate that I would make somewhere north of $200k/yr, pre-tax. The overall plan is to &lt;em&gt;not&lt;/em&gt; work full-time, and to work part-time instead.&lt;/p&gt;
-
-&lt;p&gt;What clients get for that number is someone with a decade and a half of web development experience in many different teams of different shapes and sizes, with a good knowledge across many different languages. And: “he wrote &lt;em&gt;the book on Rails!&lt;/em&gt;”&lt;/p&gt;
-
-&lt;h3 id=&quot;invoicing&quot;&gt;Invoicing&lt;/h3&gt;
-
-&lt;p&gt;Invoicing: get yourself a &lt;a href=&quot;https://xero.com&quot;&gt;Xero&lt;/a&gt; subscription and hook it up to your bank account. Dedicate a time on a particular morning each week to track expenses in Xero and issue invoices or to follow up unpaid invoices.&lt;/p&gt;
-
-&lt;p&gt;Expense tracking is incredibly helpful for depreciating things around tax time like the “tools of the trade”: laptops, chairs, desks, pencils, pens, rulers… if you use it for a job, keep the receipt (in Xero) and list it under business expenses.&lt;/p&gt;
-
-&lt;p&gt;On that same topic: talk to a tax agent around tax time. Again, this is another couple-of-hundred-dollars worth of expenses but the good ones will save you more than what you pay them in raw time-value. The tax agent bill can then be expensed the next financial year. Your tax agent’s job is to sift through the data you’ve diligently collected in Xero and to help you pay the correct amount of tax, or even in some cases to get a tax refund if you’ve overpaid in your tax obligations.&lt;/p&gt;
-
-&lt;h3 id=&quot;gst&quot;&gt;GST&lt;/h3&gt;
-
-&lt;p&gt;Speaking of tax: if you’re earning over $75k, you’ll need to &lt;a href=&quot;https://www.ato.gov.au/Business/GST/Registering-for-GST/&quot;&gt;register for GST as well&lt;/a&gt;. The ATO purports to have the facilities to do this online, but when I tried using their app it shit the bed (maybe they need to hire more contractors?) and so I had to call them up. Even though I had to wait a while, the agent was super helpful and guided me through all the steps.&lt;/p&gt;
-
-&lt;p&gt;I’m now registered for GST, which means that I need to &lt;em&gt;collect&lt;/em&gt; GST from the clients that I charge, and then pay that money every quarter to the government, through a process called a Business Activity Statement. You take &lt;em&gt;all&lt;/em&gt; the money you charged for GST, &lt;em&gt;minus&lt;/em&gt; the GST on purchases you’ve paid for the business, and that’s then your BAS payment for the quarter.&lt;/p&gt;
-
-&lt;p&gt;Xero has a great automatic tool for calculating BAS.&lt;/p&gt;
-
-&lt;h3 id=&quot;whats-it-going-to-take-to-run-the-business-this-month&quot;&gt;What’s it going to take to run the business this month?&lt;/h3&gt;
-
-&lt;p&gt;Once I’ve invoiced the client, received the money and correctly set aside the GST amount, it’s math time.&lt;/p&gt;
-
-&lt;p&gt;For the sole-tradership that I operate, there are business expenses that need to be taken of on usually a monthly recurring rate. There are some that are &lt;em&gt;yearly&lt;/em&gt; as well. These provide me with a baseline cost of what it’s going to take to run the business this month. The yearly ones get divided by 12 and treated like a monthly cost, except the money is transferred into the business savings account.&lt;/p&gt;
-
-&lt;h3 id=&quot;pay-yourself&quot;&gt;Pay yourself&lt;/h3&gt;
-
-&lt;p&gt;Using that base number, I can then work out that my &lt;a href=&quot;https://www.ato.gov.au/rates/individual-income-tax-rates/&quot;&gt;income tax rate&lt;/a&gt; is somewhere in the range of 37c-45c in the dollar (after certain amounts), depending on if I end up making more than $180k this year or not. This depends on how many weeks I can work this year. This is impossible to predict, given the nature of contracting work. Tide goes in, tide goes out.&lt;/p&gt;
-
-&lt;p&gt;So I err on the side of it being 45c instead of 37c. To make the mental math easy, I take whatever I get paid and put away half (50%) of that into a savings account that is then, essentially, untouchable. That then goes to paying my quarterly BAS bills that I get from the government with the money set aside for tax reasons listed in the BAS as a “tax withheld” amount.&lt;/p&gt;
-
-&lt;p&gt;Previously, I was on a Pay-as-you-go quarterly payment plan with the government thanks to my &lt;a href=&quot;https://leanpub.com&quot;&gt;Leanpub royalties&lt;/a&gt; – but that’ll be changing to a quarterly Business Activity Statement soon due to the increased nature of my “business’s” earnings.&lt;/p&gt;
-
-&lt;p&gt;My effective tax rate is not exactly 37c or 45c on the dollar for every dollar – it’s important to note here that it’s 37c on every dollar &lt;em&gt;over&lt;/em&gt; $120,000. So if my annual income was $150,000, the tax would not be $55,500 ($150k x 0.37). It would be more like: $150,000 - $120,000 = $30,000. Then that $30,000 x 0.37 = $11,100, plus the base rate of $29,467, or $40,567, or about 27% of $150k. An important distinction to make here!&lt;/p&gt;
-
-&lt;p&gt;By the time tax time comes around and I talk to my tax agent (below), we do some math and work out how much additional tax I need to pay. Hopefully this amount is zero, and that there’s also a nice tax return attached to that. If it’s not, no sweat: the money in the business savings account will cover it.&lt;/p&gt;
-
-&lt;p&gt;If there’s still leftover money in the savings account after all that then that gets rolled into the general transaction account for the business and I’ll spend it on things that I need, or transfer it into my family’s accounts as an extra bonus.&lt;/p&gt;
-
-&lt;p&gt;I then take 9.5% of whatever I get paid and put that directly into my superannuation. When I retire, I want money to be able to live, so this is a sensible choice. I could contribute more here.&lt;/p&gt;
-
-&lt;p&gt;I also take 5% out of this total amount for leave entitlements. I am (unfortunately) not invulnerable, so I will need paid sick leave from &lt;em&gt;somewhere&lt;/em&gt;, and occasionally I might like to leave my computer so annual leave needs to be accounted for too. This really should be somewhere in the range of 11-12%, as annual + sick leave entitlements are usually in the range of 6 weeks of the year (11.5% of the year)… but I’m bootstrapping my consulting business now and I’m choosing to take fewer leave days for the moment.&lt;/p&gt;
-
-&lt;p&gt;By this point I’ve deducted these things from my business’s income:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Running the business expenses&lt;/li&gt;
-  &lt;li&gt;Tax obligations (both GST + personal income tax)&lt;/li&gt;
-  &lt;li&gt;Superannuation&lt;/li&gt;
-  &lt;li&gt;Leave entitlements&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The rest of this money then goes into my family’s bank accounts.&lt;/p&gt;
-
-&lt;h2 id=&quot;get-it-in-writing&quot;&gt;Get it in writing&lt;/h2&gt;
-
-&lt;p&gt;Next up: contracts!&lt;/p&gt;
-
-&lt;p&gt;My wife is an ex-lawyer and read over a contract that I drafted using my significant (read: completely lacking) legal expertise.&lt;/p&gt;
-
-&lt;p&gt;Having a Real Lawyer™ look over the contract ensures that I’m not missing obvious things (like including GST in payments, dummy!). Get yourself a contract lawyer who can do the same.&lt;/p&gt;
-
-&lt;p&gt;The contract is designed to answer the who, what, why, where, when, how questions:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Who’s this contract between?&lt;/li&gt;
-  &lt;li&gt;What’s this contract about?&lt;/li&gt;
-  &lt;li&gt;Why are we entering into this agreement?&lt;/li&gt;
-  &lt;li&gt;Where are we gonna be doing the work?&lt;/li&gt;
-  &lt;li&gt;For how long is this work going to happen?&lt;/li&gt;
-  &lt;li&gt;How are we going to work together?&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Get a contract. Get it signed.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;You cannot be a contractor without a contract. You will be an “or”. Nobody wants an “or”&lt;/strong&gt;. Get it in writing. Get it signed. Dated. As the wise Jeff Casimir once said, contracts are written while in love, but only ever used in hate. You will want a good one for when shit hits the fan. And it will hit the fan.&lt;/p&gt;
-
-&lt;p&gt;If you agree to some work, it’s in writing &lt;em&gt;in your personal email account, not in their company’s Slack&lt;/em&gt;. It’s timestamped, filed away and easily accessible. Can you find that documentation with minimal effort? You better be able to.&lt;/p&gt;
-
-&lt;h2 id=&quot;getting-paid&quot;&gt;Getting paid&lt;/h2&gt;
-
-&lt;p&gt;In order to make it ridiculously easy for people to pay me, I work with Australian-only clients &lt;em&gt;and&lt;/em&gt; I offer two different payment methods: bank transfer or PayPal. Anyone who’s adulted a single day in Australia will know how to do a bank transfer between Australian bank accounts. Australian-only clients means that I don’t need to worry about international transfer fees, currency conversions or tracking alternative income for tax purposes. PayPal is for the occasional international client, and for Leanpub royalties.&lt;/p&gt;
-
-&lt;p&gt;I issue invoices (through Xero) fortnightly for one week gone, and one week coming. For example, if I was issuing an invoice on next Monday, the 8th of March, that invoice would cover all my work for the week of the 1st-5th of March &lt;em&gt;and also&lt;/em&gt; the work that I would do during the week of the 8th-12th March. If I (unexpectedly) take time off that week, it would be deducted from the following invoice. That invoice would be on the 22nd of March, and would cover 15th-19th and 22nd-26th March, and so on and so on.&lt;/p&gt;
-
-&lt;p&gt;On the topic of getting paid: all my invoices are 14 days payable. This means that if an invoice is issued on, say, the 8th of March, then it must be paid by the time the 22nd of March comes around.&lt;/p&gt;
-
-&lt;p&gt;If the invoice is not paid by that time, then I will stop working. No exceptions. No “check is in the mail”, no “I’ll pay you next week”. If the money is not in the bank account by the very day the invoice says it is due, the work does not get done. Absofuckinglutely not.&lt;/p&gt;
-
-&lt;p&gt;Why am I so bullish on this point? Because I’ve been dicked around before, and I &lt;em&gt;will not&lt;/em&gt; let it happen again. As a contractor, I rely on a steady stream of income to support my family and the moment that is cut off is the very moment I will need to start finding a new stream.&lt;/p&gt;
-
-&lt;p&gt;Take pride in yourself as a contractor and have the same rules.&lt;/p&gt;
-
-&lt;h3 id=&quot;billable-hours&quot;&gt;Billable hours&lt;/h3&gt;
-
-&lt;p&gt;On a related topic: billable hours. Did you spend time working for a client between the hours of 9am and 5pm? That’s billable time. Did you spend time outside of those hours working for the client? Maybe you had an on-call incident in the middle of the night or had to work a weekend? That’s billable too. Get it in writing in the contract that it’s a thing that &lt;em&gt;might&lt;/em&gt; happen, and &lt;em&gt;bill for it&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Conversely: did you spend an hour at a dentist appointment? That’s not billable. Haircut? Unbillable. Had a case of the “dunwannas” and needed to lie on the couch? Don’t you dare think about billing for it.&lt;/p&gt;
-
-&lt;p&gt;When it comes to invoicing clients for hours worked, keep it honest in &lt;em&gt;both directions&lt;/em&gt;. Bill for the hours you’ve worked (even if they’re slightly outside of the agreed time) and do not bill for the hours you did not work for them. Honesty is the best policy here.&lt;/p&gt;
-
-&lt;h2 id=&quot;leave-the-campsite-better-than-how-you-found-it&quot;&gt;Leave the campsite better than how you found it&lt;/h2&gt;
-
-&lt;p&gt;The header of this section is a Scouts motto. After attending the scouts for precisely zero days of my life, this statement &lt;em&gt;still&lt;/em&gt; resonates with me.&lt;/p&gt;
-
-&lt;p&gt;I care about the long-term viability of your codebase, company and team, not just the money coming in the door. The money in the door helps me keep my family alive and happy. The work I deliver at your company keeps &lt;em&gt;your&lt;/em&gt; families alive and happy, and I want that to remain that way long-term. If it remains that way, it’s likely you’ll keep me as a contractor or at least recommend me to your favourite people.&lt;/p&gt;
-
-&lt;p&gt;I’ve had to work on codebases where contractors who &lt;em&gt;didn’t&lt;/em&gt; care about those things (“oh fuck we’ve only got 2 weeks shipitshipitshipit”) and it was miserable. I don’t want misery – I want happiness. I want people to go “yeah, you should hire Ryan because he came in for 3 months and did X, Y and Z and rocked our socks.” Yeah it’s nice being paid, but the &lt;em&gt;success&lt;/em&gt; of doing a good job is what counts.&lt;/p&gt;</content><author><name></name></author><summary type="html">(All advice in this blog post is of a general nature and comes with the regular disclaimers, such as: “I am not a lawyer / tax agent”, etc. etc. If you have questions about the law or your tax obligations, talk to real lawyers, tax agents or even the people at the ATO.)</summary></entry></feed>
+&lt;p&gt;_If you want to find out how to build maintainable Rails applications, read my book: &lt;a href=&quot;https://leanpub.com/maintain-rails&quot;&gt;Maintainable Rails&lt;/a&gt;, available on Leanpub for $10 for the next month.&lt;/p&gt;</content><author><name></name></author><summary type="html">This is the Preface from my book, Maintainable Rails, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.</summary></entry></feed>
