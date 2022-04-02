@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .swatch {
+        border-radius: 10px;
+        border: 1px solid #999999;
+        width: 100%;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .game-container {
+        display: flex;
+        margin-bottom: 20px;
+      }
+
+      canvas {
+        margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="game-container">
+        <canvas id="game" width="500" height="500" style="border: 1px solid black">
+
+        </canvas>
+      </div>
+      <div class="colors" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">
+
+      </div>
+
+      <div class="url"></div>
+    </div>
+
+    <script type="text/javascript">
+
+      class Coord {
+        constructor (x, y, color) {
+          this.x = x;
+          this.y = y;
+          this.colorIndex = color;
+        }
+
+        get details() {
+          return `${this.x.padStart(2, '0')},${this.y.padStart(2, '0')},${this.colorIndex}`
+        }
+      }
+
+      const colors = [
+        "#FF4500",
+        "#FFA800",
+        "#FFD635",
+        "#00A368",
+        "#7EED56",
+        "#2450A4",
+        "#3690EA",
+        "#51E9F4",
+        "#811E9F",
+        "#B44AC0",
+        "#FF99AA",
+        "#9C6926",
+        "#000000",
+        "#898D90",
+        "#D4D7D9",
+        "#FFFFFF"
+      ]
+      const game = document.getElementById('game')
+      const ctx = game.getContext('2d');
+      const colorSwatchBar = document.querySelector(".colors");
+      const size = 25
+      let log = [];
+      ctx.fillStyle = "#000";
+      for (let [name, color] of Object.entries(colors)) {
+        const swatch = document.createElement("div")
+        swatch.classList.add("swatch")
+        swatch.style.backgroundColor = color
+        swatch.style.borderRadius = "10px"
+        swatch.style.width = `100%`;
+        swatch.style.height = `${size * 2}px`;
+        swatch.onclick = (e) => {
+          ctx.fillStyle = e.currentTarget.style["background-color"]
+        }
+        colorSwatchBar.appendChild(swatch)
+      }
+
+      const boundaries = game.getBoundingClientRect();
+
+
+      game.onmousedown = (e) => {
+        const x = Math.floor((e.clientX - boundaries.left) / size) * size;
+        const y = Math.floor((e.clientY - boundaries.top) / size) * size;
+        ctx.fillRect(x, y, size, size);
+        const xLog = `${x / size}`.padStart(2, '0')
+        const yLog = `${x / size}`.padStart(2, '0')
+        const indexLog = colors.indexOf(ctx.fillStyle.toUpperCase());
+        const logLine = new Coord(xLog, yLog, indexLog)
+        const anyMatch = log.filter((coord) => coord.x == logLine.x && coord.y == logLine.y && coord.color == indexLog)
+        if (anyMatch.length == 0) {
+          log.push(logLine)
+        }
+
+
+        // document.querySelector(".url").innerText = log[0] && log[0].details;
+
+      }
+
+
+
+    </script>
+  </body>
+</html>
