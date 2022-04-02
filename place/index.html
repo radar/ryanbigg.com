@@ -17,6 +17,7 @@
         border-radius: 10px;
         border: 1px solid #999999;
         width: 100%;
+        height: 15vh;
       }
 
       .container {
@@ -31,6 +32,15 @@
       canvas {
         margin: auto;
       }
+
+      .colors {
+        width: calc(100vw - 36px);
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+        position: fixed;
+        bottom: 1vh;
+      }
     </style>
   </head>
   <body>
@@ -40,7 +50,7 @@
 
         </canvas>
       </div>
-      <div class="colors" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">
+      <div class="colors">
 
       </div>
 
@@ -81,17 +91,18 @@
       ]
       const game = document.getElementById('game')
       const ctx = game.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      ctx.fillStyle = "#000";
       const colorSwatchBar = document.querySelector(".colors");
       const size = 25
       let log = [];
-      ctx.fillStyle = "#000";
+
       for (let [name, color] of Object.entries(colors)) {
         const swatch = document.createElement("div")
         swatch.classList.add("swatch")
         swatch.style.backgroundColor = color
         swatch.style.borderRadius = "10px"
         swatch.style.width = `100%`;
-        swatch.style.height = `${size * 2}px`;
         swatch.onclick = (e) => {
           ctx.fillStyle = e.currentTarget.style["background-color"]
         }
