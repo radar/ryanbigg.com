@@ -25,12 +25,18 @@
       }
 
       .game-container {
-        display: flex;
+        display: grid;
+        gap: 10px;
         margin-bottom: 20px;
       }
 
       canvas {
         margin: auto;
+      }
+
+      .url {
+        margin: auto;
+        display: block;
       }
 
       .colors {
@@ -49,16 +55,16 @@
         <canvas id="game" width="500" height="500" style="border: 1px solid black">
 
         </canvas>
+        <a class="url">Share</a>
       </div>
+
       <div class="colors">
 
       </div>
 
-      <div class="url"></div>
     </div>
 
     <script type="text/javascript">
-
       class Coord {
         constructor (x, y, color) {
           this.x = x;
@@ -92,10 +98,12 @@
       const game = document.getElementById('game')
       const ctx = game.getContext('2d');
       ctx.imageSmoothingEnabled = false;
-      ctx.fillStyle = "#000";
+      ctx.fillStyle = colors[0];
       const colorSwatchBar = document.querySelector(".colors");
-      const size = 25
+      const size = 25;
       let log = [];
+      const url = document.querySelector(".url");
+
 
       for (let [name, color] of Object.entries(colors)) {
         const swatch = document.createElement("div")
@@ -111,23 +119,44 @@
 
       const boundaries = game.getBoundingClientRect();
 
-
-      game.onmousedown = (e) => {
-        const x = Math.floor((e.clientX - boundaries.left) / size) * size;
-        const y = Math.floor((e.clientY - boundaries.top) / size) * size;
-        ctx.fillRect(x, y, size, size);
-        const xLog = `${x / size}`.padStart(2, '0')
-        const yLog = `${x / size}`.padStart(2, '0')
-        const indexLog = colors.indexOf(ctx.fillStyle.toUpperCase());
+      const draw = (x, y, colorIndex) => {
+        ctx.fillStyle = colors[colorIndex];
+        const relativeX = x * size;
+        const relativeY = y * size;
+        ctx.fillRect(relativeX, relativeY, size, size);
+        const pad = (val) => val.toString().padStart(2, '0')
+        const xLog = pad(`${relativeX / size}`)
+        const yLog = pad(`${relativeY / size}`)
+        const indexLog = pad(colors.indexOf(ctx.fillStyle.toUpperCase()));
         const logLine = new Coord(xLog, yLog, indexLog)
-        const anyMatch = log.filter((coord) => coord.x == logLine.x && coord.y == logLine.y && coord.color == indexLog)
+
+        const anyMatch = log.filter((coord) => coord.x == logLine.x && coord.y == logLine.y && coord.colorIndex == indexLog)
         if (anyMatch.length == 0) {
           log.push(logLine)
         }
+        search = new URLSearchParams(window.location.search)
+
+        const location = window.location.href.split("?")[0] + `?draw=${log.map(({x, y, colorIndex}) => `${x}${y}${colorIndex}`).join("-")}`
+        url.href = location
+      }
 
 
-        // document.querySelector(".url").innerText = log[0] && log[0].details;
+      game.onmousedown = (e) => {
+        const x = Math.floor((e.clientX - boundaries.left) / size);
+        const y = Math.floor((e.clientY - boundaries.top) / size);
+        draw(x, y)
+      };
 
+
+      if (window.location.search != "") {
+        const search = new URLSearchParams(window.location.search)
+        for (let pixel of search.get("draw").split("-")) {
+          const x = parseInt(pixel.slice(0, 2), 10);
+          const y = parseInt(pixel.slice(2, 4), 10);
+          const colorIndex = parseInt(pixel.slice(4, 6), 10);
+
+          draw(x, y, colorIndex)
+        }
       }
 
 
