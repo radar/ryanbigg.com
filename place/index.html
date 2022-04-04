@@ -7,22 +7,19 @@
       html, body {
         margin: 0;
         -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       * {
         box-sizing: border-box;
       }
 
-      body {
-        font-size: 10vh;
+      :root {
+        --pixel-width: 50px;
       }
 
-      .swatch {
-        border-radius: 10px;
-        border: 1px solid #999999;
-        width: 100%;
-        height: 10vh;
+      body {
+        font-size: 10vh;
       }
 
       .container {
@@ -33,6 +30,31 @@
         display: grid;
         gap: 10px;
         margin-bottom: 20px;
+      }
+
+      #game {
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        border: 5px solid black;
+      }
+
+      .pixel {
+        display: inline-block;
+        height: var(--pixel-width);
+        width: var(--pixel-width);
+      }
+
+      #clear {
+        padding: 10px;
+        background: white;
+        border: 2px solid black;
+        margin: auto;
+        width: 810px;
+      }
+
+      .pixel:hover {
+        border: 2px solid black;
       }
 
       canvas {
@@ -52,14 +74,34 @@
         position: fixed;
         bottom: 1vh;
       }
+
+      .swatch {
+        border-radius: 10px;
+        border: 1px solid #999999;
+        width: 100%;
+        height: 5vh;
+      }
+
+      @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        :root {
+          --pixel-width: 20px;
+        }
+
+        #clear {
+          width: calc(var(--pixel-width) * 16);
+        }
+
+      }
+
     </style>
   </head>
-  <body>
+  <body ondragstart="return false;" ondrop="return false;">
     <div class="container">
       <div class="game-container">
-        <canvas id="game" width="320" height="320" style="border: 1px solid black">
+        <div id="game">
 
-        </canvas>
+        </div>
+        <!-- <button id="clear">Clear</button> -->
         <!-- <a class="url">Share</a> -->
       </div>
 
@@ -83,29 +125,90 @@
       }
 
       const colors = [
-        "#FF4500",
+        "#6D001A", // burgundy
+        "#BE0039",
+        "#FF4400",
         "#FFA800",
-        "#FFD635",
+        "#FFD636",
+        "#FFF8B8",
         "#00A368",
+        "#00CC78",
         "#7EED56",
-        "#2450A4",
+        "#00756F",
+        "#009EAA",
+        "#00CCC0",
+        "#2550A4",
         "#3690EA",
         "#51E9F4",
+        "#493AC1",
+        "#6A5CFF",
+        "#94B3FF",
         "#811E9F",
         "#B44AC0",
+        "#E4ABFF",
+        "#DE0F7F",
+        "#FF3881",
         "#FF99AA",
+        "#6D482E",
         "#9C6926",
+        "#FFB470",
         "#000000",
+        "#515252",
         "#898D90",
         "#D4D7D9",
         "#FFFFFF"
       ]
       const game = document.getElementById('game')
-      const ctx = game.getContext('2d');
-      ctx.imageSmoothingEnabled = false;
-      ctx.fillStyle = colors[0];
+
+      let drawing = false;
+      let currentColor = colors[0];
+
+      const setBackground = (e) => {
+        e.style.backgroundColor = currentColor;
+      }
+
+      game.onmouseleave = (e) => {
+        console.log("omfg")
+        drawing = false
+      }
+
+      for (let i = 0; i < 256; i ++) {
+        const pixel = document.createElement("div")
+        pixel.classList.add("pixel")
+        pixel.onclick = (e) => {
+          setBackground(e.currentTarget)
+        }
+
+        pixel.ontouchstart = (e) => {
+          drawing = true;
+        }
+
+        pixel.ontouchmove = (e) => {
+          const touch = e.changedTouches[0];
+          const element = document.elementFromPoint(touch.clientX, touch.clientY);
+          if (drawing && element.classList.contains("pixel")) {
+            setBackground(element)
+          }
+        }
+
+        pixel.onmousedown = (e) => {
+          drawing = true;
+        }
+
+        pixel.onmouseup = (e) => {
+          drawing = false;
+        }
+
+        pixel.onmouseover = (e) => {
+          if (drawing) {
+            setBackground(e.currentTarget)
+          }
+        }
+
+        game.appendChild(pixel)
+      }
+
       const colorSwatchBar = document.querySelector(".colors");
-      const size = 16;
       let log = [];
       const url = document.querySelector(".url");
 
@@ -115,52 +218,16 @@
         swatch.classList.add("swatch")
         swatch.style.backgroundColor = color
         swatch.style.borderRadius = "10px"
-        swatch.style.width = `100%`;
         swatch.onclick = (e) => {
-          ctx.fillStyle = e.currentTarget.style["background-color"]
+          console.log("THIS")
+          currentColor = e.currentTarget.style["background-color"]
         }
         colorSwatchBar.appendChild(swatch)
       }
 
-      const boundaries = game.getBoundingClientRect();
-
-      const draw = (x, y, colorIndex) => {
-        ctx.fillStyle = colors[colorIndex];
-        const relativeX = x * size;
-        const relativeY = y * size;
-        ctx.fillRect(relativeX, relativeY, size, size);
-        const pad = (val) => val.toString().padStart(2, '0')
-        const xLog = pad(`${relativeX / size}`)
-        const yLog = pad(`${relativeY / size}`)
-        const indexLog = pad(colors.indexOf(ctx.fillStyle.toUpperCase()));
-        const logLine = new Coord(xLog, yLog, indexLog)
-
-        const anyMatch = log.filter((coord) => coord.x == logLine.x && coord.y == logLine.y && coord.colorIndex == indexLog)
-        if (anyMatch.length == 0) {
-          log.push(logLine)
-        }
-        search = new URLSearchParams(window.location.search)
-
-        // const location = window.location.href.split("?")[0] + `?draw=${log.map(({x, y, colorIndex}) => `${x}${y}${colorIndex}`).join("-")}`
-        // url.href = location
-      }
-
-
-      game.onmousedown = (e) => {
-        const x = Math.floor((e.clientX - boundaries.left) / size);
-        const y = Math.floor((e.clientY - boundaries.top) / size);
-        draw(x, y)
-      };
-
-
-      if (window.location.search != "") {
-        const search = new URLSearchParams(window.location.search)
-        for (let pixel of search.get("draw").split("-")) {
-          const x = parseInt(pixel.slice(0, 2), 10);
-          const y = parseInt(pixel.slice(2, 4), 10);
-          const colorIndex = parseInt(pixel.slice(4, 6), 10);
-
-          draw(x, y, colorIndex)
+      document.getElementById("clear").onclick = () => {
+        for (const pixel of document.querySelectorAll(".pixel")) {
+          pixel.style.background = "#ffffff"
         }
       }
 
