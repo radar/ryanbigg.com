@@ -33,6 +33,8 @@
       }
 
       #game {
+        position: fixed;
+        left: 30vw;
         margin: auto;
         display: grid;
         grid-template-columns: repeat(16, 1fr);
@@ -80,6 +82,10 @@
         border: 1px solid #999999;
         width: 100%;
         height: 5vh;
+      }
+
+      .swatch.active {
+        border: 5px solid black;
       }
 
       @media only screen and (-webkit-min-device-pixel-ratio: 2) {
@@ -161,14 +167,15 @@
       const game = document.getElementById('game')
 
       let drawing = false;
-      let currentColor = colors[0];
+      let currentColorIndex = Math.floor(Math.random()*colors.length);
+      let currentColor = colors[currentColorIndex];
+
 
       const setBackground = (e) => {
         e.style.backgroundColor = currentColor;
       }
 
       game.onmouseleave = (e) => {
-        console.log("omfg")
         drawing = false
       }
 
@@ -219,11 +226,25 @@
         swatch.style.backgroundColor = color
         swatch.style.borderRadius = "10px"
         swatch.onclick = (e) => {
-          console.log("THIS")
+          removeActiveSwatch();
+          e.currentTarget.classList.add("active")
           currentColor = e.currentTarget.style["background-color"]
         }
         colorSwatchBar.appendChild(swatch)
       }
+
+
+      const swatches = document.querySelectorAll(".swatch");
+      console.log(swatches[currentColorIndex])
+      swatches[currentColorIndex].classList.add("active")
+
+      const removeActiveSwatch = () => {
+        for (const swatch of swatches) {
+          swatch.classList.remove("active")
+        }
+      }
+
+
 
       document.getElementById("clear").onclick = () => {
         for (const pixel of document.querySelectorAll(".pixel")) {
