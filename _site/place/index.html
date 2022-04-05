@@ -2,21 +2,25 @@
 
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
     <style type="text/css">
       html, body {
         margin: 0;
         -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       * {
         box-sizing: border-box;
       }
 
-      .swatch {
-        border-radius: 10px;
-        border: 1px solid #999999;
-        width: 100%;
+      :root {
+        --pixel-width: 50px;
+      }
+
+      body {
+        overscroll-behavior-y: contain;
+        font-size: 10vh;
       }
 
       .container {
@@ -24,31 +28,107 @@
       }
 
       .game-container {
-        display: flex;
+        display: grid;
+        gap: 10px;
         margin-bottom: 20px;
+      }
+
+      #game {
+        position: fixed;
+        left: 30vw;
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        border: 5px solid black;
+      }
+
+      .pixel {
+        display: inline-block;
+        height: var(--pixel-width);
+        width: var(--pixel-width);
+      }
+
+      #clear {
+        padding: 10px;
+        background: white;
+        border: 2px solid black;
+        margin: auto;
+        width: 810px;
+      }
+
+      .pixel:hover {
+        border: 2px solid black;
       }
 
       canvas {
         margin: auto;
       }
+
+      .url {
+        margin: auto;
+        display: block;
+      }
+
+      .colors {
+        width: calc(100vw - 36px);
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+        position: fixed;
+        bottom: 1vh;
+      }
+
+      .swatch {
+        border-radius: 10px;
+        border: 1px solid #999999;
+        width: 100%;
+        height: 5vh;
+      }
+
+      .swatch.active {
+        border: 5px solid black;
+      }
+
+      @media only screen and (-webkit-min-device-pixel-ratio: 2) {
+        :root {
+          --pixel-width: 20px;
+        }
+
+        #game {
+          left: 6.5vw;
+        }
+
+        #clear {
+          width: calc(var(--pixel-width) * 16);
+        }
+
+      }
+
+      @media screen and (min-width: 3000px) {
+        :root {
+          --pixel-width: 40px;
+        }
+      }
+
     </style>
   </head>
-  <body>
+  <body ondragstart="return false;" ondrop="return false;">
     <div class="container">
       <div class="game-container">
-        <canvas id="game" width="500" height="500" style="border: 1px solid black">
+        <div id="game">
 
-        </canvas>
+        </div>
+        <!-- <button id="clear">Clear</button> -->
+        <!-- <a class="url">Share</a> -->
       </div>
-      <div class="colors" style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;">
+
+      <div class="colors">
 
       </div>
 
-      <div class="url"></div>
     </div>
 
     <script type="text/javascript">
-
       class Coord {
         constructor (x, y, color) {
           this.x = x;
@@ -62,61 +142,125 @@
       }
 
       const colors = [
-        "#FF4500",
+        "#6D001A", // burgundy
+        "#BE0039",
+        "#FF4400",
         "#FFA800",
-        "#FFD635",
+        "#FFD636",
+        "#FFF8B8",
         "#00A368",
+        "#00CC78",
         "#7EED56",
-        "#2450A4",
+        "#00756F",
+        "#009EAA",
+        "#00CCC0",
+        "#2550A4",
         "#3690EA",
         "#51E9F4",
+        "#493AC1",
+        "#6A5CFF",
+        "#94B3FF",
         "#811E9F",
         "#B44AC0",
+        "#E4ABFF",
+        "#DE0F7F",
+        "#FF3881",
         "#FF99AA",
+        "#6D482E",
         "#9C6926",
+        "#FFB470",
         "#000000",
+        "#515252",
         "#898D90",
         "#D4D7D9",
         "#FFFFFF"
       ]
       const game = document.getElementById('game')
-      const ctx = game.getContext('2d');
+
+      let drawing = false;
+      let currentColorIndex = Math.floor(Math.random()*colors.length);
+      let currentColor = colors[currentColorIndex];
+
+
+      const setBackground = (e) => {
+        e.style.backgroundColor = currentColor;
+      }
+
+      game.onmouseleave = (e) => {
+        drawing = false
+      }
+
+      for (let i = 0; i < 256; i ++) {
+        const pixel = document.createElement("div")
+        pixel.classList.add("pixel")
+        pixel.onclick = (e) => {
+          setBackground(e.currentTarget)
+        }
+
+        pixel.ontouchstart = (e) => {
+          drawing = true;
+        }
+
+        pixel.ontouchmove = (e) => {
+          const touch = e.changedTouches[0];
+          const element = document.elementFromPoint(touch.clientX, touch.clientY);
+          if (drawing && element.classList.contains("pixel")) {
+            setBackground(element)
+          }
+        }
+
+        pixel.onmousedown = (e) => {
+          drawing = true;
+        }
+
+        pixel.onmouseup = (e) => {
+          drawing = false;
+        }
+
+        pixel.onmouseover = (e) => {
+          if (drawing) {
+            setBackground(e.currentTarget)
+          }
+        }
+
+        game.appendChild(pixel)
+      }
+
       const colorSwatchBar = document.querySelector(".colors");
-      const size = 25
       let log = [];
-      ctx.fillStyle = "#000";
+      const url = document.querySelector(".url");
+
+
       for (let [name, color] of Object.entries(colors)) {
         const swatch = document.createElement("div")
         swatch.classList.add("swatch")
         swatch.style.backgroundColor = color
         swatch.style.borderRadius = "10px"
-        swatch.style.width = `100%`;
-        swatch.style.height = `${size * 2}px`;
         swatch.onclick = (e) => {
-          ctx.fillStyle = e.currentTarget.style["background-color"]
+          removeActiveSwatch();
+          e.currentTarget.classList.add("active")
+          currentColor = e.currentTarget.style["background-color"]
         }
         colorSwatchBar.appendChild(swatch)
       }
 
-      const boundaries = game.getBoundingClientRect();
 
+      const swatches = document.querySelectorAll(".swatch");
+      console.log(swatches[currentColorIndex])
+      swatches[currentColorIndex].classList.add("active")
 
-      game.onmousedown = (e) => {
-        const x = Math.floor((e.clientX - boundaries.left) / size) * size;
-        const y = Math.floor((e.clientY - boundaries.top) / size) * size;
-        ctx.fillRect(x, y, size, size);
-        const xLog = `${x / size}`.padStart(2, '0')
-        const yLog = `${x / size}`.padStart(2, '0')
-        const indexLog = colors.indexOf(ctx.fillStyle.toUpperCase());
-        const logLine = new Coord(xLog, yLog, indexLog)
-        const anyMatch = log.filter((coord) => coord.x == logLine.x && coord.y == logLine.y && coord.color == indexLog)
-        if (anyMatch.length == 0) {
-          log.push(logLine)
+      const removeActiveSwatch = () => {
+        for (const swatch of swatches) {
+          swatch.classList.remove("active")
         }
+      }
 
 
-        // document.querySelector(".url").innerText = log[0] && log[0].details;
 
+      document.getElementById("clear").onclick = () => {
+        for (const pixel of document.querySelectorAll(".pixel")) {
+          pixel.style.background = "#ffffff"
+        }
       }
 
 
