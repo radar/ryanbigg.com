@@ -18,7 +18,14 @@
   <meta content="{{ site.title }}" property="og:title">
   {% endif %}
   <meta property="og:site_name" content="Ryan Bigg">
-  <meta name="publish_date" property="og:publish_date" content="{{ site.time | date: '%Y-%m-%d' }}">
+
+
+  {% if page.date %}
+    <meta name="publish_date" property="og:publish_date" content="{{ page.date | date: '%Y-%m-%d' }}">
+  {% else %}
+    <meta name="publish_date" property="og:publish_date" content="{{ || site.time | date: '%Y-%m-%d' }}">
+  {% endif %}
+
   {% if page.url %}
   <meta content="https://ryanbigg.com{{ page.url }}" property="og:url">
   {% endif %}
