@@ -47,7 +47,8 @@
           const days = duration.days().toString().padStart(2, "0")
           document.querySelector('.countdown').innerText = days + ":" + moment.utc(duration.asMilliseconds()).format("HH:mm:ss")
         } else {
-          document.querySelector('.countdown').innerText = "🎉"
+          document.querySelector('.countdown').innerText = "🏖"
+          document.querySelector('.countdown').style["font-size"] = "25vw"
         }
       }, interval);
       </script>
@@ -61,7 +62,9 @@
             const days = duration.days().toString().padStart(2, "0")
             document.querySelector('.countdown2').innerText = days + ":" + moment.utc(duration.asMilliseconds()).format("HH:mm:ss")
           } else {
+            document.querySelector('.countdown').style["display"] = "none"
             document.querySelector('.countdown2').innerText = "🎉"
+            document.querySelector('.countdown2').style["font-size"] = "25vw"
           }
         }, interval);
         </script>
