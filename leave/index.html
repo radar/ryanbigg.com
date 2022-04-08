@@ -2,17 +2,15 @@
 <html>
   <head></head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style type="text/css">
     body {
-      font-family: "Orbitron";
+      font-family: "Hack", "Menlo";
       background: black;
     }
 
     .wrapper {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: center;
       height: 100vh;
@@ -23,6 +21,10 @@
       color: #dd0000;
       font-size: 12.5vw;
     }
+    .countdown2 {
+      color: #00cc00;
+      font-size: 12.5vw;
+    }
   </style>
 
   <body>
@@ -30,16 +32,38 @@
       <div class="countdown">
 
       </div>
+      <div class="countdown2">
+
+      </div>
     </div>
     <script type="text/javascript">
-      var eventTime= moment(moment("2022-04-10 17:00:00+1000"));
+      var eventTime= moment(moment("2022-04-11 17:00:00+1000"));
       var interval = 1000
 
       setInterval(function(){
         var currentTime = moment();
         duration = moment.duration(eventTime.diff(currentTime));
-          document.querySelector('.countdown').innerText = moment.utc(duration.asMilliseconds()).format("DD:HH:mm:ss")
+        if (duration > 0) {
+          const days = duration.days().toString().padStart(2, "0")
+          document.querySelector('.countdown').innerText = days + ":" + moment.utc(duration.asMilliseconds()).format("HH:mm:ss")
+        } else {
+          document.querySelector('.countdown').innerText = "🎉"
+        }
       }, interval);
       </script>
+      <script type="text/javascript">
+        const eventTime2 = moment(moment("2022-04-26 09:00:00+1000"));
+
+        setInterval(function(){
+          var currentTime = moment();
+          duration = moment.duration(eventTime2.diff(currentTime));
+          if (duration > 0) {
+            const days = duration.days().toString().padStart(2, "0")
+            document.querySelector('.countdown2').innerText = days + ":" + moment.utc(duration.asMilliseconds()).format("HH:mm:ss")
+          } else {
+            document.querySelector('.countdown2').innerText = "🎉"
+          }
+        }, interval);
+        </script>
   </body>
 </html>
