@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style type="text/css">
+    body {
+      font-family: "Orbitron";
+      background: black;
+    }
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .countdown {
+      color: #dd0000;
+      font-size: 10vh;
+    }
+  </style>
+
+  <body>
+    <div class="wrapper">
+      <div class="countdown">
+
+      </div>
+    </div>
+    <script type="text/javascript">
+      var eventTime= moment(moment("2022-04-10 17:00:00+1000"));
+      var interval = 1000
+
+      setInterval(function(){
+        var currentTime = moment();
+        duration = moment.duration(eventTime.diff(currentTime));
+          document.querySelector('.countdown').innerText = moment.utc(duration.asMilliseconds()).format("DD:HH:mm:ss")
+      }, interval);
+      </script>
+  </body>
+</html>
