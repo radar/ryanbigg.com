@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style type="text/css">
+    body {
+      font-family: "Hack", "Menlo";
+      background: black;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      max-width: 100vw;
+    }
+
+    .countdown {
+      color: #dd0000;
+      font-size: 12.5vw;
+    }
+    .countdown2 {
+      color: #00cc00;
+      font-size: 12.5vw;
+    }
+  </style>
+
+  <body>
+    <div class="wrapper">
+      <div class="countdown">
+
+      </div>
+      <div class="countdown2">
+
+      </div>
+    </div>
+    <script type="text/javascript">
+      var eventTime= moment(moment("2022-04-11 17:00:00+1000"));
+      var interval = 1000
+
+      setInterval(function(){
+        var currentTime = moment();
+        duration = moment.duration(eventTime.diff(currentTime));
+        if (duration > 0) {
+          const days = duration.days().toString().padStart(2, "0")
+          document.querySelector('.countdown').innerText = days + ":" + moment.utc(duration.asMilliseconds()).format("HH:mm:ss")
+        } else {
+          document.querySelector('.countdown').innerText = "🏖"
+          document.querySelector('.countdown').style["font-size"] = "25vw"
+        }
+      }, interval);
+      </script>
+      <script type="text/javascript">
+        const eventTime2 = moment(moment("2022-04-26 09:00:00+1000"));
+
+        setInterval(function(){
+          var currentTime = moment();
+          duration = moment.duration(eventTime2.diff(currentTime));
+          if (duration > 0) {
+            const days = duration.days().toString().padStart(2, "0")
+            document.querySelector('.countdown2').innerText = days + ":" + moment.utc(duration.asMilliseconds()).format("HH:mm:ss")
+          } else {
+            document.querySelector('.countdown').style["display"] = "none"
+            document.querySelector('.countdown2').innerText = "🎉"
+            document.querySelector('.countdown2').style["font-size"] = "25vw"
+          }
+        }, interval);
+        </script>
+  </body>
+</html>

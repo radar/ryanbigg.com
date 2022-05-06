@@ -4,13 +4,180 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2022-04-06T09:34:52+10:00</updated>
+ <updated>2022-05-06T10:32:46+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Using Union Types with GraphQL Mutations in Ruby</title>
+   <link href="http://ryanbigg.com/2022/05/ruby-graphql-mutations-with-union-types"/>
+   <updated>2022-05-06T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2022/05/ruby-graphql-mutations-with-union-types</id>
+   <content type="html"><![CDATA[<p>The <a href="https://graphql-ruby.org/mutations/mutation_classes.html">official documentation for the graphql-ruby gem</a> recommends this code for a mutation class that can either succeed or fail:</p>
+
+<pre><code class="language-ruby">class Mutations::CreateComment &lt; Mutations::BaseMutation
+  argument :body, String
+  argument :post_id, ID
+
+  field :comment, Types::Comment
+  field :errors, [String], null: false
+
+  def resolve(body:, post_id:)
+    post = Post.find(post_id)
+    comment = post.comments.build(body: body, author: context[:current_user])
+    if comment.save
+      # Successful creation, return the created object with no errors
+      {
+        comment: comment,
+        errors: [],
+      }
+    else
+      # Failed save, return the errors to the client
+      {
+        comment: nil,
+        errors: comment.errors.full_messages
+      }
+    end
+  end
+end
+</code></pre>
+
+<p>I’d like to show an alternative to this that I think leads to cleaner code by using GraphQL concept called <em>union types</em>.</p>
+
+<p>We use union types in GraphQL when we want a field to return one or more distinct types as its result. In the case of the above comment mutation, the two types of things we would like to return are either:</p>
+
+<ul>
+  <li>A comment, if the mutation was successful</li>
+  <li>Errors, if the mutation was unsuccessful</li>
+</ul>
+
+<p>Let’s change that mutation above to use a union type by declaring the type at the top of the mutation, and removing the two fields:</p>
+
+<pre><code class="language-ruby">class Mutations::CreateComment &lt; Mutations::BaseMutation
+  type Types::CreateCommentResult
+  argument :body, String
+  argument :post_id, ID
+
+  def resolve(body:, post_id:)
+    post = Post.find(post_id)
+    comment = post.comments.build(body: body, author: context[:current_user])
+    if comment.save
+      # Successful creation, return the created object with no errors
+      {
+        comment: comment,
+        errors: [],
+      }
+    else
+      # Failed save, return the errors to the client
+      {
+        comment: nil,
+        errors: comment.errors.full_messages
+      }
+    end
+  end
+end
+</code></pre>
+
+<p>This new type will be our union type that will represent either a successful creation for a comment, or a failed one.</p>
+
+<p>We can define this type in our <code>types</code> directory under <code>graphql</code>, in a file called <code>create_comment_result.rb</code>:</p>
+
+<pre><code class="language-ruby">module Types
+  class CreateCommentResult &lt; BaseUnion
+    description "The result from attempting to create a comment"
+    possible_types Types::Comment, Types::Errors
+
+    def self.resolve_type(object, _context)
+      if object[:comment]
+        [Types::Comment, object[:comment]]
+      else
+        [Types::Errors, object]
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>A union type is defined by first inheriting from <code>BaseUnion</code>. If we had common logic to share between union types in our GraphQL API, that logic would go into <code>BaseUnion</code>.</p>
+
+<p>Inside this <code>CreateCommentResult</code> type itself, we provide a description that’ll appear in our API documentation, and inform this class what the possible types are. For this union type, we’re defining two possible types: <code>Types::Comment</code>, and <code>Types::Errors</code>.</p>
+
+<p>When the GraphQL code runs, it will call this <code>resolve_type</code> method to determine the correct GraphQL type to use when representing the result of the mutation. This method checks if <code>object[:comment]</code> is present, and if it is the type that’ll be used is a <code>Types::Comment</code>, and we can fetch the comment from that object using <code>object[:comment]</code>. In Rails parlance, this <code>object[:comment]</code> will be an instance of the <code>Comment</code> model – a result of a successful <code>build</code> and <code>save</code>.</p>
+
+<p>If the operation was to fail, we would instead return a <code>Types::Error</code> type, and use the resulting object as the base object for that type.</p>
+
+<p>These two types can be defined in the <code>types</code> directory too. Let’s look at <code>CommentType</code> first, defined in <code>types/comment.rb</code>:</p>
+
+<pre><code class="language-ruby">class Types::Comment &lt; Types::BaseObject
+  field :id, ID, null: false
+  field :body, String, null: false
+end
+</code></pre>
+
+<p>This type is used to represent comments in our GraphQL API. It provides access to both the <code>id</code> and <code>body</code> attributes from any <code>Comment</code> instance that is represented by this API.</p>
+
+<p>Then, the <code>Errors</code> type:</p>
+
+<pre><code class="language-ruby">class Types::Errors &lt; Types::BaseObject
+  field :errors, [String], null: false
+end
+</code></pre>
+
+<p>This type represents the <code>{ comment: nil, errors: [...] }</code> hash that will be returned when a comment creation fails.</p>
+
+<p>With these union types setup, we can write this GraphQL query that will rely on them:</p>
+
+<pre><code>mutation {
+  createComment(input: { postId: 1, body: "Hello world" }) {
+    __typename
+    ... on Comment {
+      id
+    }
+
+    ...on Errors {
+      errors
+    }
+  }
+}
+</code></pre>
+
+<p>Firstly, we call this mutation by passing in its required arguments. After that, we fetch a field called <code>__typename</code>. This field is automatically defined, and it will return the type whatever object is returned, either <code>Comment</code> or <code>Errors</code>. When calling this GraphQL API, we can use <code>__typename</code> to determine how to act.</p>
+
+<p>The <code>... on</code> syntax here tells GraphQL which fields we would like to use in the case of each part of the union being returned here. If it’s a comment, we will fetch just the <code>id</code>. If it’s <code>Errors</code>, we can fetch just the errors.</p>
+
+<p>If we were to call this mutation with an empty comment body, we would see this as the result:</p>
+
+<pre><code class="language-json">{
+  "data": {
+    "createComment": {
+      "__typename": "Errors",
+      "errors": [
+        "Body can't be blank"
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>And if we were to call it with a valid body, we would see this:</p>
+
+<pre><code class="language-json">{
+  "data": {
+    "createComment": {
+      "__typename": "Comment",
+      "id": "6"
+    }
+  }
+}
+</code></pre>
+
+<p>When using this API (for example, within a frontend codebase), we can assert on <code>__typename</code> to determine how to show the result to a user – if it’s a <code>Comment</code>, then indicate a successful comment creation. If it’s <code>Errors</code>, then show those errors on the form.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Typed View Components with dry-types</title>
@@ -3727,621 +3894,6 @@ end
 <p>In the final part of this guide, we used <code>dry-auto_inject</code> once more to automatically inject the repository and contract into our operation class, allowing us to tidy up the code very slightly, but still noticeably.</p>
 
 <p>In the next part, we’re going to look at how we can test the parts of the application that we’ve built so far by using the RSpec testing framework. We’ll also see <em>another</em> advantage of <code>dry-auto_inject</code> in this part.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>ROM + Dry Showcase: Part 1 - Application + Database setup</title>
-   <link href="http://ryanbigg.com/2020/02/rom-and-dry-showcase-part-1"/>
-   <updated>2020-02-01T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2020/02/rom-and-dry-showcase-part-1</id>
-   <content type="html"><![CDATA[<p>The <a href="https://rom-rb.org/">rom-rb</a> and <a href="https://dry-rb.org/">dry-rb</a> sets of gems have come out in the last couple of years. These gems allow an alternative take on building a Ruby application, separate from Rails or Sinatra, or anything else like that.</p>
-
-<p>In this <em>series</em> of blog posts, I am going to show you how to build a simple application that I’m calling “Bix” using some of these gems. By the end of this series, the application will:</p>
-
-<ul>
-  <li>Part 1 (you are here) - Interact with a database using ROM</li>
-  <li><a href="/2020/02/rom-and-dry-showcase-part-2">Part 2 - Validations &amp; Operations</a></li>
-  <li><a href="/2020/02/rom-and-dry-showcase-part-3">Part 3 - Test our application with RSpec</a></li>
-  <li><a href="/2020/02/rom-and-dry-showcase-part-4">Part 4 - Have a router and a series of actions</a></li>
-</ul>
-
-<p>This part will cover how to start building out an application’s architecture. We’ll also work on having this application speak to a database. For this, we’ll use the following gems:</p>
-
-<ul>
-  <li><code>dry-system</code> – Used for loading an application’s dependencies automatically</li>
-  <li>rom, <a href="https://rom-rb.org/5.0/learn/sql/">rom-sql</a> + pg – We’ll use these to connect to a database</li>
-  <li><code>dotenv</code> – a gem that helps load <code>.env</code> files that contain environment variables</li>
-  <li><code>rake</code> – For running Rake tasks, like migrations!</li>
-</ul>
-
-<p>In this part, we will setup a small Ruby application that talks to a PostgreSQL database, by using the <code>dry-system</code>, <code>rom</code>, <code>rom-sql</code> and <code>pg</code> gems. At the end of this guide, we will be able to insert and retrieve data from the database.</p>
-
-<p>If you’d like to see the code for this application, it’s at <a href="https://github.com/radar/bix">github.com/radar/bix</a>, and each part of this series has its own branch.</p>
-
-<h2 id="a-word-on-setup-costs">A word on setup costs</h2>
-
-<p>In these guides, you may get a sense that the setup of rom-rb and dry-rb libraries takes a long time – maybe you’ll think thoughts like “this is so easy in Rails!” These are normal and understandable thoughts. The setup of this sort of thing in Rails <em>is</em> easier, thanks to its generators.</p>
-
-<p>However, Rails leads you into an application architecture that paints you into a corner, for reasons I explained in <a href="https://www.youtube.com/watch?v=04Kq_9scT1E">my “Exploding Rails” talk in 2018</a>.</p>
-
-<p>The setup of ROM and dry-rb things <em>is</em> harder, but leads you ultimately into a better designed application with clearer lines drawn between the classes’ responsibilties.</p>
-
-<p>It might help to think of it in the way my friend Bo Jeanes put it:</p>
-
-<blockquote>
-  <p>Setup cost is a cost that you pay <em>once</em>, whereas ease-of-application-maintenance is a cost that you pay <em>every single day</em>.</p>
-</blockquote>
-
-<p>So in the long run, this will be better. I promise.</p>
-
-<h2 id="installing-gems">Installing Gems</h2>
-
-<p>To get started, we’ll create an empty directory for our application. I’ve called mine <code>bix</code>. Inside this directory you will need to create a basic <code>Gemfile</code>:</p>
-
-<pre><code>source 'https://rubygems.org'
-
-ruby '2.7.0'
-
-gem 'dry-system'
-gem 'zeitwerk'
-gem 'rom'
-gem 'rom-sql'
-gem 'pg'
-
-gem 'dotenv'
-gem 'rake'
-</code></pre>
-
-<p>Once we have created that <code>Gemfile</code>, we’ll need to run <code>bundle install</code> to install all of those dependencies.</p>
-
-<h2 id="boot-configuration">Boot Configuration</h2>
-
-<p>Next up, we will create an environment for our application that will allow us to load dependencies of the application, such as files in <code>lib</code> or other dependencies like database configuration. We’re going to use the <code>dry-system</code> gem for this.</p>
-
-<p>Before we get to using that gem, let’s create a file called <code>config/boot.rb</code>. This file will contain this code to load up our application’s primary gem dependencies:</p>
-
-<pre><code class="language-ruby">ENV['APP_ENV'] ||= "development"
-
-require "bundler"
-Bundler.setup(:default, ENV["APP_ENV"])
-
-require "dotenv"
-Dotenv.load(".env", ".env.#{ENV["APP_ENV"]}")
-</code></pre>
-
-<p>The first line of code sets up an <code>APP_ENV</code> environment variable. Our application will use this environment variable to determine what dependencies to load. For instance, when we’re developing our application locally we may want to use development gems like <code>pry</code>. However, when we deploy the application to production, we will not want to use those gems. By setting <code>APP_ENV</code>, we can control what gems are loaded by our application.</p>
-
-<p>The first block of code here will setup Bundler, which adds our gem dependencies’ paths to the load path, so that we can require them when we need to. Note that <code>Bundler.setup</code> is different from <code>Bundler.require</code> (like in a Rails application) – <code>Bundler.setup</code> only adds to the load path, and does not require everything at the beginning.</p>
-
-<p>The two args passed here to <code>Bundler.setup</code> tell Bundler to include all gems outside of a group, and all gems inside of a group named after whatever <code>APP_ENV</code> is set to, which is <code>development</code>.</p>
-
-<p>The first one that we require is <code>dotenv</code>, and that is just so we can load the <code>.env</code> or <code>.env.{APP_ENV}</code> files. When we’re working locally, we’ll want to have a <code>.env.development</code> file that specifies our local database’s URL. Let’s create this file now: <code>.env.development</code>:</p>
-
-<pre><code>DATABASE_URL=postgres://localhost/bix_dev
-</code></pre>
-
-<p>This file specifies the database we want to connect to when we’re developing locally. To create that database, we will need to run:</p>
-
-<pre><code>createdb bix_dev
-</code></pre>
-
-<h2 id="application-environment-setup">Application Environment Setup</h2>
-
-<p>To setup our application’s environment and use this database configuration, we’re going to use that <code>dry-system</code> gem. To do this, we’ll create a new file called <code>config/application.rb</code> and put this code in it:</p>
-
-<pre><code class="language-ruby">require_relative "boot"
-
-require "dry/system/container"
-require "dry/system/loader/autoloading"
-
-module Bix
-  class Application &lt; Dry::System::Container
-    configure do |config|
-      config.root = File.expand_path('..', __dir__)
-
-      config.component_dirs.loader = Dry::System::Loader::Autoloading
-      config.component_dirs.add_to_load_path = false
-
-      config.component_dirs.add "lib" do |dir|
-        dir.default_namespace = 'bix'
-      end
-    end
-  end
-end
-
-loader = Zeitwerk::Loader.new
-loader.push_dir Bix::Application.config.root.join("lib").realpath
-loader.setup
-</code></pre>
-
-<p>This code is responsible for loading our <code>boot.rb</code> file and defining a <code>Bix::Application</code> <em>container</em>. This container is responsible for automatically loading dependencies in from <code>lib</code> (when we have them!). This container is also responsible for handling how system-level dependencies for our application are loaded – like how our application connects to a database.</p>
-
-<p>This container handles autoloading by delegating that responsibility to another gem called Zeitwerk. Whenever we reference a constant in our application, Zeitwerk will load that constant for us. You can read more about how Zeitwerk works <a href="https://github.com/fxn/zeitwerk#introduction">in that project’s README</a></p>
-
-<p>The <code>component_dirs</code> configuration here would allow us to split our application up into smaller components. Instead of requiring just <code>lib</code> here, we might split our application up into different components, such as <code>core</code> or <code>api</code>. To keep this guide simple, we’ll just be loading things from the <code>lib</code> directory.</p>
-
-<h2 id="database-configuration-setup">Database configuration setup</h2>
-
-<p>To set that database connection up, we’re going to create a new file over in <code>system/boot/db.rb</code>:</p>
-
-<pre><code class="language-ruby">Bix::Application.boot(:db) do
-  init do
-    require "rom"
-    require "rom-sql"
-
-    connection = Sequel.connect(ENV['DATABASE_URL'], extensions: %i[pg_timestamptz])
-    register('db.connection', connection)
-    register('db.config', ROM::Configuration.new(:sql, connection))
-  end
-end
-</code></pre>
-
-<p>This <code>system/boot</code> directory is where we put system-level dependencies when using <code>dry-system</code>. This new file that we’ve created configures how our application defines its database connection.</p>
-
-<p>To connect to the database, we need to use the <code>rom</code> and <code>rom-sql</code> gems. These will automatically require the <code>Sequel</code> gem, and we build a database connection there using <code>Sequel.connect</code>.</p>
-
-<p>The <code>extensions</code> option passed here tells the underlying database gem, Sequel, to load an extension called <code>pg_timestamptz</code>. This extension will create <code>timestamp with time zone</code> columns in our database, rather than the default, which is <code>timestamp without time zone</code>. This means that times will be stored with time zone information in the database and this means when we retrieve them Ruby won’t add the system’s timezone on the end. To demonstrate what I mean here, compare these three lines:</p>
-
-<pre><code class="language-ruby">&gt;&gt; Time.parse("2020-10-14 14:23:07.155221")
-=&gt; 2020-10-14 14:23:07.155221 +1100
-&gt;&gt; Time.parse("2020-10-14 14:23:07.155221 UTC")
-=&gt; 2020-10-14 14:23:07.155221 UTC
-&gt;&gt; Time.parse("2020-10-14 14:23:07.155221 +0100")
-=&gt; 2020-10-14 14:23:07.155221 +0100
-</code></pre>
-
-<p>A time <em>without</em> a timezone will have the local system’s timezone applied to the end. I’m in Melbourne and it’s Daylight Savings Time, so my timezone is +1100.</p>
-
-<p>However, if the time comes back out of the database with a time zone (shown here to either be <code>UTC</code> or <code>+0100</code>), then the time will be parsed correctly!</p>
-
-<p>Now that we have our database connection defined and our database itself created, we will need to create tables in that database. If this was a Rails app, we would use migrations to do such a thing. Fortunately for us, ROM “borrowed” that idea and so we can use migrations with ROM too.</p>
-
-<p>To create migrations with ROM, we will need to create another file to define the Rake tasks, called <code>Rakefile</code>:</p>
-
-<pre><code class="language-ruby">require_relative 'config/application'
-require 'rom-sql'
-require 'rom/sql/rake_task'
-
-namespace :db do
-  task :setup do
-    Bix::Application.start(:db)
-    config = Bix::Application['db.config']
-    config.gateways[:default].use_logger(Logger.new($stdout))
-  end
-end
-</code></pre>
-
-<p>This file loads the <code>config/application.rb</code> file that we created earlier and that will make it possible to require the other two files we use here.</p>
-
-<p>In order to tell ROM’s Rake tasks where our database lives, we’re required to setup a Rake task of our own: one called <code>db:setup</code>. This configuration starts the system-level dependency <code>:db</code> by calling <code>start</code> on <code>Bix::Application</code>. This will run the code inside the <code>init</code> block defined within <code>system/boot/db.rb</code>. This <code>init</code> block registers a <code>db.config</code> with our application, and we can retrieve that value by using <code>Bix::Application['db.config']</code> here. ROM will then use this value to talk to our database.</p>
-
-<p>Using this configuration, we configure something called the <em>default gateway</em>, which is the simply the default database connection that ROM has been configured with. We <em>could</em> configure multiple gateways, but we’re only going to be using the one in this series. On this gateway, we tell it to use a new <code>Logger</code> instance, which will log SQL output for our Rake tasks.</p>
-
-<h3 id="migrations">Migrations</h3>
-
-<p>Like a lot of database frameworks, ROM also comes with <a href="https://rom-rb.org/5.0/learn/sql/migrations/">migrations</a>. We can use these to create the tables for our application.</p>
-
-<p>To generate a migration with ROM, we can run:</p>
-
-<pre><code>
-rake "db:create_migration[create_users]"
-
-</code></pre>
-
-<p>This will create us a new file under <code>db/migrate</code> and it’ll be almost empty:</p>
-
-<pre><code class="language-ruby"># frozen_string_literal: true
-
-ROM::SQL.migration do
-  change do
-  end
-end
-</code></pre>
-
-<p>It’s up to us to fill this out. Let’s do so:</p>
-
-<pre><code class="language-ruby"># frozen_string_literal: true
-
-ROM::SQL.migration do
-  change do
-    create_table :users do
-      primary_key :id
-      column :first_name, String
-      column :last_name, String
-      column :age, Integer
-
-      column :created_at, DateTime, null: false
-      column :updated_at, DateTime, null: false
-    end
-  end
-end
-</code></pre>
-
-<p>In this migration, we’ve specified six columns. We’ve had to specify the <code>primary_key</code> here, because ROM does not assume that all primary keys are <code>id</code> by default.</p>
-
-<p>To run this migration, we will need to run:</p>
-
-<pre><code>rake db:migrate
-</code></pre>
-
-<p>If we see this:</p>
-
-<pre><code>... INFO -- : Finished applying migration [timestamp]_create_users.rb, direction: up, took [duration] seconds
-&lt;= db:migrate executed
-</code></pre>
-
-<p>Then the migration has been successfully applied.</p>
-
-<h3 id="repositories">Repositories</h3>
-
-<p>In order to get data into and out of database tables with ROM, we need to create something called a <em>repository</em>. A repository is a class that is used to define a clear API between your database and your application.</p>
-
-<p>To create one of these, we’ll create a new file inside a new directory structure at <code>lib/bix/repos/user_repo.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Repos
-    class UserRepo &lt; ROM::Repository[:users]
-
-    end
-  end
-end
-</code></pre>
-
-<p>To use this class (and others that we will create later on), we’ll need to create a new file at <code>system/boot/persistence.rb</code> to setup our database configuration for our application:</p>
-
-<pre><code class="language-ruby">Bix::Application.boot(:persistence) do |app|
-  start do
-    register('container', ROM.container(app['db.config']))
-  end
-end
-</code></pre>
-
-<p>This file uses the <code>rom</code> gem to define a database configuration container and registers it with our application under the <code>container</code> key.</p>
-
-<p>Next up, we’ll create a new file over at <code>bin/console</code> with this in it:</p>
-
-<pre><code class="language-ruby">#!/usr/bin/env ruby
-
-require_relative '../config/application'
-
-Bix::Application.finalize!
-
-require 'irb'
-IRB.start
-</code></pre>
-
-<p>This file will load our application’s <code>config/application.rb</code> file. When this file is loaded, all the files in <code>lib</code> will be required. This includes our new <code>lib/bix/repos/user_repo.rb</code> file.</p>
-
-<p>We call <code>Bix::Application.finalize!</code> here to start our application and all of its dependencies, this includes the two system-level dependencies specified in <code>system/boot</code>.</p>
-
-<p>Once those classes are loaded and the application is finalized <code>bin/console</code> will start an IRB prompt.</p>
-
-<p>To make it so that we can run <code>bin/console</code>, let’s run this command:</p>
-
-<pre><code>chmod +x bin/console
-</code></pre>
-
-<p>We can now launch our console by running:</p>
-
-<pre><code>bin/console
-</code></pre>
-
-<p>When we’re in this console, we can use our repository:</p>
-
-<pre><code>&gt;&gt; Bix::Repos::UserRepo.new(Bix::Application['container'])
-</code></pre>
-
-<p>This code will tell our user repository to connect to the database specified by the configuration contained within <code>Bix::Application['container']</code>. But unfortunately for us, another key part of configuration is missing and so we’re going to see an error when we run this code:</p>
-
-<pre><code>ROM::ElementNotFoundError (:users doesn't exist in ROM::RelationRegistry registry)
-</code></pre>
-
-<p>For this code to work, we’re going to need one extra class: a <em>relation</em>.</p>
-
-<h3 id="relations">Relations</h3>
-
-<p>A <em>relation</em> class is used to represent data returning from a database, and is used most often by the repository itself. If we had a need for complex methods for working with data, they would go in “messy” relation methods, and then the repository would call those methods.</p>
-
-<p>Here’s an example from an app that I’ve worked on recently. I want to have a function that works on a <code>notes</code> table, counting up all the notes for a particular set of <em>elements</em>. In my relation, I have this code:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Relations
-    class Notes &lt; ROM::Relation[:sql]
-      schema(:notes, infer: true)
-
-      def counts_for_element_ids(element_ids)
-        where(element_id: element_ids)
-        .select { [element_id, function(:count, :id).as(:count)] }
-        .group(:element_id)
-        .order(nil)
-        .to_a
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The <code>counts_for_elements</code> method defines a <em>query</em> that will run against my database, and the final <code>to_a</code> on that query will return a <em>dataset</em>; an array of elements with their note counts.</p>
-
-<p>However, this query will only return counts for elements that have counts, rather than all specified elements. In this particular application, I want a count for all elements specified in <code>element_ids</code>, regardless if they have notes or not. The place for this particular logic is in the <em>repository</em>:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Repositories
-    class NoteRepo &lt; Twist::Repository[:notes]
-      def count(element_ids)
-        counts = notes.counts_for_elements(element_ids)
-
-        missing = element_ids.select { |id| counts.none? { |c| c.element_id == id } }
-        counts += missing.map { |m| NoteCount.new(element_id: m, count: 0) }
-        counts.map { |element_id:, count:| [element_id, count] }.to_h
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The repository’s code is all about working with the data. It does not know how to build the query for the data – that responsibility is the relation’s.</p>
-
-<p>In short: relations run queries to get data out of a database, repositories define methods to work data returned by relations.</p>
-
-<p>Back to Bix!</p>
-
-<p>Let’s define our relation now at <code>lib/bix/relations/users.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Relations
-    class Users &lt; ROM::Relation[:sql]
-      schema(:users, infer: true)
-    end
-  end
-end
-</code></pre>
-
-<p>This relation class inherits from <code>ROM::Relation[:sql]</code>, and that will meant hat our relation is used to talk to an SQL database.</p>
-
-<p>Inside the class itself, there’s a method called <code>schema</code>. This method says that our relation class is for a table called <code>users</code> and that we should <em>infer</em> the attributes for that schema – meaning ROM will look at the table to define the attributes for this relation.</p>
-
-<p>This <em>almost</em> gets us past the error we saw previously:</p>
-
-<pre><code>ROM::ElementNotFoundError (:users doesn't exist in ROM::RelationRegistry registry)
-</code></pre>
-
-<p>However, we will need to register relations with our application’s database container. To do this, we can change <code>system/boot/persistence.rb</code>:</p>
-
-<pre><code class="language-ruby">Bix::Application.boot(:persistence) do |app|
-  start do
-    config = app['db.config']
-    config.auto_registration(app.root + "lib/bix")
-
-    register('container', ROM.container(app['db.config']))
-  end
-end
-
-</code></pre>
-
-<p>This file will now automatically register this relation under <code>lib/bix</code>, and any other ROM things we add in later. This means that our <code>User</code> repository will be able to find the <code>Users</code> relation.</p>
-
-<p>Let’s run <code>bin/console</code> again and try working with our repository again:</p>
-
-<pre><code>&gt;&gt; user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
-&gt;&gt; user_repo.all
-NoMethodError (undefined method `all' for #&lt;Bix::Repos::User struct_namespace=ROM::Struct auto_struct=true&gt;)
-</code></pre>
-
-<p>Oops! Repositores are intentionally bare-bones in ROM; they do not come with very many methods at all. Let’s exit the console and then we’ll define some methods on our repository. While we’re here, we’ll add a method for finding all the users, and one for creating users. Let’s open <code>lib/bix/repos/user_repo.rb</code> and add these methods:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Repos
-    class UserRepo &lt; ROM::Repository[:users]
-      commands :create,
-        use: :timestamps,
-        plugins_options: {
-          timestamps: {
-            timestamps: %i(created_at updated_at)
-          }
-        }
-
-      def all
-        users.to_a
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The <code>commands</code> class method defines built-in commands that we can use on our repository. ROM comes with three: <code>:create</code>, <code>:update</code> and <code>:delete</code>.</p>
-
-<p>This one tells ROM that we want a method called <code>create</code> that will let us create new records. The <code>use :timestamps</code> at the end tells ROM that we want <code>create</code> to set <code>created_at</code> and <code>updated_at</code> when our records are created.</p>
-
-<p>The <code>all</code> method here calls the <code>users</code> relation, and the <code>to_a</code> will run a query to fetch all of the users.</p>
-
-<p>With both of these things in place, let’s now create and retrieve a user from the database through <code>bin/console</code>:</p>
-
-<pre><code>user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
-user_repo.create(first_name: "Ryan", last_name: "Bigg", age: 32)
-=&gt; #&lt;ROM::Struct::User id=1 first_name="Ryan" last_name="Bigg" age=32 ...&gt;
-
-user_repo.all
-=&gt; [#&lt;ROM::Struct::User id=1 first_name="Ryan" last_name="Bigg" age=32 ...&gt;]
-</code></pre>
-
-<p>Hooray! We have now been able to add a record and retrieve it. We have now set up quite a few components for our application:</p>
-
-<ul>
-  <li><code>config/boot.rb</code> - Requires boot-level pieces of our application – such as Bundler and <code>dotenv</code></li>
-  <li><code>config/application.rb</code> - Defines a Container for our application’s configuration</li>
-  <li><code>system/boot/db.rb</code> - Specifies how our application connects to a database</li>
-  <li><code>system/boot/persistence.rb</code> - Defines a ROM container that defines how the ROM pieces of our application connect to and interact with our database</li>
-  <li><code>lib/bix/relations/users.rb</code> - Defines a class that can contain query logic for our <code>users</code> table</li>
-  <li><code>lib/bix/repos/user_repo.rb</code> - A class that contains methods for interacting with our relation, allowing us to create + retrieve data from the databse.</li>
-</ul>
-
-<p>ROM and Dry separate our application into small, clearly defined pieces with individual responsibilities. While this setup cost feels large <em>now</em>, it’s a cost that we’re only going to be paying once; Setup cost is one-time, maintenance cost is forever.</p>
-
-<h3 id="entities">Entities</h3>
-
-<p>Now what happens if we want to add a custom method on to the objects returned by our database? Let’s say, a <code>full_name</code> method that would let us combine a user’s <code>first_name</code> and <code>last_name</code> attributes. Currently these are <code>ROM::Struct::User</code> objects, returned from ROM. There isn’t a place to define these methods in our application yet. So let’s create one!</p>
-
-<p>To be able to define custom methods like <code>full_name</code> for users, we’re going to need a class. For this, ROM has a feature called <em>entities</em>. These are simple classes that can be considered as super-powered structs. Let’s build a new one by creating it in a new directory called <code>lib/bix/entities</code>, and calling it <code>user.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Entities
-    class User &lt; ROM::Struct
-      def full_name
-        "#{first_name} #{last_name}"
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>Ignoring <a href="https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/">the falsehoods programmers believe about names</a>, this method will combine a user’s <code>first_name</code> and <code>last_name</code> attributes.</p>
-
-<p>It’s important to consider how this class is loaded at this point. We’ve called this class <code>Bix::Entities::User</code>, and placed it at <code>lib/bix/entities/user.rb</code>. This class will be autoloaded by Zeitwerk the moment any part of our code attempts to reference this constant. That way, we won’t have to require it ourselves anywhere.</p>
-
-<p>To use this class though, we need to configure the repository further over in <code>lib/bix/repos/user_repo.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Repos
-    class UserRepo &lt; ROM::Repository[:users]
-      struct_namespace Bix::Entities
-
-      ...
-    end
-  end
-end
-</code></pre>
-
-<p>This <code>struct_namespace</code> method tells the repository that when it builds structs, it can use the <code>Bix::Entities</code> namespace for those structs. The class name will be the singularised version of the relation specified in the <code>ROM::Repository</code> class inheritance: <code>Bix::Entities::User</code>.</p>
-
-<p>Let’s go back into <code>bin/console</code> and try this out:</p>
-
-<pre><code class="language-ruby">user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
-user_repo.all.first.full_name
-# =&gt; "Ryan Bigg"
-</code></pre>
-
-<p>Great! We’re now able to have a class that contains custom Ruby logic for the data that is returned from the database.</p>
-
-<h2 id="specifying-the-container-automatically">Specifying the container automatically</h2>
-
-<p>When we initialize our repository, we have to use some really long code to do that:</p>
-
-<pre><code class="language-ruby">user_repo = Bix::Repos::UserRepo.new(Bix::Application['container'])
-</code></pre>
-
-<p>What if we were able to do this instead?</p>
-
-<pre><code class="language-ruby">user_repo = Bix::Repos::UserRepo.new
-</code></pre>
-
-<p>Wouldn’t that be much nicer?</p>
-
-<p>Well, with another one of the <code>dry-rb</code> set of gems, we can indeed do this. The last gem that we’ll use in this part is one called <code>dry-auto_inject</code>. This gem will make it so that the <em>dependency</em> of the <em>database container</em> will be <em>auto(matically) injected</em> into the <code>Bix::Repos::User</code> class.</p>
-
-<p>Let’s get started with this gem by adding the <code>dry-auto_inject</code> gem into our <code>Gemfile</code>:</p>
-
-<pre><code class="language-ruby">gem 'dry-auto_inject'
-</code></pre>
-
-<p>Then we’ll run <code>bundle install</code> to install this gem.</p>
-
-<p>Next up we’ll add two lines to <code>config/application.rb</code>. The first one is to require this gem:</p>
-
-<pre><code class="language-ruby">require "dry/auto_inject"
-</code></pre>
-
-<p>Next, we’ll need to define a new constant in this file:</p>
-
-<pre><code class="language-ruby">module Bix
-  class Application &lt; Dry::System::Container
-    ...
-  end
-
-  Import = Dry::AutoInject(Application)
-end
-</code></pre>
-
-<p>This <code>Import</code> constant will allow us to import (or <em>inject</em>) anything registered with our application into other parts. Let’s see this in action now by adding this line to <code>lib/repos/user_repo.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Repos
-    class UserRepo &lt; ROM::Repository[:users]
-      include Import["container"]
-
-      ...
-    end
-  end
-end
-</code></pre>
-
-<p>This line will use the <code>Import</code> constant to inject the <code>container</code> dependency into this class. This works by passing in a <code>container</code> keyword argument to <code>initialize</code> for this class.</p>
-
-<p>Let’s try initializing a repository again in <code>bin/console</code>:</p>
-
-<pre><code class="language-ruby">user_repo = Bix::Repos::UserRepo.new
-# =&gt; #&lt;Bix::Repos::User struct_namespace=Bix auto_struct=true&gt;
-user_repo.all.first.full_name
-# =&gt; "Ryan Bigg"
-</code></pre>
-
-<p>Everything seems to be working correctly!</p>
-
-<p>In order to make this so we don’t have to import this container into <em>every</em> repository that we create in this application, we can also approach this problem by adding a <code>Repository</code> class to our application, putting the file at <code>lib/bix/repository.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  class Repository &lt; ROM::Repository::Root
-    include Import["container"]
-
-    struct_namespace Bix::Entities
-  end
-end
-</code></pre>
-
-<p>Then, we can change the <code>UserRepository</code> class to inherit from this class:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Repos
-    class UserRepo &lt; Bix::Repository
-
-      commands :create,
-        use: :timestamps,
-        plugins_options: {
-          timestamps: {
-            timestamps: %i(created_at updated_at)
-          }
-        }
-
-      def all
-        users.to_a
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>Note here that because the <code>Repository</code> class defines both the <code>container</code> and the <code>struct_namespace</code>, we no longer need to do that in this repository either. That will lead to our code being a little bit cleaner.</p>
-
-<h3 id="summary">Summary</h3>
-
-<p>In this first part of the ROM + Dry showcase, we’ve seen how to setup a small application that can talk to a database.</p>
-
-<p>We have created files that allow us to bootstrap our application’s environment – <code>config/boot.rb</code> and <code>config/application.rb</code>. Along with this, we have created <code>system/boot</code>, a directory that contains system-level dependencies for our application’s boot process.</p>
-
-<p>In the <code>lib</code> directory, we have setup three directories:</p>
-
-<ul>
-  <li><code>entities</code> - Classes that represent specific data types returned from our database.</li>
-  <li><code>relations</code> - Classes that can contain custom methods for querying the database</li>
-  <li><code>repos</code> - Classes that provide a place for defining a public API between relations and our application code</li>
-</ul>
-
-<p>This separation of concerns across our application will make it easier to work with in the long run. One more time: the setup cost is paid <em>once</em>, the maintenance cost is paid <em>forever</em>.</p>
-
-<p>In the last part of this guide, we used the <code>dry-auto_inject</code> gem to inject the ROM container dependency into our <code>Repos::User</code> class. This will allow us to reduce the code that we need to write whenever we want to initialize the repository.</p>
-
-<p>In the next part, we’re going to look at how to use more dry-rb gems to add validations to our application, and we’ll see another benefit of <code>dry-auto_inject</code> demonstrated.</p>
 ]]></content>
  </entry>
  

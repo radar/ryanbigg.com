@@ -1,4 +1,162 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-04-06T09:34:52+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Typed View Components with dry-types</title><link href="http://localhost:4000/2022/03/typed-view-components" rel="alternate" type="text/html" title="Typed View Components with dry-types" /><published>2022-03-08T00:00:00+11:00</published><updated>2022-03-08T00:00:00+11:00</updated><id>http://localhost:4000/2022/03/typed-view-components</id><content type="html" xml:base="http://localhost:4000/2022/03/typed-view-components">&lt;p&gt;This post was originally inspired by &lt;a href=&quot;https://twitter.com/RogersKonnor&quot;&gt;Konnor Rogers&lt;/a&gt;, and &lt;a href=&quot;https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011&quot;&gt;this gist from him&lt;/a&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-05-06T10:32:46+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Using Union Types with GraphQL Mutations in Ruby</title><link href="http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types" rel="alternate" type="text/html" title="Using Union Types with GraphQL Mutations in Ruby" /><published>2022-05-06T00:00:00+10:00</published><updated>2022-05-06T00:00:00+10:00</updated><id>http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types</id><content type="html" xml:base="http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types">&lt;p&gt;The &lt;a href=&quot;https://graphql-ruby.org/mutations/mutation_classes.html&quot;&gt;official documentation for the graphql-ruby gem&lt;/a&gt; recommends this code for a mutation class that can either succeed or fail:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Mutations::CreateComment &amp;lt; Mutations::BaseMutation
+  argument :body, String
+  argument :post_id, ID
+
+  field :comment, Types::Comment
+  field :errors, [String], null: false
+
+  def resolve(body:, post_id:)
+    post = Post.find(post_id)
+    comment = post.comments.build(body: body, author: context[:current_user])
+    if comment.save
+      # Successful creation, return the created object with no errors
+      {
+        comment: comment,
+        errors: [],
+      }
+    else
+      # Failed save, return the errors to the client
+      {
+        comment: nil,
+        errors: comment.errors.full_messages
+      }
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I’d like to show an alternative to this that I think leads to cleaner code by using GraphQL concept called &lt;em&gt;union types&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;We use union types in GraphQL when we want a field to return one or more distinct types as its result. In the case of the above comment mutation, the two types of things we would like to return are either:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;A comment, if the mutation was successful&lt;/li&gt;
+  &lt;li&gt;Errors, if the mutation was unsuccessful&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Let’s change that mutation above to use a union type by declaring the type at the top of the mutation, and removing the two fields:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Mutations::CreateComment &amp;lt; Mutations::BaseMutation
+  type Types::CreateCommentResult
+  argument :body, String
+  argument :post_id, ID
+
+  def resolve(body:, post_id:)
+    post = Post.find(post_id)
+    comment = post.comments.build(body: body, author: context[:current_user])
+    if comment.save
+      # Successful creation, return the created object with no errors
+      {
+        comment: comment,
+        errors: [],
+      }
+    else
+      # Failed save, return the errors to the client
+      {
+        comment: nil,
+        errors: comment.errors.full_messages
+      }
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This new type will be our union type that will represent either a successful creation for a comment, or a failed one.&lt;/p&gt;
+
+&lt;p&gt;We can define this type in our &lt;code&gt;types&lt;/code&gt; directory under &lt;code&gt;graphql&lt;/code&gt;, in a file called &lt;code&gt;create_comment_result.rb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Types
+  class CreateCommentResult &amp;lt; BaseUnion
+    description &quot;The result from attempting to create a comment&quot;
+    possible_types Types::Comment, Types::Errors
+
+    def self.resolve_type(object, _context)
+      if object[:comment]
+        [Types::Comment, object[:comment]]
+      else
+        [Types::Errors, object]
+      end
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;A union type is defined by first inheriting from &lt;code&gt;BaseUnion&lt;/code&gt;. If we had common logic to share between union types in our GraphQL API, that logic would go into &lt;code&gt;BaseUnion&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Inside this &lt;code&gt;CreateCommentResult&lt;/code&gt; type itself, we provide a description that’ll appear in our API documentation, and inform this class what the possible types are. For this union type, we’re defining two possible types: &lt;code&gt;Types::Comment&lt;/code&gt;, and &lt;code&gt;Types::Errors&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;When the GraphQL code runs, it will call this &lt;code&gt;resolve_type&lt;/code&gt; method to determine the correct GraphQL type to use when representing the result of the mutation. This method checks if &lt;code&gt;object[:comment]&lt;/code&gt; is present, and if it is the type that’ll be used is a &lt;code&gt;Types::Comment&lt;/code&gt;, and we can fetch the comment from that object using &lt;code&gt;object[:comment]&lt;/code&gt;. In Rails parlance, this &lt;code&gt;object[:comment]&lt;/code&gt; will be an instance of the &lt;code&gt;Comment&lt;/code&gt; model – a result of a successful &lt;code&gt;build&lt;/code&gt; and &lt;code&gt;save&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If the operation was to fail, we would instead return a &lt;code&gt;Types::Error&lt;/code&gt; type, and use the resulting object as the base object for that type.&lt;/p&gt;
+
+&lt;p&gt;These two types can be defined in the &lt;code&gt;types&lt;/code&gt; directory too. Let’s look at &lt;code&gt;CommentType&lt;/code&gt; first, defined in &lt;code&gt;types/comment.rb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Types::Comment &amp;lt; Types::BaseObject
+  field :id, ID, null: false
+  field :body, String, null: false
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This type is used to represent comments in our GraphQL API. It provides access to both the &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;body&lt;/code&gt; attributes from any &lt;code&gt;Comment&lt;/code&gt; instance that is represented by this API.&lt;/p&gt;
+
+&lt;p&gt;Then, the &lt;code&gt;Errors&lt;/code&gt; type:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Types::Errors &amp;lt; Types::BaseObject
+  field :errors, [String], null: false
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This type represents the &lt;code&gt;{ comment: nil, errors: [...] }&lt;/code&gt; hash that will be returned when a comment creation fails.&lt;/p&gt;
+
+&lt;p&gt;With these union types setup, we can write this GraphQL query that will rely on them:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mutation {
+  createComment(input: { postId: 1, body: &quot;Hello world&quot; }) {
+    __typename
+    ... on Comment {
+      id
+    }
+
+    ...on Errors {
+      errors
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Firstly, we call this mutation by passing in its required arguments. After that, we fetch a field called &lt;code&gt;__typename&lt;/code&gt;. This field is automatically defined, and it will return the type whatever object is returned, either &lt;code&gt;Comment&lt;/code&gt; or &lt;code&gt;Errors&lt;/code&gt;. When calling this GraphQL API, we can use &lt;code&gt;__typename&lt;/code&gt; to determine how to act.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;... on&lt;/code&gt; syntax here tells GraphQL which fields we would like to use in the case of each part of the union being returned here. If it’s a comment, we will fetch just the &lt;code&gt;id&lt;/code&gt;. If it’s &lt;code&gt;Errors&lt;/code&gt;, we can fetch just the errors.&lt;/p&gt;
+
+&lt;p&gt;If we were to call this mutation with an empty comment body, we would see this as the result:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;data&quot;: {
+    &quot;createComment&quot;: {
+      &quot;__typename&quot;: &quot;Errors&quot;,
+      &quot;errors&quot;: [
+        &quot;Body can&apos;t be blank&quot;
+      ]
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And if we were to call it with a valid body, we would see this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;data&quot;: {
+    &quot;createComment&quot;: {
+      &quot;__typename&quot;: &quot;Comment&quot;,
+      &quot;id&quot;: &quot;6&quot;
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When using this API (for example, within a frontend codebase), we can assert on &lt;code&gt;__typename&lt;/code&gt; to determine how to show the result to a user – if it’s a &lt;code&gt;Comment&lt;/code&gt;, then indicate a successful comment creation. If it’s &lt;code&gt;Errors&lt;/code&gt;, then show those errors on the form.&lt;/p&gt;</content><author><name></name></author><summary type="html">The official documentation for the graphql-ruby gem recommends this code for a mutation class that can either succeed or fail:</summary></entry><entry><title type="html">Typed View Components with dry-types</title><link href="http://localhost:4000/2022/03/typed-view-components" rel="alternate" type="text/html" title="Typed View Components with dry-types" /><published>2022-03-08T00:00:00+11:00</published><updated>2022-03-08T00:00:00+11:00</updated><id>http://localhost:4000/2022/03/typed-view-components</id><content type="html" xml:base="http://localhost:4000/2022/03/typed-view-components">&lt;p&gt;This post was originally inspired by &lt;a href=&quot;https://twitter.com/RogersKonnor&quot;&gt;Konnor Rogers&lt;/a&gt;, and &lt;a href=&quot;https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011&quot;&gt;this gist from him&lt;/a&gt;.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -1284,364 +1442,4 @@ end
 
 &lt;p&gt;Dave 3 estimates the rebuild of the bike shed will take approximately 3 months, which coincidentally is two weeks longer than our contract lasts for. We will talk to the management here about renewing our contract for another 12 months.&lt;/p&gt;
 
-&lt;p&gt;Are there any questions before we begin?&lt;/p&gt;</content><author><name></name></author><summary type="html">Hello.</summary></entry><entry><title type="html">Maintainable Rails</title><link href="http://localhost:4000/2021/03/maintainable-rails" rel="alternate" type="text/html" title="Maintainable Rails" /><published>2021-03-23T00:00:00+11:00</published><updated>2021-03-23T00:00:00+11:00</updated><id>http://localhost:4000/2021/03/maintainable-rails</id><content type="html" xml:base="http://localhost:4000/2021/03/maintainable-rails">&lt;p&gt;&lt;em&gt;This is the Preface from my book, &lt;a href=&quot;https://leanpub.com/maintain-rails&quot;&gt;Maintainable Rails&lt;/a&gt;, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.&lt;/em&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;When Rails came out, it was revolutionary. There was an order to everything.&lt;/p&gt;
-
-&lt;p&gt;Code for your business logic or code that talks to the database &lt;em&gt;obviously&lt;/em&gt;
-belongs in the model.&lt;/p&gt;
-
-&lt;p&gt;Code that presents data in either HTML or JSON formats &lt;em&gt;obviously&lt;/em&gt; belongs in
-the view.&lt;/p&gt;
-
-&lt;p&gt;Any special (or complex) view logic goes into helpers.&lt;/p&gt;
-
-&lt;p&gt;The thing that ties all of this together is &lt;em&gt;obviously&lt;/em&gt; the controller.&lt;/p&gt;
-
-&lt;p&gt;It was (and still is) neat and orderly. Getting started with a Rails
-application is incredibly easy thanks to everything having a pre-assigned home.&lt;/p&gt;
-
-&lt;p&gt;The Rails Way™ enforces these conventions and suggests that this is the
-One True Way™ to organise a Rails application. This Rails Way™ suggests that,
-despite there being over a decade since Rails was crafted, that there still is
-no better way to organise an application than the MVC pattern that Rails
-originally came with.&lt;/p&gt;
-
-&lt;p&gt;While I agree that this way is still extremely simple and great for &lt;em&gt;getting
-started&lt;/em&gt; within a Rails application, I do not agree that this is the best way to
-organise a Rails application in 2021 with long-term maintenance in mind.&lt;/p&gt;
-
-&lt;p&gt;As a friend of mine, &lt;a href=&quot;https://twitter.com/bjeanes&quot;&gt;Bo Jeanes&lt;/a&gt; put it neatly once:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Code is written for the first time only once.&lt;/p&gt;
-
-  &lt;p&gt;Then there is anywhere between 0 and infinite days of having to change that code, understand that code, move that code, delete that code, document that code, etc. Rails makes it easy to write that code and to do some of those things early on, but often harder to do all the those things on an ongoing basis.&lt;/p&gt;
-
-  &lt;p&gt;We benefit by being patient in that first period and maybe trading off some of that efficiency for a clarity and momentum for the &lt;em&gt;life&lt;/em&gt; of the project.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;A decade of Ruby development has produced some great alternatives to Rails’
-MVC directory structure that are definitely worthwhile to consider.&lt;/p&gt;
-
-&lt;p&gt;In this book, I want to show an &lt;em&gt;alternative&lt;/em&gt; viewpoint on how a Rails
-application should be organised in order to increase its maintainability.&lt;/p&gt;
-
-&lt;p&gt;These are the best pieces that I’ve found to work for me and others.&lt;/p&gt;
-
-&lt;p&gt;This research for how to construct a better Rails application comes out of 15 years worth of developing Rails applications.&lt;/p&gt;
-
-&lt;p&gt;To best understand why this alternative architecture is a better approach, we must first understand the ways in which Rails has failed.&lt;/p&gt;
-
-&lt;h2 id=&quot;where-rails-falls-down&quot;&gt;Where Rails falls down&lt;/h2&gt;
-
-&lt;p&gt;The Original Rails Way™ falls down in at least three major areas in my opinion. Three major areas that have to do with organization. Coincidentally (or not), these three areas are the major highlights of the way Rails suggests you organize applications: models, controllers, and views.&lt;/p&gt;
-
-&lt;p&gt;Let’s start with controllers.&lt;/p&gt;
-
-&lt;h2 id=&quot;messy-controllers&quot;&gt;Messy controllers&lt;/h2&gt;
-
-&lt;p&gt;The controller’s actions talk to the model, asking the model to create, read, update or delete records in a database. And then this controller code might do more: send emails, enqueue background jobs, make requests to external services. There is no pre-determined, widely agreed-upon location for this logic; the controller is the de facto place. A controller action can often have request logic, business logic, external API calls and response logic all tied up in the one method, typically inside the action itself.&lt;/p&gt;
-
-&lt;p&gt;If this logic is not inside of the actions themselves, it is then likely found in private methods at the bottom of the controller. This leads to a common anti-pattern seen in Rails applications, one called the “iceberg controller”. What appears to be a small handful of clean actions is actually masking 100+ lines of private methods defined underneath. It is not immediately clear from scanning through these private methods which private method is used in which action. Or even if they &lt;em&gt;are&lt;/em&gt; used at all!&lt;/p&gt;
-
-&lt;p&gt;Testing all these intertwining parts individually is hard work. To make sure that it all works together, you often have to write many feature and/or request tests to test the different ways that the controller action is called and utilized. The logic of the controller’s actions – those calls out to the model – get intimately acquainted with the logic for handling the request and response for that action. The lines between the incoming request, the business logic and the outgoing response become blurred. The controller’s responsibilities are complex because there is no other sensible place for this code to go.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-problems-with-active-record-models&quot;&gt;The problems with Active Record Models&lt;/h2&gt;
-
-&lt;p&gt;Controllers are bad, but models are worse. In order to remove complexity from controllers, it has been suggested to move that logic to the models instead – the “Fat model, skinny controller” paradigm.&lt;/p&gt;
-
-&lt;p&gt;An Active Record model is responsible for &lt;em&gt;at least&lt;/em&gt; the following things:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Mapping database rows to Ruby objects&lt;/li&gt;
-  &lt;li&gt;Containing validation rules for those objects&lt;/li&gt;
-  &lt;li&gt;Managing the CRUD operations of those objects in the database (through
-inheritance from &lt;code&gt;ActiveRecord::Base&lt;/code&gt;)&lt;/li&gt;
-  &lt;li&gt;Providing a place to put code to run before those CRUD operations (callbacks)&lt;/li&gt;
-  &lt;li&gt;Containing complicated database queries&lt;/li&gt;
-  &lt;li&gt;Containing business logic for your application&lt;/li&gt;
-  &lt;li&gt;Defining associations between different models&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;If you were to colour each responsibility of your model, it might look something like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/maintainable_rails/normal_model_clean.png&quot; alt=&quot;Normal model&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Or really, it might look like this:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/maintainable_rails/normal_model.png&quot; alt=&quot;Normal model&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;In traditional Rails models, all of this gets muddled together in the model,
-making it very hard to disentangle code that talks to the database and code
-that is working with plain-Ruby objects.&lt;/p&gt;
-
-&lt;p&gt;For instance, if you saw this code:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;class Project &amp;lt; ApplicationRecord
-has_many :tickets
-
-  def contributors
-    tickets.map(&amp;amp;:user).uniq
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You might know &lt;em&gt;instinctively&lt;/em&gt; that this code is going to make a database call
-to the &lt;code&gt;tickets&lt;/code&gt; association for the &lt;code&gt;Project&lt;/code&gt; instance, and then for each of
-these &lt;code&gt;Ticket&lt;/code&gt; objects it’s going to call its &lt;code&gt;user&lt;/code&gt; method, which will load a
-&lt;code&gt;User&lt;/code&gt; record from the database.&lt;/p&gt;
-
-&lt;p&gt;Someone unfamiliar with Rails – like, say, a junior Ruby developer with very
-little prior Rails exposure – might think this is bog-standard Ruby code
-because that’s &lt;em&gt;exactly&lt;/em&gt; what it looks like. That is what Rails is designed to look like. There’s something called
-&lt;code&gt;tickets&lt;/code&gt;, and you’re calling a &lt;code&gt;map&lt;/code&gt; method on it, so they might guess that
-&lt;code&gt;tickets&lt;/code&gt; is an array. Then &lt;code&gt;uniq&lt;/code&gt; further indicates that. But &lt;code&gt;tickets&lt;/code&gt; is an
-association method, and so a database query is made to load all the associated
-tickets.&lt;/p&gt;
-
-&lt;p&gt;This kind of code is very, very easy to write in a Rails application because
-Rails applications are intentionally designed to be easy. &lt;a href=&quot;http://youtu.be/Gzj723LkRJY&quot;&gt;“Look at all the
-things I’m &lt;em&gt;not&lt;/em&gt; doing”&lt;/a&gt; and &lt;a href=&quot;http://rubyonrails.org/doctrine/#provide-sharp-knives&quot;&gt;“provide sharp
-knives”&lt;/a&gt; and all that.&lt;/p&gt;
-
-&lt;p&gt;However, this code executes one query to load all the &lt;code&gt;tickets&lt;/code&gt;, and then one
-query &lt;em&gt;per ticket&lt;/em&gt; to fetch its users. If we called this method in the console, then the query output might look like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Project Load (0.2ms)  SELECT  &quot;projects&quot;.* FROM &quot;projects&quot; ORDER BY &quot;projects&quot;.&quot;id&quot; ASC LIMIT ?  [[&quot;LIMIT&quot;, 1]]
-Ticket Load (0.1ms)  SELECT &quot;tickets&quot;.* FROM &quot;tickets&quot; WHERE &quot;tickets&quot;.&quot;project_id&quot; = ?  [[&quot;project_id&quot;, 1]]
-User Load (0.1ms)  SELECT  &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; = ? LIMIT ?  [[&quot;id&quot;, 1], [&quot;LIMIT&quot;, 1]]
-User Load (0.1ms)  SELECT  &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; = ? LIMIT ?  [[&quot;id&quot;, 2], [&quot;LIMIT&quot;, 1]]
-User Load (0.1ms)  SELECT  &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; = ? LIMIT ?  [[&quot;id&quot;, 3], [&quot;LIMIT&quot;, 1]]
-User Load (0.1ms)  SELECT  &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; = ? LIMIT ?  [[&quot;id&quot;, 1], [&quot;LIMIT&quot;, 1]]
-User Load (0.1ms)  SELECT  &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; = ? LIMIT ?  [[&quot;id&quot;, 2], [&quot;LIMIT&quot;, 1]]
-User Load (0.1ms)  SELECT  &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; = ? LIMIT ?  [[&quot;id&quot;, 3], [&quot;LIMIT&quot;, 1]]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is a classic N+1 query, which Rails does not stop you from doing. It’s a
-classic Active Record footgun / sharp knife. And this is all because Active Record makes it
-&lt;em&gt;much&lt;/em&gt; too easy to call out to the database. This code
-for &lt;code&gt;Project#contributors&lt;/code&gt; combines business logic intent (“find me all the
-contributors to this project”) with database querying and it’s &lt;em&gt;the&lt;/em&gt; major
-problem with Active Record’s design.&lt;/p&gt;
-
-&lt;p&gt;What’s worse, is that you can make a database call &lt;em&gt;wherever a model is used in a Rails application&lt;/em&gt;. If you use a model in a view, a view can make a database call. A view helper can. Anywhere! Rails’ attitude to this is one of “this is fine”, because they provide sharp knives and you’re supposed to trust the “omakase chefs” of the Rails core team. Constant vigilance can be exhausting, however.&lt;/p&gt;
-
-&lt;p&gt;Database queries are cheap to make because Active Record makes it so darn
-easy. When looking at the performance of a large, in-production Rails
-application, the number one thing I come across is slow database queries
-caused by methods just like this. Programmers writing innocent looking Ruby
-code that triggers not-so-innocent database activity is something that I’ve
-had to fix too many times within a Rails application.&lt;/p&gt;
-
-&lt;p&gt;Active Record makes it way too easy to make calls to the database. Once these
-database calls are ingrained in the model like this and things start depending
-on those calls being made, it becomes hard to refactor this code to reduce
-those queries. Even tracking down where queries are being made can be
-difficult due to the natural implicitness that &lt;em&gt;some&lt;/em&gt; method calls produce
-database queries.&lt;/p&gt;
-
-&lt;p&gt;Thankfully, there are tools like &lt;a href=&quot;https://appsignal.com&quot;&gt;AppSignal&lt;/a&gt;, &lt;a href=&quot;https://skylight.io&quot;&gt;Skylight&lt;/a&gt; and &lt;a href=&quot;https://newrelic.com&quot;&gt;New
-Relic&lt;/a&gt; that point directly at the “smoking guns” of
-performance hits in a Rails application. Tools like these are invaluable. It
-would be nice to not need them so much in the first place, however.&lt;/p&gt;
-
-&lt;p&gt;The intention here with the &lt;code&gt;contributors&lt;/code&gt; method is very innocent: get all the
-users who have contributed to the project by iterating through all the tickets
-and finding their users. If we had a &lt;code&gt;Project&lt;/code&gt; instance (&lt;a href=&quot;https://github.com/rails/rails&quot;&gt;with thousands of
-tickets&lt;/a&gt;), running that contributors method
-would cause thousands of database queries to be executed against our database.&lt;/p&gt;
-
-&lt;p&gt;Of course, there is a way to make this all into two queries through Rails:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;class Project &amp;lt; ApplicationRecord
-  def contributors
-    tickets.includes(:user).map(&amp;amp;:user).uniq
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This will load all the tickets &lt;em&gt;and&lt;/em&gt; their users in two separate queries,
-rather than one for tickets and then one for each ticket’s user, thanks to the
-&lt;em&gt;power of eager loading&lt;/em&gt;. (Which you can &lt;a href=&quot;http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations&quot;&gt;read more about in the Active Record
-Querying
-guide&lt;/a&gt;.)&lt;/p&gt;
-
-&lt;p&gt;The queries look like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Ticket Load (0.4ms)  SELECT &quot;tickets&quot;.* FROM &quot;tickets&quot; WHERE &quot;tickets&quot;.&quot;project_id&quot; = ?  [[&quot;project_id&quot;, 1]]
-User Load (0.4ms)  SELECT &quot;users&quot;.* FROM &quot;users&quot; WHERE &quot;users&quot;.&quot;id&quot; IN (1, 5)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Active Record loads all the ticket objects that it needs to, and then it issues
-a query to find all the users that match the &lt;code&gt;user_id&lt;/code&gt; values from all the
-tickets.&lt;/p&gt;
-
-&lt;p&gt;You can of course not load all the tickets at the start either, you could load
-only the 100 most recent tickets:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;class Project &amp;lt; ApplicationRecord
-  def contributors
-    tickets.recent.includes(:user).map(&amp;amp;:user).uniq
-  end
-end
-
-class Ticket &amp;lt; ApplicationRecord
-  scope :recent, -&amp;gt; { limit(100) }
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;But I think this is still too much of a mish-mash of database querying and
-business logic. Where is the clear line between database querying and business
-logic in this method? It’s hard to tell. This is because Active
-Record &lt;em&gt;allows&lt;/em&gt; us to do this sort of super-easy querying; intertwining
-Active Record’s tentacles with our business logic.&lt;/p&gt;
-
-&lt;h2 id=&quot;views&quot;&gt;Views&lt;/h2&gt;
-
-&lt;p&gt;Views in a typical Rails application are used to define logic for how to present data from models once this data has been fetched by controllers.&lt;/p&gt;
-
-&lt;p&gt;We’ve already discussed how Active Record allows you to execute additional queries in any context that a model is used. Typically additional queries like the &lt;code&gt;tickets&lt;/code&gt; and &lt;code&gt;contributors&lt;/code&gt; ones above will be executed in a view. There’s no clear barrier between models and views to prevent this from happening.&lt;/p&gt;
-
-&lt;p&gt;This sort of “leakage” makes it very hard for views to be used in complete isolation from a database. The moment a view uses a model is the moment that the view is now potentially tied to a database. For example: could you look at a view and quickly know how many, if any, database queries were being executed? Probably not.&lt;/p&gt;
-
-&lt;p&gt;To define any sort of Ruby logic for views, Rails recommends using view helpers. Perhaps we want to render a particular avatar for users:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;module UsersHelper
-  def avatar
-    image_tag(user.avatar_url || &quot;anonymous.png&quot;)
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And then we were to use this in our view over at &lt;code&gt;app/views/projects/show.html.erb&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;ul&amp;gt;
-  &amp;lt;% @project.tickets.each do |ticket| %&amp;gt;
-    &amp;lt;li&amp;gt;&amp;lt;%= avatar(ticket.author) %&amp;gt;&amp;lt;/li&amp;gt;
-  &amp;lt;% end %&amp;gt;
-&amp;lt;/ul&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This code is defined in a helper file at &lt;code&gt;app/helpers/users_helper.rb&lt;/code&gt;, but is used in a completely separate directory, under a completely different namespace. The distance between where the code is &lt;em&gt;defined&lt;/em&gt; and where it is &lt;em&gt;used&lt;/em&gt; is very far apart.&lt;/p&gt;
-
-&lt;p&gt;On top of all that, helpers are then shared across &lt;em&gt;all&lt;/em&gt; views. So while the helper is defined in &lt;code&gt;UsersHelper&lt;/code&gt;, it will be available for &lt;em&gt;all&lt;/em&gt; views. If you define a helper in &lt;code&gt;UsersHelper&lt;/code&gt;, then it is also available under views at &lt;code&gt;app/views/tickets&lt;/code&gt;, or &lt;code&gt;app/views/projects&lt;/code&gt;, too.&lt;/p&gt;
-
-&lt;p&gt;Because of this “wide sharing” of view helpers, we don’t know if changing it is going to have ramifications elsewhere in our application. If we change it for this &lt;em&gt;one&lt;/em&gt; context, will it potentially break other areas? We cannot know without looking through our code diligently.&lt;/p&gt;
-
-&lt;h3 id=&quot;presenters&quot;&gt;Presenters&lt;/h3&gt;
-
-&lt;p&gt;A common way to approach solving this problem is through the &lt;em&gt;presenter&lt;/em&gt; pattern. Presenters define classes that then “accentuate” models. They’re typically used to include presentational logic for models – things that would be “incorrect” to put in a model, but okay to put in a view.&lt;/p&gt;
-
-&lt;p&gt;By using a presenter, we have a clear indicator of where the presenter’s method is used: look for things like &lt;code&gt;UserPresenter.new(user)&lt;/code&gt;, and then that’ll be where it is used.&lt;/p&gt;
-
-&lt;p&gt;Here’s our &lt;code&gt;avatar&lt;/code&gt; example, but this time in a presenter:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;class UserPresenter
-  def avatar
-    image_tag(user.avatar_url || &quot;anonymous.png&quot;)
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;To use this, we would then need to initialize a new instance of this presenter per user object:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;ul&amp;gt;
-  &amp;lt;% @project.tickets.each do |ticket| %&amp;gt;
-    &amp;lt;li&amp;gt;&amp;lt;%= UserPresenter.new(ticket.author).avatar %&amp;gt;&amp;lt;/li&amp;gt;
-  &amp;lt;% end %&amp;gt;
-&amp;lt;/ul&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This then muddles together the Ruby and HTML code of our view. A way to solve this could be to move that preparation of the data into a helper:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;module TicketsHelper
-  def author_avatar(author)
-    UserPresenter.new(author).avatar
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then in the view:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;ul&amp;gt;
-  &amp;lt;% @project.tickets.each do |ticket| %&amp;gt;
-    &amp;lt;li&amp;gt;&amp;lt;%= author_avatar(ticket.author) %&amp;gt;&amp;lt;/li&amp;gt;
-  &amp;lt;% end %&amp;gt;
-&amp;lt;/ul&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We have now got the logic for rendering an avatar spread over three different points:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;The view&lt;/li&gt;
-  &lt;li&gt;The presenter&lt;/li&gt;
-  &lt;li&gt;The helper&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;This is not a very clear way to organize this code, and the more this pattern is used, the more confusing your application will get.&lt;/p&gt;
-
-&lt;p&gt;Views in a default Rails application leave us with no alternative other than to create a sticky combined mess of logic between our ERB files and helper files that are globally shared.&lt;/p&gt;
-
-&lt;h2 id=&quot;we-can-do-better&quot;&gt;We can do better&lt;/h2&gt;
-
-&lt;p&gt;It should be possible to render a view without relying on a model to be connected to a database. Being
-able to reach into the database from your views &lt;em&gt;should&lt;/em&gt; be hard work.
-Your business logic should have everything it needs to work by the stage a view is being rendered. This will then make it easier to test the view in isolation from the other components of your application.&lt;/p&gt;
-
-&lt;p&gt;The source of these frustrations is the Active Record pattern and Rails’ strict adherence to it. A class containing only business logic and being passed some data should not need
-to know also about how that data is validated, any “callbacks” or how that data
-is persisted too. If a class knows about all of those things, it has too many
-responsibilities.&lt;/p&gt;
-
-&lt;p&gt;The Single Responsibility Principle says that a class or a module should only
-be responsible for one aspect of the application’s behaviour. It should only
-have one reason to change. An Active Record model of any meaningful size has
-many different reasons to change. Maybe there’s a validation that needs
-tweaking, or an association to be added. How about a scope, a class method or a
-plain old regular method, like the contributors one? All more reasons why
-changes could happen to the class.&lt;/p&gt;
-
-&lt;p&gt;An Active Record model flies in the face of the Single Responsibility
-Principle. I would go as far as to say this: Active Record leads you to writing
-code that is hard to maintain from the very first time you set foot in a Rails
-application. Just look at any sizable Rails application. The models are
-usually the messiest part and I really believe Active Record – both the
-design pattern and the gem that implements that pattern – is the cause.&lt;/p&gt;
-
-&lt;p&gt;Having a well-defined boundary between different pieces of code makes it easier
-to work with each piece. Active Record does not encourage this.&lt;/p&gt;
-
-&lt;p&gt;Validations and persistence should be their own separate responsibilities and separated into
-different classes, as should business logic. There should be specific, dedicated classes that only
-have the responsibility of talking to the database. Clear lines between the
-responsibilities here makes it so much easier to work with this code.&lt;/p&gt;
-
-&lt;p&gt;It becomes easier then to say: this class works with only validations and this
-other class talks to the database. There’s no muddying of the waters between
-the responsibilities of the classes. Each class has perhaps not &lt;em&gt;one&lt;/em&gt; reason to
-change, but at least &lt;em&gt;fewer&lt;/em&gt; reasons to change than Active Record classes.&lt;/p&gt;
-
-&lt;p&gt;It’s possible to build a Rails application with distinct classes for validations, persistence and logic that concerns itself with data from database records. It’s possible to build one that does not combine a heap of messy logic in a controller action, muddling it in with request and response handling.&lt;/p&gt;
-
-&lt;p&gt;Just because DHH &amp;amp; friends decided in 2006 that there was One True Way™ to build a Rails application – it does not mean that now in 2021, a full 15 years later, that we need to hew as close to that as possible.&lt;/p&gt;
-
-&lt;p&gt;We can explore other pathways. This is a book dedicated to charting that exploration, leading to a brighter future for your Rails application.&lt;/p&gt;
-
-&lt;p&gt;The way we’re going to &lt;em&gt;improve&lt;/em&gt; upon the default Rails architecture is with two suites of gems: those from the &lt;a href=&quot;https://dry-rb.org/&quot;&gt;dry-rb&lt;/a&gt; suite, and those from the &lt;a href=&quot;https://rom-rb.org&quot;&gt;rom-rb&lt;/a&gt; suite.&lt;/p&gt;
-
-&lt;p&gt;We’ll be using these gems to clearly demarcate the lines between responsibilities for our application.&lt;/p&gt;
-
-&lt;p&gt;We’ll have particular classes that will separate the code that validates user input from the code that talks to a database.&lt;/p&gt;
-
-&lt;p&gt;We’ll take apart the intermingling of request-response handling and business logic from within our controllers, and move that out to another set of distinct classes.&lt;/p&gt;
-
-&lt;p&gt;We’ll move code that would typically be in a view or a helper, into yet another type of distinct class: one called a &lt;em&gt;view component&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;And with this, we’ll move forward into that bright future that’ll lead to your Rails applications being maintainable.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;_If you want to find out how to build maintainable Rails applications, read my book: &lt;a href=&quot;https://leanpub.com/maintain-rails&quot;&gt;Maintainable Rails&lt;/a&gt;, available on Leanpub for $10 for the next month.&lt;/p&gt;</content><author><name></name></author><summary type="html">This is the Preface from my book, Maintainable Rails, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.</summary></entry></feed>
+&lt;p&gt;Are there any questions before we begin?&lt;/p&gt;</content><author><name></name></author><summary type="html">Hello.</summary></entry></feed>

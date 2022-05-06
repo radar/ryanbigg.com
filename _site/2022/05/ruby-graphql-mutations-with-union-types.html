@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Blog - Ryan Bigg</title>
+  <title>Using Union Types with GraphQL Mutations in Ruby - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,700|Ubuntu+Mono:400,700,700i&display=swap"
@@ -15,7 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg - Blog" property="og:title">
+  <meta content="Ryan Bigg - Using Union Types with GraphQL Mutations in Ruby" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
@@ -25,10 +25,10 @@
   
 
   
-  <meta content="https://ryanbigg.com/blog" property="og:url">
+  <meta content="https://ryanbigg.com/2022/05/ruby-graphql-mutations-with-union-types" property="og:url">
   
   
-  <meta content="Blog" property="og:description">
+  <meta content="Using Union Types with GraphQL Mutations in Ruby" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -37,29 +37,24 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta name="twitter:title" content="Blog">
+  <meta name="twitter:title" content="Using Union Types with GraphQL Mutations in Ruby">
   
 </head>
 
 
 <body>
-  <!-- <header class="topbar">
-  <h1><a href="/">RB</a></h1>
-</header>
- -->
   <div class="main">
-    
-
-<article>
-  <h1 class="text-center">Ryan Bigg</h1>
-  <div class='text-center mb-8'>
-    <a href="/">&#x27F5; Home</a>
-    <a href="/2022/05/ruby-graphql-mutations-with-union-types">
-      <h2 class="mt-4">Using Union Types with GraphQL Mutations in Ruby</h2>
-    </a>
-    <small>06 May 2022</small>
-  </div>
-  <p>The <a href="https://graphql-ruby.org/mutations/mutation_classes.html">official documentation for the graphql-ruby gem</a> recommends this code for a mutation class that can either succeed or fail:</p>
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <div class='text-center mb-8'>
+            <a href="/blog">&#x27F5; Posts</a>
+            <a href="/2022/05/ruby-graphql-mutations-with-union-types">
+              <h2>Using Union Types with GraphQL Mutations in Ruby</h2>
+            </a>
+            <small>06 May 2022</small>
+          </div>
+          <p>The <a href="https://graphql-ruby.org/mutations/mutation_classes.html">official documentation for the graphql-ruby gem</a> recommends this code for a mutation class that can either succeed or fail:</p>
 
 <pre><code class="language-ruby">class Mutations::CreateComment &lt; Mutations::BaseMutation
   argument :body, String
@@ -219,46 +214,9 @@ end
 
 <p>When using this API (for example, within a frontend codebase), we can assert on <code>__typename</code> to determine how to show the result to a user – if it’s a <code>Comment</code>, then indicate a successful comment creation. If it’s <code>Errors</code>, then show those errors on the form.</p>
 
-</article>
-
-<div class="text-center">
-  <h2>In case you missed it...</h2>
-  <ul>
-    
-    <li class="mb-4"><a href="/2022/03/typed-view-components">Typed View Components with dry-types</a> <span class="text-gray-400 text-xs">&mdash; 08 Mar 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/12/culture-and-values">Culture and Values</a> <span class="text-gray-400 text-xs">&mdash; 09 Dec 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/08/a-tour-of-twist">A tour of Twist</a> <span class="text-gray-400 text-xs">&mdash; 11 Aug 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/07/on-coding-tests">On coding tests</a> <span class="text-gray-400 text-xs">&mdash; 27 Jul 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/07/ruby-27s-new-triple-dot-syntax">Using Ruby 2.7's new triple-dot syntax to clean up service objects</a> <span class="text-gray-400 text-xs">&mdash; 21 Jul 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/07/job-hunt-q2-2021">Job Hunt Q2 2021</a> <span class="text-gray-400 text-xs">&mdash; 19 Jul 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/04/finding-a-new-contract-gig">How I found a new contract gig</a> <span class="text-gray-400 text-xs">&mdash; 29 Apr 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/04/view-components-the-missing-link">View Components: The Missing Link</a> <span class="text-gray-400 text-xs">&mdash; 07 Apr 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/03/the-bikeshed">The Bikeshed</a> <span class="text-gray-400 text-xs">&mdash; 29 Mar 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/03/maintainable-rails">Maintainable Rails</a> <span class="text-gray-400 text-xs">&mdash; 23 Mar 2021</span>
-    </li>
-    
-  </ul>
-  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
-</div>
-
+        </article>
+      </div>
+    </div>
   </div>
   <footer>
 </footer>
