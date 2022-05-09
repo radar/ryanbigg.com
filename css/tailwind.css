@@ -3,14 +3,10 @@
 @tailwind utilities;
 @import "recruiters";
 
-html {
-  font-size: 18px;
-}
-
 body {
-  font-family: "Nunito Sans";
+  font-family: "Nunito";
 
-  @apply dark:bg-gray-900 dark:text-gray-50 text-base;
+  @apply dark:bg-zinc-900 dark:text-gray-300 text-base;
 }
 
 h1, h2, h3 {
@@ -31,14 +27,6 @@ h3 {
 
 a {
   @apply dark:text-green-300 text-green-500;
-}
-
-.topbar a {
-  @apply dark:text-gray-800
-}
-
-.landing-page {
-  /* @apply grid grid-cols-1 md:grid-cols-2 m-4; */
 }
 
 .landing-page .photo {
@@ -69,7 +57,7 @@ article p {
 }
 
 article code {
-  @apply text-base;
+  @apply text-sm;
 }
 
 article blockquote {
@@ -143,4 +131,13 @@ article pre code {
 
 hr {
   @apply border-2 dark:border-gray-800
+}
+
+.post-title {
+  font-family: "Koulen";
+  @apply dark:bg-green-300 dark:text-zinc-900 w-1/2 mx-auto py-2 rounded-lg;
+}
+
+.hljs {
+  @apply rounded-md;
 }

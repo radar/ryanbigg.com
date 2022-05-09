@@ -1,11 +1,11 @@
 ---
-layout: default
+layout: post
 title: Setup
 ---
 
 # My Setup
 
-Working from home means that I have to choose where to work from in my house. It could be my couch. It could be my bed. But most of the time it's at my desk. Having a separate "work room" helps get me "in the mood" for doing work.
+Working from home means that I have to choose where to work from in my house. It could be my couch. It could be my bed. But most of the time it's at my desk. Having a separate "work room" helps get me "in the mood" for doing work. The room itself has a small window to the outside world, good air flow, along with heating and cooling a button press away.
 
 Here's the setup that I have in the room at the moment.
 
