@@ -4,13 +4,170 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2022-05-18T09:10:28+10:00</updated>
+ <updated>2022-11-13T22:16:04+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>A replacement for strong parameters</title>
+   <link href="http://ryanbigg.com/2022/11/a-replacement-for-strong-parameters"/>
+   <updated>2022-11-09T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2022/11/a-replacement-for-strong-parameters</id>
+   <content type="html"><![CDATA[<p>I’m not going to take <a href="https://dev.37signals.com/vanilla-rails-is-plenty">this week’s (very obvious) bait about how “Vanilla Rails is plenty”</a>.</p>
+
+<p>In the past, I’ve spent effort watching DHH’s videos and <a href="https://ryanbigg.com/2018/03/on-writing-software-well-2-a-review">issuing a (time-stamped) rebuttal</a>, and writing up about <a href="https://ryanbigg.com/2017/06/current-considered-harmful">a new Rails feature I would consider harmful</a>.</p>
+
+<p style="font-size: 125%"><strong>I even <a href="https://leanpub.com/maintain-rails/">wrote a book called Maintainable Rails</a> that offers my take on how to build a maintainable Rails application. A whole 30,000 words of it!</strong></p>
+
+<p>I am not going to follow that pattern today, even though the vanilla Rails article is <em>concerning</em>.</p>
+
+<p>You know, if their apps were <em>maintainable</em>, then they wouldn’t need to keep re-writing them completely, yeah?</p>
+
+<p>I digress.</p>
+
+<p>Today, I want to cover a <em>different</em> feature of Rails that I think could be improved: strong parameters.</p>
+
+<p>The <a href="https://guides.rubyonrails.org/action_controller_overview.html#nested-parameters">documentation for strong_parameters</a> always makes me a little confused with all of its different kinds of brackets. It feels like someone discovered Lisp and then thought it would be good to have as many brackets in Ruby, only to abandon the idea half-way.</p>
+
+<p>Here’s a complicated example from that documentation.</p>
+
+<pre><code class="language-ruby">params.permit(:name, { emails: [] },
+              friends: [ :name,
+                         { family: [ :name ], hobbies: [] }])
+</code></pre>
+
+<p>The documentation goes on to explain:</p>
+
+<blockquote>
+  <p>This declaration permits the name, emails, and friends attributes. It is expected that emails will be an array of permitted scalar values, and that friends will be an array of resources with specific attributes: they should have a name attribute (any permitted scalar values allowed), a hobbies attribute as an array of permitted scalar values, and a family attribute which is restricted to having a name (any permitted scalar values allowed here, too).</p>
+</blockquote>
+
+<p>How might we approach this differently? I think we could do this in a clearer fashion with a gem called <a href="https://dry-rb.org/gems/dry-schema/1.10/">dry-schema</a>. The dry-schema gem allows us to define particular schemas that our data should comply with, and like strong parameters it will automatically drop keys that are not specified in the schema itself.</p>
+
+<h3 id="creating-the-schema">Creating the schema</h3>
+
+<p>Let’s try creating a schema from the above strong parameters code, but this time in dry-schema. I’m also going to add an extra field here called age:</p>
+
+<pre><code class="language-ruby">PersonSchema = Dry::Schema.Params do
+  required(:name).filled(:string)
+  required(:age).filled(:integer)
+  required(:emails).value(array[:string]).value(min_size?: 1)
+  required(:friends).array(:hash) do
+    required(:name).filled(:string)
+    required(:family).hash do
+      required(:name).filled(:string)
+    end
+  end
+  required(:hobbies).array(:string)
+end
+</code></pre>
+
+<p>With this schema we’re clearly defining the types of the data that we expect. You could define this schema at the top of your controller, if you like, or in its own file at <code>app/schemas/person_schema.rb</code>. It really should depend on the context in which it is used.</p>
+
+<p>It goes further than strong parameters, because it specifies the types expected for things such as emails and hobbies, whereas strong parameters would allow any “permitted scalar values” in there, including things such as numbers. The <code>dry-schema</code> version <em>also</em> specifies that there has to be at least one email address.</p>
+
+<h3 id="using-a-valid-set-of-parameters">Using a valid set of parameters</h3>
+
+<p>A hash that would pass the checks for this schema.</p>
+
+<pre><code class="language-ruby">params = {
+  name: "Ryan",
+  age: 34,
+  emails: ["me@ryanbigg.com"],
+  hobbies: ["MTG", "Coding"],
+  friends: [
+    {
+      name: "Dear",
+      family: { name: "Reader" }
+    }
+  ]
+}
+</code></pre>
+
+<p>We can check this with:</p>
+
+<pre><code class="language-ruby">result = PersonSchema.(params)
+</code></pre>
+
+<p>We will get a <code>Dry::Schema::Result</code> back from this, which we can grab the output of with:</p>
+
+<pre><code>result.output
+</code></pre>
+
+<h3 id="type-coercions">Type-coercions</h3>
+
+<p>Another hash that would pass the checks, even though it might not look like it, is this one:</p>
+
+<pre><code class="language-ruby">params = {
+  name: "Ryan",
+  age: "34",
+  emails: ["me@ryanbigg.com"],
+  hobbies: ["MTG", "Coding"],
+  friends: [
+    {
+      name: "Dear",
+      family: { name: "Reader" }
+    }
+  ]
+}
+</code></pre>
+
+<p>The <code>age</code> key here is specified as a string, but the schema says the type must be an <code>integer</code>. Let’s look at what happens:</p>
+
+<pre><code class="language-ruby">result = PersonSchema.(params)
+result.output[:age] # =&gt; 34
+</code></pre>
+
+<p>The <code>Dry::Schema.Params</code> type will do its best to cooerce string parameter values to their matching Ruby counterparts. This will also work for things such as dates in the “YYYY-MM-DD” formats, too. No more needing to do a <code>Date.parse</code> if that parameter is being sent to something else, like a service object instead of a model.</p>
+
+<h3 id="unknown-keys-are-removed">Unknown Keys are removed</h3>
+
+<p>Like with strong parameters, if we attempt to pass an extra key:</p>
+
+<pre><code class="language-ruby">params = {
+  name: "Ryan",
+  age: 34,
+  emails: ["me@ryanbigg.com"],
+  hobbies: ["MTG", "Coding"],
+  friends: [
+    {
+      name: "Dear",
+      family: { name: "Reader" }
+    }
+  ],
+  very_smart: true
+}
+</code></pre>
+
+<p>Then the schema will remove this additional key, proving that I am just regular smart, if that.</p>
+
+<h3 id="error-messages-are-provided">Error messages are provided</h3>
+
+<p>If the hash passed in is completely invalid, like this one:</p>
+
+<pre><code class="language-ruby">params = {}
+result = PersonSchema.(params)
+</code></pre>
+
+<p>Then we can retrieve error messages that are similar to Active Model validations back out:</p>
+
+<pre><code>=&gt; {:name=&gt;["is missing"], :age=&gt;["is missing"], :emails=&gt;["is missing"], :friends=&gt;["is missing"], :hobbies=&gt;["is missing"]}
+</code></pre>
+
+<p>On top of this, the <code>result</code> is also going to respond to <code>success?</code> with <code>false</code>, meaning we could use this in a controller action to check if the parameters are valid, before even passing them to their final destination. That might be a model (with, perhaps, it’s own validations), or it could
+be another service.</p>
+
+<hr />
+
+<p>I’ve only scratched the surface on what <code>dry-schema</code> can do. I purposely wanted to keep this post short today to cover how it could replace strong parameters within Rails to provide a much better developer experience than that bracketed mess.</p>
+
+<p>If you’d like to know what else dry-schema can do, make sure to check out <a href="https://dry-rb.org/gems/dry-schema/">its documentation here</a>.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Using Union Types with GraphQL Mutations in Ruby</title>
@@ -3441,459 +3598,6 @@ end
 <p>When testing the operation, we’ve chosen to isolate those tests from the database by injecting a stubbed <code>UserRepo</code> object in place of the real thing. This isolation will mean that our tests will not have to concern themselves with setting up database state – for instance, if we had foreign key constraints – and over time it will mean that our operation tests will be lightning fast.</p>
 
 <p>In the next part of this series, we’ll add the final piece of our application to our stack: a way to make HTTP requests. And we’ll <em>definitely</em> be adding tests for this too!</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>ROM + Dry Showcase: Part 2 - Validations &amp; Operations</title>
-   <link href="http://ryanbigg.com/2020/02/rom-and-dry-showcase-part-2"/>
-   <updated>2020-02-02T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2020/02/rom-and-dry-showcase-part-2</id>
-   <content type="html"><![CDATA[<p>This is the 2nd part of a 4 part series covering the <a href="https://rom-rb.org/">rom-rb</a> and <a href="https://dry-rb.org/">dry-rb</a> suites of gems.</p>
-
-<ul>
-  <li>Part 1: <a href="/2020/02/rom-and-dry-showcase-part-1">Application + Database setup</a></li>
-</ul>
-
-<p>In this part, we’re going to look at how to add data validation to our application. Our application currently has a way of creating users, but there’s nothing preventing those users being created without their <code>first_name</code> or <code>last_name</code> set. In this part, we’ll add some code to validate that both of these fields are set. We’re going to add this code by using a gem called <code>dry-validation</code>.</p>
-
-<p>When we’ve added this code, it’s going to sit apart from the repositories and relations that we’ve built already, and we will need a way of connecting these pieces. The way that we will connect these pieces is through the <code>dry-monads</code> gem.</p>
-
-<p>When we’re done here, we’ll have a class that encapsulates all the actions of creating a user:</p>
-
-<ol>
-  <li>Validates <code>first_name</code> and <code>last_name</code> are present</li>
-  <li>If they aren’t present, returns an error.</li>
-  <li>If they are present, the user data is persisted to the database</li>
-</ol>
-
-<p>We’ll call this class a <em>operation</em>, as it will contain all the logic for performing a particular <em>operation</em> with our system; the operation of creating a new user.</p>
-
-<p>This part of the guide previously called this type of class a <em>transaction</em>, but in order to not conflate these with <em>database transactions</em>, a different name has been used. Other people might call these <em>service objects</em> or <em>interactors</em>.</p>
-
-<p>If you’d like to see the code for this application, it’s at <a href="https://github.com/radar/bix">github.com/radar/bix</a>, and each part of this series has its own branch.</p>
-
-<p>Let’s begin!</p>
-
-<h2 id="adding-validations">Adding validations</h2>
-
-<p>Validations are a key part of any application. We need to make sure that before data is stored in our database that it is valid. In our currently very small application, we so far have just one type of data: users. Still, in this tiny application it doesn’t really make much sense to create users that don’t have a name. In this section we’re going to add a class that will validate a particular input for user data is valid.</p>
-
-<p>To start with, we’ll need to add the <code>dry-validation</code> gem to our <code>Gemfile</code>:</p>
-
-<pre><code class="language-ruby">gem 'dry-validation', '~&gt; 1.4'
-</code></pre>
-
-<p>Next up, we’ll need to install the gem:</p>
-
-<pre><code class="language-bash">bundle install
-</code></pre>
-
-<p>We’ll need to require this gem somewhere too, so that it is loaded in our application. To load this gem and other gems that we’ll add in the future, we’ll create a new file at <code>system/boot/core.rb</code>.</p>
-
-<pre><code class="language-ruby">Bix::Application.boot(:core) do
-  init do
-    require "dry-validation"
-  end
-end
-</code></pre>
-
-<p>This new file will include any sort of setup logic that we will need for the <em>core</em> part of our application. This is going to be everything that we’ll need when running the plain Ruby code for our application. We have a <code>db.rb</code> and <code>persistence.rb</code> file in this same directory that contains logic for anything we want to do with a database. n the last part of this guide, we’ll add a fourth file in this directory called <code>web.rb</code> and that file will contain setup logic for anything to do with handling web requests.</p>
-
-<p>The <code>dry-validation</code> gem allows us to create classes to encapsulate validation logic, and this gem uses another dry-rb gem under the hood called <a href="https://dry-rb.org/gems/dry-schema/1.4"><code>dry-schema</code></a></p>
-
-<p>These classes are called <em>contracts</em>. We’ll create our first contract at <code>lib/bix/contracts/users/create_user.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Contracts
-    module Users
-      class CreateUser &lt; Dry::Validation::Contract
-        params do
-          required(:first_name).filled(:string)
-          required(:last_name).filled(:string)
-          optional(:age).filled(:integer)
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This class defines a contract that says that when we’re creating users, there has to be at least two parameters – <code>first_name</code> and <code>last_name</code>, and they both have to be <code>filled</code> (present) strings. This contract also says that an <code>age</code> parameter is optional, but when it’s specified it’s an integer. Let’s try using this contract now in <code>bin/console</code>:</p>
-
-<pre><code class="language-ruby">create_user = Bix::Contracts::Users::CreateUser.new
-result = create_user.call({})
-</code></pre>
-
-<p>To use this contract, we need to initialize a new object from the class and then use the <code>call</code> method on that new object. The argument that we pass it are the parameters for the contract, which in this case is just an empty Hash.</p>
-
-<p>When we call this contract, we see the validation errors returned:</p>
-
-<pre><code>=&gt; #&lt;Dry::Validation::Result{} errors={:first_name=&gt;["is missing"], :last_name=&gt;["is missing"]}&gt;
-</code></pre>
-
-<p>The returned object is a <code>Result</code> object, and with that result object we can determine if the validation was successful by calling the <code>success?</code> method:</p>
-
-<pre><code class="language-ruby">result.success?
-# =&gt; false
-</code></pre>
-
-<p>If we wanted to display these error messages (for example, as feedback to a user) we could call:</p>
-
-<pre><code class="language-ruby">result.errors.to_h
-=&gt; {:first_name=&gt;["is missing"], :last_name=&gt;["is missing"]}
-</code></pre>
-
-<p>Let’s look at what happens when we pass valid data, but with a twist: all of our values are strings. This is the kind of data you would get from a form submission through a web application:</p>
-
-<pre><code class="language-ruby">create_user = Bix::Contracts::Users::CreateUser.new
-result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: "32")
-=&gt; #&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"Bigg", :age=&gt;32} errors={}&gt;
-result.success?
-# =&gt; true
-</code></pre>
-
-<p>Great, our contract is correctly validating input! What’s interesting to note here is that the <code>age</code> parameter is being correctly typecast from a String to an Integer. This is because we have defined that field to be an <code>integer</code> in our contract:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Contracts
-    module Users
-      class CreateUser &lt; Dry::Validation::Contract
-        params do
-          required(:first_name).filled(:string)
-          required(:last_name).filled(:string)
-          optional(:age).filled(:integer)
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>If we pass data from a form submission through our contract before we work through it, the data will have all the correct types and we don’t need to coerce that data when we’re working with – dry-validation has done that for us. After this point, our data will always be in the correct type.</p>
-
-<p>Another thing to note with our new contract is that it will only return the specified fields. Extra fields will be ignored:</p>
-
-<pre><code class="language-ruby">create_user = Bix::Contracts::Users::CreateUser.new
-result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: "32", admin: true)
-# =&gt; #&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"Bigg", :age=&gt;32} errors={}&gt;
-</code></pre>
-
-<p>The <code>admin</code> field doesn’t appear here at all, even though we’ve specified it as an input to this contract.</p>
-
-<p>So in summary, here’s what we’re given by using a <code>dry-validation</code> contract:</p>
-
-<ul>
-  <li>Validations to ensure fields meet certain criteria</li>
-  <li>Automatic type coercion of fields into their correct types</li>
-  <li>Automatic limiting of input to just the fields we have specified</li>
-</ul>
-
-<h2 id="intro-to-dry-monads">Intro to Dry Monads</h2>
-
-<p>Now that we have a way to create user records (the <code>Bix::Repos::UserRepo</code>) and a way to validate that data before it gets into the database <code>(Bix::Contracts::Users::CreateUser</code>), we can combine them to ensure data is valid before it reaches out database.</p>
-
-<p>To do this combination, we could write a class like this:</p>
-
-<pre><code class="language-ruby">class CreateUser
-  def call(input)
-    create_contract = Bix::Contracts::Users::Create.new
-    result = create_contract.call(input)
-    if result.success?
-      user_repo = Bix::Repos::User.new
-      user_repo.create(input)
-    else
-      result
-    end
-  end
-end
-</code></pre>
-
-<p>From the start, this class doesn’t look so bad. But if we added one more <code>if</code> condition or perhaps some code to send a “successful sign up” email to a user, this class would get longer and more complex.</p>
-
-<p>To avoid that kind of complexity, the <code>dry-rb</code> suite of gems provides another gem called <code>dry-monads</code>. Among <a href="https://dry-rb.org/gems/dry-monads/1.3/getting-started/">other things</a>, this <code>dry-monads</code> gem provides us with a feature called “Do Notation”. This feature will allow us to write our <code>CreateUser</code> class in a much cleaner way that will also allow for extensibility later on – if we want that.</p>
-
-<p>Let’s add this gem to our <code>Gemfile</code> now:</p>
-
-<pre><code class="language-ruby">gem 'dry-monads', '~&gt; 1.3'
-</code></pre>
-
-<p>And we’ll run <code>bundle install</code> to install it.</p>
-
-<p>Next up, we will need to require this gem in <code>system/boot/core.rb</code>:</p>
-
-<pre><code class="language-ruby">Bix::Application.boot(:core) do
-  init do
-    require "dry-validation"
-    require "dry/monads"
-    require "dry/monads/do"
-  end
-
-  start do
-    Dry::Validation.load_extensions(:monads)
-  end
-end
-</code></pre>
-
-<p>We’ve changed <code>core.rb</code> here to require <code>dry/monads</code> and <code>dry/monads/do</code>. The second file will give us access to Dry Monad’s <em>Do Notation</em> feature. We’ve added a <code>start</code> block here, which will run when our application is finalized. This will add an extra <code>to_monad</code> method to our validation results. We’ll see this used in a short while.</p>
-
-<p>Before we get there, we need to talk about two things. One is called the <em>Result Monad</em>, and the other is the <em>Do Notation</em>.</p>
-
-<h3 id="result-monad">Result Monad</h3>
-
-<p>The Result Monad is a type of object that can represent whether an action has succeeded or failed. Where it comes in handy is when you have a chain of actions that you might want to stop if one of those things goes wrong. For instance, in the above code when the user is invalid, we want the code to not persist the user to the database.</p>
-
-<p>To do this with <code>dry-monads</code>, we would return one of two types of the result monad, a <code>Success</code> or <code>Failure</code>. Here’s a flowchart showing what would go on when we use a Result monad:</p>
-
-<p><img src="/images/rom/dry-monads.png" alt="Result monad diagram" /></p>
-
-<p>Here we have a “Create User” action that has two steps: a “Validate User” and a “Persist User” step. When our “Create User” action receives some parameters, it passes them to the “Validate User” step. When this step runs, there can be one of two results: success or failure.</p>
-
-<p>When the validation succeeds, that step returns a <code>Success</code> result monad which will contain the validated (and type-casted!) parameters.</p>
-
-<p>If the validation fails, the step returns a <code>Failure</code> result monad. This monad contains the validation errors.</p>
-
-<p>When our code sees a <code>Failure</code> Result Monad returned, it will not execute the remaining steps. In the above diagram, the validation of a user <em>must</em> succeed before persistence happens. Just like in the earlier code we wrote too.</p>
-
-<h3 id="do-notation">Do Notation</h3>
-
-<p>The Result Monad is used in conjunction with that other feature of <code>dry-monads</code> I mentioned earlier: Do Notation. Let’s take the above <code>CreateUser</code> class and re-write it using <code>dry-monads</code>’ Do Notation. We’ll put this class at <code>lib/bix/operations/users/create_user.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Operations
-    module Users
-      class CreateUser
-        include Dry::Monads[:result]
-        include Dry::Monads::Do.for(:call)
-
-
-        def call(input)
-          values = yield validate(input)
-          user = yield persist(values)
-
-          Success(user)
-        end
-
-        def validate(input)
-          create_contract = Contracts::Users::Create.new
-          create_contract.call(input).to_monad
-        end
-
-        def persist(result)
-          user_repo = Bix::Repos::UserRepo.new
-          Success(user_repo.create(result.values))
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This code is a bit longer than the code we had previously. However, it comes with a few benefits. The first of these is that each step is clearly split out into its own method.</p>
-
-<aside>
-  <header>The <code>call</code> dumping ground anti-pattern</header>
-
-  <p>
-    No longer are we just throwing <em>everything</em> into the <code>call</code> function.
-  </p>
-
-  <p>
-    This is a common trap for developers who adopt this kind of <em>operation</em> (or "service") pattern. They split out a class from a controller, and then dump everything into the <code>call</code> method! The code is no cleaner when you've done this, it has simply been swept under the proverbial rug.
-  </p>
-
-  <p>
-    A much better approach is a call method that delegates to <em>other</em> methods.
-  </p>
-</aside>
-
-<p>The <code>call</code> method here is responsible for ordering the steps of our operation. It takes our initial <code>input</code> for this operation and runs it through the validator. All of that validation logic is neatly gathered together in the <code>validate</code> method:</p>
-
-<pre><code class="language-ruby">def validate(input)
-  create_contract = Contracts::Users::CreateUser.new
-  create_contract.call(input).to_monad
-end
-</code></pre>
-
-<p>In this method, we use our contract that we built earlier. When we call this contract, it will return a <code>Dry::Validation::Result</code> object. To use this in conjunction with <code>dry-monads</code>’ Do Notation, we need to convert this object to a Result Monad. We do this by calling <code>to_monad</code> on the result.</p>
-
-<p>If the validation succeeds, we’ll get back a <code>Success(validated_input)</code> result monad, otherwise a <code>Failure(validation_result)</code> result monad will be returned.</p>
-
-<p>If it fails at this point, the operation will stop and return the validation failure.</p>
-
-<p>If it succeeds however, the operation to the next step: <code>create_user</code>:</p>
-
-<pre><code class="language-ruby">def create_user(result)
-  user_repo = Bix::Repos::UserRepo.new
-  Success(user_repo.create(result.values))
-end
-</code></pre>
-
-<p>This step takes a <code>result</code> argument, which will be the <code>validated_input</code> returned from our validation step. We then initialise a new repo, and use that to create a user, taking the <code>result.values</code>. These values will be the validated and type-casted values from the validation’s result.</p>
-
-<p>Let’s try using this class now in <code>bin/console</code>:</p>
-
-<pre><code class="language-ruby">create_user = Bix::Operations::Users::CreateUser.new
-result = create_user.call(first_name: "Ryan", last_name: "Bigg", age: 32)
-# =&gt; Success(#&lt;Bix::User id=4 first_name="Ryan" last_name="Bigg" age=32 ...&gt;)
-</code></pre>
-
-<p>When we use this operation, it runs the validation and persistence steps for us. If everything goes well, like in the above example, then we get back a <code>Success</code> result monad.</p>
-
-<p>Let’s see what happens if the validation fails in this operation:</p>
-
-<pre><code class="language-ruby">create_user = Bix::Operations::Users::CreateUser.new
-result = create_user.call(first_name: "Ryan", last_name: "", age: 32)
-# =&gt; Failure(#&lt;Dry::Validation::Result{:first_name=&gt;"Ryan", :last_name=&gt;"", :age=&gt;32} errors={:last_name=&gt;["must be filled"]}&gt;)
-</code></pre>
-
-<p>This time, we get back a <code>Failure</code> result monad, which is wrapping our <code>Dry::Validation::Result</code>. This will mean that the persistence won’t happen at all.</p>
-
-<p>Our operation class so far has only two methods, but <em>could</em> be expanded out to include more. Perhaps we would want to send an email to the user to confirm that they’ve signed up?</p>
-
-<p>Or what if we had a operation class that handled account signup, where both an account <em>and</em> a user had to be created? A flowchart for that operation class would look like this:</p>
-
-<p><img src="/images/rom/dry-monads-complex.png" alt="More complex operation diagram" /></p>
-
-<p>A operation class is a great way of grouping together all these steps into small, discrete methods.</p>
-
-<h2 id="handling-success-or-failure">Handling success or failure</h2>
-
-<p>Let’s now think about how we would actually use this <code>CreateUser</code> operation class in a real context, something a bit more specialised than a simple <code>bin/console</code> session. For this section, we’ll create a new file at the root of the Bix application, called <code>operation_test.rb</code>. In this file, we’ll put this content:</p>
-
-<pre><code class="language-ruby">require_relative "config/application"
-
-Bix::Application.finalize!
-
-include Dry::Monads[:result]
-
-input = {
-  first_name: "Ryan",
-  last_name: "Bigg",
-  age: 32
-}
-
-create_user = Bix::Operations::Users::CreateUser.new
-case create_user.call(input)
-when Success
-  puts "User created successfully!"
-when Failure(Dry::Validation::Result)
-  puts "User creation failed:"
-  puts result.failure.errors.to_h # TODO variable result is not defined
-end
-</code></pre>
-
-<p>This file starts out the same way as <code>bin/console</code>: we require <code>config/application.rb</code> and then “finalize” our application. This finalization step will load all the application’s files and start all of the application’s dependencies.</p>
-
-<p>Next up, we include <code>Dry::Monads[:result]</code>. This gives us access to the <code>Success</code> and <code>Failure</code> result monad classes that we use at the end of this file.</p>
-
-<p>Once we’ve set everything up, we define an input hash for our operation, and the operation itself. When we call the operation, we can use a <code>case</code> to match on the outcome of the operation. If it is successful, we output a message saying as much. If it fails, and the failure is a validation failure (indicated by the failure being a <code>Dry::Validation::Result</code> failure), we output the validation error messages.</p>
-
-<p>Here we’ve seen a very simple way of handling the success or failure of a operation. This code is very similar to how we would use the operation in another context, such as a controller. The great thing about a operation is that we aren’t limited to using it just within a controller – we could use it anywhere we pleased. This example is just a small one showing us how we could use it.</p>
-
-<p>In Part 4 of this guide, we’ll re-visit how to use this operation in a different context.</p>
-
-<h2 id="automatically-injecting-dependencies">Automatically injecting dependencies</h2>
-
-<p>Before we finish up this part of the showcase, I would like to demonstrate one additional piece of cleanup that we could do. Let’s re-visit our operation’s code:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Operations
-    module Users
-      class CreateUser
-        include Dry::Monads[:result]
-        include Dry::Monads::Do.for(:call)
-
-        def call(params)
-          values = yield validate(params)
-          user = yield persist(values)
-
-          Success(user)
-        end
-
-        def validate(params)
-          create_user = Bix::Contracts::Users::CreateUser.new
-          create_user.call(params).to_monad
-        end
-
-        def persist(result)
-          user_repo = Bix::Repos::UserRepo.new
-          Success(user_repo.create(result.values))
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This code looks pretty clean as it stands. But there’s one extra thing we can do to make it even tidier, and that thing is to use <code>dry-auto_inject</code>’s import feature. When we define things like the <code>CreateUser</code> contract or the <code>UserRepo</code> within our application, these classes are automatically registered with <code>Bix::Application</code>, because we’ve directed the application to <code>auto_register</code> things in <code>lib</code>. This happened over in <code>config/application.rb</code>:</p>
-
-<pre><code class="language-ruby">require_relative "boot"
-
-require "dry/system/container"
-require "dry/auto_inject"
-
-module Bix
-  class Application &lt; Dry::System::Container
-    configure do |config|
-      config.root = File.expand_path('..', __dir__)
-      config.default_namespace = 'bix'
-
-      config.auto_register = 'lib'
-    end
-
-    load_paths!('lib')
-  end
-
-  Import = Dry::AutoInject(Application)
-end
-</code></pre>
-
-<p>We saw earlier that we could refer to the ROM container with the syntax <code>include Import["container"]</code> within our <code>UserRepo</code> class. Well, we can do the same thing with our contract and repository in this operation class too.</p>
-
-<p>Here’s how we’ll do it. At the top of the class, we’ll put these two <code>include</code> lines:</p>
-
-<pre><code class="language-ruby">module Bix
-  module Operations
-    module Users
-      class CreateUser
-        include Dry::Monads[:result]
-        include Dry::Monads::Do.for(:call)
-
-        include Import["contracts.users.create_user"]
-        include Import["repos.user_repo"]
-...
-</code></pre>
-
-<p>By using <code>include</code> like this, we will be able to access our contract and repository in a simpler fashion. To do that, we can change our <code>validate</code> and <code>persist</code> methods in this operation to this:</p>
-
-<pre><code class="language-ruby">def validate(params)
-  create_user.call(params).to_monad
-end
-
-def persist(result)
-  Success(user_repo.create(result.values))
-end
-</code></pre>
-
-<p>That’s a lot cleaner, isn’t it? We’re now able to refer to the contract as simply <code>create_user</code>, and the repository as <code>user_repo</code>, without putting in those ugly namespaces into these methods. This syntax also more clearly defines the other class dependencies this operation has, right at the top of the class. We don’t need to scan through the class to figure out what they are anymore.</p>
-
-<p>To make sure that things are working again, let’s try running <code>ruby operation_test.rb</code> again. If the <code>input</code> hash at the top of this file contains valid input, then we should see the successful message still:</p>
-
-<pre><code>User created successfully!
-</code></pre>
-
-<p>If this operation class went on to use other classes from our application, we could import them with very little effort, thanks to the <code>dry-system</code> and <code>dry-auto_inject</code> gems.</p>
-
-<h2 id="summary">Summary</h2>
-
-<p>In this 2nd part of the ROM and Dry showcase, we have used the <code>dry-validation</code> gem to add a  <em>contract</em> to our application. A contract is a class that contains validation logic. It’s a way of saying that incoming data must meet some criteria before our application can use it.</p>
-
-<p>In the second half of this guide, we used <code>dry-monads</code> to define a <em>operation</em> class within our application for creating users. This class is a collection of all the actions that our application would have to take to create a user. So far, there are only two of them: <code>validate</code> and <code>persist</code>. This class uses the contract to first validate the input, and then if that validation succeeds, the class will create a user in the database by using the repo.</p>
-
-<p>In the final part of this guide, we used <code>dry-auto_inject</code> once more to automatically inject the repository and contract into our operation class, allowing us to tidy up the code very slightly, but still noticeably.</p>
-
-<p>In the next part, we’re going to look at how we can test the parts of the application that we’ve built so far by using the RSpec testing framework. We’ll also see <em>another</em> advantage of <code>dry-auto_inject</code> in this part.</p>
 ]]></content>
  </entry>
  
