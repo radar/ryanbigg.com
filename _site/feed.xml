@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-11-14T09:19:32+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">A replacement for strong parameters</title><link href="http://localhost:4000/2022/11/a-replacement-for-strong-parameters" rel="alternate" type="text/html" title="A replacement for strong parameters" /><published>2022-11-09T00:00:00+11:00</published><updated>2022-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/a-replacement-for-strong-parameters</id><content type="html" xml:base="http://localhost:4000/2022/11/a-replacement-for-strong-parameters">&lt;p&gt;I’m not going to take &lt;a href=&quot;https://dev.37signals.com/vanilla-rails-is-plenty&quot;&gt;this week’s (very obvious) bait about how “Vanilla Rails is plenty”&lt;/a&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-11-14T09:30:04+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">A replacement for strong parameters</title><link href="http://localhost:4000/2022/11/a-replacement-for-strong-parameters" rel="alternate" type="text/html" title="A replacement for strong parameters" /><published>2022-11-09T00:00:00+11:00</published><updated>2022-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/a-replacement-for-strong-parameters</id><content type="html" xml:base="http://localhost:4000/2022/11/a-replacement-for-strong-parameters">&lt;p&gt;I’m not going to take &lt;a href=&quot;https://dev.37signals.com/vanilla-rails-is-plenty&quot;&gt;this week’s (very obvious) bait about how “Vanilla Rails is plenty”&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;In the past, I’ve spent effort watching DHH’s videos and &lt;a href=&quot;https://ryanbigg.com/2018/03/on-writing-software-well-2-a-review&quot;&gt;issuing a (time-stamped) rebuttal&lt;/a&gt;, and writing up about &lt;a href=&quot;https://ryanbigg.com/2017/06/current-considered-harmful&quot;&gt;a new Rails feature I would consider harmful&lt;/a&gt;.&lt;/p&gt;
 
@@ -27,6 +27,13 @@
   &lt;p&gt;This declaration permits the name, emails, and friends attributes. It is expected that emails will be an array of permitted scalar values, and that friends will be an array of resources with specific attributes: they should have a name attribute (any permitted scalar values allowed), a hobbies attribute as an array of permitted scalar values, and a family attribute which is restricted to having a name (any permitted scalar values allowed here, too).&lt;/p&gt;
 &lt;/blockquote&gt;
 
+&lt;p&gt;The documentation also explains that the permitted scalar values are:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;The permitted scalar types are `String`, `Symbol`, `NilClass`, `Numeric`, `TrueClass`, `FalseClass`, `Date`, `Time`, `DateTime`, `StringIO`, `IO`, `ActionDispatch::Http::UploadedFile`, and `Rack::Test::UploadedFile`.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;That’s quite a few permitted types!&lt;/p&gt;
+
 &lt;p&gt;How might we approach this differently? I think we could do this in a clearer fashion with a gem called &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/1.10/&quot;&gt;dry-schema&lt;/a&gt;. The dry-schema gem allows us to define particular schemas that our data should comply with, and like strong parameters it will automatically drop keys that are not specified in the schema itself.&lt;/p&gt;
 
 &lt;h3 id=&quot;creating-the-schema&quot;&gt;Creating the schema&lt;/h3&gt;
@@ -47,7 +54,11 @@
 end
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;With this schema we’re clearly defining the types of the data that we expect. You could define this schema at the top of your controller, if you like, or in its own file at &lt;code&gt;app/schemas/person_schema.rb&lt;/code&gt;. It really should depend on the context in which it is used.&lt;/p&gt;
+&lt;p&gt;With this schema we’re clearly defining the types of the data that we expect. Now we’ve limited the type of &lt;code&gt;name&lt;/code&gt; to string, so it can no longer accept a file for its value. That is probably for the best.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;required(:friends).array(:hash)&lt;/code&gt; syntax might hurt a little bit to read, but it means “an array of any length, where the values are all hashes”. The block of this method then defines the permitted keys within those hashes.&lt;/p&gt;
+
+&lt;p&gt;You could define this schema at the top of your controller, if you like, or in its own file at &lt;code&gt;app/schemas/person_schema.rb&lt;/code&gt;. It really should depend on the context in which it is used.&lt;/p&gt;
 
 &lt;p&gt;It goes further than strong parameters, because it specifies the types expected for things such as emails and hobbies, whereas strong parameters would allow any “permitted scalar values” in there, including things such as numbers. The &lt;code&gt;dry-schema&lt;/code&gt; version &lt;em&gt;also&lt;/em&gt; specifies that there has to be at least one email address.&lt;/p&gt;
 
@@ -125,6 +136,30 @@ result.output[:age] # =&amp;gt; 34
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;Then the schema will remove this additional key, proving that I am just regular smart, if that.&lt;/p&gt;
+
+&lt;h3 id=&quot;re-using-schemas&quot;&gt;Re-using schemas&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;dry-schema&lt;/code&gt; also allows us to re-use schemas. Let’s say that we have two schemas, our &lt;code&gt;PersonSchema&lt;/code&gt; and another schema called &lt;code&gt;FriendSchema&lt;/code&gt; that defines the shape of the friend keys. Heres how we could use those together:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;FriendSchema = Dry::Schema.params do
+  required(:name).filled(:string)
+  required(:family).hash do
+    required(:name).filled(:string)
+  end
+end
+
+PersonSchema = Dry::Schema.Params do
+  required(:name).filled(:string)
+  required(:age).filled(:integer)
+  required(:emails).value(array[:string]).value(min_size?: 1)
+  required(:friends).array(FriendSchema)
+  required(:hobbies).array(:string)
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is particularly helpful if you had a couple of complicated data structures that you wanted to validate at the same time, and use each of those schemas in different locations.&lt;/p&gt;
+
+&lt;p&gt;I’d like to see strong parameters do that!&lt;/p&gt;
 
 &lt;h3 id=&quot;error-messages-are-provided&quot;&gt;Error messages are provided&lt;/h3&gt;
 

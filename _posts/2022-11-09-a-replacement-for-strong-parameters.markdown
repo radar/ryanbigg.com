@@ -32,6 +32,14 @@ The documentation goes on to explain:
 
 > This declaration permits the name, emails, and friends attributes. It is expected that emails will be an array of permitted scalar values, and that friends will be an array of resources with specific attributes: they should have a name attribute (any permitted scalar values allowed), a hobbies attribute as an array of permitted scalar values, and a family attribute which is restricted to having a name (any permitted scalar values allowed here, too).
 
+The documentation also explains that the permitted scalar values are:
+
+```
+The permitted scalar types are `String`, `Symbol`, `NilClass`, `Numeric`, `TrueClass`, `FalseClass`, `Date`, `Time`, `DateTime`, `StringIO`, `IO`, `ActionDispatch::Http::UploadedFile`, and `Rack::Test::UploadedFile`.
+```
+
+That's quite a few permitted types!
+
 How might we approach this differently? I think we could do this in a clearer fashion with a gem called [dry-schema](https://dry-rb.org/gems/dry-schema/1.10/). The dry-schema gem allows us to define particular schemas that our data should comply with, and like strong parameters it will automatically drop keys that are not specified in the schema itself.
 
 ### Creating the schema
@@ -53,7 +61,11 @@ PersonSchema = Dry::Schema.Params do
 end
 ```
 
-With this schema we're clearly defining the types of the data that we expect. You could define this schema at the top of your controller, if you like, or in its own file at `app/schemas/person_schema.rb`. It really should depend on the context in which it is used.
+With this schema we're clearly defining the types of the data that we expect. Now we've limited the type of `name` to string, so it can no longer accept a file for its value. That is probably for the best.
+
+The `required(:friends).array(:hash)` syntax might hurt a little bit to read, but it means "an array of any length, where the values are all hashes". The block of this method then defines the permitted keys within those hashes.
+
+You could define this schema at the top of your controller, if you like, or in its own file at `app/schemas/person_schema.rb`. It really should depend on the context in which it is used.
 
 It goes further than strong parameters, because it specifies the types expected for things such as emails and hobbies, whereas strong parameters would allow any "permitted scalar values" in there, including things such as numbers. The `dry-schema` version _also_ specifies that there has to be at least one email address.
 
@@ -138,6 +150,31 @@ params = {
 ```
 
 Then the schema will remove this additional key, proving that I am just regular smart, if that.
+
+### Re-using schemas
+
+`dry-schema` also allows us to re-use schemas. Let's say that we have two schemas, our `PersonSchema` and another schema called `FriendSchema` that defines the shape of the friend keys. Heres how we could use those together:
+
+```ruby
+FriendSchema = Dry::Schema.params do
+  required(:name).filled(:string)
+  required(:family).hash do
+    required(:name).filled(:string)
+  end
+end
+
+PersonSchema = Dry::Schema.Params do
+  required(:name).filled(:string)
+  required(:age).filled(:integer)
+  required(:emails).value(array[:string]).value(min_size?: 1)
+  required(:friends).array(FriendSchema)
+  required(:hobbies).array(:string)
+end
+```
+
+This is particularly helpful if you had a couple of complicated data structures that you wanted to validate at the same time, and use each of those schemas in different locations.
+
+I'd like to see strong parameters do that!
 
 ### Error messages are provided
 
