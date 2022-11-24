@@ -11,7 +11,7 @@ Its mission is assist contributors in the Ruby community in their task to furthe
 
 Because Ruby _is_ more than just a single framework.
 
-Immediately after establishment of this foundation, we have already surpassed [The Rails Foundation](https://rubyonrails.org/2022/11/14/the-rails-foundation) in terms of dollars donated, as we have donated **ONE SINGLE U.S. DOLLAR** to [Brandon Weaver](https://ruby.social/@baweaver), who was the first developer to get in touch with the foundation. Brandon contributes to the Ruby community by [writing articles on his personal blog](https://dev.to/baweaver), and also runs the Ruby Learning Centre Discord.
+Immediately after establishment of this foundation, we have already surpassed [The Rails Foundation](https://rubyonrails.org/2022/11/14/the-rails-foundation) in terms of dollars donated, as we have donated **ONE SINGLE U.S. DOLLAR** to [Brandon Weaver](https://ruby.social/@baweaver), who was the first developer to get in touch with the foundation. Brandon contributes to the Ruby community by [writing articles on his personal blog](https://dev.to/baweaver), and also runs the Ruby Learning Center Discord.
 
 The Gem Foundation is also contributing $25/USD a month towards the [Hanami](https://github.com/sponsors/hanami) web framework. If you would like there to be real competition in the Ruby web framework sphere, I would encourage you to do the same.
 
