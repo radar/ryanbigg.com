@@ -18,3 +18,11 @@ The Gem Foundation has also donated **TWO U.S. DOLLARS** to [Jared White](https:
 The Gem Foundation is also contributing $25/USD a month towards the [Hanami](https://github.com/sponsors/hanami) web framework. If you would like there to be real competition in the Ruby web framework sphere, I would encourage you to do the same.
 
 That's _$28USD_ already donated by the Gem Foundation!
+
+----
+
+**UPDATE**: Kieran Andrews from Adelaide (and of [Active Rails fame](https://activerailsbook.com)) has also donated _$30USD_ to the [Pry gem](https://github.com/pry/pry), bringing The Gem Foundation's donation total up to $58USD!
+
+Here's a helpful chart to track our donations:
+
+![The Gem Foundation donations](https://i.imgur.com/N0HDbXq.png)
