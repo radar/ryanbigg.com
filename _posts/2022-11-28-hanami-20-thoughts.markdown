@@ -22,4 +22,6 @@ I really enjoy the dependency injection support that [allows me to test parts of
 
 I love that [Tim Riley, who is on the Hanami Core Team, is re-building Decaf Sucks in public](https://github.com/decafsucks/decafsucks) to really show how it's done.
 
+There's also a bunch of [Hanami screencasts (HanamiMastery) recorded by Seb Wilgosz](https://hanamimastery.com/), which come in both video and text format.
+
 Overall, I'm glad that the Hanami team has taken their time to really polish up this release, and I'm looking forward to building more things in what is shaping up to be _the_ Ruby web framework of the future.
