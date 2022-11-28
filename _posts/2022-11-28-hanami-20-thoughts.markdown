@@ -4,7 +4,7 @@ layout: post
 title: Hanami 2.0 Thoughts
 ---
 
-[I've been a fan of Hanami](https://ryanbigg.com/2018/03/my-thoughts-on-hanami) for a number of years now. One of my favourite apps to work on is [even an open-source Hanami app!](https://github.com/radar/twist-v2). I have also been writing [an ActivityPub app called "Chirper"](https://github.com/radar/chirper) in Hanami as well.
+[I've been a fan of Hanami](https://ryanbigg.com/2018/03/my-thoughts-on-hanami) for a number of years now. One of my favourite apps to work on is [even an open-source Hanami app!](https://github.com/radar/twist-v2) I have also been writing [an ActivityPub app called "Chirper"](https://github.com/radar/chirper) in Hanami.
 
 Now that Hanami 2.0 has come out, a few people have been asking me for my thoughts on this major Hanami release.
 
