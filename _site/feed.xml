@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-12-01T07:35:05+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Hanami 2.0 Thoughts</title><link href="http://localhost:4000/2022/11/hanami-20-thoughts" rel="alternate" type="text/html" title="Hanami 2.0 Thoughts" /><published>2022-11-28T00:00:00+11:00</published><updated>2022-11-28T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/hanami-20-thoughts</id><content type="html" xml:base="http://localhost:4000/2022/11/hanami-20-thoughts">&lt;p&gt;&lt;a href=&quot;https://ryanbigg.com/2018/03/my-thoughts-on-hanami&quot;&gt;I’ve been a fan of Hanami&lt;/a&gt; for a number of years now. One of my favourite apps to work on is &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;even an open-source Hanami app!&lt;/a&gt; I have also been writing &lt;a href=&quot;https://github.com/radar/chirper&quot;&gt;an ActivityPub app called “Chirper”&lt;/a&gt; in Hanami.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-12-02T11:26:11+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">CSS :has selector for selects that have options</title><link href="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options" rel="alternate" type="text/html" title="CSS :has selector for selects that have options" /><published>2022-12-02T00:00:00+11:00</published><updated>2022-12-02T00:00:00+11:00</updated><id>http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options</id><content type="html" xml:base="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options">&lt;p&gt;Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.&lt;/p&gt;
+
+&lt;p&gt;I worked out today that thanks to the new &lt;code&gt;:has&lt;/code&gt; selector in CSS, you can achieve this:&lt;/p&gt;
+
+&lt;div class=&quot;mb-4&quot;&gt;
+&lt;p class=&quot;codepen&quot; data-height=&quot;300&quot; data-default-tab=&quot;html,result&quot; data-slug-hash=&quot;bGKmaRz&quot; data-user=&quot;ryanbigg&quot; style=&quot;height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;&quot;&gt;
+  &lt;span&gt;See the Pen &lt;a href=&quot;https://codepen.io/ryanbigg/pen/bGKmaRz&quot;&gt;
+  Untitled&lt;/a&gt; by Ryan Bigg (&lt;a href=&quot;https://codepen.io/ryanbigg&quot;&gt;@ryanbigg&lt;/a&gt;)
+  on &lt;a href=&quot;https://codepen.io&quot;&gt;CodePen&lt;/a&gt;.&lt;/span&gt;
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;script async=&quot;&quot; src=&quot;https://cpwebassets.codepen.io/assets/embed/ei.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;&lt;strong&gt;This demo will work in most modern browsers, with the exception of Internet Explorer 11 and Firefox.&lt;/strong&gt; Selecting from the 1st select box will make the 2nd one appear, then selecting from that makes the 3rd box appear.&lt;/p&gt;
+
+&lt;p&gt;Given that this feature is &lt;em&gt;currently&lt;/em&gt; not supported in either IE11 (at all) or Firefox (without enabling a configuration flag), I would be hesitant to use it in production.&lt;/p&gt;
+
+&lt;p&gt;Nevertheless, it’s pretty cool to see that CSS can do this and we do not have to reach for JavaScript.&lt;/p&gt;</content><author><name></name></author><summary type="html">Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.</summary></entry><entry><title type="html">Hanami 2.0 Thoughts</title><link href="http://localhost:4000/2022/11/hanami-20-thoughts" rel="alternate" type="text/html" title="Hanami 2.0 Thoughts" /><published>2022-11-28T00:00:00+11:00</published><updated>2022-11-28T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/hanami-20-thoughts</id><content type="html" xml:base="http://localhost:4000/2022/11/hanami-20-thoughts">&lt;p&gt;&lt;a href=&quot;https://ryanbigg.com/2018/03/my-thoughts-on-hanami&quot;&gt;I’ve been a fan of Hanami&lt;/a&gt; for a number of years now. One of my favourite apps to work on is &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;even an open-source Hanami app!&lt;/a&gt; I have also been writing &lt;a href=&quot;https://github.com/radar/chirper&quot;&gt;an ActivityPub app called “Chirper”&lt;/a&gt; in Hanami.&lt;/p&gt;
 
 &lt;p&gt;Now that Hanami 2.0 has come out, a few people have been asking me for my thoughts on this major Hanami release.&lt;/p&gt;
 
@@ -1387,22 +1404,4 @@ end
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new(book_repository: book_repo).call(book_params)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;But that’s a story for another day.&lt;/p&gt;</content><author><name></name></author><summary type="html">In big Rails projects there’s been a bit of a push to move things out to service objects. You might recognise these from their appearance in things like controllers:</summary></entry><entry><title type="html">Job Hunt Q2 2021</title><link href="http://localhost:4000/2021/07/job-hunt-q2-2021" rel="alternate" type="text/html" title="Job Hunt Q2 2021" /><published>2021-07-19T00:00:00+10:00</published><updated>2021-07-19T00:00:00+10:00</updated><id>http://localhost:4000/2021/07/job-hunt-q2-2021</id><content type="html" xml:base="http://localhost:4000/2021/07/job-hunt-q2-2021">&lt;p&gt;After &lt;a href=&quot;https://ryanbigg.com/2021/04/finding-a-new-contract-gig&quot;&gt;wrapping up a contract&lt;/a&gt; earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that &lt;em&gt;that&lt;/em&gt; job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.&lt;/p&gt;
-
-&lt;p&gt;Last time I pitched myself as a “mercenary developer wizard”. While I enjoy developing code, nothing brings more joy than developing &lt;em&gt;people&lt;/em&gt;. Running the Culture Amp JEP was some of the most fun-at-work I’ve had. I would love to do that stuff again. So I’ve been pitching myself this time as someone who would rather be developing people, than developing code. I could definitely do both!&lt;/p&gt;
-
-&lt;p&gt;The appetite for this sort of work has been incredibly lacking. It appears from my perspective that more companies are &lt;em&gt;still&lt;/em&gt; more interested in hiring senior “mercenary developer wizards” who can “crush code”, than training up &lt;em&gt;any&lt;/em&gt; developers at all.&lt;/p&gt;
-
-&lt;p&gt;I’ve been &lt;a href=&quot;https://ryanbigg.com/2019/09/hiring-juniors-2019&quot;&gt;banging the drum around hiring juniors&lt;/a&gt; for almost a decade. For the status quo to remain the same for this time is disheartening. Perhaps the developer drought is not severe enough for companies to act. The impetus is not strong enough. &lt;em&gt;Despite&lt;/em&gt; all these companies being so ravenously thirsty for senior developers.&lt;/p&gt;
-
-&lt;p&gt;I dearly, desperately want a job where I am not &lt;em&gt;just&lt;/em&gt; somebody who can crush code, but someone who gets to work with other people to improve their skills. That’s my jam. That’s where I get the joy.&lt;/p&gt;
-
-&lt;p&gt;But, fine. Okay. That job doesn’t (seemingly) exist.&lt;/p&gt;
-
-&lt;p&gt;I need to be real.&lt;/p&gt;
-
-&lt;p&gt;So I’ll just go and pick up a senior dev role at some shop somewhere, “crush code” and earn a paycheck so I can pay my mortgage.&lt;/p&gt;
-
-&lt;p&gt;I’m disheartened by the current outcomes from the current iteration of the job hunting process, but things have changed before and might change again.&lt;/p&gt;
-
-&lt;p&gt;Always the next step.&lt;/p&gt;</content><author><name></name></author><summary type="html">After wrapping up a contract earlier in the year, I wrote a post about how I looked for a future job. Now it’s around about the time that that job is wrapping up. So why not write another post about this hunt? Maybe there are some things that are different.</summary></entry></feed>
+&lt;p&gt;But that’s a story for another day.&lt;/p&gt;</content><author><name></name></author><summary type="html">In big Rails projects there’s been a bit of a push to move things out to service objects. You might recognise these from their appearance in things like controllers:</summary></entry></feed>

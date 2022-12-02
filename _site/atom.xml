@@ -4,13 +4,39 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2022-12-01T07:35:05+11:00</updated>
+ <updated>2022-12-02T11:26:11+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>CSS :has selector for selects that have options</title>
+   <link href="http://ryanbigg.com/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options"/>
+   <updated>2022-12-02T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options</id>
+   <content type="html"><![CDATA[<p>Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.</p>
+
+<p>I worked out today that thanks to the new <code>:has</code> selector in CSS, you can achieve this:</p>
+
+<div class="mb-4">
+<p class="codepen" data-height="300" data-default-tab="html,result" data-slug-hash="bGKmaRz" data-user="ryanbigg" style="height: 300px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;">
+  <span>See the Pen <a href="https://codepen.io/ryanbigg/pen/bGKmaRz">
+  Untitled</a> by Ryan Bigg (<a href="https://codepen.io/ryanbigg">@ryanbigg</a>)
+  on <a href="https://codepen.io">CodePen</a>.</span>
+</p>
+</div>
+<script async="" src="https://cpwebassets.codepen.io/assets/embed/ei.js"></script>
+
+<p><strong>This demo will work in most modern browsers, with the exception of Internet Explorer 11 and Firefox.</strong> Selecting from the 1st select box will make the 2nd one appear, then selecting from that makes the 3rd box appear.</p>
+
+<p>Given that this feature is <em>currently</em> not supported in either IE11 (at all) or Firefox (without enabling a configuration flag), I would be hesitant to use it in production.</p>
+
+<p>Nevertheless, it’s pretty cool to see that CSS can do this and we do not have to reach for JavaScript.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Hanami 2.0 Thoughts</title>
@@ -2780,74 +2806,6 @@ git push origin update-storybook
 <p>Once the PR is created, we can choose to merge it to that base branch. The base branch will then have both sets of changes on it: one (small one) to fix Issue #22, and one (large one) to upgrade storybook.</p>
 
 <p>The storybook changes <em>could</em> probably be split out into smaller commits too, but I’ll leave that one as an exercise to the reader.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>The Stand Down</title>
-   <link href="http://ryanbigg.com/2020/04/the-stand-down"/>
-   <updated>2020-04-06T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2020/04/the-stand-down</id>
-   <content type="html"><![CDATA[<p>Two weeks ago, I was moved from a teaching position into a “curriculum development” position at Coder Academy. Instead of facing students and teaching them directly, I was to work with my teacher’s assistant on improving curriculum for <em>all of Coder Academy</em>. I absolutely love writing, and so this was an amazing opportunity to apply my craft.</p>
-
-<p>We set to work on updating curriculum for all Coder Academy’s bootcamps, revising content a week or two ahead of where they were all at.</p>
-
-<p>At the start of the week last week, an email went out from Coder Academy’s parent company that announced they were standing down some staff. This was at 9:50am on Monday morning. This email did not mention how many staff it was, but <a href="https://www.theguardian.com/australia-news/live/2020/mar/30/coronavirus-update-live-australia-news-nsw-qld-victoria-scott-morrison-press-conference-covid-19-restrictions-public-gatherings-cruise-lockdown-app-latest-updates?page=with:block-5e8138d38f0878a2a48aca93#block-5e8138d38f0878a2a48aca93">The Guardian helpfully reported that the number would be 235 staff</a>.</p>
-
-<p>I was told that Monday that “don’t worry, it’s not academic staff”, meaning I would not be affected. They let some of the admin staff go, or reduced their hours. Some people went from working 5 days a week to only working two.</p>
-
-<p>I didn’t receive word at all if I still had my job or not until Friday. On Friday, at about 3pm, I received a phone call not from my Coder Academy manager, but from the head of HR at RedHill: Ruby Biscuit. She told me that I would be stood down immediately.</p>
-
-<p>It was almost an entire business week of waiting and anxiety. I still tried working through it and, surprisingly, got a lot done.</p>
-
-<p>13 minutes after that phone call, I was locked out of Coder’s GitHub and Slack accounts. My direct bosses did not know this phone call was going to happen. The call came from Ruby instead.</p>
-
-<hr />
-
-<p>Then there was a standard “Stand Down” form letter. It’s brutal. An older version of this post contained the text, but I’ll save you the brutality here.</p>
-
-<p>The letter says that I can come back to my job once this whole COVID thing blows over. That’s all well-and-good, but to be honest I will likely have another job by then.</p>
-
-<p>The letter also says that I remain an employee, but the dictionary definition of “employee” is:</p>
-
-<blockquote>
-  <p>a person employed for wages or salary, especially at non-executive level.</p>
-</blockquote>
-
-<p>And I am not getting wages or a salary, nor am I being required to do any work. So I am not sure how this still makes me an employee.</p>
-
-<p>The letter says that I can draw down on my annual leave entitlements, but there are only 7 days of those. So I get a week and a half of runway before my money dries up.</p>
-
-<p>The letter goes on to say that I should look into government benefits, but neglects to mention if RedHill has applied for the <a href="https://www.business.gov.au/risk-management/emergency-management/coronavirus-information-and-support-for-business/jobkeeper-payment">JobKeeper program</a>, or even if I would qualify for it. Doing my own research, yes I probably would. Do I know if they’ve applied for the program? Nope.</p>
-
-<p>The letter at one point says:</p>
-
-<blockquote>
-  <p>We anticipate that the stand down will apply for a period of 3 months, but that timeframe may change pending the company’s ongoing review of pandemic circumstances.</p>
-</blockquote>
-
-<p>And later:</p>
-
-<blockquote>
-  <p>At the end of the stand down period, you will return to your role and your employment agreement will continue.</p>
-</blockquote>
-
-<p>But does not take into account my contract was due to run out on the 7th of July. The stand down came into effect on the 6th of April, Monday of this week. If it’s indeed <em>exactly</em> 3 months, it means that I would return to work on the 6th of July only for my contract to then run out on the 7th.</p>
-
-<hr />
-
-<p>How you let people go <em>matters</em>. More than ever in these COVID-19 times. We need to stick together; to be kind to one another. This letter and process is devoid of feeling and it threw me for a big loop. 13 minutes from phone call to cut off from my colleagues is too harsh. Especially when I did nothing wrong other than be in the wrong team.</p>
-
-<p>Two simple ways they could’ve improved this process are:</p>
-
-<ul>
-  <li><strong>Let people know <em>immediately</em> on Monday morning if they had their job or not</strong>. The anxiety I had throughout the week would’ve been reduced massively.</li>
-  <li><strong>Given me a week’s notice</strong> (as per the contract I signed when I joined). I would’ve liked to have (proverbially) packed my desk and (not proverbially) said my goodbyes. As it stands now, I have LinkedIn / Whatsapp / insert-26-other-chat-programs here messages to do that. It would’ve also allowed me to hand over any work or knowledge that I had to other people.</li>
-</ul>
-
-<p>Just these two things would’ve been a big help and really helped me transition out of there. Instead, I and many, many others have been cast out like detritus. It really hurts.</p>
-
-<p>Anyway, I’m now looking for a new job. Go to <a href="https://ryanbigg.com/work">my /work page</a> to see what I’m interested in doing. I’m (obviously) available immediately.</p>
 ]]></content>
  </entry>
  
