@@ -1,4 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-12-02T11:26:11+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">CSS :has selector for selects that have options</title><link href="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options" rel="alternate" type="text/html" title="CSS :has selector for selects that have options" /><published>2022-12-02T00:00:00+11:00</published><updated>2022-12-02T00:00:00+11:00</updated><id>http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options</id><content type="html" xml:base="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options">&lt;p&gt;Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-01-20T15:23:56+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">The method method</title><link href="http://localhost:4000/2023/01/the-method-method" rel="alternate" type="text/html" title="The method method" /><published>2023-01-20T00:00:00+11:00</published><updated>2023-01-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/the-method-method</id><content type="html" xml:base="http://localhost:4000/2023/01/the-method-method">&lt;p&gt;The &lt;code&gt;method&lt;/code&gt; method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1.method(:+)
+=&amp;gt; #&amp;lt;Method: Integer#+(_)&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;where-is-this-method-defined&quot;&gt;Where is this method defined?&lt;/h2&gt;
+
+&lt;p&gt;With this method &lt;code&gt;method&lt;/code&gt;, you can find out where a method is defined, if it is defined in Ruby code anywhere:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;SomeModel.method(:find).source_location
+=&amp;gt; [&quot;...activerecord-x.x.x/lib/active_record/core.rb&quot;, 337]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then I can look at this source code within the Active Record gem to &lt;em&gt;find out&lt;/em&gt; how &lt;code&gt;find&lt;/code&gt; works.&lt;/p&gt;
+
+&lt;h2 id=&quot;call-me-maybe&quot;&gt;Call me, maybe?&lt;/h2&gt;
+
+&lt;p&gt;Methods can also be passed in place of traditional block arguments:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;class Maths
+  def self.square(num)
+    num ** 2
+  end
+end
+
+square = Maths.method(:square)
+
+[1, 2, 3, 4].map(&amp;amp;square)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;map&lt;/code&gt; syntax here is short-hand for:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[1, 2, 3, 4].map { |number| square.call(number) }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Which is exactly the same behaviour that a &lt;code&gt;Proc&lt;/code&gt; has:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;a_proc = -&amp;gt; (num) { num ** 2 }
+[1, 2, 3, 4].map(&amp;amp;square)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;more-documentation&quot;&gt;More documentation&lt;/h2&gt;
+
+&lt;p&gt;You can find more about the &lt;a href=&quot;https://devdocs.io/ruby~3.1/method&quot;&gt;Method class&lt;/a&gt; here. You can even find out why this code returns &lt;code&gt;true&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def moo(arg) arg == 3; end
+
+number = 3
+case number
+when method(:moo)
+  true
+else
+  false
+end
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">The method method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:</summary></entry><entry><title type="html">CSS :has selector for selects that have options</title><link href="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options" rel="alternate" type="text/html" title="CSS :has selector for selects that have options" /><published>2022-12-02T00:00:00+11:00</published><updated>2022-12-02T00:00:00+11:00</updated><id>http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options</id><content type="html" xml:base="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options">&lt;p&gt;Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.&lt;/p&gt;
 
 &lt;p&gt;I worked out today that thanks to the new &lt;code&gt;:has&lt;/code&gt; selector in CSS, you can achieve this:&lt;/p&gt;
 
@@ -1359,49 +1414,4 @@ GraphQL::RakeTask.new(
 
 &lt;p&gt;I’m personally &lt;em&gt;done&lt;/em&gt; with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.&lt;/p&gt;
 
-&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry><entry><title type="html">Using Ruby 2.7’s new triple-dot syntax to clean up service objects</title><link href="http://localhost:4000/2021/07/ruby-27s-new-triple-dot-syntax" rel="alternate" type="text/html" title="Using Ruby 2.7’s new triple-dot syntax to clean up service objects" /><published>2021-07-21T00:00:00+10:00</published><updated>2021-07-21T00:00:00+10:00</updated><id>http://localhost:4000/2021/07/ruby-27s-new-triple-dot-syntax</id><content type="html" xml:base="http://localhost:4000/2021/07/ruby-27s-new-triple-dot-syntax">&lt;p&gt;In big Rails projects there’s been a bit of a push to move things out to &lt;em&gt;service objects&lt;/em&gt;. You might recognise these from their appearance in things like controllers:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new.call(book_params)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;CreateBook&lt;/code&gt; class itself might look like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class CreateBook
-  include Dry::Monads[:do, :result]
-
-  def call(params)
-    book_params = yield validate(params)
-    create_book(book_params)
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In order to access that instance &lt;code&gt;call&lt;/code&gt; method from the controller, we must first create an instance of this &lt;code&gt;CreateBook&lt;/code&gt; class. This makes our code &lt;em&gt;slightly&lt;/em&gt; messy because we must always &lt;code&gt;new&lt;/code&gt; before we &lt;code&gt;call&lt;/code&gt;. The &lt;code&gt;call&lt;/code&gt; here &lt;em&gt;must&lt;/em&gt; be an instance method because we’ve included &lt;code&gt;Dry::Monads&lt;/code&gt; methods within instances of this class, as per the best-practices when using that gem.&lt;/p&gt;
-
-&lt;p&gt;However, we can tidy things up here by using Ruby 2.7’s new triple-dot syntax. This syntax is another special type of argument, used in the same place you might use positional or keyword arguments. We can use triple-dots to pass arguments from a class method down to an instance method, like in this example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class CreateBook
-  include Dry::Monads[:do, :result]
-
-  def self.call(...)
-    new.call(...)
-  end
-
-  def call(params)
-    book_params = yield validate(params)
-    create_book(book_params)
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Anytime the &lt;code&gt;call&lt;/code&gt; method on the &lt;em&gt;class&lt;/em&gt; is called, a new &lt;code&gt;CreateBook&lt;/code&gt; &lt;em&gt;instance&lt;/em&gt; is created, then those arguments from the class-level &lt;code&gt;call&lt;/code&gt; are passed to the instance-level &lt;code&gt;call&lt;/code&gt;. By defining this new &lt;code&gt;call&lt;/code&gt; method on the class itself, we can then change our controller to this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.call(book_params)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This makes our code out to the &lt;code&gt;CreateBook&lt;/code&gt; class from wherever we’re using it slightly easier, while still allowing us to create &amp;amp; use instances of &lt;code&gt;CreateBook&lt;/code&gt; if we wish. One particular case where that might come in handy is if you wanted to inject a dependency here:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;CreateBook.new(book_repository: book_repo).call(book_params)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;But that’s a story for another day.&lt;/p&gt;</content><author><name></name></author><summary type="html">In big Rails projects there’s been a bit of a push to move things out to service objects. You might recognise these from their appearance in things like controllers:</summary></entry></feed>
+&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry></feed>
