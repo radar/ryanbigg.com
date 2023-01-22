@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+  <script>
+    let cards;
+    fetch("./cards.json").then(response => response.json()).then(json => cards = json)
+    let foundCards = []
+  </script>
+
+
+  <div class="m-4">
+
+    <h1 class="text-4xl mb-4">Find a card</h1>
+
+  <input type="text" class="search border-2 px-2 py-1" placeholder="Enter card name...">
+
+  <div class="foundCards mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2"></div>
+</div>
+
+
+  <script>
+    document.querySelector(".search").addEventListener("keyup", (e) => {
+      foundCards = cards.filter(card => card.name.toLowerCase().includes(e.target.value.toLowerCase())).slice(0, 100)
+      const foundCardsEl = document.querySelector(".foundCards");
+      foundCardsEl.innerHTML = ""
+
+      if (foundCards.length === 0) {
+        foundCardsEl.innerText = `No cards found with name including ${e.target.value}`
+      }
+
+      const cardEls = foundCards.map(card => {
+        const cardEl = document.createElement("div")
+        cardEl.classList.add("mx-auto");
+        const image = document.createElement("img")
+        image.src = card.image;
+        image.alt = `${card.name} - ${card.set} - ${card.number}`
+        cardEl.appendChild(image);
+        return cardEl;
+      })
+
+      cardEls.forEach(cardEl => foundCardsEl.appendChild(cardEl))
+
+    })
+  </script>
+</body>
+</html>
