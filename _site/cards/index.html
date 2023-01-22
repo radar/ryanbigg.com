@@ -22,7 +22,7 @@
 
   <script>
     document.querySelector(".search").addEventListener("keyup", (e) => {
-      foundCards = cards.filter(card => card.name.toLowerCase().includes(e.target.value.toLowerCase())).slice(0, 100).sort();
+      foundCards = cards.filter(card => card.name.toLowerCase().includes(e.target.value.toLowerCase())).slice(0, 100).sort((a, b) => a.name < b.name ? - 1 : (a.name > b.name ? 1 : 0));
       const foundCardsEl = document.querySelector(".foundCards");
       foundCardsEl.innerHTML = ""
 
