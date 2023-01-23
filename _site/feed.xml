@@ -1,4 +1,233 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-01-23T10:07:36+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">The method method</title><link href="http://localhost:4000/2023/01/the-method-method" rel="alternate" type="text/html" title="The method method" /><published>2023-01-20T00:00:00+11:00</published><updated>2023-01-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/the-method-method</id><content type="html" xml:base="http://localhost:4000/2023/01/the-method-method">&lt;p&gt;The &lt;code&gt;method&lt;/code&gt; method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-01-24T10:59:32+11:00</updated><id>/feed.xml</id><entry><title type="html">Ruby GraphQL field notes</title><link href="/2023/01/ruby-graphql-field-notes" rel="alternate" type="text/html" title="Ruby GraphQL field notes" /><published>2023-01-24T00:00:00+11:00</published><updated>2023-01-24T00:00:00+11:00</updated><id>/2023/01/ruby-graphql-field-notes</id><content type="html" xml:base="/2023/01/ruby-graphql-field-notes">&lt;p&gt;Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on &lt;a href=&quot;https://github.com/radar/twist-v2/blob/master/backend/lib/twist/web/graphql/schema.rb&quot;&gt;Twist’s GraphQL API&lt;/a&gt;, and other GraphQL APIs that are deployed in production.&lt;/p&gt;
+
+&lt;p&gt;Overall sentiment is that GraphQL is an improvement over the classic REST approach because:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;It gives you clear types of fields&lt;/li&gt;
+  &lt;li&gt;You can choose which fields you wish to select&lt;/li&gt;
+  &lt;li&gt;You can choose to select from a single resource, or from multiple, disparate resources at the same time.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I like its interoperability between Ruby and JavaScript, with good tooling existing on both sides of that divide in the &lt;a href=&quot;https://rubygems.org/gems/graphql&quot;&gt;GraphQL Rubygem&lt;/a&gt; and the &lt;a href=&quot;https://www.apollographql.com/docs/react/get-started/&quot;&gt;Apollo Client&lt;/a&gt; on the JavaScript side of things. Honorable mention to the &lt;a href=&quot;https://the-guild.dev/graphql/codegen&quot;&gt;GraphQL codegen&lt;/a&gt; library too, which provides the ability of generating TypeScript types from a GraphQL schema.&lt;/p&gt;
+
+&lt;h2 id=&quot;schema-definition&quot;&gt;Schema definition&lt;/h2&gt;
+
+&lt;p&gt;A schema can be defined in &lt;code&gt;app/graphql&lt;/code&gt; in a Rails application (since its &lt;em&gt;application&lt;/em&gt; code), or a directory of your choosing in any other Ruby project.&lt;/p&gt;
+
+&lt;p&gt;I’d recommend disabling the introspection endpoints here so that 3rd parties cannot find out that your API contains particular admin-only endpoints. I’d also recommend setting up a &lt;code&gt;max_complexity&lt;/code&gt; and a &lt;code&gt;max_depth&lt;/code&gt; value. This prevents API requests from recursively requesting data (think post -&amp;gt; comments -&amp;gt; post -&amp;gt; …), and from also building queries that might rate as “highly complex” database operations. You can read more about &lt;a href=&quot;https://graphql-ruby.org/queries/complexity_and_depth&quot;&gt;complexity and depth here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class AppSchema &amp;lt; GraphQL::Schema
+  mutation(Types::MutationType)
+  query(Types::QueryType)
+  disable_introspection_entry_points unless Rails.env.development?
+
+  max_complexity 200
+  max_depth 20
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;schema-dumping-from-ruby&quot;&gt;Schema dumping from Ruby&lt;/h2&gt;
+
+&lt;p&gt;On that topic, the Ruby library provides the ability to dump the schema out with a custom Rake task (that I’ve put in &lt;code&gt;lib/tasks/graphql.rake&lt;/code&gt;)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require &quot;graphql/rake_task&quot;
+
+GraphQL::RakeTask.new(
+  schema_name: &quot;AppSchema&quot;,
+  directory: &quot;./app/javascript/graphql&quot;,
+  dependencies: [:environment]
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Running this Rake task:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bundle exec rake graphql:schema:dump
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Will generate two files, a &lt;code&gt;schema.json&lt;/code&gt; and a &lt;code&gt;schema.graphql&lt;/code&gt;, which are both representations of the &lt;em&gt;shape&lt;/em&gt; of the GraphQL API. Different tools (such as GraphQL codegen) can then use this schema to work with the GraphQL API.&lt;/p&gt;
+
+&lt;h2 id=&quot;queries-and-resolvers&quot;&gt;Queries and Resolvers&lt;/h2&gt;
+
+&lt;p&gt;The GraphQL Ruby library &lt;a href=&quot;https://graphql-ruby.org/fields/introduction.html&quot;&gt;recommends&lt;/a&gt; defining the fields and their resolvers within the same class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
+  module Web
+    module GraphQL
+      class QueryType &amp;lt; ::GraphQL::Schema::Object
+        field :books, [Types::Book], null: false
+
+        def books
+          ...
+        end
+      end
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I feel like this gets messy particularly quickly if your types have a large (&amp;gt; 5) amount of fields.&lt;/p&gt;
+
+&lt;p&gt;For top level fields like this, I would recommend defining separate resolver classes:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :books, [Types::Book], null: false, resolver: Resolvers::Books
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
+  module Web
+    module GraphQL
+      module Resolvers
+        class Books &amp;lt; Resolver
+          def resolve
+            ...
+          end
+        end
+      end
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This allows for you to have potentially complex logic for resolution separate from the field definitions, allowing you to read &lt;em&gt;what&lt;/em&gt; fields are defined by looking at the type, rather than reading &lt;em&gt;what&lt;/em&gt; the fields are and &lt;em&gt;how&lt;/em&gt; they’re also implemented.&lt;/p&gt;
+
+&lt;p&gt;If we had a resolver for a book chapter, then I’d put that class under &lt;code&gt;Resolvers::Books::Chapters&lt;/code&gt; to indicate that it’s not resolving &lt;em&gt;all&lt;/em&gt; chapters, but rather chapters for a particular book.&lt;/p&gt;
+
+&lt;h2 id=&quot;mutations&quot;&gt;Mutations&lt;/h2&gt;
+
+&lt;p&gt;Along similar lines to queries and resolvers, I also suggest using separate classes for mutations, namespacing them down the lines of the particular &lt;em&gt;context&lt;/em&gt; of the application (&lt;code&gt;Mutations::Users::Login&lt;/code&gt;), or at least along the lines of the resource thats undergoing mutation:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :add_comment, mutation: Mutations::Comments::Add
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;union-types&quot;&gt;Union types&lt;/h2&gt;
+
+&lt;p&gt;Occassionally, it can be helpful to return one or another type from a GraphQL query or a mutation. For this, GraphQL has &lt;em&gt;union types&lt;/em&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
+  module Web
+    module GraphQL
+      module Types
+        class BookPermissionCheckResult &amp;lt; BaseUnion
+          description &quot;The result from attempting a login&quot;
+          possible_types Types::Book, Types::PermissionDenied
+
+          def self.resolve_type(object, _context)
+            if object.is_a?(Twist::Entities::Book)
+              Types::Book
+            else
+              Types::PermissionDenied
+            end
+          end
+        end
+      end
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This type is used in the &lt;code&gt;book&lt;/code&gt; field:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :book, Types::BookPermissionCheckResult, null: false, resolver: Resolvers::Book
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If the resolver returns a &lt;code&gt;Twist::Entities::Book&lt;/code&gt; instance, then this union type will use the GraphQL class &lt;code&gt;Types::Book&lt;/code&gt; to resolve this field. Otherwise, it uses &lt;code&gt;Types::PermissionDenied&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In the client-side GraphQL query, utilising these union types looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-gql&quot;&gt;query {
+  book(permalink: &quot;exploding-rails&quot;) {
+    __typename
+    ... on Book {
+      id
+      title
+      defaultBranch {
+        name
+        chapters(part: FRONTMATTER) {
+          ...chapterFields
+        }
+      }
+    }
+
+    ... on PermissionDenied {
+      error
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The query uses the GraphQL &lt;code&gt;__typename&lt;/code&gt; to return the type of the &lt;code&gt;book&lt;/code&gt; field. We can then read this type on the client side to determine how to act (to show a book, or not). The fields selected within both branches of this union allow us to display information about a book if the query has gone through successfully, without having to first check for permission, and then querying for a book.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;resolve_type&lt;/code&gt; method from union classes can also return an &lt;em&gt;array&lt;/em&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def self.resolve_type(object, _context)
+  if object.success?
+    [Types::BookType, object.success]
+  else
+    [Types::PermissionDenied, object.failure]
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is helpful if we wish to do something with the object being resolved. In this case, we’re unwrapping that &lt;code&gt;object&lt;/code&gt; from a &lt;code&gt;Dry::Result&lt;/code&gt; wrapping. If we did not do this unwrapping, then the &lt;code&gt;BookType&lt;/code&gt; type would not be able to work on the object it receives, as the wrapped &lt;code&gt;Dry::Result&lt;/code&gt; object does not have the &lt;code&gt;title&lt;/code&gt; that &lt;code&gt;Types::Book&lt;/code&gt; would expect that object to have.&lt;/p&gt;
+
+&lt;h2 id=&quot;authentication&quot;&gt;Authentication&lt;/h2&gt;
+
+&lt;p&gt;To authenticate against the GraphQL API, I’d recommend supporting sessions as well as authentication by tokens. While requests may come into the application from the same domain, they also may not. Allowing that flexibility of your API to be queryable by a 3rd party from the outset (assuming they have the right token!) can only be a good thing. It will also allow you to make requests from within tests by providing a token.&lt;/p&gt;
+
+&lt;p&gt;You can do this with something like the following code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;  def current_user
+
+    @current_user = super
+    @current_user ||= User.authenticate_by_token(request.authorization)
+  end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;testing&quot;&gt;Testing&lt;/h2&gt;
+
+&lt;p&gt;To test the GraphQL endpoints, I would recommend request specs over testing the schema itself by calling &lt;code&gt;Schema.execute(...)&lt;/code&gt;. This ensures that you can run tests against your API as close to how it will be used as possible.&lt;/p&gt;
+
+&lt;p&gt;To aid in this, I like adding a &lt;code&gt;GraphqlHelpers&lt;/code&gt; module with a little helper:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;  def graphql_request(query:, variables: {})
+    post &quot;/graphql&quot;,
+      params: {
+        query: query,
+        variables: variables,
+      }.to_json,
+      headers: { Authorization: user.token, &apos;Content-Type&apos;: &quot;application/json&quot; }
+  end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can then use this in a test:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;query = %|
+  query {
+    book(permalink: &quot;exploding-rails&quot;) {
+      title
+    }
+  }
+|
+
+json = graphql_request(query: query)
+expect(json.dig(&quot;book&quot;, &quot;title&quot;)).to eq(&quot;Exploding Rails&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;preventing-n1-queries&quot;&gt;Preventing N+1 queries&lt;/h2&gt;
+
+&lt;p&gt;By default, GraphQL Ruby will perform N+1 queries if you write a query such as:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;query {
+  users {
+    books {
+      chapters
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will make one query for all the users, N queries for all of those users’ books, and M queries for all of those users’ books’ chapters.&lt;/p&gt;
+
+&lt;p&gt;To prevent N+1 queries, I’d recommend relying on the &lt;code&gt;GraphQL::Dataloader&lt;/code&gt; features &lt;a href=&quot;https://graphql-ruby.org/dataloader/overview.html&quot;&gt;shown here&lt;/a&gt;. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on Twist’s GraphQL API, and other GraphQL APIs that are deployed in production.</summary></entry><entry><title type="html">The method method</title><link href="/2023/01/the-method-method" rel="alternate" type="text/html" title="The method method" /><published>2023-01-20T00:00:00+11:00</published><updated>2023-01-20T00:00:00+11:00</updated><id>/2023/01/the-method-method</id><content type="html" xml:base="/2023/01/the-method-method">&lt;p&gt;The &lt;code&gt;method&lt;/code&gt; method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;1.method(:+)
 =&amp;gt; #&amp;lt;Method: Integer#+(_)&amp;gt;
@@ -53,7 +282,7 @@ when method(:moo)
 else
   false
 end
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">The method method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:</summary></entry><entry><title type="html">CSS :has selector for selects that have options</title><link href="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options" rel="alternate" type="text/html" title="CSS :has selector for selects that have options" /><published>2022-12-02T00:00:00+11:00</published><updated>2022-12-02T00:00:00+11:00</updated><id>http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options</id><content type="html" xml:base="http://localhost:4000/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options">&lt;p&gt;Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">The method method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:</summary></entry><entry><title type="html">CSS :has selector for selects that have options</title><link href="/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options" rel="alternate" type="text/html" title="CSS :has selector for selects that have options" /><published>2022-12-02T00:00:00+11:00</published><updated>2022-12-02T00:00:00+11:00</updated><id>/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options</id><content type="html" xml:base="/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options">&lt;p&gt;Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.&lt;/p&gt;
 
 &lt;p&gt;I worked out today that thanks to the new &lt;code&gt;:has&lt;/code&gt; selector in CSS, you can achieve this:&lt;/p&gt;
 
@@ -70,7 +299,7 @@ end
 
 &lt;p&gt;Given that this feature is &lt;em&gt;currently&lt;/em&gt; not supported in either IE11 (at all) or Firefox (without enabling a configuration flag), I would be hesitant to use it in production.&lt;/p&gt;
 
-&lt;p&gt;Nevertheless, it’s pretty cool to see that CSS can do this and we do not have to reach for JavaScript.&lt;/p&gt;</content><author><name></name></author><summary type="html">Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.</summary></entry><entry><title type="html">Hanami 2.0 Thoughts</title><link href="http://localhost:4000/2022/11/hanami-20-thoughts" rel="alternate" type="text/html" title="Hanami 2.0 Thoughts" /><published>2022-11-28T00:00:00+11:00</published><updated>2022-11-28T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/hanami-20-thoughts</id><content type="html" xml:base="http://localhost:4000/2022/11/hanami-20-thoughts">&lt;p&gt;&lt;a href=&quot;https://ryanbigg.com/2018/03/my-thoughts-on-hanami&quot;&gt;I’ve been a fan of Hanami&lt;/a&gt; for a number of years now. One of my favourite apps to work on is &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;even an open-source Hanami app!&lt;/a&gt; I have also been writing &lt;a href=&quot;https://github.com/radar/chirper&quot;&gt;an ActivityPub app called “Chirper”&lt;/a&gt; in Hanami.&lt;/p&gt;
+&lt;p&gt;Nevertheless, it’s pretty cool to see that CSS can do this and we do not have to reach for JavaScript.&lt;/p&gt;</content><author><name></name></author><summary type="html">Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.</summary></entry><entry><title type="html">Hanami 2.0 Thoughts</title><link href="/2022/11/hanami-20-thoughts" rel="alternate" type="text/html" title="Hanami 2.0 Thoughts" /><published>2022-11-28T00:00:00+11:00</published><updated>2022-11-28T00:00:00+11:00</updated><id>/2022/11/hanami-20-thoughts</id><content type="html" xml:base="/2022/11/hanami-20-thoughts">&lt;p&gt;&lt;a href=&quot;https://ryanbigg.com/2018/03/my-thoughts-on-hanami&quot;&gt;I’ve been a fan of Hanami&lt;/a&gt; for a number of years now. One of my favourite apps to work on is &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;even an open-source Hanami app!&lt;/a&gt; I have also been writing &lt;a href=&quot;https://github.com/radar/chirper&quot;&gt;an ActivityPub app called “Chirper”&lt;/a&gt; in Hanami.&lt;/p&gt;
 
 &lt;p&gt;Now that Hanami 2.0 has come out, a few people have been asking me for my thoughts on this major Hanami release.&lt;/p&gt;
 
@@ -90,7 +319,7 @@ end
 
 &lt;p&gt;There’s also a bunch of &lt;a href=&quot;https://hanamimastery.com/&quot;&gt;Hanami screencasts (HanamiMastery) recorded by Seb Wilgosz&lt;/a&gt;, which come in both video and text format.&lt;/p&gt;
 
-&lt;p&gt;Overall, I’m glad that the Hanami team has taken their time to really polish up this release, and I’m looking forward to building more things in what is shaping up to be &lt;em&gt;the&lt;/em&gt; Ruby web framework of the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve been a fan of Hanami for a number of years now. One of my favourite apps to work on is even an open-source Hanami app! I have also been writing an ActivityPub app called “Chirper” in Hanami.</summary></entry><entry><title type="html">The Gem Foundation</title><link href="http://localhost:4000/2022/11/the-gem-foundation" rel="alternate" type="text/html" title="The Gem Foundation" /><published>2022-11-24T00:00:00+11:00</published><updated>2022-11-24T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/the-gem-foundation</id><content type="html" xml:base="http://localhost:4000/2022/11/the-gem-foundation">&lt;div class=&quot;text-3xl text-center&quot;&gt;&lt;p&gt;Today, I am excited to announce the launch of &lt;strong&gt;The Gem Foundation&lt;/strong&gt;.&lt;/p&gt;&lt;/div&gt;
+&lt;p&gt;Overall, I’m glad that the Hanami team has taken their time to really polish up this release, and I’m looking forward to building more things in what is shaping up to be &lt;em&gt;the&lt;/em&gt; Ruby web framework of the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve been a fan of Hanami for a number of years now. One of my favourite apps to work on is even an open-source Hanami app! I have also been writing an ActivityPub app called “Chirper” in Hanami.</summary></entry><entry><title type="html">The Gem Foundation</title><link href="/2022/11/the-gem-foundation" rel="alternate" type="text/html" title="The Gem Foundation" /><published>2022-11-24T00:00:00+11:00</published><updated>2022-11-24T00:00:00+11:00</updated><id>/2022/11/the-gem-foundation</id><content type="html" xml:base="/2022/11/the-gem-foundation">&lt;div class=&quot;text-3xl text-center&quot;&gt;&lt;p&gt;Today, I am excited to announce the launch of &lt;strong&gt;The Gem Foundation&lt;/strong&gt;.&lt;/p&gt;&lt;/div&gt;
 
 &lt;p&gt;Its mission is assist contributors in the Ruby community in their task to further the adoption of the Ruby language, expanding the scope more broadly than just one particular web framework.&lt;/p&gt;
 
@@ -112,7 +341,7 @@ end
 
 &lt;p&gt;Here’s a helpful chart to track our donations:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/gem-foundation/donations.png&quot; alt=&quot;The Gem Foundation donations&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I am excited to announce the launch of The Gem Foundation.</summary></entry><entry><title type="html">A replacement for strong parameters</title><link href="http://localhost:4000/2022/11/a-replacement-for-strong-parameters" rel="alternate" type="text/html" title="A replacement for strong parameters" /><published>2022-11-09T00:00:00+11:00</published><updated>2022-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/a-replacement-for-strong-parameters</id><content type="html" xml:base="http://localhost:4000/2022/11/a-replacement-for-strong-parameters">&lt;p&gt;I’m not going to take &lt;a href=&quot;https://dev.37signals.com/vanilla-rails-is-plenty&quot;&gt;this week’s (very obvious) bait about how “Vanilla Rails is plenty”&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/gem-foundation/donations.png&quot; alt=&quot;The Gem Foundation donations&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I am excited to announce the launch of The Gem Foundation.</summary></entry><entry><title type="html">A replacement for strong parameters</title><link href="/2022/11/a-replacement-for-strong-parameters" rel="alternate" type="text/html" title="A replacement for strong parameters" /><published>2022-11-09T00:00:00+11:00</published><updated>2022-11-09T00:00:00+11:00</updated><id>/2022/11/a-replacement-for-strong-parameters</id><content type="html" xml:base="/2022/11/a-replacement-for-strong-parameters">&lt;p&gt;I’m not going to take &lt;a href=&quot;https://dev.37signals.com/vanilla-rails-is-plenty&quot;&gt;this week’s (very obvious) bait about how “Vanilla Rails is plenty”&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;In the past, I’ve spent effort watching DHH’s videos and &lt;a href=&quot;https://ryanbigg.com/2018/03/on-writing-software-well-2-a-review&quot;&gt;issuing a (time-stamped) rebuttal&lt;/a&gt;, and writing up about &lt;a href=&quot;https://ryanbigg.com/2017/06/current-considered-harmful&quot;&gt;a new Rails feature I would consider harmful&lt;/a&gt;.&lt;/p&gt;
 
@@ -295,7 +524,7 @@ be another service.&lt;/p&gt;
 
 &lt;p&gt;I’ve only scratched the surface on what &lt;code&gt;dry-schema&lt;/code&gt; can do. I purposely wanted to keep this post short today to cover how it could replace strong parameters within Rails to provide a much better developer experience than that bracketed mess.&lt;/p&gt;
 
-&lt;p&gt;If you’d like to know what else dry-schema can do, make sure to check out &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/&quot;&gt;its documentation here&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’m not going to take this week’s (very obvious) bait about how “Vanilla Rails is plenty”.</summary></entry><entry><title type="html">Using Union Types with GraphQL Mutations in Ruby</title><link href="http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types" rel="alternate" type="text/html" title="Using Union Types with GraphQL Mutations in Ruby" /><published>2022-05-06T00:00:00+10:00</published><updated>2022-05-06T00:00:00+10:00</updated><id>http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types</id><content type="html" xml:base="http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types">&lt;p&gt;The &lt;a href=&quot;https://graphql-ruby.org/mutations/mutation_classes.html&quot;&gt;official documentation for the graphql-ruby gem&lt;/a&gt; recommends this code for a mutation class that can either succeed or fail:&lt;/p&gt;
+&lt;p&gt;If you’d like to know what else dry-schema can do, make sure to check out &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/&quot;&gt;its documentation here&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’m not going to take this week’s (very obvious) bait about how “Vanilla Rails is plenty”.</summary></entry><entry><title type="html">Using Union Types with GraphQL Mutations in Ruby</title><link href="/2022/05/ruby-graphql-mutations-with-union-types" rel="alternate" type="text/html" title="Using Union Types with GraphQL Mutations in Ruby" /><published>2022-05-06T00:00:00+10:00</published><updated>2022-05-06T00:00:00+10:00</updated><id>/2022/05/ruby-graphql-mutations-with-union-types</id><content type="html" xml:base="/2022/05/ruby-graphql-mutations-with-union-types">&lt;p&gt;The &lt;a href=&quot;https://graphql-ruby.org/mutations/mutation_classes.html&quot;&gt;official documentation for the graphql-ruby gem&lt;/a&gt; recommends this code for a mutation class that can either succeed or fail:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Mutations::CreateComment &amp;lt; Mutations::BaseMutation
   argument :body, String
@@ -453,7 +682,7 @@ end
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;When using this API (for example, within a frontend codebase), we can assert on &lt;code&gt;__typename&lt;/code&gt; to determine how to show the result to a user – if it’s a &lt;code&gt;Comment&lt;/code&gt;, then indicate a successful comment creation. If it’s &lt;code&gt;Errors&lt;/code&gt;, then show those errors on the form.&lt;/p&gt;</content><author><name></name></author><summary type="html">The official documentation for the graphql-ruby gem recommends this code for a mutation class that can either succeed or fail:</summary></entry><entry><title type="html">Typed View Components with dry-types</title><link href="http://localhost:4000/2022/03/typed-view-components" rel="alternate" type="text/html" title="Typed View Components with dry-types" /><published>2022-03-08T00:00:00+11:00</published><updated>2022-03-08T00:00:00+11:00</updated><id>http://localhost:4000/2022/03/typed-view-components</id><content type="html" xml:base="http://localhost:4000/2022/03/typed-view-components">&lt;p&gt;This post was originally inspired by &lt;a href=&quot;https://twitter.com/RogersKonnor&quot;&gt;Konnor Rogers&lt;/a&gt;, and &lt;a href=&quot;https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011&quot;&gt;this gist from him&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;When using this API (for example, within a frontend codebase), we can assert on &lt;code&gt;__typename&lt;/code&gt; to determine how to show the result to a user – if it’s a &lt;code&gt;Comment&lt;/code&gt;, then indicate a successful comment creation. If it’s &lt;code&gt;Errors&lt;/code&gt;, then show those errors on the form.&lt;/p&gt;</content><author><name></name></author><summary type="html">The official documentation for the graphql-ruby gem recommends this code for a mutation class that can either succeed or fail:</summary></entry><entry><title type="html">Typed View Components with dry-types</title><link href="/2022/03/typed-view-components" rel="alternate" type="text/html" title="Typed View Components with dry-types" /><published>2022-03-08T00:00:00+11:00</published><updated>2022-03-08T00:00:00+11:00</updated><id>/2022/03/typed-view-components</id><content type="html" xml:base="/2022/03/typed-view-components">&lt;p&gt;This post was originally inspired by &lt;a href=&quot;https://twitter.com/RogersKonnor&quot;&gt;Konnor Rogers&lt;/a&gt;, and &lt;a href=&quot;https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011&quot;&gt;this gist from him&lt;/a&gt;.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -590,7 +819,7 @@ end
 &lt;pre&gt;&lt;code&gt;1234 (Integer) has invalid type for :amount violates constraints (type?(Float, 1234) failed) (Dry::Types::SchemaError)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;This helps alert us to a typing issue earlier on in our code, before it even reaches our React code.&lt;/p&gt;</content><author><name></name></author><summary type="html">This post was originally inspired by Konnor Rogers, and this gist from him.</summary></entry><entry><title type="html">Culture and Values</title><link href="http://localhost:4000/2021/12/culture-and-values" rel="alternate" type="text/html" title="Culture and Values" /><published>2021-12-09T00:00:00+11:00</published><updated>2021-12-09T00:00:00+11:00</updated><id>http://localhost:4000/2021/12/culture-and-values</id><content type="html" xml:base="http://localhost:4000/2021/12/culture-and-values">&lt;p&gt;It’s been one year since I was fired.&lt;/p&gt;
+&lt;p&gt;This helps alert us to a typing issue earlier on in our code, before it even reaches our React code.&lt;/p&gt;</content><author><name></name></author><summary type="html">This post was originally inspired by Konnor Rogers, and this gist from him.</summary></entry><entry><title type="html">Culture and Values</title><link href="/2021/12/culture-and-values" rel="alternate" type="text/html" title="Culture and Values" /><published>2021-12-09T00:00:00+11:00</published><updated>2021-12-09T00:00:00+11:00</updated><id>/2021/12/culture-and-values</id><content type="html" xml:base="/2021/12/culture-and-values">&lt;p&gt;It’s been one year since I was fired.&lt;/p&gt;
 
 &lt;p&gt;The Big Boss at the time wanted everyone to work out of an office in Melbourne (because by the end of 2020, everyone thought that The Pandemic was &lt;em&gt;over&lt;/em&gt;), and I was moving 250km to the west.&lt;/p&gt;
 
@@ -710,7 +939,7 @@ end
 
 &lt;p&gt;I guess that’s an indicator of personal growth. While trauma does happen, we can always &lt;em&gt;grow around&lt;/em&gt; it. To come up against adversarial situations is a part of what makes us human. We are not alone in these situations, as much as it can feel this way sometimes.&lt;/p&gt;
 
-&lt;p&gt;I hope that sharing a little bit about my history and how I’ve worked through it helps you, either today or into the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">It’s been one year since I was fired.</summary></entry><entry><title type="html">A tour of Twist</title><link href="http://localhost:4000/2021/08/a-tour-of-twist" rel="alternate" type="text/html" title="A tour of Twist" /><published>2021-08-11T00:00:00+10:00</published><updated>2021-08-11T00:00:00+10:00</updated><id>http://localhost:4000/2021/08/a-tour-of-twist</id><content type="html" xml:base="http://localhost:4000/2021/08/a-tour-of-twist">&lt;p&gt;When I’m writing &lt;a href=&quot;/books&quot;&gt;my books&lt;/a&gt;, it’s more often than not that reviewers read and review these books on an application that I built myself called &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;Twist&lt;/a&gt;. It looks like this:&lt;/p&gt;
+&lt;p&gt;I hope that sharing a little bit about my history and how I’ve worked through it helps you, either today or into the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">It’s been one year since I was fired.</summary></entry><entry><title type="html">A tour of Twist</title><link href="/2021/08/a-tour-of-twist" rel="alternate" type="text/html" title="A tour of Twist" /><published>2021-08-11T00:00:00+10:00</published><updated>2021-08-11T00:00:00+10:00</updated><id>/2021/08/a-tour-of-twist</id><content type="html" xml:base="/2021/08/a-tour-of-twist">&lt;p&gt;When I’m writing &lt;a href=&quot;/books&quot;&gt;my books&lt;/a&gt;, it’s more often than not that reviewers read and review these books on an application that I built myself called &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;Twist&lt;/a&gt;. It looks like this:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/radar/twist-v2/master/preview.png&quot; alt=&quot;Twist&quot; /&gt;&lt;/p&gt;
 
@@ -1380,38 +1609,4 @@ GraphQL::RakeTask.new(
 
 &lt;hr /&gt;
 
-&lt;p&gt;If you like what you see in this post, you might also like to read my book &lt;a href=&quot;https://leanpub.com/maintain-rails/c/opinions&quot;&gt;Maintainable Rails&lt;/a&gt; which is just $5 at the moment. This book demonstrates how to bring the concepts shown in this post into a brand new Rails application, ultimately leading to an application that is easier to maintain in the long-term.&lt;/p&gt;</content><author><name></name></author><summary type="html">When I’m writing my books, it’s more often than not that reviewers read and review these books on an application that I built myself called Twist. It looks like this:</summary></entry><entry><title type="html">On coding tests</title><link href="http://localhost:4000/2021/07/on-coding-tests" rel="alternate" type="text/html" title="On coding tests" /><published>2021-07-27T00:00:00+10:00</published><updated>2021-07-27T00:00:00+10:00</updated><id>http://localhost:4000/2021/07/on-coding-tests</id><content type="html" xml:base="http://localhost:4000/2021/07/on-coding-tests">&lt;p&gt;As you might know, I’ve been &lt;a href=&quot;https://ryanbigg.com/2021/07/job-hunt-q2-2021&quot;&gt;job hunting recently&lt;/a&gt;. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.&lt;/p&gt;
-
-&lt;p&gt;But that’s okay, because it “should only take up to 3 hours to do”. Now let’s theoretically say that I’m talking with 5 companies now. That’s &lt;em&gt;15 hours&lt;/em&gt; of my time, that I have to pull out of work, life or sleep, to do these coding tests. All to prove to them that I can code!&lt;/p&gt;
-
-&lt;p&gt;This strikes me as odd because I’m pretty sure I can code.&lt;/p&gt;
-
-&lt;p&gt;I’ve been employed as a developer in one way or another since 2004. That’s 17 years! I’ve had to pass other coding tests in the past to get some of those jobs. I had a lot more free time in my youth and wasn’t such a crotchety old man like I am now.&lt;/p&gt;
-
-&lt;p&gt;I’ve &lt;a href=&quot;https://ryanbigg.com/books&quot;&gt;written books&lt;/a&gt; where I try to teach other people how to code. If I don’t know how to code, how could I teach other people to code? Mystery!&lt;/p&gt;
-
-&lt;p&gt;I’ve recently &lt;a href=&quot;https://www.youtube.com/watch?v=qWdyo3icsjU&quot;&gt;released a 6-part screencast series&lt;/a&gt; where I demonstrate my ability to code in not one, but THREE different languages &lt;strong&gt;AT THE SAME TIME&lt;/strong&gt;! I’m clearly not a 10x developer. Maybe a 3x developer?&lt;/p&gt;
-
-&lt;p&gt;I’ve even made the &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;codebase from that screencast series completely open source&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;I’m also responsible for maintaining the &lt;a href=&quot;https://github.com/ruby-i18n/i18n&quot;&gt;12th-most-downloaded Ruby Gem – i18n&lt;/a&gt;. Yeah, this is code that I’ve (unlikely) written or (likely) vetted &amp;amp; approved that’s &lt;em&gt;probably running in your Rails application right now&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;But no, these things don’t count for &lt;em&gt;anything&lt;/em&gt; in the interview process. Maybe I’ve gone too far down the path of tying my self-worth up in these things. The way I feel is: if you don’t value these things I’ve &lt;em&gt;already done&lt;/em&gt;, then you do not value me.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;I can read the replies now:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;but how do we know that you really know how to code, according to our 100% bias-free baseline?&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;We have subjected our other developers to this antiquated hazing ritual so why shouldn’t we subject you to the same?&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Fact is, you don’t. Some people can code really well in interviews and have had lots of practice answering how exactly you go about reversing a purple linked list uphill both ways in the snow. Some people struggle with the pressure of developing something &lt;em&gt;completely solo&lt;/em&gt; and then having that scruitinised in an hour-long live-code-review session.&lt;/p&gt;
-
-&lt;p&gt;I’m personally &lt;em&gt;done&lt;/em&gt; with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.&lt;/p&gt;
-
-&lt;p&gt;Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.&lt;/p&gt;</content><author><name></name></author><summary type="html">As you might know, I’ve been job hunting recently. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</summary></entry></feed>
+&lt;p&gt;If you like what you see in this post, you might also like to read my book &lt;a href=&quot;https://leanpub.com/maintain-rails/c/opinions&quot;&gt;Maintainable Rails&lt;/a&gt; which is just $5 at the moment. This book demonstrates how to bring the concepts shown in this post into a brand new Rails application, ultimately leading to an application that is easier to maintain in the long-term.&lt;/p&gt;</content><author><name></name></author><summary type="html">When I’m writing my books, it’s more often than not that reviewers read and review these books on an application that I built myself called Twist. It looks like this:</summary></entry></feed>

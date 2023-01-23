@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Blog - Ryan Bigg</title>
+  <title>Ruby GraphQL field notes - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,700|Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
@@ -15,7 +15,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg - Blog" property="og:title">
+  <meta content="Ryan Bigg - Ruby GraphQL field notes" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
@@ -25,10 +25,10 @@
   
 
   
-  <meta content="https://ryanbigg.com/blog" property="og:url">
+  <meta content="https://ryanbigg.com/2023/01/ruby-graphql-field-notes" property="og:url">
   
   
-  <meta content="Blog" property="og:description">
+  <meta content="Ruby GraphQL field notes" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -37,29 +37,24 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta name="twitter:title" content="Blog">
+  <meta name="twitter:title" content="Ruby GraphQL field notes">
   
 </head>
 
 
 <body>
-  <!-- <header class="topbar">
-  <h1><a href="/">RB</a></h1>
-</header>
- -->
   <div class="main">
-    
-
-<article>
-  <h1 class="text-center">Ryan Bigg</h1>
-  <div class='text-center mb-8'>
-    <a href="/">&#x27F5; Home</a>
-    <a href="/2023/01/ruby-graphql-field-notes">
-      <h2 class="mt-4 post-title">Ruby GraphQL field notes</h2>
-    </a>
-    <small>24 Jan 2023</small>
-  </div>
-  <p>Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on <a href="https://github.com/radar/twist-v2/blob/master/backend/lib/twist/web/graphql/schema.rb">Twist’s GraphQL API</a>, and other GraphQL APIs that are deployed in production.</p>
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <div class='text-center mb-8'>
+            <a href="/blog">&#x27F5; Posts</a>
+            <a href="/2023/01/ruby-graphql-field-notes">
+              <h2 class="post-title">Ruby GraphQL field notes</h2>
+            </a>
+            <small>24 Jan 2023</small>
+          </div>
+          <p>Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on <a href="https://github.com/radar/twist-v2/blob/master/backend/lib/twist/web/graphql/schema.rb">Twist’s GraphQL API</a>, and other GraphQL APIs that are deployed in production.</p>
 
 <p>Overall sentiment is that GraphQL is an improvement over the classic REST approach because:</p>
 
@@ -290,46 +285,9 @@ expect(json.dig("book", "title")).to eq("Exploding Rails")
 
 <p>To prevent N+1 queries, I’d recommend relying on the <code>GraphQL::Dataloader</code> features <a href="https://graphql-ruby.org/dataloader/overview.html">shown here</a>. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.</p>
 
-</article>
-
-<div class="text-center">
-  <h2>In case you missed it...</h2>
-  <ul>
-    
-    <li class="mb-4"><a href="/2023/01/the-method-method">The method method</a> <span class="text-gray-400 text-xs">&mdash; 20 Jan 2023</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2022/12/using-a-css-has-selector-to-target-selects-that-have-selected-options">CSS :has selector for selects that have options</a> <span class="text-gray-400 text-xs">&mdash; 02 Dec 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2022/11/hanami-20-thoughts">Hanami 2.0 Thoughts</a> <span class="text-gray-400 text-xs">&mdash; 28 Nov 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2022/11/the-gem-foundation">The Gem Foundation</a> <span class="text-gray-400 text-xs">&mdash; 24 Nov 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2022/11/a-replacement-for-strong-parameters">A replacement for strong parameters</a> <span class="text-gray-400 text-xs">&mdash; 09 Nov 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2022/05/ruby-graphql-mutations-with-union-types">Using Union Types with GraphQL Mutations in Ruby</a> <span class="text-gray-400 text-xs">&mdash; 06 May 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2022/03/typed-view-components">Typed View Components with dry-types</a> <span class="text-gray-400 text-xs">&mdash; 08 Mar 2022</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/12/culture-and-values">Culture and Values</a> <span class="text-gray-400 text-xs">&mdash; 09 Dec 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/08/a-tour-of-twist">A tour of Twist</a> <span class="text-gray-400 text-xs">&mdash; 11 Aug 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/07/on-coding-tests">On coding tests</a> <span class="text-gray-400 text-xs">&mdash; 27 Jul 2021</span>
-    </li>
-    
-  </ul>
-  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
-</div>
-
+        </article>
+      </div>
+    </div>
   </div>
   <footer>
 </footer>

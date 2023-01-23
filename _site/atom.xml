@@ -4,13 +4,251 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2023-01-23T10:07:36+11:00</updated>
+ <updated>2023-01-24T10:59:32+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Ruby GraphQL field notes</title>
+   <link href="http://ryanbigg.com/2023/01/ruby-graphql-field-notes"/>
+   <updated>2023-01-24T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2023/01/ruby-graphql-field-notes</id>
+   <content type="html"><![CDATA[<p>Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on <a href="https://github.com/radar/twist-v2/blob/master/backend/lib/twist/web/graphql/schema.rb">Twist’s GraphQL API</a>, and other GraphQL APIs that are deployed in production.</p>
+
+<p>Overall sentiment is that GraphQL is an improvement over the classic REST approach because:</p>
+
+<ol>
+  <li>It gives you clear types of fields</li>
+  <li>You can choose which fields you wish to select</li>
+  <li>You can choose to select from a single resource, or from multiple, disparate resources at the same time.</li>
+</ol>
+
+<p>I like its interoperability between Ruby and JavaScript, with good tooling existing on both sides of that divide in the <a href="https://rubygems.org/gems/graphql">GraphQL Rubygem</a> and the <a href="https://www.apollographql.com/docs/react/get-started/">Apollo Client</a> on the JavaScript side of things. Honorable mention to the <a href="https://the-guild.dev/graphql/codegen">GraphQL codegen</a> library too, which provides the ability of generating TypeScript types from a GraphQL schema.</p>
+
+<h2 id="schema-definition">Schema definition</h2>
+
+<p>A schema can be defined in <code>app/graphql</code> in a Rails application (since its <em>application</em> code), or a directory of your choosing in any other Ruby project.</p>
+
+<p>I’d recommend disabling the introspection endpoints here so that 3rd parties cannot find out that your API contains particular admin-only endpoints. I’d also recommend setting up a <code>max_complexity</code> and a <code>max_depth</code> value. This prevents API requests from recursively requesting data (think post -&gt; comments -&gt; post -&gt; …), and from also building queries that might rate as “highly complex” database operations. You can read more about <a href="https://graphql-ruby.org/queries/complexity_and_depth">complexity and depth here</a>.</p>
+
+<pre><code class="language-ruby">class AppSchema &lt; GraphQL::Schema
+  mutation(Types::MutationType)
+  query(Types::QueryType)
+  disable_introspection_entry_points unless Rails.env.development?
+
+  max_complexity 200
+  max_depth 20
+end
+</code></pre>
+
+<h2 id="schema-dumping-from-ruby">Schema dumping from Ruby</h2>
+
+<p>On that topic, the Ruby library provides the ability to dump the schema out with a custom Rake task (that I’ve put in <code>lib/tasks/graphql.rake</code>)</p>
+
+<pre><code class="language-ruby">require "graphql/rake_task"
+
+GraphQL::RakeTask.new(
+  schema_name: "AppSchema",
+  directory: "./app/javascript/graphql",
+  dependencies: [:environment]
+)
+</code></pre>
+
+<p>Running this Rake task:</p>
+
+<pre><code>bundle exec rake graphql:schema:dump
+</code></pre>
+
+<p>Will generate two files, a <code>schema.json</code> and a <code>schema.graphql</code>, which are both representations of the <em>shape</em> of the GraphQL API. Different tools (such as GraphQL codegen) can then use this schema to work with the GraphQL API.</p>
+
+<h2 id="queries-and-resolvers">Queries and Resolvers</h2>
+
+<p>The GraphQL Ruby library <a href="https://graphql-ruby.org/fields/introduction.html">recommends</a> defining the fields and their resolvers within the same class:</p>
+
+<pre><code class="language-ruby">module Twist
+  module Web
+    module GraphQL
+      class QueryType &lt; ::GraphQL::Schema::Object
+        field :books, [Types::Book], null: false
+
+        def books
+          ...
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>I feel like this gets messy particularly quickly if your types have a large (&gt; 5) amount of fields.</p>
+
+<p>For top level fields like this, I would recommend defining separate resolver classes:</p>
+
+<pre><code class="language-ruby">field :books, [Types::Book], null: false, resolver: Resolvers::Books
+</code></pre>
+
+<pre><code class="language-ruby">module Twist
+  module Web
+    module GraphQL
+      module Resolvers
+        class Books &lt; Resolver
+          def resolve
+            ...
+          end
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This allows for you to have potentially complex logic for resolution separate from the field definitions, allowing you to read <em>what</em> fields are defined by looking at the type, rather than reading <em>what</em> the fields are and <em>how</em> they’re also implemented.</p>
+
+<p>If we had a resolver for a book chapter, then I’d put that class under <code>Resolvers::Books::Chapters</code> to indicate that it’s not resolving <em>all</em> chapters, but rather chapters for a particular book.</p>
+
+<h2 id="mutations">Mutations</h2>
+
+<p>Along similar lines to queries and resolvers, I also suggest using separate classes for mutations, namespacing them down the lines of the particular <em>context</em> of the application (<code>Mutations::Users::Login</code>), or at least along the lines of the resource thats undergoing mutation:</p>
+
+<pre><code class="language-ruby">field :add_comment, mutation: Mutations::Comments::Add
+</code></pre>
+
+<h2 id="union-types">Union types</h2>
+
+<p>Occassionally, it can be helpful to return one or another type from a GraphQL query or a mutation. For this, GraphQL has <em>union types</em>.</p>
+
+<pre><code class="language-ruby">module Twist
+  module Web
+    module GraphQL
+      module Types
+        class BookPermissionCheckResult &lt; BaseUnion
+          description "The result from attempting a login"
+          possible_types Types::Book, Types::PermissionDenied
+
+          def self.resolve_type(object, _context)
+            if object.is_a?(Twist::Entities::Book)
+              Types::Book
+            else
+              Types::PermissionDenied
+            end
+          end
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This type is used in the <code>book</code> field:</p>
+
+<pre><code class="language-ruby">field :book, Types::BookPermissionCheckResult, null: false, resolver: Resolvers::Book
+</code></pre>
+
+<p>If the resolver returns a <code>Twist::Entities::Book</code> instance, then this union type will use the GraphQL class <code>Types::Book</code> to resolve this field. Otherwise, it uses <code>Types::PermissionDenied</code>.</p>
+
+<p>In the client-side GraphQL query, utilising these union types looks like this:</p>
+
+<pre><code class="language-gql">query {
+  book(permalink: "exploding-rails") {
+    __typename
+    ... on Book {
+      id
+      title
+      defaultBranch {
+        name
+        chapters(part: FRONTMATTER) {
+          ...chapterFields
+        }
+      }
+    }
+
+    ... on PermissionDenied {
+      error
+    }
+  }
+}
+</code></pre>
+
+<p>The query uses the GraphQL <code>__typename</code> to return the type of the <code>book</code> field. We can then read this type on the client side to determine how to act (to show a book, or not). The fields selected within both branches of this union allow us to display information about a book if the query has gone through successfully, without having to first check for permission, and then querying for a book.</p>
+
+<p>The <code>resolve_type</code> method from union classes can also return an <em>array</em>:</p>
+
+<pre><code class="language-ruby">def self.resolve_type(object, _context)
+  if object.success?
+    [Types::BookType, object.success]
+  else
+    [Types::PermissionDenied, object.failure]
+  end
+end
+</code></pre>
+
+<p>This is helpful if we wish to do something with the object being resolved. In this case, we’re unwrapping that <code>object</code> from a <code>Dry::Result</code> wrapping. If we did not do this unwrapping, then the <code>BookType</code> type would not be able to work on the object it receives, as the wrapped <code>Dry::Result</code> object does not have the <code>title</code> that <code>Types::Book</code> would expect that object to have.</p>
+
+<h2 id="authentication">Authentication</h2>
+
+<p>To authenticate against the GraphQL API, I’d recommend supporting sessions as well as authentication by tokens. While requests may come into the application from the same domain, they also may not. Allowing that flexibility of your API to be queryable by a 3rd party from the outset (assuming they have the right token!) can only be a good thing. It will also allow you to make requests from within tests by providing a token.</p>
+
+<p>You can do this with something like the following code:</p>
+
+<pre><code class="language-ruby">  def current_user
+
+    @current_user = super
+    @current_user ||= User.authenticate_by_token(request.authorization)
+  end
+</code></pre>
+
+<h2 id="testing">Testing</h2>
+
+<p>To test the GraphQL endpoints, I would recommend request specs over testing the schema itself by calling <code>Schema.execute(...)</code>. This ensures that you can run tests against your API as close to how it will be used as possible.</p>
+
+<p>To aid in this, I like adding a <code>GraphqlHelpers</code> module with a little helper:</p>
+
+<pre><code class="language-ruby">  def graphql_request(query:, variables: {})
+    post "/graphql",
+      params: {
+        query: query,
+        variables: variables,
+      }.to_json,
+      headers: { Authorization: user.token, 'Content-Type': "application/json" }
+  end
+</code></pre>
+
+<p>You can then use this in a test:</p>
+
+<pre><code class="language-ruby">query = %|
+  query {
+    book(permalink: "exploding-rails") {
+      title
+    }
+  }
+|
+
+json = graphql_request(query: query)
+expect(json.dig("book", "title")).to eq("Exploding Rails")
+</code></pre>
+
+<h2 id="preventing-n1-queries">Preventing N+1 queries</h2>
+
+<p>By default, GraphQL Ruby will perform N+1 queries if you write a query such as:</p>
+
+<pre><code>query {
+  users {
+    books {
+      chapters
+    }
+  }
+}
+</code></pre>
+
+<p>This will make one query for all the users, N queries for all of those users’ books, and M queries for all of those users’ books’ chapters.</p>
+
+<p>To prevent N+1 queries, I’d recommend relying on the <code>GraphQL::Dataloader</code> features <a href="https://graphql-ruby.org/dataloader/overview.html">shown here</a>. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>The method method</title>
@@ -2598,127 +2836,6 @@ end
 </ol>
 
 <p>With these helpers, I can effectively test React Select within Capybara and Selenium.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Selenium, Capybara, ChromeDriver: connection refused error debugging</title>
-   <link href="http://ryanbigg.com/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging"/>
-   <updated>2020-08-29T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2020/08/selenium-capybara-chromedriver-connection-refused-error-debugging</id>
-   <content type="html"><![CDATA[<p>A few days ago, we started seeing this exception happening for <em>some</em> of our Capybara feature tests:</p>
-
-<pre><code>1.1) Failure/Error: visit(sign_out_path)
-
-      Selenium::WebDriver::Error::UnknownError:
-        java.net.ConnectException: Connection refused (Connection refused)
-      # [remote server] org.openqa.selenium.remote.server.WebDriverServlet(WebDriverServlet.java):240:in `lambda$handle$0'
-      # [remote server] java.util.concurrent.Executors$RunnableAdapter(Executors.java):511:in `call'
-      # [remote server] java.util.concurrent.FutureTask(FutureTask.java):266:in `run'
-      # [remote server] java.util.concurrent.ThreadPoolExecutor(ThreadPoolExecutor.java):1149:in `runWorker'
-      # [remote server] java.util.concurrent.ThreadPoolExecutor$Worker(ThreadPoolExecutor.java):624:in `run'
-      # [remote server] java.lang.Thread(Thread.java):748:in `run'
-      # ./spec/support/pages/login.rb:5:in `login'
-      # ./spec/concepts/extraction/keyboard_shortcuts_spec.rb:84:in `block (2 levels) in &lt;main&gt;'
-      # ./spec/spec_helper.rb:69:in `block (2 levels) in &lt;main&gt;'
-      # ./spec/support/elasticsearch_spec_helper.rb:42:in `block (3 levels) in &lt;main&gt;'
-      # ./spec/support/elasticsearch_spec_helper.rb:38:in `block (2 levels) in &lt;main&gt;'
-</code></pre>
-
-<p>Connection refused, fine. But connection refused to <em>what</em>? This error message doesn’t give us much to go on.</p>
-
-<p>Seemingly nothing that we changed had caused this issue – it was one of those types of issues that just popped up spontaneously.</p>
-
-<p>It turns out that this is due to a bug within Google ChromeDriver <code>85.0.4183.83</code>. Here’s the bug report for ChromeDriver: <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
-
-<h2 id="debugging-steps">Debugging steps</h2>
-
-<p>After quite a lot of playing around with our Docker container setup, building EC2 instances and testing things out there… I was able to track it down to this issue by adding this line to the configuration for our tests:</p>
-
-<pre><code>Selenium::WebDriver.logger.level = Logger::DEBUG
-</code></pre>
-
-<p>I knew of this trick by having to debug Selenium issues in the past – it’s a very helpful trick to get messages out of Selenium WebDriver that you wouldn’t otherwise see.</p>
-
-<p>When I did this, I saw these messages come through:</p>
-
-<pre><code>2020-08-30 08:39:15 INFO Selenium &lt;- {"value":{"data":{"text":"{Alert text : "},"error":"unexpected alert open","message":"unexpected alert open: {Alert text : }\n  (Session info: chrome=85.0.4183.83)","stacktrace":"0   chromedriver                        0x000000010a9261b9 chromedriver + 4911545\n1   chromedriver                        0x000000010a8c5e03 chromedriver + 4517379\n2   chromedriver                        0x000000010a533da6 chromedriver + 773542\n3   chromedriver                        0x000000010a4c4072 chromedriver + 315506\n4   chromedriver                        0x000000010a4b7c23 chromedriver + 265251\n5   chromedriver                        0x000000010a491720 chromedriver + 108320\n6   chromedriver                        0x000000010a492693 chromedriver + 112275\n7   chromedriver                        0x000000010a8eef72 chromedriver + 4685682\n8   chromedriver                        0x000000010a8fcb3a chromedriver + 4741946\n9   chromedriver                        0x000000010a8fc801 chromedriver + 4741121\n10  chromedriver                        0x000000010a8d225e chromedriver + 4567646\n11  chromedriver                        0x000000010a8fd061 chromedriver + 4743265\n12  chromedriver                        0x000000010a8e3d0a chromedriver + 4640010\n13  chromedriver                        0x000000010a9160ba chromedriver + 4845754\n14  chromedriver                        0x000000010a92c387 chromedriver + 4936583\n15  libsystem_pthread.dylib             0x00007fff67652109 _pthread_start + 148\n16  libsystem_pthread.dylib             0x00007fff6764db8b thread_start + 15\n"}}
-</code></pre>
-
-<p>Well that looks like a crash!</p>
-
-<p>An unexpected alert open? What does that mean?</p>
-
-<p>This lead me to look through the issue logs for Capybara first, as these were tests using Capybara. The final “exit” point from our code uses Capybara code. When I looked on Capybara’s issue tracker I saw that there’s an issue for this problem: <a href="https://github.com/teamcapybara/capybara/issues/2382">Capybara Issue #2382</a>. This then links to a Selenium issue: <a href="https://github.com/SeleniumHQ/selenium/issues/8638">Selenium Issue #8638</a>, which itself then links to <a href="https://bugs.chromium.org/p/chromedriver/issues/detail?id=3578">Issue 3578</a>.</p>
-
-<p>These are pretty good pieces of evidence that indicate it was a chromedriver issue. I then recalled that a colleague of mine, Luiz, mentioned that Chrome had updated a few days ago. An update of Chrome leads to an update in Chromedriver, and since it was Chromedriver that was breaking, I thought to check that.</p>
-
-<p>On the Capybara issue, there are some good steps to reproduce the issue with a minimal test case. I used this to lock Chromedriver to the more modern version:</p>
-
-<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.87'
-</code></pre>
-
-<p>The issue reported on Capybara wasn’t happening with that <code>.87</code> release, but it <em>does</em> happen with this:</p>
-
-<pre><code>Webdrivers::Chromedriver.required_version = '85.0.4183.83'
-</code></pre>
-
-<p>So this then indicates that it’s a particular version of Chromedriver that causes the issue.</p>
-
-<p>There are at least two ways to fix this issue.</p>
-
-<p>The first is to lock Chromedriver using <code>Webdrivers::Chromedriver.required_version</code> to a particular version. But that means we need to remember to update that.</p>
-
-<p>The second way is to dismiss the alert before finishing the test:</p>
-
-<pre><code class="language-ruby">require 'bundler/inline'
-
-gemfile do
-  source 'https://rubygems.org'
-  gem 'capybara'
-  gem 'puma'
-  gem 'selenium-webdriver'
-  gem 'webdrivers'
-  gem 'byebug'
-  gem 'pry'
-end
-
-require 'selenium-webdriver'
-require 'capybara/dsl'
-
-Webdrivers::Chromedriver.required_version = '85.0.4183.83'
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-html = &lt;&lt;~HTML
-&lt;!DOCTYPE html&gt;
-&lt;html lang="en"&gt;
-  &lt;head&gt;
-    &lt;title&gt;Hello World&lt;/title&gt;
-    &lt;meta charset="utf-8"&gt;
-
-    &lt;script type="text/javascript"&gt;
-      window.addEventListener('beforeunload', (event) =&gt; {
-        event.preventDefault();
-        event.returnValue = '';
-      });
-    &lt;/script&gt;
-  &lt;/head&gt;
-  &lt;body&gt;
-    &lt;h1&gt;&lt;a href="https://google.com"&gt;Hello World&lt;/a&gt;&lt;/h1&gt;
-  &lt;/body&gt;
-&lt;/html&gt;
-HTML
-
-app = proc { |env| [200, { "Content-Type" =&gt; "text/html" }, [html] ] }
-
-session = Capybara::Session.new(:selenium_chrome, app)
-session.visit '/'
-session.click_on 'Hello World' # interact with the page, to get Chrome to fire `beforeunload`
-session.driver.browser.switch_to.alert.accept
-session.visit '/'
-</code></pre>
-
-<p>It’s the third-to-last and second-to-last lines here that will work around the issue here – we need to attempt to navigate away from the page and then click the alert. Then we can carry on testing after that point.</p>
 ]]></content>
  </entry>
  
