@@ -4,13 +4,26 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2023-01-24T10:59:32+11:00</updated>
+ <updated>2023-01-28T14:32:23+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title>
+   <link href="http://ryanbigg.com/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable"/>
+   <updated>2023-01-28T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id>
+   <content type="html"><![CDATA[<p>No.</p>
+
+<p>The switches on this keyboard are not hot-swappable. They are soldered on to the board.</p>
+
+<p>(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Ruby GraphQL field notes</title>
@@ -2677,165 +2690,6 @@ change, but at least <em>fewer</em> reasons to change than Active Record classes
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/Bg1W8-SzbHw " frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
 
-]]></content>
- </entry>
- 
- <entry>
-   <title>React Select + Capybara + Selenium</title>
-   <link href="http://ryanbigg.com/2020/09/react-select-capybara-selenium"/>
-   <updated>2020-09-23T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2020/09/react-select-capybara-selenium</id>
-   <content type="html"><![CDATA[<p>Today, I was adding a <a href="https://react-select.com/home">React Select</a> element to a page, and I really wanted to test it.</p>
-
-<p>This is, surprisingly, <a href="https://github.com/JedWatson/react-select/issues/856">not the first time I’ve attempted this</a>.</p>
-
-<p>Since 2016, React Select has undergone some changes, released a brand-new (and much better!) version. One of these big features is that it uses <a href="https://emotion.sh/docs/introduction">Emotion</a> for styling. A consequence of this is that React Select no longer has <code>.Select</code>, or <code>.Select-input</code> classes that you could use as selectors in the tests. Instead, it will generate hashed CSS selectors, like <code>css-2b097c-container</code> and <code>css-1rhbuit-multiValue</code>. These have the potential to change: if the underlying CSS changes, then the hash will change. So they are not reliable in tests.</p>
-
-<p>To fix this, I used another prop of <code>ReactSelect</code> called <code>classNamePrefix</code>:</p>
-
-<pre><code class="language-tsx">import CreatableSelect from "react-select/creatable";
-
-// ...
-
-const options = [
-  { label: "Admin", value: "Admin" },
-  { label: "HIU", value: "HIU" },
-  { label: "Organisational", value: "Organisational" },
-  { label: "Paid", value: "Paid" },
-];
-
-// "tags" here comes from a prop on this component
-const selectedOptions = options.filter(({ value }) =&gt; tags.includes(value));
-
-return (
-  &lt;CreatableSelect
-    options={options}
-    defaultValue={selectedOptions}
-    isMulti
-    classNamePrefix="tags"
-  /&gt;
-);
-</code></pre>
-
-<p>This prop adds additional classes to the React Select component, such as <code>.tags__control</code> and <code>.tags__multi-value</code> – values that <em>are</em> reliable and predictable!</p>
-
-<p>This means that in the Capybara test, I can now use these to interact with this React Select component, like this:</p>
-
-<pre><code class="language-ruby"># spec/support/filter_helpers.rb
-module FilterHelpers
-  class SelectControl
-    include Capybara::DSL
-
-    attr_reader :prefix
-
-    def initialize(prefix:)
-      @prefix = prefix
-    end
-
-    def select(option)
-      within_control do
-        find("input").fill_in(with: option)
-      end
-
-      find(".#{prefix}__option", text: option).click
-    end
-
-    def value
-      find(single_value_selector).text
-    end
-
-    def blank?
-      page.has_no_selector?(single_value_selector)
-    end
-
-    def values
-      all(multi_value_selector).map(&amp;:text)
-    end
-
-    def remove(label)
-      value = find(multi_value_selector, text: label)
-      within(value) do
-        find("#{multi_value_selector}__remove").click
-      end
-    end
-
-    def visible?
-      page.has_selector?(control_selector)
-    end
-
-    def hidden?
-      !visible?
-    end
-
-    private
-
-    def single_value_selector
-      ".#{prefix}__single-value"
-    end
-
-    def multi_value_selector
-      ".#{prefix}__multi-value"
-    end
-
-    def control_selector
-      ".#{prefix}__control"
-    end
-
-    def within_control(&amp;block)
-      within(control_selector, &amp;block)
-    end
-  end
-
-  module TagFilterControl
-    def tag_filter_control
-      SelectControl.new(prefix: "tags")
-    end
-
-    def add_new_tag(tag)
-      tags_control.select(tags)
-    end
-
-    def expect_tags_selected(tags)
-      expect(tags_control.value).to eq(tags)
-    end
-
-    def expect_no_tags_selected
-      expect(tags_control).to be_blank
-    end
-
-    def remove_tags(*tags)
-      tags.each do |tag|
-        tags_control.remove(tag)
-      end
-    end
-  end
-end
-
-# spec/features/updating_tags_spec.rb
-
-RSpec.describe "Updating tags" do
-  include TagFilterControl
-
-  scenario "Can update a User's tags", js: true do
-    visit edit_admin_user_path(user)
-
-    expect_tags_selected("Existing tag")
-    remove_tag("HIU")
-    add_new_tag("Paid")
-    add_new_tag("Custom tag")
-  end
-end
-</code></pre>
-
-<p>I have the following helpers:</p>
-
-<ol>
-  <li><code>expect_selected_tag</code>: When the page loads, the Select element should contain a tag that is <em>already</em> assigned to the user.</li>
-  <li><code>remove_tag</code>: Used to remove a tag that appears in the Select element.</li>
-  <li><code>add_new_tag</code>: Used to add either a tag from the list of options, or to create a brand new tag.</li>
-</ol>
-
-<p>With these helpers, I can effectively test React Select within Capybara and Selenium.</p>
 ]]></content>
  </entry>
  

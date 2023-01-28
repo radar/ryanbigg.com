@@ -111,6 +111,8 @@ Along similar lines to queries and resolvers, I also suggest using separate clas
 field :add_comment, mutation: Mutations::Comments::Add
 ```
 
+
+
 ## Union types
 
 Occassionally, it can be helpful to return one or another type from a GraphQL query or a mutation. For this, GraphQL has _union types_.

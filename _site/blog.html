@@ -21,7 +21,7 @@
 
 
   
-    <meta name="publish_date" property="og:publish_date" content="2023-01-24">
+    <meta name="publish_date" property="og:publish_date" content="2023-01-28">
   
 
   
@@ -54,247 +54,25 @@
   <h1 class="text-center">Ryan Bigg</h1>
   <div class='text-center mb-8'>
     <a href="/">&#x27F5; Home</a>
-    <a href="/2023/01/ruby-graphql-field-notes">
-      <h2 class="mt-4 post-title">Ruby GraphQL field notes</h2>
+    <a href="/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">
+      <h2 class="mt-4 post-title">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</h2>
     </a>
-    <small>24 Jan 2023</small>
+    <small>28 Jan 2023</small>
   </div>
-  <p>Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on <a href="https://github.com/radar/twist-v2/blob/master/backend/lib/twist/web/graphql/schema.rb">Twist’s GraphQL API</a>, and other GraphQL APIs that are deployed in production.</p>
+  <p>No.</p>
 
-<p>Overall sentiment is that GraphQL is an improvement over the classic REST approach because:</p>
+<p>The switches on this keyboard are not hot-swappable. They are soldered on to the board.</p>
 
-<ol>
-  <li>It gives you clear types of fields</li>
-  <li>You can choose which fields you wish to select</li>
-  <li>You can choose to select from a single resource, or from multiple, disparate resources at the same time.</li>
-</ol>
-
-<p>I like its interoperability between Ruby and JavaScript, with good tooling existing on both sides of that divide in the <a href="https://rubygems.org/gems/graphql">GraphQL Rubygem</a> and the <a href="https://www.apollographql.com/docs/react/get-started/">Apollo Client</a> on the JavaScript side of things. Honorable mention to the <a href="https://the-guild.dev/graphql/codegen">GraphQL codegen</a> library too, which provides the ability of generating TypeScript types from a GraphQL schema.</p>
-
-<h2 id="schema-definition">Schema definition</h2>
-
-<p>A schema can be defined in <code>app/graphql</code> in a Rails application (since its <em>application</em> code), or a directory of your choosing in any other Ruby project.</p>
-
-<p>I’d recommend disabling the introspection endpoints here so that 3rd parties cannot find out that your API contains particular admin-only endpoints. I’d also recommend setting up a <code>max_complexity</code> and a <code>max_depth</code> value. This prevents API requests from recursively requesting data (think post -&gt; comments -&gt; post -&gt; …), and from also building queries that might rate as “highly complex” database operations. You can read more about <a href="https://graphql-ruby.org/queries/complexity_and_depth">complexity and depth here</a>.</p>
-
-<pre><code class="language-ruby">class AppSchema &lt; GraphQL::Schema
-  mutation(Types::MutationType)
-  query(Types::QueryType)
-  disable_introspection_entry_points unless Rails.env.development?
-
-  max_complexity 200
-  max_depth 20
-end
-</code></pre>
-
-<h2 id="schema-dumping-from-ruby">Schema dumping from Ruby</h2>
-
-<p>On that topic, the Ruby library provides the ability to dump the schema out with a custom Rake task (that I’ve put in <code>lib/tasks/graphql.rake</code>)</p>
-
-<pre><code class="language-ruby">require "graphql/rake_task"
-
-GraphQL::RakeTask.new(
-  schema_name: "AppSchema",
-  directory: "./app/javascript/graphql",
-  dependencies: [:environment]
-)
-</code></pre>
-
-<p>Running this Rake task:</p>
-
-<pre><code>bundle exec rake graphql:schema:dump
-</code></pre>
-
-<p>Will generate two files, a <code>schema.json</code> and a <code>schema.graphql</code>, which are both representations of the <em>shape</em> of the GraphQL API. Different tools (such as GraphQL codegen) can then use this schema to work with the GraphQL API.</p>
-
-<h2 id="queries-and-resolvers">Queries and Resolvers</h2>
-
-<p>The GraphQL Ruby library <a href="https://graphql-ruby.org/fields/introduction.html">recommends</a> defining the fields and their resolvers within the same class:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module GraphQL
-      class QueryType &lt; ::GraphQL::Schema::Object
-        field :books, [Types::Book], null: false
-
-        def books
-          ...
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>I feel like this gets messy particularly quickly if your types have a large (&gt; 5) amount of fields.</p>
-
-<p>For top level fields like this, I would recommend defining separate resolver classes:</p>
-
-<pre><code class="language-ruby">field :books, [Types::Book], null: false, resolver: Resolvers::Books
-</code></pre>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module GraphQL
-      module Resolvers
-        class Books &lt; Resolver
-          def resolve
-            ...
-          end
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This allows for you to have potentially complex logic for resolution separate from the field definitions, allowing you to read <em>what</em> fields are defined by looking at the type, rather than reading <em>what</em> the fields are and <em>how</em> they’re also implemented.</p>
-
-<p>If we had a resolver for a book chapter, then I’d put that class under <code>Resolvers::Books::Chapters</code> to indicate that it’s not resolving <em>all</em> chapters, but rather chapters for a particular book.</p>
-
-<h2 id="mutations">Mutations</h2>
-
-<p>Along similar lines to queries and resolvers, I also suggest using separate classes for mutations, namespacing them down the lines of the particular <em>context</em> of the application (<code>Mutations::Users::Login</code>), or at least along the lines of the resource thats undergoing mutation:</p>
-
-<pre><code class="language-ruby">field :add_comment, mutation: Mutations::Comments::Add
-</code></pre>
-
-<h2 id="union-types">Union types</h2>
-
-<p>Occassionally, it can be helpful to return one or another type from a GraphQL query or a mutation. For this, GraphQL has <em>union types</em>.</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module GraphQL
-      module Types
-        class BookPermissionCheckResult &lt; BaseUnion
-          description "The result from attempting a login"
-          possible_types Types::Book, Types::PermissionDenied
-
-          def self.resolve_type(object, _context)
-            if object.is_a?(Twist::Entities::Book)
-              Types::Book
-            else
-              Types::PermissionDenied
-            end
-          end
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This type is used in the <code>book</code> field:</p>
-
-<pre><code class="language-ruby">field :book, Types::BookPermissionCheckResult, null: false, resolver: Resolvers::Book
-</code></pre>
-
-<p>If the resolver returns a <code>Twist::Entities::Book</code> instance, then this union type will use the GraphQL class <code>Types::Book</code> to resolve this field. Otherwise, it uses <code>Types::PermissionDenied</code>.</p>
-
-<p>In the client-side GraphQL query, utilising these union types looks like this:</p>
-
-<pre><code class="language-gql">query {
-  book(permalink: "exploding-rails") {
-    __typename
-    ... on Book {
-      id
-      title
-      defaultBranch {
-        name
-        chapters(part: FRONTMATTER) {
-          ...chapterFields
-        }
-      }
-    }
-
-    ... on PermissionDenied {
-      error
-    }
-  }
-}
-</code></pre>
-
-<p>The query uses the GraphQL <code>__typename</code> to return the type of the <code>book</code> field. We can then read this type on the client side to determine how to act (to show a book, or not). The fields selected within both branches of this union allow us to display information about a book if the query has gone through successfully, without having to first check for permission, and then querying for a book.</p>
-
-<p>The <code>resolve_type</code> method from union classes can also return an <em>array</em>:</p>
-
-<pre><code class="language-ruby">def self.resolve_type(object, _context)
-  if object.success?
-    [Types::BookType, object.success]
-  else
-    [Types::PermissionDenied, object.failure]
-  end
-end
-</code></pre>
-
-<p>This is helpful if we wish to do something with the object being resolved. In this case, we’re unwrapping that <code>object</code> from a <code>Dry::Result</code> wrapping. If we did not do this unwrapping, then the <code>BookType</code> type would not be able to work on the object it receives, as the wrapped <code>Dry::Result</code> object does not have the <code>title</code> that <code>Types::Book</code> would expect that object to have.</p>
-
-<h2 id="authentication">Authentication</h2>
-
-<p>To authenticate against the GraphQL API, I’d recommend supporting sessions as well as authentication by tokens. While requests may come into the application from the same domain, they also may not. Allowing that flexibility of your API to be queryable by a 3rd party from the outset (assuming they have the right token!) can only be a good thing. It will also allow you to make requests from within tests by providing a token.</p>
-
-<p>You can do this with something like the following code:</p>
-
-<pre><code class="language-ruby">  def current_user
-
-    @current_user = super
-    @current_user ||= User.authenticate_by_token(request.authorization)
-  end
-</code></pre>
-
-<h2 id="testing">Testing</h2>
-
-<p>To test the GraphQL endpoints, I would recommend request specs over testing the schema itself by calling <code>Schema.execute(...)</code>. This ensures that you can run tests against your API as close to how it will be used as possible.</p>
-
-<p>To aid in this, I like adding a <code>GraphqlHelpers</code> module with a little helper:</p>
-
-<pre><code class="language-ruby">  def graphql_request(query:, variables: {})
-    post "/graphql",
-      params: {
-        query: query,
-        variables: variables,
-      }.to_json,
-      headers: { Authorization: user.token, 'Content-Type': "application/json" }
-  end
-</code></pre>
-
-<p>You can then use this in a test:</p>
-
-<pre><code class="language-ruby">query = %|
-  query {
-    book(permalink: "exploding-rails") {
-      title
-    }
-  }
-|
-
-json = graphql_request(query: query)
-expect(json.dig("book", "title")).to eq("Exploding Rails")
-</code></pre>
-
-<h2 id="preventing-n1-queries">Preventing N+1 queries</h2>
-
-<p>By default, GraphQL Ruby will perform N+1 queries if you write a query such as:</p>
-
-<pre><code>query {
-  users {
-    books {
-      chapters
-    }
-  }
-}
-</code></pre>
-
-<p>This will make one query for all the users, N queries for all of those users’ books, and M queries for all of those users’ books’ chapters.</p>
-
-<p>To prevent N+1 queries, I’d recommend relying on the <code>GraphQL::Dataloader</code> features <a href="https://graphql-ruby.org/dataloader/overview.html">shown here</a>. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.</p>
+<p>(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)</p>
 
 </article>
 
 <div class="text-center">
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li class="mb-4"><a href="/2023/01/ruby-graphql-field-notes">Ruby GraphQL field notes</a> <span class="text-gray-400 text-xs">&mdash; 24 Jan 2023</span>
+    </li>
     
     <li class="mb-4"><a href="/2023/01/the-method-method">The method method</a> <span class="text-gray-400 text-xs">&mdash; 20 Jan 2023</span>
     </li>
@@ -321,9 +99,6 @@ expect(json.dig("book", "title")).to eq("Exploding Rails")
     </li>
     
     <li class="mb-4"><a href="/2021/08/a-tour-of-twist">A tour of Twist</a> <span class="text-gray-400 text-xs">&mdash; 11 Aug 2021</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2021/07/on-coding-tests">On coding tests</a> <span class="text-gray-400 text-xs">&mdash; 27 Jul 2021</span>
     </li>
     
   </ul>
