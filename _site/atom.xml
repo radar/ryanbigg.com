@@ -4,7 +4,7 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2023-01-28T14:32:23+11:00</updated>
+ <updated>2023-02-03T11:01:58+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -128,6 +128,25 @@ end
 <p>Along similar lines to queries and resolvers, I also suggest using separate classes for mutations, namespacing them down the lines of the particular <em>context</em> of the application (<code>Mutations::Users::Login</code>), or at least along the lines of the resource thats undergoing mutation:</p>
 
 <pre><code class="language-ruby">field :add_comment, mutation: Mutations::Comments::Add
+</code></pre>
+
+<p>It’s worth noting that if your <code>BaseMutation</code> class inherits from <code>GraphQL::Schema::RelayClassicMutation</code>, that these mutations will have an <code>input</code> argument defined for them. In the GraphQL documentation, this would appear as:</p>
+
+<pre><code>addComment(input: AddInput!): AddPayload
+</code></pre>
+
+<p>If you have a separate class called <code>Post::Add</code>, it will have an identical <code>AddInput</code> type and <code>AddPayload</code> defined. GraphQL supports only one type of each different name, and so we must differentiate these. To do this, inside the mutation class we define its <code>graphql_name</code>:</p>
+
+<pre><code class="language-ruby">module Mutations
+  class Comments::Add &lt; BaseMutation
+    graphql_name "AddComment"
+  end
+end
+</code></pre>
+
+<p>This will rename both the input and payload types:</p>
+
+<pre><code>addComment(input: AddCommentInput!): AddCommentPayload
 </code></pre>
 
 <h2 id="union-types">Union types</h2>
@@ -405,7 +424,9 @@ end
 
 <p><strong>UPDATE</strong>: Kieran Andrews from Adelaide (and of <a href="https://activerailsbook.com">Active Rails fame</a>) has also donated <em>$30USD</em> to the <a href="https://github.com/pry/pry">Pry gem</a>, bringing The Gem Foundation’s donation total up to $58USD!</p>
 
-<p><strong>UPDATE #2</strong>: As it’s now the 1st of December, a payment of $25USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!</p>
+<p><strong>UPDATE #2</strong>: As it’s now the 1st of December, a payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!</p>
+
+<p><strong>UPDATE #3</strong>: As it’s now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.</p>
 
 <p>Here’s a helpful chart to track our donations:</p>
 

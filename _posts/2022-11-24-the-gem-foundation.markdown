@@ -23,7 +23,9 @@ That's _$28USD_ already donated by the Gem Foundation!
 
 **UPDATE**: Kieran Andrews from Adelaide (and of [Active Rails fame](https://activerailsbook.com)) has also donated _$30USD_ to the [Pry gem](https://github.com/pry/pry), bringing The Gem Foundation's donation total up to $58USD!
 
-**UPDATE #2**: As it's now the 1st of December, a payment of $25USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!
+**UPDATE #2**: As it's now the 1st of December, a payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!
+
+**UPDATE #3**: As it's now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.
 
 Here's a helpful chart to track our donations:
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-01-28T14:32:23+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-02-03T11:01:58+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
 
 &lt;p&gt;The switches on this keyboard are not hot-swappable. They are soldered on to the board.&lt;/p&gt;
 
@@ -100,6 +100,25 @@ end
 &lt;p&gt;Along similar lines to queries and resolvers, I also suggest using separate classes for mutations, namespacing them down the lines of the particular &lt;em&gt;context&lt;/em&gt; of the application (&lt;code&gt;Mutations::Users::Login&lt;/code&gt;), or at least along the lines of the resource thats undergoing mutation:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :add_comment, mutation: Mutations::Comments::Add
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It’s worth noting that if your &lt;code&gt;BaseMutation&lt;/code&gt; class inherits from &lt;code&gt;GraphQL::Schema::RelayClassicMutation&lt;/code&gt;, that these mutations will have an &lt;code&gt;input&lt;/code&gt; argument defined for them. In the GraphQL documentation, this would appear as:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;addComment(input: AddInput!): AddPayload
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you have a separate class called &lt;code&gt;Post::Add&lt;/code&gt;, it will have an identical &lt;code&gt;AddInput&lt;/code&gt; type and &lt;code&gt;AddPayload&lt;/code&gt; defined. GraphQL supports only one type of each different name, and so we must differentiate these. To do this, inside the mutation class we define its &lt;code&gt;graphql_name&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Mutations
+  class Comments::Add &amp;lt; BaseMutation
+    graphql_name &quot;AddComment&quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will rename both the input and payload types:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;addComment(input: AddCommentInput!): AddCommentPayload
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;h2 id=&quot;union-types&quot;&gt;Union types&lt;/h2&gt;
@@ -341,7 +360,9 @@ end
 
 &lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt;: Kieran Andrews from Adelaide (and of &lt;a href=&quot;https://activerailsbook.com&quot;&gt;Active Rails fame&lt;/a&gt;) has also donated &lt;em&gt;$30USD&lt;/em&gt; to the &lt;a href=&quot;https://github.com/pry/pry&quot;&gt;Pry gem&lt;/a&gt;, bringing The Gem Foundation’s donation total up to $58USD!&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;UPDATE #2&lt;/strong&gt;: As it’s now the 1st of December, a payment of $25USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;UPDATE #2&lt;/strong&gt;: As it’s now the 1st of December, a payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;UPDATE #3&lt;/strong&gt;: As it’s now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.&lt;/p&gt;
 
 &lt;p&gt;Here’s a helpful chart to track our donations:&lt;/p&gt;
 

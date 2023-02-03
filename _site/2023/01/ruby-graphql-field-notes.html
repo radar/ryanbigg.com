@@ -154,6 +154,25 @@ end
 <pre><code class="language-ruby">field :add_comment, mutation: Mutations::Comments::Add
 </code></pre>
 
+<p>It’s worth noting that if your <code>BaseMutation</code> class inherits from <code>GraphQL::Schema::RelayClassicMutation</code>, that these mutations will have an <code>input</code> argument defined for them. In the GraphQL documentation, this would appear as:</p>
+
+<pre><code>addComment(input: AddInput!): AddPayload
+</code></pre>
+
+<p>If you have a separate class called <code>Post::Add</code>, it will have an identical <code>AddInput</code> type and <code>AddPayload</code> defined. GraphQL supports only one type of each different name, and so we must differentiate these. To do this, inside the mutation class we define its <code>graphql_name</code>:</p>
+
+<pre><code class="language-ruby">module Mutations
+  class Comments::Add &lt; BaseMutation
+    graphql_name "AddComment"
+  end
+end
+</code></pre>
+
+<p>This will rename both the input and payload types:</p>
+
+<pre><code>addComment(input: AddCommentInput!): AddCommentPayload
+</code></pre>
+
 <h2 id="union-types">Union types</h2>
 
 <p>Occassionally, it can be helpful to return one or another type from a GraphQL query or a mutation. For this, GraphQL has <em>union types</em>.</p>

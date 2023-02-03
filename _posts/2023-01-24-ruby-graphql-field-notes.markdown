@@ -111,6 +111,27 @@ Along similar lines to queries and resolvers, I also suggest using separate clas
 field :add_comment, mutation: Mutations::Comments::Add
 ```
 
+It's worth noting that if your `BaseMutation` class inherits from `GraphQL::Schema::RelayClassicMutation`, that these mutations will have an `input` argument defined for them. In the GraphQL documentation, this would appear as:
+
+```
+addComment(input: AddInput!): AddPayload
+```
+
+If you have a separate class called `Post::Add`, it will have an identical `AddInput` type and `AddPayload` defined. GraphQL supports only one type of each different name, and so we must differentiate these. To do this, inside the mutation class we define its `graphql_name`:
+
+```ruby
+module Mutations
+  class Comments::Add < BaseMutation
+    graphql_name "AddComment"
+  end
+end
+```
+
+This will rename both the input and payload types:
+
+```
+addComment(input: AddCommentInput!): AddCommentPayload
+```
 
 
 ## Union types
