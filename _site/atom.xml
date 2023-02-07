@@ -4,13 +4,88 @@
  <title>The Life of a Radar</title>
  <link href="http://ryanbigg.com/atom.xml" rel="self"/>
  <link href="http://ryanbigg.com"/>
- <updated>2023-02-03T11:01:58+11:00</updated>
+ <updated>2023-02-07T21:39:24+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>radarlistener@gmail.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Why game programming and why Magic?</title>
+   <link href="http://ryanbigg.com/2023/02/why-game-programming-and-why-magic"/>
+   <updated>2023-02-07T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2023/02/why-game-programming-and-why-magic</id>
+   <content type="html"><![CDATA[<p>For about the past 5 months, I’ve been fiddling with a little Ruby project called <a href="https://github.com/radar/mtg">“Magic: The Gathering: The Ruby Project”</a>. It’s my attempt to make Magic: The Gathering, in Ruby.</p>
+
+<p>But why game programming when my forté is web programming, and why <em>this</em> game specifically?</p>
+
+<p>Because I wanted a challenge!</p>
+
+<p>I had played Magic first <a href="https://apps.apple.com/us/app/magic-the-gathering-arena/id1496227521">through their Arena app on iOS</a>, which (mostly) works, save a few little issues here and there. Last year I started playing Magic weekly at a local game shop in town. I love the different mechanics of the different cards and figuring out how they all interact best. <em>Especially</em> when they syngerise together.</p>
+
+<p>What’s appealing about this game is that while there’s a rulebook (I’ll get to that in a minute), the <em>cards themselves</em> make up the rules. If the creators want to change the rules of the game, they can print more cards with different text on them.</p>
+
+<p>This is Rule 101.1 of Magic:</p>
+
+<blockquote>
+  <p>101.1. Whenever a card’s text directly contradicts these rules, the card takes precedence.</p>
+</blockquote>
+
+<p>Some of the cards are simple, like <a href="https://scryfall.com/card/a25/33/savannah-lions">Savannah Lions</a>. It costs one white mana to play, and it has 2 power and 1 toughness.</p>
+
+<p>Others, like <a href="https://scryfall.com/card/eld/171/questing-beast">Questing Beast</a> with all its words, and <a href="https://scryfall.com/card/isd/181/garruk-relentless-garruk-the-veil-cursed">Garruk Relentless</a> with all its words on one side, <em>and then even more words on the other side</em>, are not so simple.</p>
+
+<p>This Rule 101.1, the <em>first</em> of Magic’s several “Golden Rules”, is contained in <a href="https://media.wizards.com/2023/downloads/MagicCompRules%2020230203.pdf">this two-hundred-and-seventy-eight PDF page document</a>, where all of Magic’s non-card-defined rules are written down. Some of the rules even have examples with them.</p>
+
+<p>If you wanted to find out all of the creature types, you’d look at Rule 205.3m.</p>
+
+<p>Want to know how combat is designed to run? Start on page 74 with Rule 506, and finish on Page 84 with rule 511.</p>
+
+<hr />
+
+<p>Now this MTG-in-Ruby project is not a line-for-line reproduction of the rulebook or even a card-for-card replication attempt from A-Z. It started as an attempt to reproduce the features of a stack of random cards that were on my desk, and progressed from there to attempting to implement all of the <a href="https://scryfall.com/sets/m21?as=grid&amp;order=set">Core Set 2021</a> cards. I needed to set myself a goal, and even though that goal is <em>extremely ambitious</em>, it’s still a goal and something to aim for.</p>
+
+<p>I’ve gotten most of the white cards done, and that leaves only about 300 more cards of that set. And <a href="https://en.wikipedia.org/wiki/List_of_Magic:_The_Gathering_sets">there are quite a few sets</a> .</p>
+
+<p>What I’m particularly proud of here is that I have a clean DSL for being able to define cards and their abilities. For a simple card like <a href="https://scryfall.com/card/khm/34/story-seeker">Story Seeker</a>, I can define it like:</p>
+
+<pre><code class="language-ruby">module Magic
+  module Cards
+    StorySeeker = Creature("Story Seeker") do
+      cost generic: 1, white: 1
+      type "Creature -- Dwarf Cleric"
+      keywords :lifelink
+      power 2
+      toughness 2
+    end
+  end
+end
+</code></pre>
+
+<p>The one thing here I’d change is making those types into constants rather than being strings. I’ve been too lazy to address that yet, as it hasn’t been a problem. Here’s a quick riff on what that might look like:</p>
+
+<pre><code class="language-ruby">module Magic
+  module Cards
+    StorySeeker = Creature("Story Seeker") do
+      cost generic: 1, white: 1
+      type Types::Creature[:Dwarf, :Cleric]
+      keywords :lifelink
+      power 2
+      toughness 2
+    end
+  end
+end
+</code></pre>
+
+<p>While writing this post I built <a href="https://github.com/radar/mtg/commit/8cb9efe66248a1672d0e56a04bc8e92d19209385">this exact interface</a>. I’d love to go back to revisit it sometime to handle when an <em>invalid</em> type is passed, but it’ll work for the time-being.</p>
+
+<hr />
+
+<p>Another version of this DSL defines cards slightly differently, but provides some common method hooks for handling events and replacement effects. Here’s the card <a href="https://scryfall.com/card/m21/28/nine-lives">Nine Lives</a> that I’ve just implemented recently: <a href="https://github.com/radar/mtg/blob/master/lib/magic/cards/nine_lives.rb">https://github.com/radar/mtg/blob/master/lib/magic/cards/nine_lives.rb</a>.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title>
@@ -2681,36 +2756,6 @@ change, but at least <em>fewer</em> reasons to change than Active Record classes
 <p>I care about the long-term viability of your codebase, company and team, not just the money coming in the door. The money in the door helps me keep my family alive and happy. The work I deliver at your company keeps <em>your</em> families alive and happy, and I want that to remain that way long-term. If it remains that way, it’s likely you’ll keep me as a contractor or at least recommend me to your favourite people.</p>
 
 <p>I’ve had to work on codebases where contractors who <em>didn’t</em> care about those things (“oh fuck we’ve only got 2 weeks shipitshipitshipit”) and it was miserable. I don’t want misery – I want happiness. I want people to go “yeah, you should hire Ryan because he came in for 3 months and did X, Y and Z and rocked our socks.” Yeah it’s nice being paid, but the <em>success</em> of doing a good job is what counts.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Twist V2 - Live Coding</title>
-   <link href="http://ryanbigg.com/2021/01/twist-v2-live-coding"/>
-   <updated>2021-01-13T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2021/01/twist-v2-live-coding</id>
-   <content type="html"><![CDATA[<p>This year, I’ve been continuing on my work on <a href="https://github.com/radar/twist-v2">Twist</a>. As the README says:</p>
-
-<blockquote>
-  <p>This is a rewrite of my <a href="http://github.com/radar/twist">Rails-based book review app</a> in <a href="https://rom-rb.org/">rom-rb</a>, <a href="https://dry-rb.org/">dry-rb</a>, (some parts of) <a href="https://hanamirb.org/">Hanami</a>, <a href="https://sidekiq.org/">Sidekiq</a>, <a href="https://graphql.org/">GraphQL</a>, <a href="https://reactjs.org/">React</a>, <a href="https://reach.tech/router/">Reach Router</a>, <a href="https://www.apollographql.com/">Apollo</a>, <a href="https://www.typescriptlang.org/">TypeScript</a>, <a href="https://graphql-code-generator.com/">GraphQL Code Generator</a>, <a href="https://tailwindcss.com/">Tailwind</a>, and whatever other Cool Hipster Tech™ I can get my grubby hands on.</p>
-</blockquote>
-
-<p>This application is a hybrid application, consisting of two distinct parts: a Ruby backend, and a TypeScript frontend. They communicate over GraphQL.</p>
-
-<p>To demonstrate what working on this application is like, I’m doing some live coding sessions on it, every Wednesday morning.</p>
-
-<h2 id="episode-1-starting-the-invitations-feature">Episode 1: Starting the invitations feature</h2>
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qWdyo3icsjU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-
-<h2 id="episode-2-continuing-the-invitations-feature">Episode 2: Continuing the invitations feature</h2>
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/RKQLEEGIPyE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-
-<h2 id="episode-3-checking-for-permissions-on-the-invitations">Episode 3: Checking for permissions on the invitations</h2>
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Bg1W8-SzbHw " frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
-
 ]]></content>
  </entry>
  
