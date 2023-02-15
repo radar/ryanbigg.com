@@ -172,7 +172,7 @@ If the resolver returns a `Twist::Entities::Book` instance, then this union type
 
 In the client-side GraphQL query, utilising these union types looks like this:
 
-```gql
+```
 query {
   book(permalink: "exploding-rails") {
     __typename

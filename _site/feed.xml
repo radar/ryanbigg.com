@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-02-07T21:39:24+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-02-15T14:17:25+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
 
-&lt;p&gt;But why game programming when my forté is web programming, and why &lt;em&gt;this&lt;/em&gt; game specifically?&lt;/p&gt;
+&lt;p&gt;But why game programming when my forté is web programming, and why &lt;em&gt;this&lt;/em&gt; game specifically? Why not Uno?&lt;/p&gt;
 
 &lt;p&gt;Because I wanted a challenge!&lt;/p&gt;
 
@@ -64,7 +64,77 @@ end
 
 &lt;hr /&gt;
 
-&lt;p&gt;Another version of this DSL defines cards slightly differently, but provides some common method hooks for handling events and replacement effects. Here’s the card &lt;a href=&quot;https://scryfall.com/card/m21/28/nine-lives&quot;&gt;Nine Lives&lt;/a&gt; that I’ve just implemented recently: &lt;a href=&quot;https://github.com/radar/mtg/blob/master/lib/magic/cards/nine_lives.rb&quot;&gt;https://github.com/radar/mtg/blob/master/lib/magic/cards/nine_lives.rb&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.</summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
+&lt;p&gt;The cards themselves are &lt;em&gt;usually&lt;/em&gt; straightforward to implement. It’s how they interact that’s the tricky part. For this, I try to come up with scenarios that might happen in real games, and then model those in the tests themselves.&lt;/p&gt;
+
+&lt;p&gt;One of these that I’m particularly proud about is the mana-cost-reducing effect of &lt;a href=&quot;https://scryfall.com/card/nec/152/foundry-inspector&quot;&gt;Foundry Inspector&lt;/a&gt;. I started working on this card by writing the test for it first and working up from there.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt; require &apos;spec_helper&apos;
+
+RSpec.describe Magic::Game, &quot;Mana spend -- Foundry Inspector + Free Sol Ring&quot; do
+  include_context &quot;two player game&quot;
+
+  context &quot;when at first main phase&quot; do
+    before do
+      current_turn.untap!
+      current_turn.upkeep!
+      current_turn.draw!
+      current_turn.first_main!
+    end
+
+    context &quot;foundry inspector reduces sol ring cost&quot; do
+      let(:foundry_inspector) { Card(&quot;Foundry Inspector&quot;) }
+      let(:sol_ring) { Card(&quot;Sol Ring&quot;) }
+
+      before do
+        p1.hand.add(foundry_inspector)
+        p1.hand.add(sol_ring)
+      end
+
+      it &quot;casts a foundry inspector and then a sol ring&quot; do
+        p1.add_mana(red: 3)
+        action = Magic::Actions::Cast.new(player: p1, card: foundry_inspector)
+        expect(action.can_perform?).to eq(true)
+        action.pay_mana(generic: { red: 3 } )
+        game.take_action(action)
+        game.tick!
+
+        action = Magic::Actions::Cast.new(player: p1, card: sol_ring)
+        expect(action.can_perform?).to eq(true)
+        game.take_action(action)
+
+        game.tick!
+        expect(p1.permanents.by_name(sol_ring.name).count).to eq(1)
+      end
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The body of the test ensures that we can pay 3 red mana to cast the Foundry Inspector, and then by casting that we can then cast the &lt;a href=&quot;https://scryfall.com/card/dmc/190/sol-ring&quot;&gt;Sol Ring&lt;/a&gt; by not paying any mana at all. It finishes by using some more DSL code to ensure that the Sol Ring has been registered as a permanent controlled by Player 1.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;If you’re looking for where the proverbial bodies are buried on this particular project, well, there are &lt;em&gt;plenty&lt;/em&gt;. This project was coded up over nights, after work and sometimes even after a glass of Port or two. Caution was thrown to the wind, and past that.&lt;/p&gt;
+
+&lt;p&gt;The worst of it would be demonstrated in &lt;code&gt;attacking_creature_creates_attacking_token_spec.rb&lt;/code&gt;, where a card called &lt;a href=&quot;https://scryfall.com/card/m21/18/falconer-adept&quot;&gt;Falconer Adept&lt;/a&gt; has a triggered ability of:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Whenever Falconer Adept attacks, create a 1/1 white Bird creature token with flying that’s tapped and attacking.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;What this means is that you can declare that Falconer Adept is attacking as a part of the &lt;em&gt;regular&lt;/em&gt; “Declare Attackers” phase of combat, and then by doing that, a different game object (a Bird token) is created, where you will need to delcare what that Bird token is attacking. In effect, “Declare Attackers” happens &lt;em&gt;twice&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can see how this code is handled in the &lt;code&gt;Turn&lt;/code&gt; class’s state machine, particularly anywhere the &lt;code&gt;final_attackers_declared&lt;/code&gt; method is used.&lt;/p&gt;
+
+&lt;p&gt;This one took me a &lt;em&gt;long&lt;/em&gt; time to implement.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;I like fiddling with this project. It’s outside my regular wheelhouse and is teaching me more about event-driven game programming.&lt;/p&gt;
+
+&lt;p&gt;If I get stuck on a card, it’s not like I &lt;em&gt;have&lt;/em&gt; to implement it. There’s thousands more out there to choose from.&lt;/p&gt;
+
+&lt;p&gt;I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find &lt;a href=&quot;https://scryfall.com/random&quot;&gt;a card at random&lt;/a&gt; and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.&lt;/p&gt;</content><author><name></name></author><summary type="html">For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.</summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
 
 &lt;p&gt;The switches on this keyboard are not hot-swappable. They are soldered on to the board.&lt;/p&gt;
 
@@ -222,7 +292,7 @@ end
 
 &lt;p&gt;In the client-side GraphQL query, utilising these union types looks like this:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&quot;language-gql&quot;&gt;query {
+&lt;pre&gt;&lt;code&gt;query {
   book(permalink: &quot;exploding-rails&quot;) {
     __typename
     ... on Book {

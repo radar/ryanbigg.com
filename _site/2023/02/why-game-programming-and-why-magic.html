@@ -56,7 +56,7 @@
           </div>
           <p>For about the past 5 months, I’ve been fiddling with a little Ruby project called <a href="https://github.com/radar/mtg">“Magic: The Gathering: The Ruby Project”</a>. It’s my attempt to make Magic: The Gathering, in Ruby.</p>
 
-<p>But why game programming when my forté is web programming, and why <em>this</em> game specifically?</p>
+<p>But why game programming when my forté is web programming, and why <em>this</em> game specifically? Why not Uno?</p>
 
 <p>Because I wanted a challenge!</p>
 
@@ -120,7 +120,77 @@ end
 
 <hr />
 
-<p>Another version of this DSL defines cards slightly differently, but provides some common method hooks for handling events and replacement effects. Here’s the card <a href="https://scryfall.com/card/m21/28/nine-lives">Nine Lives</a> that I’ve just implemented recently: <a href="https://github.com/radar/mtg/blob/master/lib/magic/cards/nine_lives.rb">https://github.com/radar/mtg/blob/master/lib/magic/cards/nine_lives.rb</a>.</p>
+<p>The cards themselves are <em>usually</em> straightforward to implement. It’s how they interact that’s the tricky part. For this, I try to come up with scenarios that might happen in real games, and then model those in the tests themselves.</p>
+
+<p>One of these that I’m particularly proud about is the mana-cost-reducing effect of <a href="https://scryfall.com/card/nec/152/foundry-inspector">Foundry Inspector</a>. I started working on this card by writing the test for it first and working up from there.</p>
+
+<pre><code class="language-ruby"> require 'spec_helper'
+
+RSpec.describe Magic::Game, "Mana spend -- Foundry Inspector + Free Sol Ring" do
+  include_context "two player game"
+
+  context "when at first main phase" do
+    before do
+      current_turn.untap!
+      current_turn.upkeep!
+      current_turn.draw!
+      current_turn.first_main!
+    end
+
+    context "foundry inspector reduces sol ring cost" do
+      let(:foundry_inspector) { Card("Foundry Inspector") }
+      let(:sol_ring) { Card("Sol Ring") }
+
+      before do
+        p1.hand.add(foundry_inspector)
+        p1.hand.add(sol_ring)
+      end
+
+      it "casts a foundry inspector and then a sol ring" do
+        p1.add_mana(red: 3)
+        action = Magic::Actions::Cast.new(player: p1, card: foundry_inspector)
+        expect(action.can_perform?).to eq(true)
+        action.pay_mana(generic: { red: 3 } )
+        game.take_action(action)
+        game.tick!
+
+        action = Magic::Actions::Cast.new(player: p1, card: sol_ring)
+        expect(action.can_perform?).to eq(true)
+        game.take_action(action)
+
+        game.tick!
+        expect(p1.permanents.by_name(sol_ring.name).count).to eq(1)
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>The body of the test ensures that we can pay 3 red mana to cast the Foundry Inspector, and then by casting that we can then cast the <a href="https://scryfall.com/card/dmc/190/sol-ring">Sol Ring</a> by not paying any mana at all. It finishes by using some more DSL code to ensure that the Sol Ring has been registered as a permanent controlled by Player 1.</p>
+
+<hr />
+
+<p>If you’re looking for where the proverbial bodies are buried on this particular project, well, there are <em>plenty</em>. This project was coded up over nights, after work and sometimes even after a glass of Port or two. Caution was thrown to the wind, and past that.</p>
+
+<p>The worst of it would be demonstrated in <code>attacking_creature_creates_attacking_token_spec.rb</code>, where a card called <a href="https://scryfall.com/card/m21/18/falconer-adept">Falconer Adept</a> has a triggered ability of:</p>
+
+<blockquote>
+  <p>Whenever Falconer Adept attacks, create a 1/1 white Bird creature token with flying that’s tapped and attacking.</p>
+</blockquote>
+
+<p>What this means is that you can declare that Falconer Adept is attacking as a part of the <em>regular</em> “Declare Attackers” phase of combat, and then by doing that, a different game object (a Bird token) is created, where you will need to delcare what that Bird token is attacking. In effect, “Declare Attackers” happens <em>twice</em>.</p>
+
+<p>You can see how this code is handled in the <code>Turn</code> class’s state machine, particularly anywhere the <code>final_attackers_declared</code> method is used.</p>
+
+<p>This one took me a <em>long</em> time to implement.</p>
+
+<hr />
+
+<p>I like fiddling with this project. It’s outside my regular wheelhouse and is teaching me more about event-driven game programming.</p>
+
+<p>If I get stuck on a card, it’s not like I <em>have</em> to implement it. There’s thousands more out there to choose from.</p>
+
+<p>I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find <a href="https://scryfall.com/random">a card at random</a> and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.</p>
 
         </article>
       </div>
