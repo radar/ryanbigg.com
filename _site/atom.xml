@@ -4,13 +4,340 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-03-03T10:09:09+11:00</updated>
+ <updated>2023-03-03T10:47:40+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Please explain, Elastic Search</title>
+   <link href="http://ryanbigg.com/2023/03/please-explain-elasticsearch"/>
+   <updated>2023-03-03T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2023/03/please-explain-elasticsearch</id>
+   <content type="html"><![CDATA[<p>I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</p>
+
+<p>I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.</p>
+
+<p>Let’s go through the whole process, from indexing to searching to explaining. I’ll be using <a href="https://httpie.io/">the wonderful httpie tool</a> to interact with Elastic Search in this post.</p>
+
+<h2 id="indexing-a-document">Indexing a document</h2>
+
+<p>To index a document in ElasticSearch, we need an index that this document can be inserted into. We can create this index with:</p>
+
+<pre><code class="language-text">http put http://localhost:9200/posts
+</code></pre>
+
+<p>Running this command will show us the index has been created:</p>
+
+<pre><code class="language-json">{
+  "acknowledged": true,
+  "index": "posts",
+  "shards_acknowledged": true
+}
+</code></pre>
+
+<p>Next, we can add a new document into this index. For this example, I’ll create a small JSON file containing the data that we want to index, calling the file <code>post.json</code>:</p>
+
+<pre><code class="language-json">{
+  "id": 1,
+  "title": "Please explain, Elastic Search",
+  "date": "2023-03-03",
+  "user_id": 101,
+}
+</code></pre>
+
+<p>We can then add this document to the index by running:</p>
+
+<pre><code class="language-text">http put http://localhost:9200/posts/_doc/1 &lt; post.json
+</code></pre>
+
+<p>When we run this command, we’ll see the document has been inserted successfully, as indicated by the “result” field:</p>
+
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
+    },
+    "_type": "_doc",
+    "_version": 1,
+    "result": "created"
+}
+</code></pre>
+
+<p>Let’s also add a document that <em>should not</em> be returned by our search query:</p>
+
+<pre><code class="language-json">{
+  "id": 2,
+  "title": "We should not see this post",
+  "date": "2023-02-02",
+  "user_id": 155,
+}
+</code></pre>
+
+<p>I’ll save this in a file called <code>post-2.json</code>, and insert it:</p>
+
+<pre><code class="language-text">http put http://localhost:9200/posts/_doc/2 &lt; post-2.json
+</code></pre>
+
+<h2 id="viewing-a-document">Viewing a document</h2>
+
+<p>We can then see the document in this index using either the search API, or using the document API. Let’s look first at the search API:</p>
+
+<pre><code class="language-text">http get http://localhost:9200/posts/_search
+</code></pre>
+
+<p>This shows:</p>
+
+<pre><code class="language-json">{
+    "_shards": {
+        "failed": 0,
+        "skipped": 0,
+        "successful": 1,
+        "total": 1
+    },
+    "hits": {
+        "hits": [
+            {
+                "_id": "1",
+                "_index": "posts",
+                "_score": 1.0,
+                "_source": {
+                    "date": "2023-03-03",
+                    "id": 1,
+                    "title": "Please explain, Elastic Search",
+                    "user_id": 101
+                },
+                "_type": "_doc"
+            }
+        ],
+        "max_score": 1.0,
+        "total": {
+            "relation": "eq",
+            "value": 1
+        }
+    },
+    "timed_out": false,
+    "took": 3
+}
+</code></pre>
+
+<p>Alternatively, we can request this document using the same URL we used for the <code>PUT</code> operation to add the document into the index:</p>
+
+<pre><code class="language-text">http get http get http://localhost:9200/posts/_doc/1
+</code></pre>
+
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_source": {
+        "date": "2023-03-03",
+        "id": 1,
+        "title": "Please explain, Elastic Search",
+        "user_id": 101
+    },
+    "_type": "_doc",
+    "_version": 1,
+    "found": true
+}
+</code></pre>
+
+<h2 id="searching-for-a-document">Searching for a document</h2>
+
+<p>Elastic Search has a very flexible query API, but it can be a bit wordy sometimes. Let’s write some search JSON to find a post based on a particular date range, and a user ID. I’m going to put this one into a file called <code>query.json</code>, and we’re going to write this in such a way that it does <em>not</em> find our document by writing the wrong user ID, and the wrong date range.</p>
+
+<pre><code class="language-json">{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "date": { "gte": "2023-02-01", "lte": "2023-02-28" }
+          }
+        },
+        {
+          "term": { "user_id": 100 }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>We can then run this query by using the search API:</p>
+
+<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; query.json
+</code></pre>
+
+<p>This will return no results, as our query is wrong:</p>
+
+<pre><code class="language-json">{
+    "_shards": {
+        "failed": 0,
+        "skipped": 0,
+        "successful": 1,
+        "total": 1
+    },
+    "hits": {
+        "hits": [],
+        "max_score": null,
+        "total": {
+            "relation": "eq",
+            "value": 0
+        }
+    },
+    "timed_out": false,
+    "took": 2
+}
+</code></pre>
+
+<h2 id="explaining-a-query">Explaining a query</h2>
+
+<p>To get information from Elastic Search on why a particular document hasn’t matched a query, we can use the Explain API.</p>
+
+<pre><code class="language-text">http get http://localhost:9200/posts/_explain/1/ &lt; query.json
+</code></pre>
+
+<p>When we run this query, we see a <em>huge</em> amount of output:</p>
+
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_type": "_doc",
+    "explanation": {
+        "description": "Failure to meet condition(s) of required/prohibited clause(s)",
+        "details": [
+            {
+                "description": "no match on required clause (date:[1675209600000 TO 1677628799999])",
+                "details": [
+                    {
+                        "description": "date:[1675209600000 TO 1677628799999] doesn't match id 0",
+                        "details": [],
+                        "value": 0.0
+                    }
+                ],
+                "value": 0.0
+            },
+            {
+                "description": "no match on required clause (user_id:[100 TO 100])",
+                "details": [
+                    {
+                        "description": "user_id:[100 TO 100] doesn't match id 0",
+                        "details": [],
+                        "value": 0.0
+                    }
+                ],
+                "value": 0.0
+            }
+        ],
+        "value": 0.0
+    },
+    "matched": false
+}
+</code></pre>
+
+<p>This shows us that the query did not match because both the <code>date</code> and <code>user_id</code> fields are wrong. Important to note here is that the <code>date</code> field range values are returned in milliseconds-from-epoch, rather than the <code>2023-03-03</code> format we might expect.</p>
+
+<p>Let’s fix up the query so that it now matches, putting the query into another file called <code>fixed-query.json</code>:</p>
+
+<pre><code class="language-json">{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "date": { "gte": "2023-03-01", "lte": "2023-03-31" }
+          }
+        },
+        {
+          "term": { "user_id": 101 }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>We can then run this corrected query through the explain endpoint:</p>
+
+<pre><code class="language-text">http post http://localhost:9200/posts/_explain/1 &lt; fixed-query.json
+</code></pre>
+
+<p>The output will show that our query now matches this document:</p>
+
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_type": "_doc",
+    "explanation": {
+        "description": "sum of:",
+        "details": [
+            {
+                "description": "date:[1677628800000 TO 1680307199999]",
+                "details": [],
+                "value": 1.0
+            },
+            {
+                "description": "user_id:[101 TO 101]",
+                "details": [],
+                "value": 1.0
+            }
+        ],
+        "value": 2.0
+    },
+    "matched": true
+}
+</code></pre>
+
+<p>And if we attempt to search with this query, we’ll see it returned in the hits for this query too:</p>
+
+<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; fixed-query.json
+</code></pre>
+
+<pre><code class="language-json">
+{
+    "_shards": {
+        "failed": 0,
+        "skipped": 0,
+        "successful": 1,
+        "total": 1
+    },
+    "hits": {
+        "hits": [
+            {
+                "_id": "1",
+                "_index": "posts",
+                "_score": 2.0,
+                "_source": {
+                    "date": "2023-03-03",
+                    "id": 1,
+                    "title": "Please explain, Elastic Search",
+                    "user_id": 101
+                },
+                "_type": "_doc"
+            }
+        ],
+        "max_score": 2.0,
+        "total": {
+            "relation": "eq",
+            "value": 1
+        }
+    },
+    "timed_out": false,
+    "took": 12
+}
+</code></pre>
+]]></content>
+ </entry>
  
  <entry>
    <title>Why game programming and why Magic?</title>
@@ -2671,161 +2998,6 @@ change, but at least <em>fewer</em> reasons to change than Active Record classes
 <hr />
 
 <p>_If you want to find out how to build maintainable Rails applications, read my book: <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>, available on Leanpub for $10 for the next month.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Contracting as a developer in Australia</title>
-   <link href="http://ryanbigg.com/2021/03/getting-started-with-contracting-in-australia"/>
-   <updated>2021-03-04T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2021/03/getting-started-with-contracting-in-australia</id>
-   <content type="html"><![CDATA[<p>(All advice in this blog post is of a general nature and comes with the regular disclaimers, such as: “I am not a lawyer / tax agent”, etc. etc. If you have questions about the law or your tax obligations, talk to real lawyers, tax agents or even the people at the ATO.)</p>
-
-<p>(This blog post will be updated as I find out more things about contracting – there is definitely more to learn!)</p>
-
-<p>After working as a developer full-time for a number of years, I’ve decided to give that a break. And instead I’m now working full-time as a sole-trader contractor instead.</p>
-
-<p>Maybe it was the two redundancies and then being fired. Maybe it was the “ride or die” / undying loyalty that companies want from their employees now. Who knows what truly led to this ridiculous decision to work as a solo contractor.</p>
-
-<p>It wasn’t supposed to be full-time – but having two months off work does <em>nasty</em> things to your bank account. Alas. So I’m working full-time (for now) as a contractor, hoping to reduce that to 4 days in the near future.</p>
-
-<p>Another developer by the name of Susan Pan asked these questions on an Australian web developer Slack group recently:</p>
-
-<blockquote>
-  <p>Hey everyone, was wondering if there are any people here with contracting experience? I’m new to the industry and also new to contracting so I have no idea about the logistics of it all (working out a salary, need an abn?, legal protections, etc). I’d be super appreciative if anyone has any time to chat/dm about their experience? Thanks!</p>
-</blockquote>
-
-<p>Here’s my (slightly edited) answers to those questions, and I’ll add a bit extra here too that I didn’t include there. Just for you!</p>
-
-<h2 id="abn">ABN</h2>
-
-<p>If you’re working as a contractor within Australia it’s likely that you’ll need an ABN. You can <a href="https://abr.gov.au/ABRWeb/Default.aspx?Target=CheckAbnEntitlement&amp;pid=71">check your ABN eligibility here</a>. I have an ABN. You can look it up!</p>
-
-<p>An ABN helps identify transactions between businesses within Australia. The government will <em>probably</em> require you to have one, so I would suggest getting one as a first point of call. But! Check your eligibility first.</p>
-
-<h2 id="money">Money</h2>
-
-<h3 id="working-out-a-daily-rate">Working out a daily rate</h3>
-
-<p>I contract out at a daily rate that was worked out based on what I was previously paid ($150k as a senior Ruby / JavaScript dev), plus a bit of extra padding to account for things like 1) making my own tax + super contributions 2) giving myself annual leave and sick leave.</p>
-
-<p>I am now charging out at [redacted] as a contractor, working 8 hour days (with an hour lunch break somewhere in there, unpaid). This works out to [redacted]/day, which is a nice round number that makes me happy.</p>
-
-<p>This base-hour number is a point-in-time sample and may vary, depending on circumstances. Someone else on that same Slack group gave this advice:</p>
-
-<blockquote>
-  <p>The best advice I ever got for setting your rate is “think of the highest number you can say with a straight face, then say that number”</p>
-</blockquote>
-
-<p>That’s essentially how I work out my number, too. What I will say is that if I was working full-time at this rate that I would make somewhere north of $200k/yr, pre-tax. The overall plan is to <em>not</em> work full-time, and to work part-time instead.</p>
-
-<p>What clients get for that number is someone with a decade and a half of web development experience in many different teams of different shapes and sizes, with a good knowledge across many different languages. And: “he wrote <em>the book on Rails!</em>”</p>
-
-<h3 id="invoicing">Invoicing</h3>
-
-<p>Invoicing: get yourself a <a href="https://xero.com">Xero</a> subscription and hook it up to your bank account. Dedicate a time on a particular morning each week to track expenses in Xero and issue invoices or to follow up unpaid invoices.</p>
-
-<p>Expense tracking is incredibly helpful for depreciating things around tax time like the “tools of the trade”: laptops, chairs, desks, pencils, pens, rulers… if you use it for a job, keep the receipt (in Xero) and list it under business expenses.</p>
-
-<p>On that same topic: talk to a tax agent around tax time. Again, this is another couple-of-hundred-dollars worth of expenses but the good ones will save you more than what you pay them in raw time-value. The tax agent bill can then be expensed the next financial year. Your tax agent’s job is to sift through the data you’ve diligently collected in Xero and to help you pay the correct amount of tax, or even in some cases to get a tax refund if you’ve overpaid in your tax obligations.</p>
-
-<h3 id="gst">GST</h3>
-
-<p>Speaking of tax: if you’re earning over $75k, you’ll need to <a href="https://www.ato.gov.au/Business/GST/Registering-for-GST/">register for GST as well</a>. The ATO purports to have the facilities to do this online, but when I tried using their app it shit the bed (maybe they need to hire more contractors?) and so I had to call them up. Even though I had to wait a while, the agent was super helpful and guided me through all the steps.</p>
-
-<p>I’m now registered for GST, which means that I need to <em>collect</em> GST from the clients that I charge, and then pay that money every quarter to the government, through a process called a Business Activity Statement. You take <em>all</em> the money you charged for GST, <em>minus</em> the GST on purchases you’ve paid for the business, and that’s then your BAS payment for the quarter.</p>
-
-<p>Xero has a great automatic tool for calculating BAS.</p>
-
-<h3 id="whats-it-going-to-take-to-run-the-business-this-month">What’s it going to take to run the business this month?</h3>
-
-<p>Once I’ve invoiced the client, received the money and correctly set aside the GST amount, it’s math time.</p>
-
-<p>For the sole-tradership that I operate, there are business expenses that need to be taken of on usually a monthly recurring rate. There are some that are <em>yearly</em> as well. These provide me with a baseline cost of what it’s going to take to run the business this month. The yearly ones get divided by 12 and treated like a monthly cost, except the money is transferred into the business savings account.</p>
-
-<h3 id="pay-yourself">Pay yourself</h3>
-
-<p>Using that base number, I can then work out that my <a href="https://www.ato.gov.au/rates/individual-income-tax-rates/">income tax rate</a> is somewhere in the range of 37c-45c in the dollar (after certain amounts), depending on if I end up making more than $180k this year or not. This depends on how many weeks I can work this year. This is impossible to predict, given the nature of contracting work. Tide goes in, tide goes out.</p>
-
-<p>So I err on the side of it being 45c instead of 37c. To make the mental math easy, I take whatever I get paid and put away half (50%) of that into a savings account that is then, essentially, untouchable. That then goes to paying my quarterly BAS bills that I get from the government with the money set aside for tax reasons listed in the BAS as a “tax withheld” amount.</p>
-
-<p>Previously, I was on a Pay-as-you-go quarterly payment plan with the government thanks to my <a href="https://leanpub.com">Leanpub royalties</a> – but that’ll be changing to a quarterly Business Activity Statement soon due to the increased nature of my “business’s” earnings.</p>
-
-<p>My effective tax rate is not exactly 37c or 45c on the dollar for every dollar – it’s important to note here that it’s 37c on every dollar <em>over</em> $120,000. So if my annual income was $150,000, the tax would not be $55,500 ($150k x 0.37). It would be more like: $150,000 - $120,000 = $30,000. Then that $30,000 x 0.37 = $11,100, plus the base rate of $29,467, or $40,567, or about 27% of $150k. An important distinction to make here!</p>
-
-<p>By the time tax time comes around and I talk to my tax agent (below), we do some math and work out how much additional tax I need to pay. Hopefully this amount is zero, and that there’s also a nice tax return attached to that. If it’s not, no sweat: the money in the business savings account will cover it.</p>
-
-<p>If there’s still leftover money in the savings account after all that then that gets rolled into the general transaction account for the business and I’ll spend it on things that I need, or transfer it into my family’s accounts as an extra bonus.</p>
-
-<p>I then take 9.5% of whatever I get paid and put that directly into my superannuation. When I retire, I want money to be able to live, so this is a sensible choice. I could contribute more here.</p>
-
-<p>I also take 5% out of this total amount for leave entitlements. I am (unfortunately) not invulnerable, so I will need paid sick leave from <em>somewhere</em>, and occasionally I might like to leave my computer so annual leave needs to be accounted for too. This really should be somewhere in the range of 11-12%, as annual + sick leave entitlements are usually in the range of 6 weeks of the year (11.5% of the year)… but I’m bootstrapping my consulting business now and I’m choosing to take fewer leave days for the moment.</p>
-
-<p>By this point I’ve deducted these things from my business’s income:</p>
-
-<ul>
-  <li>Running the business expenses</li>
-  <li>Tax obligations (both GST + personal income tax)</li>
-  <li>Superannuation</li>
-  <li>Leave entitlements</li>
-</ul>
-
-<p>The rest of this money then goes into my family’s bank accounts.</p>
-
-<h2 id="get-it-in-writing">Get it in writing</h2>
-
-<p>Next up: contracts!</p>
-
-<p>My wife is an ex-lawyer and read over a contract that I drafted using my significant (read: completely lacking) legal expertise.</p>
-
-<p>Having a Real Lawyer™ look over the contract ensures that I’m not missing obvious things (like including GST in payments, dummy!). Get yourself a contract lawyer who can do the same.</p>
-
-<p>The contract is designed to answer the who, what, why, where, when, how questions:</p>
-
-<ol>
-  <li>Who’s this contract between?</li>
-  <li>What’s this contract about?</li>
-  <li>Why are we entering into this agreement?</li>
-  <li>Where are we gonna be doing the work?</li>
-  <li>For how long is this work going to happen?</li>
-  <li>How are we going to work together?</li>
-</ol>
-
-<p>Get a contract. Get it signed.</p>
-
-<p><strong>You cannot be a contractor without a contract. You will be an “or”. Nobody wants an “or”</strong>. Get it in writing. Get it signed. Dated. As the wise Jeff Casimir once said, contracts are written while in love, but only ever used in hate. You will want a good one for when shit hits the fan. And it will hit the fan.</p>
-
-<p>If you agree to some work, it’s in writing <em>in your personal email account, not in their company’s Slack</em>. It’s timestamped, filed away and easily accessible. Can you find that documentation with minimal effort? You better be able to.</p>
-
-<h2 id="getting-paid">Getting paid</h2>
-
-<p>In order to make it ridiculously easy for people to pay me, I work with Australian-only clients <em>and</em> I offer two different payment methods: bank transfer or PayPal. Anyone who’s adulted a single day in Australia will know how to do a bank transfer between Australian bank accounts. Australian-only clients means that I don’t need to worry about international transfer fees, currency conversions or tracking alternative income for tax purposes. PayPal is for the occasional international client, and for Leanpub royalties.</p>
-
-<p>I issue invoices (through Xero) fortnightly for one week gone, and one week coming. For example, if I was issuing an invoice on next Monday, the 8th of March, that invoice would cover all my work for the week of the 1st-5th of March <em>and also</em> the work that I would do during the week of the 8th-12th March. If I (unexpectedly) take time off that week, it would be deducted from the following invoice. That invoice would be on the 22nd of March, and would cover 15th-19th and 22nd-26th March, and so on and so on.</p>
-
-<p>On the topic of getting paid: all my invoices are 14 days payable. This means that if an invoice is issued on, say, the 8th of March, then it must be paid by the time the 22nd of March comes around.</p>
-
-<p>If the invoice is not paid by that time, then I will stop working. No exceptions. No “check is in the mail”, no “I’ll pay you next week”. If the money is not in the bank account by the very day the invoice says it is due, the work does not get done. Absofuckinglutely not.</p>
-
-<p>Why am I so bullish on this point? Because I’ve been dicked around before, and I <em>will not</em> let it happen again. As a contractor, I rely on a steady stream of income to support my family and the moment that is cut off is the very moment I will need to start finding a new stream.</p>
-
-<p>Take pride in yourself as a contractor and have the same rules.</p>
-
-<h3 id="billable-hours">Billable hours</h3>
-
-<p>On a related topic: billable hours. Did you spend time working for a client between the hours of 9am and 5pm? That’s billable time. Did you spend time outside of those hours working for the client? Maybe you had an on-call incident in the middle of the night or had to work a weekend? That’s billable too. Get it in writing in the contract that it’s a thing that <em>might</em> happen, and <em>bill for it</em>.</p>
-
-<p>Conversely: did you spend an hour at a dentist appointment? That’s not billable. Haircut? Unbillable. Had a case of the “dunwannas” and needed to lie on the couch? Don’t you dare think about billing for it.</p>
-
-<p>When it comes to invoicing clients for hours worked, keep it honest in <em>both directions</em>. Bill for the hours you’ve worked (even if they’re slightly outside of the agreed time) and do not bill for the hours you did not work for them. Honesty is the best policy here.</p>
-
-<h2 id="leave-the-campsite-better-than-how-you-found-it">Leave the campsite better than how you found it</h2>
-
-<p>The header of this section is a Scouts motto. After attending the scouts for precisely zero days of my life, this statement <em>still</em> resonates with me.</p>
-
-<p>I care about the long-term viability of your codebase, company and team, not just the money coming in the door. The money in the door helps me keep my family alive and happy. The work I deliver at your company keeps <em>your</em> families alive and happy, and I want that to remain that way long-term. If it remains that way, it’s likely you’ll keep me as a contractor or at least recommend me to your favourite people.</p>
-
-<p>I’ve had to work on codebases where contractors who <em>didn’t</em> care about those things (“oh fuck we’ve only got 2 weeks shipitshipitshipit”) and it was miserable. I don’t want misery – I want happiness. I want people to go “yeah, you should hire Ryan because he came in for 3 months and did X, Y and Z and rocked our socks.” Yeah it’s nice being paid, but the <em>success</em> of doing a good job is what counts.</p>
 ]]></content>
  </entry>
  

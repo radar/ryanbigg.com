@@ -1,4 +1,322 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-03-03T10:09:09+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-03-03T10:47:40+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Please explain, Elastic Search</title><link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-03T00:00:00+11:00</published><updated>2023-03-03T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch">&lt;p&gt;I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.&lt;/p&gt;
+
+&lt;p&gt;I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.&lt;/p&gt;
+
+&lt;p&gt;Let’s go through the whole process, from indexing to searching to explaining. I’ll be using &lt;a href=&quot;https://httpie.io/&quot;&gt;the wonderful httpie tool&lt;/a&gt; to interact with Elastic Search in this post.&lt;/p&gt;
+
+&lt;h2 id=&quot;indexing-a-document&quot;&gt;Indexing a document&lt;/h2&gt;
+
+&lt;p&gt;To index a document in ElasticSearch, we need an index that this document can be inserted into. We can create this index with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http put http://localhost:9200/posts
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Running this command will show us the index has been created:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;acknowledged&quot;: true,
+  &quot;index&quot;: &quot;posts&quot;,
+  &quot;shards_acknowledged&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next, we can add a new document into this index. For this example, I’ll create a small JSON file containing the data that we want to index, calling the file &lt;code&gt;post.json&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;id&quot;: 1,
+  &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
+  &quot;date&quot;: &quot;2023-03-03&quot;,
+  &quot;user_id&quot;: 101,
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can then add this document to the index by running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http put http://localhost:9200/posts/_doc/1 &amp;lt; post.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When we run this command, we’ll see the document has been inserted successfully, as indicated by the “result” field:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_index&quot;: &quot;posts&quot;,
+    &quot;_primary_term&quot;: 1,
+    &quot;_seq_no&quot;: 0,
+    &quot;_shards&quot;: {
+        &quot;failed&quot;: 0,
+        &quot;successful&quot;: 1,
+        &quot;total&quot;: 2
+    },
+    &quot;_type&quot;: &quot;_doc&quot;,
+    &quot;_version&quot;: 1,
+    &quot;result&quot;: &quot;created&quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Let’s also add a document that &lt;em&gt;should not&lt;/em&gt; be returned by our search query:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;id&quot;: 2,
+  &quot;title&quot;: &quot;We should not see this post&quot;,
+  &quot;date&quot;: &quot;2023-02-02&quot;,
+  &quot;user_id&quot;: 155,
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I’ll save this in a file called &lt;code&gt;post-2.json&lt;/code&gt;, and insert it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http put http://localhost:9200/posts/_doc/2 &amp;lt; post-2.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;viewing-a-document&quot;&gt;Viewing a document&lt;/h2&gt;
+
+&lt;p&gt;We can then see the document in this index using either the search API, or using the document API. Let’s look first at the search API:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_search
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This shows:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &quot;_shards&quot;: {
+        &quot;failed&quot;: 0,
+        &quot;skipped&quot;: 0,
+        &quot;successful&quot;: 1,
+        &quot;total&quot;: 1
+    },
+    &quot;hits&quot;: {
+        &quot;hits&quot;: [
+            {
+                &quot;_id&quot;: &quot;1&quot;,
+                &quot;_index&quot;: &quot;posts&quot;,
+                &quot;_score&quot;: 1.0,
+                &quot;_source&quot;: {
+                    &quot;date&quot;: &quot;2023-03-03&quot;,
+                    &quot;id&quot;: 1,
+                    &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
+                    &quot;user_id&quot;: 101
+                },
+                &quot;_type&quot;: &quot;_doc&quot;
+            }
+        ],
+        &quot;max_score&quot;: 1.0,
+        &quot;total&quot;: {
+            &quot;relation&quot;: &quot;eq&quot;,
+            &quot;value&quot;: 1
+        }
+    },
+    &quot;timed_out&quot;: false,
+    &quot;took&quot;: 3
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Alternatively, we can request this document using the same URL we used for the &lt;code&gt;PUT&lt;/code&gt; operation to add the document into the index:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http get http://localhost:9200/posts/_doc/1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_index&quot;: &quot;posts&quot;,
+    &quot;_primary_term&quot;: 1,
+    &quot;_seq_no&quot;: 0,
+    &quot;_source&quot;: {
+        &quot;date&quot;: &quot;2023-03-03&quot;,
+        &quot;id&quot;: 1,
+        &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
+        &quot;user_id&quot;: 101
+    },
+    &quot;_type&quot;: &quot;_doc&quot;,
+    &quot;_version&quot;: 1,
+    &quot;found&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;searching-for-a-document&quot;&gt;Searching for a document&lt;/h2&gt;
+
+&lt;p&gt;Elastic Search has a very flexible query API, but it can be a bit wordy sometimes. Let’s write some search JSON to find a post based on a particular date range, and a user ID. I’m going to put this one into a file called &lt;code&gt;query.json&lt;/code&gt;, and we’re going to write this in such a way that it does &lt;em&gt;not&lt;/em&gt; find our document by writing the wrong user ID, and the wrong date range.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        {
+          &quot;range&quot;: {
+            &quot;date&quot;: { &quot;gte&quot;: &quot;2023-02-01&quot;, &quot;lte&quot;: &quot;2023-02-28&quot; }
+          }
+        },
+        {
+          &quot;term&quot;: { &quot;user_id&quot;: 100 }
+        }
+      ]
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can then run this query by using the search API:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_search &amp;lt; query.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will return no results, as our query is wrong:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &quot;_shards&quot;: {
+        &quot;failed&quot;: 0,
+        &quot;skipped&quot;: 0,
+        &quot;successful&quot;: 1,
+        &quot;total&quot;: 1
+    },
+    &quot;hits&quot;: {
+        &quot;hits&quot;: [],
+        &quot;max_score&quot;: null,
+        &quot;total&quot;: {
+            &quot;relation&quot;: &quot;eq&quot;,
+            &quot;value&quot;: 0
+        }
+    },
+    &quot;timed_out&quot;: false,
+    &quot;took&quot;: 2
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;explaining-a-query&quot;&gt;Explaining a query&lt;/h2&gt;
+
+&lt;p&gt;To get information from Elastic Search on why a particular document hasn’t matched a query, we can use the Explain API.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_explain/1/ &amp;lt; query.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When we run this query, we see a &lt;em&gt;huge&lt;/em&gt; amount of output:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_index&quot;: &quot;posts&quot;,
+    &quot;_type&quot;: &quot;_doc&quot;,
+    &quot;explanation&quot;: {
+        &quot;description&quot;: &quot;Failure to meet condition(s) of required/prohibited clause(s)&quot;,
+        &quot;details&quot;: [
+            {
+                &quot;description&quot;: &quot;no match on required clause (date:[1675209600000 TO 1677628799999])&quot;,
+                &quot;details&quot;: [
+                    {
+                        &quot;description&quot;: &quot;date:[1675209600000 TO 1677628799999] doesn&apos;t match id 0&quot;,
+                        &quot;details&quot;: [],
+                        &quot;value&quot;: 0.0
+                    }
+                ],
+                &quot;value&quot;: 0.0
+            },
+            {
+                &quot;description&quot;: &quot;no match on required clause (user_id:[100 TO 100])&quot;,
+                &quot;details&quot;: [
+                    {
+                        &quot;description&quot;: &quot;user_id:[100 TO 100] doesn&apos;t match id 0&quot;,
+                        &quot;details&quot;: [],
+                        &quot;value&quot;: 0.0
+                    }
+                ],
+                &quot;value&quot;: 0.0
+            }
+        ],
+        &quot;value&quot;: 0.0
+    },
+    &quot;matched&quot;: false
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This shows us that the query did not match because both the &lt;code&gt;date&lt;/code&gt; and &lt;code&gt;user_id&lt;/code&gt; fields are wrong. Important to note here is that the &lt;code&gt;date&lt;/code&gt; field range values are returned in milliseconds-from-epoch, rather than the &lt;code&gt;2023-03-03&lt;/code&gt; format we might expect.&lt;/p&gt;
+
+&lt;p&gt;Let’s fix up the query so that it now matches, putting the query into another file called &lt;code&gt;fixed-query.json&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;query&quot;: {
+    &quot;bool&quot;: {
+      &quot;must&quot;: [
+        {
+          &quot;range&quot;: {
+            &quot;date&quot;: { &quot;gte&quot;: &quot;2023-03-01&quot;, &quot;lte&quot;: &quot;2023-03-31&quot; }
+          }
+        },
+        {
+          &quot;term&quot;: { &quot;user_id&quot;: 101 }
+        }
+      ]
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can then run this corrected query through the explain endpoint:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http post http://localhost:9200/posts/_explain/1 &amp;lt; fixed-query.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The output will show that our query now matches this document:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+    &quot;_id&quot;: &quot;1&quot;,
+    &quot;_index&quot;: &quot;posts&quot;,
+    &quot;_type&quot;: &quot;_doc&quot;,
+    &quot;explanation&quot;: {
+        &quot;description&quot;: &quot;sum of:&quot;,
+        &quot;details&quot;: [
+            {
+                &quot;description&quot;: &quot;date:[1677628800000 TO 1680307199999]&quot;,
+                &quot;details&quot;: [],
+                &quot;value&quot;: 1.0
+            },
+            {
+                &quot;description&quot;: &quot;user_id:[101 TO 101]&quot;,
+                &quot;details&quot;: [],
+                &quot;value&quot;: 1.0
+            }
+        ],
+        &quot;value&quot;: 2.0
+    },
+    &quot;matched&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And if we attempt to search with this query, we’ll see it returned in the hits for this query too:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_search &amp;lt; fixed-query.json
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;
+{
+    &quot;_shards&quot;: {
+        &quot;failed&quot;: 0,
+        &quot;skipped&quot;: 0,
+        &quot;successful&quot;: 1,
+        &quot;total&quot;: 1
+    },
+    &quot;hits&quot;: {
+        &quot;hits&quot;: [
+            {
+                &quot;_id&quot;: &quot;1&quot;,
+                &quot;_index&quot;: &quot;posts&quot;,
+                &quot;_score&quot;: 2.0,
+                &quot;_source&quot;: {
+                    &quot;date&quot;: &quot;2023-03-03&quot;,
+                    &quot;id&quot;: 1,
+                    &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
+                    &quot;user_id&quot;: 101
+                },
+                &quot;_type&quot;: &quot;_doc&quot;
+            }
+        ],
+        &quot;max_score&quot;: 2.0,
+        &quot;total&quot;: {
+            &quot;relation&quot;: &quot;eq&quot;,
+            &quot;value&quot;: 1
+        }
+    },
+    &quot;timed_out&quot;: false,
+    &quot;took&quot;: 12
+}
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</summary></entry><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
 
 &lt;p&gt;But why game programming when my forté is web programming, and why &lt;em&gt;this&lt;/em&gt; game specifically? Why not Uno?&lt;/p&gt;
 
@@ -843,141 +1161,4 @@ end
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;When using this API (for example, within a frontend codebase), we can assert on &lt;code&gt;__typename&lt;/code&gt; to determine how to show the result to a user – if it’s a &lt;code&gt;Comment&lt;/code&gt;, then indicate a successful comment creation. If it’s &lt;code&gt;Errors&lt;/code&gt;, then show those errors on the form.&lt;/p&gt;</content><author><name></name></author><summary type="html">The official documentation for the graphql-ruby gem recommends this code for a mutation class that can either succeed or fail:</summary></entry><entry><title type="html">Typed View Components with dry-types</title><link href="http://localhost:4000/2022/03/typed-view-components" rel="alternate" type="text/html" title="Typed View Components with dry-types" /><published>2022-03-08T00:00:00+11:00</published><updated>2022-03-08T00:00:00+11:00</updated><id>http://localhost:4000/2022/03/typed-view-components</id><content type="html" xml:base="http://localhost:4000/2022/03/typed-view-components">&lt;p&gt;This post was originally inspired by &lt;a href=&quot;https://twitter.com/RogersKonnor&quot;&gt;Konnor Rogers&lt;/a&gt;, and &lt;a href=&quot;https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011&quot;&gt;this gist from him&lt;/a&gt;.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;Last year, I wrote about &lt;a href=&quot;https://ryanbigg.com/2021/04/view-components-the-missing-link&quot;&gt;View Components&lt;/a&gt; for the first time. That post demonstrated how you could use View Components to bridge the gap between Ruby and React by using a View Component to build up the props for a React component.&lt;/p&gt;
-
-&lt;p&gt;Since then, I’ve joined &lt;a href=&quot;https://fatzebra.com&quot;&gt;Fat Zebra&lt;/a&gt; and we’re doing a lot of work involving Rails, React and View Components.&lt;/p&gt;
-
-&lt;p&gt;One thing we’ve discovered that helps with using View Components is adding types by using the &lt;code&gt;dry-initializer&lt;/code&gt; and &lt;code&gt;dry-types&lt;/code&gt; to those View Components. While we have the protection of types in TypeScript, we do not have the same level of protection in Ruby. And since TypeScript only does compile-time checking, it means that we could pass a property from these Ruby View Components down to our React components where that property’s type is incorrect.&lt;/p&gt;
-
-&lt;p&gt;Take for (contrived) example, this simple component that takes in a &lt;code&gt;standalone&lt;/code&gt; property.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class RefundComponent &amp;lt; ViewComponent::Base
-  attr_reader :standalone
-
-  def initialize(standalone:)
-    @standalone = standalone
-  end
-
-  def props
-    {
-      standalone: standalone,
-      # ...
-    }
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;There’s nothing in this component that dictates the type for &lt;code&gt;standalone&lt;/code&gt;. It should be a boolean. It &lt;em&gt;could be&lt;/em&gt; a string, or a number, or literally any valid object in Ruby. So when this component is used in this way:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;render RefundComponent.new(standalone: params[:standalone])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;What’s going to happen here?&lt;/p&gt;
-
-&lt;p&gt;Well, if we &lt;em&gt;think&lt;/em&gt; standalone is a boolean, we can expect &lt;code&gt;params[:standalone]&lt;/code&gt; is going to be either &lt;code&gt;&quot;true&quot;&lt;/code&gt; or &lt;code&gt;&quot;false&quot;&lt;/code&gt; ,given that Rails parameters are stringified.&lt;/p&gt;
-
-&lt;p&gt;Inside our React component, we might have code like this.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;{standalone ? &quot;Standalone&quot; : &quot;Not Standalone&quot;}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The string &lt;code&gt;&quot;true&quot;&lt;/code&gt; does the same as the boolean &lt;code&gt;true&lt;/code&gt;. The string &lt;code&gt;&quot;false&quot;&lt;/code&gt; does not do the same as the boolean &lt;code&gt;&quot;false&quot;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;This is completely innocent code, and the kind that we might write any old day. Nothing stopped us from writing it. In fact, TypeScript gave us &lt;em&gt;two&lt;/em&gt; thumbs up when we compiled our React code. Ruby doesn’t care. Ruby’s fine as long as the syntax is correct.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;To prevent a mistake like this, we can use the &lt;code&gt;dry-initializer&lt;/code&gt; and &lt;code&gt;dry-types&lt;/code&gt; gems like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class RefundComponent &amp;lt; ViewComponent::Base
-  extend Dry::Initializer
-  Types = Dry.Types()
-
-  option :standalone, Types::Bool
-
-  def props
-    {
-      standalone: standalone,
-      # ...
-    }
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;Types&lt;/code&gt; constant here is usually defined on a more “global” level. For example, you might define it at &lt;code&gt;lib/types.rb&lt;/code&gt; for your entire application. I’ve just included it in the class here for brevity.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;option&lt;/code&gt; method here defines a keyword argument initializer for &lt;code&gt;RefundComponent&lt;/code&gt;, so this means our component will still be able to be rendered in the same way:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;render RefundComponent.new(standalone: params[:standalone])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;But this time, if we pass it a stringly-typed &lt;code&gt;standalone&lt;/code&gt; here, it will show us an error:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&quot;false&quot; violates constraints (type?(FalseClass, &quot;false&quot;) failed) (Dry::Types::ConstraintError)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The error message is wordy, but with enough practice (just like TypeScript!) we can learn to read these. The error message here says that the type of &lt;code&gt;FalseClass&lt;/code&gt;, is not the same type as &lt;code&gt;&quot;false&quot;&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;We cannot pass the stringly-typed &lt;code&gt;params[:standalone]&lt;/code&gt; here anymore.&lt;/p&gt;
-
-&lt;p&gt;Instead, we would have to convert this parameter to a boolean so that our code would work:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;render RefundComponent.new(standalone: params[:standalone] == &apos;true&apos;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;but-wait-theres-more&quot;&gt;But wait, there’s more…&lt;/h3&gt;
-
-&lt;p&gt;We can also use &lt;code&gt;dry-types&lt;/code&gt; to define the types for our properties too, in case we had some complicated logic there.  Perhaps we have an amount that is returned, and we want to guarantee it’s a float by the time it gets to our React library. To spice things up, for legacy reasons the &lt;code&gt;amount&lt;/code&gt; arrives at our component as a string, not a float. With this amount also comes a currency property, which is also a string.&lt;/p&gt;
-
-&lt;p&gt;Here’s how we would handle that by using another &lt;code&gt;dry-rb&lt;/code&gt; library, &lt;code&gt;dry-struct&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class RefundComponent &amp;lt; ViewComponent::Base
-  extend Dry::Initializer
-  Types = Dry.Types()
-
-  option :standalone, Types::Bool
-  option :amount, Types::String
-  option :currency, Types::String
-
-  class Props &amp;lt; Dry::Struct
-    schema schema.strict
-
-    attribute :standalone, Types::Bool
-    attribute :amount, Types::Float
-    attribute :currency, Types::String
-  end
-
-  def props
-    Props.new(
-      standalone: standalone,
-      amount: amount.to_money(currency).to_f,
-      currency: currency,
-      # ...
-    ).to_h
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This way, we can call &lt;code&gt;RefundComponent&lt;/code&gt; with a stringified &lt;code&gt;amount&lt;/code&gt;, and have &lt;code&gt;props&lt;/code&gt; be the correct type:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; component = RefundComponent.new(standalone: params[:standalone] == &apos;true&apos;, amount: &quot;1234&quot;, currency: &quot;AUD&quot;)
-=&amp;gt; #&amp;lt;RefundComponent:0x000000013e6a76a8 @amount=&quot;1234&quot;, @currency=&quot;AUD&quot;, @standalone=true&amp;gt;
-&amp;gt;&amp;gt; component.props
-=&amp;gt; {:standalone=&amp;gt;true, :amount=&amp;gt;1234.0, :currency=&amp;gt;&quot;AUD&quot;}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If the type of &lt;code&gt;Props#amount&lt;/code&gt; (once it has been coerced) wasn’t a float and instead was an integer, like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;amount: amount.to_money(currency).to_i,
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This code would cause this error:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;1234 (Integer) has invalid type for :amount violates constraints (type?(Float, 1234) failed) (Dry::Types::SchemaError)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This helps alert us to a typing issue earlier on in our code, before it even reaches our React code.&lt;/p&gt;</content><author><name></name></author><summary type="html">This post was originally inspired by Konnor Rogers, and this gist from him.</summary></entry></feed>
+&lt;p&gt;When using this API (for example, within a frontend codebase), we can assert on &lt;code&gt;__typename&lt;/code&gt; to determine how to show the result to a user – if it’s a &lt;code&gt;Comment&lt;/code&gt;, then indicate a successful comment creation. If it’s &lt;code&gt;Errors&lt;/code&gt;, then show those errors on the form.&lt;/p&gt;</content><author><name></name></author><summary type="html">The official documentation for the graphql-ruby gem recommends this code for a mutation class that can either succeed or fail:</summary></entry></feed>
