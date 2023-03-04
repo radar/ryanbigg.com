@@ -130,7 +130,7 @@ This shows:
 Alternatively, we can request this document using the same URL we used for the `PUT` operation to add the document into the index:
 
 ```text
-http get http get http://localhost:9200/posts/_doc/1
+http get http://localhost:9200/posts/_doc/1
 ```
 
 ```json
