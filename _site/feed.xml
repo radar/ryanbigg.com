@@ -1,4 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-03-03T14:38:34+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Please explain, Elastic Search</title><link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch">&lt;p&gt;I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-03-10T06:22:47+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Open Letter to the Rails Foundation</title><link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation">&lt;p&gt;I sent this email to Amanda at the &lt;a href=&quot;https://rubyonrails.org/foundation&quot;&gt;Rails Foundation&lt;/a&gt; this morning.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;Hello, my name is Ryan and I run the Gem Foundation: https://ryanbigg.com/2022/11/the-gem-foundation.&lt;/p&gt;
+
+&lt;p&gt;(Just quietly between you and me, id rather you answer this email than David. We’ve got… history.)&lt;/p&gt;
+
+&lt;p&gt;I’ve also written several books on Ruby, including the same Rails book 3, almost 4 times: Rails 3 in Action, Rails 4 in Action and Active Rails 1st and 2nd editions. Oh and I wrote a bunch of the Rails guides too. And contributed enough on Rails answers on Stack Overflow to earn me 100k rep, as well as a cool SO T-shirt and socks. I also took over the #rubyonrails IRC channel there for a time.&lt;/p&gt;
+
+&lt;p&gt;Point is: I have written multiple of millions of words about Rails to further its adoption.&lt;/p&gt;
+
+&lt;p&gt;As we approach the 4 month mark of the Rails Foundation launch, I am absolutely STUNNED that there has been not a single cent that has left the organisation’s coffers since its inception.&lt;/p&gt;
+
+&lt;p&gt;The announcement was grandiose in nature. A fat sack of cash for those who do unpaid labour for Rails. Sounds delightful. I like money for the way it buys hot chocolates for my daughter who then proceeds to wear them more than drink them, amongst other things.&lt;/p&gt;
+
+&lt;p&gt;Why hasn’t the Rails Foundation donated money to Rails Girls? Why haven’t they incentivised mentoring through FirstRubyFriend for Rails-focussed mentoring? Current and past guide authors: do they get funding? Rails gem authors or those gems that Rails depends on outside of its immediate vicinity? (Oh I maintain i18n as well btw, and GitHub recently sent me an award for that.)&lt;/p&gt;
+
+&lt;p&gt;You want to further adoption of Rails. So do I. I love most parts of Rails. I say most parts because after 15 years with a thing you start being really good at seeing the warts. Overall, it’s a framework that’s provided me with a stable income (and some tiny level of notoriety) over the last 15 years.&lt;/p&gt;
+
+&lt;p&gt;The framework and its related resources are a monumental achievement of open source collaboration.&lt;/p&gt;
+
+&lt;p&gt;So my question today is when will the Rails
+foundation start funding these projects? Are we going to be waiting weeks, or months?&lt;/p&gt;
+
+&lt;p&gt;I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.&lt;/p&gt;
+
+&lt;p&gt;What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.&lt;/p&gt;</content><author><name></name></author><summary type="html">I sent this email to Amanda at the Rails Foundation this morning.</summary></entry><entry><title type="html">Please explain, Elastic Search</title><link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch">&lt;p&gt;I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.&lt;/p&gt;
 
 &lt;p&gt;I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.&lt;/p&gt;
 
@@ -112,7 +139,7 @@
 
 &lt;p&gt;Alternatively, we can request this document using the same URL we used for the &lt;code&gt;PUT&lt;/code&gt; operation to add the document into the index:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http get http://localhost:9200/posts/_doc/1
+&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_doc/1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
@@ -818,6 +845,8 @@ end
 
 &lt;p&gt;&lt;strong&gt;UPDATE #3&lt;/strong&gt;: As it’s now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;UPDATE #4&lt;/strong&gt;: As it’s now the 1st of March, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $208.&lt;/p&gt;
+
 &lt;p&gt;Here’s a helpful chart to track our donations:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/gem-foundation/donations.png&quot; alt=&quot;The Gem Foundation donations&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I am excited to announce the launch of The Gem Foundation.</summary></entry><entry><title type="html">A replacement for strong parameters</title><link href="http://localhost:4000/2022/11/a-replacement-for-strong-parameters" rel="alternate" type="text/html" title="A replacement for strong parameters" /><published>2022-11-09T00:00:00+11:00</published><updated>2022-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/a-replacement-for-strong-parameters</id><content type="html" xml:base="http://localhost:4000/2022/11/a-replacement-for-strong-parameters">&lt;p&gt;I’m not going to take &lt;a href=&quot;https://dev.37signals.com/vanilla-rails-is-plenty&quot;&gt;this week’s (very obvious) bait about how “Vanilla Rails is plenty”&lt;/a&gt;.&lt;/p&gt;
@@ -1003,162 +1032,4 @@ be another service.&lt;/p&gt;
 
 &lt;p&gt;I’ve only scratched the surface on what &lt;code&gt;dry-schema&lt;/code&gt; can do. I purposely wanted to keep this post short today to cover how it could replace strong parameters within Rails to provide a much better developer experience than that bracketed mess.&lt;/p&gt;
 
-&lt;p&gt;If you’d like to know what else dry-schema can do, make sure to check out &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/&quot;&gt;its documentation here&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’m not going to take this week’s (very obvious) bait about how “Vanilla Rails is plenty”.</summary></entry><entry><title type="html">Using Union Types with GraphQL Mutations in Ruby</title><link href="http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types" rel="alternate" type="text/html" title="Using Union Types with GraphQL Mutations in Ruby" /><published>2022-05-06T00:00:00+10:00</published><updated>2022-05-06T00:00:00+10:00</updated><id>http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types</id><content type="html" xml:base="http://localhost:4000/2022/05/ruby-graphql-mutations-with-union-types">&lt;p&gt;The &lt;a href=&quot;https://graphql-ruby.org/mutations/mutation_classes.html&quot;&gt;official documentation for the graphql-ruby gem&lt;/a&gt; recommends this code for a mutation class that can either succeed or fail:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Mutations::CreateComment &amp;lt; Mutations::BaseMutation
-  argument :body, String
-  argument :post_id, ID
-
-  field :comment, Types::Comment
-  field :errors, [String], null: false
-
-  def resolve(body:, post_id:)
-    post = Post.find(post_id)
-    comment = post.comments.build(body: body, author: context[:current_user])
-    if comment.save
-      # Successful creation, return the created object with no errors
-      {
-        comment: comment,
-        errors: [],
-      }
-    else
-      # Failed save, return the errors to the client
-      {
-        comment: nil,
-        errors: comment.errors.full_messages
-      }
-    end
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I’d like to show an alternative to this that I think leads to cleaner code by using GraphQL concept called &lt;em&gt;union types&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;We use union types in GraphQL when we want a field to return one or more distinct types as its result. In the case of the above comment mutation, the two types of things we would like to return are either:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;A comment, if the mutation was successful&lt;/li&gt;
-  &lt;li&gt;Errors, if the mutation was unsuccessful&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Let’s change that mutation above to use a union type by declaring the type at the top of the mutation, and removing the two fields:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Mutations::CreateComment &amp;lt; Mutations::BaseMutation
-  type Types::CreateCommentResult
-  argument :body, String
-  argument :post_id, ID
-
-  def resolve(body:, post_id:)
-    post = Post.find(post_id)
-    comment = post.comments.build(body: body, author: context[:current_user])
-    if comment.save
-      # Successful creation, return the created object with no errors
-      {
-        comment: comment,
-        errors: [],
-      }
-    else
-      # Failed save, return the errors to the client
-      {
-        comment: nil,
-        errors: comment.errors.full_messages
-      }
-    end
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This new type will be our union type that will represent either a successful creation for a comment, or a failed one.&lt;/p&gt;
-
-&lt;p&gt;We can define this type in our &lt;code&gt;types&lt;/code&gt; directory under &lt;code&gt;graphql&lt;/code&gt;, in a file called &lt;code&gt;create_comment_result.rb&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Types
-  class CreateCommentResult &amp;lt; BaseUnion
-    description &quot;The result from attempting to create a comment&quot;
-    possible_types Types::Comment, Types::Errors
-
-    def self.resolve_type(object, _context)
-      if object[:comment]
-        [Types::Comment, object[:comment]]
-      else
-        [Types::Errors, object]
-      end
-    end
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;A union type is defined by first inheriting from &lt;code&gt;BaseUnion&lt;/code&gt;. If we had common logic to share between union types in our GraphQL API, that logic would go into &lt;code&gt;BaseUnion&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Inside this &lt;code&gt;CreateCommentResult&lt;/code&gt; type itself, we provide a description that’ll appear in our API documentation, and inform this class what the possible types are. For this union type, we’re defining two possible types: &lt;code&gt;Types::Comment&lt;/code&gt;, and &lt;code&gt;Types::Errors&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;When the GraphQL code runs, it will call this &lt;code&gt;resolve_type&lt;/code&gt; method to determine the correct GraphQL type to use when representing the result of the mutation. This method checks if &lt;code&gt;object[:comment]&lt;/code&gt; is present, and if it is the type that’ll be used is a &lt;code&gt;Types::Comment&lt;/code&gt;, and we can fetch the comment from that object using &lt;code&gt;object[:comment]&lt;/code&gt;. In Rails parlance, this &lt;code&gt;object[:comment]&lt;/code&gt; will be an instance of the &lt;code&gt;Comment&lt;/code&gt; model – a result of a successful &lt;code&gt;build&lt;/code&gt; and &lt;code&gt;save&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;If the operation was to fail, we would instead return a &lt;code&gt;Types::Error&lt;/code&gt; type, and use the resulting object as the base object for that type.&lt;/p&gt;
-
-&lt;p&gt;These two types can be defined in the &lt;code&gt;types&lt;/code&gt; directory too. Let’s look at &lt;code&gt;CommentType&lt;/code&gt; first, defined in &lt;code&gt;types/comment.rb&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Types::Comment &amp;lt; Types::BaseObject
-  field :id, ID, null: false
-  field :body, String, null: false
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This type is used to represent comments in our GraphQL API. It provides access to both the &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;body&lt;/code&gt; attributes from any &lt;code&gt;Comment&lt;/code&gt; instance that is represented by this API.&lt;/p&gt;
-
-&lt;p&gt;Then, the &lt;code&gt;Errors&lt;/code&gt; type:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class Types::Errors &amp;lt; Types::BaseObject
-  field :errors, [String], null: false
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This type represents the &lt;code&gt;{ comment: nil, errors: [...] }&lt;/code&gt; hash that will be returned when a comment creation fails.&lt;/p&gt;
-
-&lt;p&gt;With these union types setup, we can write this GraphQL query that will rely on them:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mutation {
-  createComment(input: { postId: 1, body: &quot;Hello world&quot; }) {
-    __typename
-    ... on Comment {
-      id
-    }
-
-    ...on Errors {
-      errors
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Firstly, we call this mutation by passing in its required arguments. After that, we fetch a field called &lt;code&gt;__typename&lt;/code&gt;. This field is automatically defined, and it will return the type whatever object is returned, either &lt;code&gt;Comment&lt;/code&gt; or &lt;code&gt;Errors&lt;/code&gt;. When calling this GraphQL API, we can use &lt;code&gt;__typename&lt;/code&gt; to determine how to act.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;... on&lt;/code&gt; syntax here tells GraphQL which fields we would like to use in the case of each part of the union being returned here. If it’s a comment, we will fetch just the &lt;code&gt;id&lt;/code&gt;. If it’s &lt;code&gt;Errors&lt;/code&gt;, we can fetch just the errors.&lt;/p&gt;
-
-&lt;p&gt;If we were to call this mutation with an empty comment body, we would see this as the result:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;data&quot;: {
-    &quot;createComment&quot;: {
-      &quot;__typename&quot;: &quot;Errors&quot;,
-      &quot;errors&quot;: [
-        &quot;Body can&apos;t be blank&quot;
-      ]
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And if we were to call it with a valid body, we would see this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;data&quot;: {
-    &quot;createComment&quot;: {
-      &quot;__typename&quot;: &quot;Comment&quot;,
-      &quot;id&quot;: &quot;6&quot;
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;When using this API (for example, within a frontend codebase), we can assert on &lt;code&gt;__typename&lt;/code&gt; to determine how to show the result to a user – if it’s a &lt;code&gt;Comment&lt;/code&gt;, then indicate a successful comment creation. If it’s &lt;code&gt;Errors&lt;/code&gt;, then show those errors on the form.&lt;/p&gt;</content><author><name></name></author><summary type="html">The official documentation for the graphql-ruby gem recommends this code for a mutation class that can either succeed or fail:</summary></entry></feed>
+&lt;p&gt;If you’d like to know what else dry-schema can do, make sure to check out &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/&quot;&gt;its documentation here&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’m not going to take this week’s (very obvious) bait about how “Vanilla Rails is plenty”.</summary></entry></feed>

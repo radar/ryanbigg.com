@@ -4,13 +4,49 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-03-03T14:38:34+11:00</updated>
+ <updated>2023-03-10T06:22:47+11:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Open Letter to the Rails Foundation</title>
+   <link href="http://ryanbigg.com/2023/03/open-letter-to-the-rails-foundation"/>
+   <updated>2023-03-09T00:00:00+11:00</updated>
+   <id>http://ryanbigg.com/2023/03/open-letter-to-the-rails-foundation</id>
+   <content type="html"><![CDATA[<p>I sent this email to Amanda at the <a href="https://rubyonrails.org/foundation">Rails Foundation</a> this morning.</p>
+
+<hr />
+
+<p>Hello, my name is Ryan and I run the Gem Foundation: https://ryanbigg.com/2022/11/the-gem-foundation.</p>
+
+<p>(Just quietly between you and me, id rather you answer this email than David. We’ve got… history.)</p>
+
+<p>I’ve also written several books on Ruby, including the same Rails book 3, almost 4 times: Rails 3 in Action, Rails 4 in Action and Active Rails 1st and 2nd editions. Oh and I wrote a bunch of the Rails guides too. And contributed enough on Rails answers on Stack Overflow to earn me 100k rep, as well as a cool SO T-shirt and socks. I also took over the #rubyonrails IRC channel there for a time.</p>
+
+<p>Point is: I have written multiple of millions of words about Rails to further its adoption.</p>
+
+<p>As we approach the 4 month mark of the Rails Foundation launch, I am absolutely STUNNED that there has been not a single cent that has left the organisation’s coffers since its inception.</p>
+
+<p>The announcement was grandiose in nature. A fat sack of cash for those who do unpaid labour for Rails. Sounds delightful. I like money for the way it buys hot chocolates for my daughter who then proceeds to wear them more than drink them, amongst other things.</p>
+
+<p>Why hasn’t the Rails Foundation donated money to Rails Girls? Why haven’t they incentivised mentoring through FirstRubyFriend for Rails-focussed mentoring? Current and past guide authors: do they get funding? Rails gem authors or those gems that Rails depends on outside of its immediate vicinity? (Oh I maintain i18n as well btw, and GitHub recently sent me an award for that.)</p>
+
+<p>You want to further adoption of Rails. So do I. I love most parts of Rails. I say most parts because after 15 years with a thing you start being really good at seeing the warts. Overall, it’s a framework that’s provided me with a stable income (and some tiny level of notoriety) over the last 15 years.</p>
+
+<p>The framework and its related resources are a monumental achievement of open source collaboration.</p>
+
+<p>So my question today is when will the Rails
+foundation start funding these projects? Are we going to be waiting weeks, or months?</p>
+
+<p>I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.</p>
+
+<p>What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Please explain, Elastic Search</title>
@@ -131,7 +167,7 @@
 
 <p>Alternatively, we can request this document using the same URL we used for the <code>PUT</code> operation to add the document into the index:</p>
 
-<pre><code class="language-text">http get http get http://localhost:9200/posts/_doc/1
+<pre><code class="language-text">http get http://localhost:9200/posts/_doc/1
 </code></pre>
 
 <pre><code class="language-json">{
@@ -899,6 +935,8 @@ end
 <p><strong>UPDATE #2</strong>: As it’s now the 1st of December, a payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!</p>
 
 <p><strong>UPDATE #3</strong>: As it’s now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.</p>
+
+<p><strong>UPDATE #4</strong>: As it’s now the 1st of March, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $208.</p>
 
 <p>Here’s a helpful chart to track our donations:</p>
 
@@ -2629,375 +2667,6 @@ end
 <p>Dave 3 estimates the rebuild of the bike shed will take approximately 3 months, which coincidentally is two weeks longer than our contract lasts for. We will talk to the management here about renewing our contract for another 12 months.</p>
 
 <p>Are there any questions before we begin?</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Maintainable Rails</title>
-   <link href="http://ryanbigg.com/2021/03/maintainable-rails"/>
-   <updated>2021-03-23T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2021/03/maintainable-rails</id>
-   <content type="html"><![CDATA[<p><em>This is the Preface from my book, <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>, available on Leanpub for half-price ($10USD) for the next month. Maintainable Rails demonstrates how to separate out the distinct responsibilities of a Rails application into smaller classes, leading to a more maintainable Rails application architecture.</em></p>
-
-<hr />
-
-<p>When Rails came out, it was revolutionary. There was an order to everything.</p>
-
-<p>Code for your business logic or code that talks to the database <em>obviously</em>
-belongs in the model.</p>
-
-<p>Code that presents data in either HTML or JSON formats <em>obviously</em> belongs in
-the view.</p>
-
-<p>Any special (or complex) view logic goes into helpers.</p>
-
-<p>The thing that ties all of this together is <em>obviously</em> the controller.</p>
-
-<p>It was (and still is) neat and orderly. Getting started with a Rails
-application is incredibly easy thanks to everything having a pre-assigned home.</p>
-
-<p>The Rails Way™ enforces these conventions and suggests that this is the
-One True Way™ to organise a Rails application. This Rails Way™ suggests that,
-despite there being over a decade since Rails was crafted, that there still is
-no better way to organise an application than the MVC pattern that Rails
-originally came with.</p>
-
-<p>While I agree that this way is still extremely simple and great for <em>getting
-started</em> within a Rails application, I do not agree that this is the best way to
-organise a Rails application in 2021 with long-term maintenance in mind.</p>
-
-<p>As a friend of mine, <a href="https://twitter.com/bjeanes">Bo Jeanes</a> put it neatly once:</p>
-
-<blockquote>
-  <p>Code is written for the first time only once.</p>
-
-  <p>Then there is anywhere between 0 and infinite days of having to change that code, understand that code, move that code, delete that code, document that code, etc. Rails makes it easy to write that code and to do some of those things early on, but often harder to do all the those things on an ongoing basis.</p>
-
-  <p>We benefit by being patient in that first period and maybe trading off some of that efficiency for a clarity and momentum for the <em>life</em> of the project.</p>
-</blockquote>
-
-<p>A decade of Ruby development has produced some great alternatives to Rails’
-MVC directory structure that are definitely worthwhile to consider.</p>
-
-<p>In this book, I want to show an <em>alternative</em> viewpoint on how a Rails
-application should be organised in order to increase its maintainability.</p>
-
-<p>These are the best pieces that I’ve found to work for me and others.</p>
-
-<p>This research for how to construct a better Rails application comes out of 15 years worth of developing Rails applications.</p>
-
-<p>To best understand why this alternative architecture is a better approach, we must first understand the ways in which Rails has failed.</p>
-
-<h2 id="where-rails-falls-down">Where Rails falls down</h2>
-
-<p>The Original Rails Way™ falls down in at least three major areas in my opinion. Three major areas that have to do with organization. Coincidentally (or not), these three areas are the major highlights of the way Rails suggests you organize applications: models, controllers, and views.</p>
-
-<p>Let’s start with controllers.</p>
-
-<h2 id="messy-controllers">Messy controllers</h2>
-
-<p>The controller’s actions talk to the model, asking the model to create, read, update or delete records in a database. And then this controller code might do more: send emails, enqueue background jobs, make requests to external services. There is no pre-determined, widely agreed-upon location for this logic; the controller is the de facto place. A controller action can often have request logic, business logic, external API calls and response logic all tied up in the one method, typically inside the action itself.</p>
-
-<p>If this logic is not inside of the actions themselves, it is then likely found in private methods at the bottom of the controller. This leads to a common anti-pattern seen in Rails applications, one called the “iceberg controller”. What appears to be a small handful of clean actions is actually masking 100+ lines of private methods defined underneath. It is not immediately clear from scanning through these private methods which private method is used in which action. Or even if they <em>are</em> used at all!</p>
-
-<p>Testing all these intertwining parts individually is hard work. To make sure that it all works together, you often have to write many feature and/or request tests to test the different ways that the controller action is called and utilized. The logic of the controller’s actions – those calls out to the model – get intimately acquainted with the logic for handling the request and response for that action. The lines between the incoming request, the business logic and the outgoing response become blurred. The controller’s responsibilities are complex because there is no other sensible place for this code to go.</p>
-
-<h2 id="the-problems-with-active-record-models">The problems with Active Record Models</h2>
-
-<p>Controllers are bad, but models are worse. In order to remove complexity from controllers, it has been suggested to move that logic to the models instead – the “Fat model, skinny controller” paradigm.</p>
-
-<p>An Active Record model is responsible for <em>at least</em> the following things:</p>
-
-<ul>
-  <li>Mapping database rows to Ruby objects</li>
-  <li>Containing validation rules for those objects</li>
-  <li>Managing the CRUD operations of those objects in the database (through
-inheritance from <code>ActiveRecord::Base</code>)</li>
-  <li>Providing a place to put code to run before those CRUD operations (callbacks)</li>
-  <li>Containing complicated database queries</li>
-  <li>Containing business logic for your application</li>
-  <li>Defining associations between different models</li>
-</ul>
-
-<p>If you were to colour each responsibility of your model, it might look something like this:</p>
-
-<p><img src="/images/maintainable_rails/normal_model_clean.png" alt="Normal model" /></p>
-
-<p>Or really, it might look like this:</p>
-
-<p><img src="/images/maintainable_rails/normal_model.png" alt="Normal model" /></p>
-
-<p>In traditional Rails models, all of this gets muddled together in the model,
-making it very hard to disentangle code that talks to the database and code
-that is working with plain-Ruby objects.</p>
-
-<p>For instance, if you saw this code:</p>
-
-<pre><code>class Project &lt; ApplicationRecord
-has_many :tickets
-
-  def contributors
-    tickets.map(&amp;:user).uniq
-  end
-end
-</code></pre>
-
-<p>You might know <em>instinctively</em> that this code is going to make a database call
-to the <code>tickets</code> association for the <code>Project</code> instance, and then for each of
-these <code>Ticket</code> objects it’s going to call its <code>user</code> method, which will load a
-<code>User</code> record from the database.</p>
-
-<p>Someone unfamiliar with Rails – like, say, a junior Ruby developer with very
-little prior Rails exposure – might think this is bog-standard Ruby code
-because that’s <em>exactly</em> what it looks like. That is what Rails is designed to look like. There’s something called
-<code>tickets</code>, and you’re calling a <code>map</code> method on it, so they might guess that
-<code>tickets</code> is an array. Then <code>uniq</code> further indicates that. But <code>tickets</code> is an
-association method, and so a database query is made to load all the associated
-tickets.</p>
-
-<p>This kind of code is very, very easy to write in a Rails application because
-Rails applications are intentionally designed to be easy. <a href="http://youtu.be/Gzj723LkRJY">“Look at all the
-things I’m <em>not</em> doing”</a> and <a href="http://rubyonrails.org/doctrine/#provide-sharp-knives">“provide sharp
-knives”</a> and all that.</p>
-
-<p>However, this code executes one query to load all the <code>tickets</code>, and then one
-query <em>per ticket</em> to fetch its users. If we called this method in the console, then the query output might look like this:</p>
-
-<pre><code>Project Load (0.2ms)  SELECT  "projects".* FROM "projects" ORDER BY "projects"."id" ASC LIMIT ?  [["LIMIT", 1]]
-Ticket Load (0.1ms)  SELECT "tickets".* FROM "tickets" WHERE "tickets"."project_id" = ?  [["project_id", 1]]
-User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
-User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
-User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 3], ["LIMIT", 1]]
-User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
-User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 2], ["LIMIT", 1]]
-User Load (0.1ms)  SELECT  "users".* FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 3], ["LIMIT", 1]]
-</code></pre>
-
-<p>This is a classic N+1 query, which Rails does not stop you from doing. It’s a
-classic Active Record footgun / sharp knife. And this is all because Active Record makes it
-<em>much</em> too easy to call out to the database. This code
-for <code>Project#contributors</code> combines business logic intent (“find me all the
-contributors to this project”) with database querying and it’s <em>the</em> major
-problem with Active Record’s design.</p>
-
-<p>What’s worse, is that you can make a database call <em>wherever a model is used in a Rails application</em>. If you use a model in a view, a view can make a database call. A view helper can. Anywhere! Rails’ attitude to this is one of “this is fine”, because they provide sharp knives and you’re supposed to trust the “omakase chefs” of the Rails core team. Constant vigilance can be exhausting, however.</p>
-
-<p>Database queries are cheap to make because Active Record makes it so darn
-easy. When looking at the performance of a large, in-production Rails
-application, the number one thing I come across is slow database queries
-caused by methods just like this. Programmers writing innocent looking Ruby
-code that triggers not-so-innocent database activity is something that I’ve
-had to fix too many times within a Rails application.</p>
-
-<p>Active Record makes it way too easy to make calls to the database. Once these
-database calls are ingrained in the model like this and things start depending
-on those calls being made, it becomes hard to refactor this code to reduce
-those queries. Even tracking down where queries are being made can be
-difficult due to the natural implicitness that <em>some</em> method calls produce
-database queries.</p>
-
-<p>Thankfully, there are tools like <a href="https://appsignal.com">AppSignal</a>, <a href="https://skylight.io">Skylight</a> and <a href="https://newrelic.com">New
-Relic</a> that point directly at the “smoking guns” of
-performance hits in a Rails application. Tools like these are invaluable. It
-would be nice to not need them so much in the first place, however.</p>
-
-<p>The intention here with the <code>contributors</code> method is very innocent: get all the
-users who have contributed to the project by iterating through all the tickets
-and finding their users. If we had a <code>Project</code> instance (<a href="https://github.com/rails/rails">with thousands of
-tickets</a>), running that contributors method
-would cause thousands of database queries to be executed against our database.</p>
-
-<p>Of course, there is a way to make this all into two queries through Rails:</p>
-
-<pre><code>class Project &lt; ApplicationRecord
-  def contributors
-    tickets.includes(:user).map(&amp;:user).uniq
-  end
-end
-</code></pre>
-
-<p>This will load all the tickets <em>and</em> their users in two separate queries,
-rather than one for tickets and then one for each ticket’s user, thanks to the
-<em>power of eager loading</em>. (Which you can <a href="http://guides.rubyonrails.org/active_record_querying.html#eager-loading-associations">read more about in the Active Record
-Querying
-guide</a>.)</p>
-
-<p>The queries look like this:</p>
-
-<pre><code>Ticket Load (0.4ms)  SELECT "tickets".* FROM "tickets" WHERE "tickets"."project_id" = ?  [["project_id", 1]]
-User Load (0.4ms)  SELECT "users".* FROM "users" WHERE "users"."id" IN (1, 5)
-</code></pre>
-
-<p>Active Record loads all the ticket objects that it needs to, and then it issues
-a query to find all the users that match the <code>user_id</code> values from all the
-tickets.</p>
-
-<p>You can of course not load all the tickets at the start either, you could load
-only the 100 most recent tickets:</p>
-
-<pre><code>class Project &lt; ApplicationRecord
-  def contributors
-    tickets.recent.includes(:user).map(&amp;:user).uniq
-  end
-end
-
-class Ticket &lt; ApplicationRecord
-  scope :recent, -&gt; { limit(100) }
-end
-</code></pre>
-
-<p>But I think this is still too much of a mish-mash of database querying and
-business logic. Where is the clear line between database querying and business
-logic in this method? It’s hard to tell. This is because Active
-Record <em>allows</em> us to do this sort of super-easy querying; intertwining
-Active Record’s tentacles with our business logic.</p>
-
-<h2 id="views">Views</h2>
-
-<p>Views in a typical Rails application are used to define logic for how to present data from models once this data has been fetched by controllers.</p>
-
-<p>We’ve already discussed how Active Record allows you to execute additional queries in any context that a model is used. Typically additional queries like the <code>tickets</code> and <code>contributors</code> ones above will be executed in a view. There’s no clear barrier between models and views to prevent this from happening.</p>
-
-<p>This sort of “leakage” makes it very hard for views to be used in complete isolation from a database. The moment a view uses a model is the moment that the view is now potentially tied to a database. For example: could you look at a view and quickly know how many, if any, database queries were being executed? Probably not.</p>
-
-<p>To define any sort of Ruby logic for views, Rails recommends using view helpers. Perhaps we want to render a particular avatar for users:</p>
-
-<pre><code>module UsersHelper
-  def avatar
-    image_tag(user.avatar_url || "anonymous.png")
-  end
-end
-</code></pre>
-
-<p>And then we were to use this in our view over at <code>app/views/projects/show.html.erb</code>:</p>
-
-<pre><code>&lt;ul&gt;
-  &lt;% @project.tickets.each do |ticket| %&gt;
-    &lt;li&gt;&lt;%= avatar(ticket.author) %&gt;&lt;/li&gt;
-  &lt;% end %&gt;
-&lt;/ul&gt;
-</code></pre>
-
-<p>This code is defined in a helper file at <code>app/helpers/users_helper.rb</code>, but is used in a completely separate directory, under a completely different namespace. The distance between where the code is <em>defined</em> and where it is <em>used</em> is very far apart.</p>
-
-<p>On top of all that, helpers are then shared across <em>all</em> views. So while the helper is defined in <code>UsersHelper</code>, it will be available for <em>all</em> views. If you define a helper in <code>UsersHelper</code>, then it is also available under views at <code>app/views/tickets</code>, or <code>app/views/projects</code>, too.</p>
-
-<p>Because of this “wide sharing” of view helpers, we don’t know if changing it is going to have ramifications elsewhere in our application. If we change it for this <em>one</em> context, will it potentially break other areas? We cannot know without looking through our code diligently.</p>
-
-<h3 id="presenters">Presenters</h3>
-
-<p>A common way to approach solving this problem is through the <em>presenter</em> pattern. Presenters define classes that then “accentuate” models. They’re typically used to include presentational logic for models – things that would be “incorrect” to put in a model, but okay to put in a view.</p>
-
-<p>By using a presenter, we have a clear indicator of where the presenter’s method is used: look for things like <code>UserPresenter.new(user)</code>, and then that’ll be where it is used.</p>
-
-<p>Here’s our <code>avatar</code> example, but this time in a presenter:</p>
-
-<pre><code>class UserPresenter
-  def avatar
-    image_tag(user.avatar_url || "anonymous.png")
-  end
-end
-</code></pre>
-
-<p>To use this, we would then need to initialize a new instance of this presenter per user object:</p>
-
-<pre><code>&lt;ul&gt;
-  &lt;% @project.tickets.each do |ticket| %&gt;
-    &lt;li&gt;&lt;%= UserPresenter.new(ticket.author).avatar %&gt;&lt;/li&gt;
-  &lt;% end %&gt;
-&lt;/ul&gt;
-</code></pre>
-
-<p>This then muddles together the Ruby and HTML code of our view. A way to solve this could be to move that preparation of the data into a helper:</p>
-
-<pre><code>module TicketsHelper
-  def author_avatar(author)
-    UserPresenter.new(author).avatar
-  end
-end
-</code></pre>
-
-<p>Then in the view:</p>
-
-<pre><code>&lt;ul&gt;
-  &lt;% @project.tickets.each do |ticket| %&gt;
-    &lt;li&gt;&lt;%= author_avatar(ticket.author) %&gt;&lt;/li&gt;
-  &lt;% end %&gt;
-&lt;/ul&gt;
-</code></pre>
-
-<p>We have now got the logic for rendering an avatar spread over three different points:</p>
-
-<ol>
-  <li>The view</li>
-  <li>The presenter</li>
-  <li>The helper</li>
-</ol>
-
-<p>This is not a very clear way to organize this code, and the more this pattern is used, the more confusing your application will get.</p>
-
-<p>Views in a default Rails application leave us with no alternative other than to create a sticky combined mess of logic between our ERB files and helper files that are globally shared.</p>
-
-<h2 id="we-can-do-better">We can do better</h2>
-
-<p>It should be possible to render a view without relying on a model to be connected to a database. Being
-able to reach into the database from your views <em>should</em> be hard work.
-Your business logic should have everything it needs to work by the stage a view is being rendered. This will then make it easier to test the view in isolation from the other components of your application.</p>
-
-<p>The source of these frustrations is the Active Record pattern and Rails’ strict adherence to it. A class containing only business logic and being passed some data should not need
-to know also about how that data is validated, any “callbacks” or how that data
-is persisted too. If a class knows about all of those things, it has too many
-responsibilities.</p>
-
-<p>The Single Responsibility Principle says that a class or a module should only
-be responsible for one aspect of the application’s behaviour. It should only
-have one reason to change. An Active Record model of any meaningful size has
-many different reasons to change. Maybe there’s a validation that needs
-tweaking, or an association to be added. How about a scope, a class method or a
-plain old regular method, like the contributors one? All more reasons why
-changes could happen to the class.</p>
-
-<p>An Active Record model flies in the face of the Single Responsibility
-Principle. I would go as far as to say this: Active Record leads you to writing
-code that is hard to maintain from the very first time you set foot in a Rails
-application. Just look at any sizable Rails application. The models are
-usually the messiest part and I really believe Active Record – both the
-design pattern and the gem that implements that pattern – is the cause.</p>
-
-<p>Having a well-defined boundary between different pieces of code makes it easier
-to work with each piece. Active Record does not encourage this.</p>
-
-<p>Validations and persistence should be their own separate responsibilities and separated into
-different classes, as should business logic. There should be specific, dedicated classes that only
-have the responsibility of talking to the database. Clear lines between the
-responsibilities here makes it so much easier to work with this code.</p>
-
-<p>It becomes easier then to say: this class works with only validations and this
-other class talks to the database. There’s no muddying of the waters between
-the responsibilities of the classes. Each class has perhaps not <em>one</em> reason to
-change, but at least <em>fewer</em> reasons to change than Active Record classes.</p>
-
-<p>It’s possible to build a Rails application with distinct classes for validations, persistence and logic that concerns itself with data from database records. It’s possible to build one that does not combine a heap of messy logic in a controller action, muddling it in with request and response handling.</p>
-
-<p>Just because DHH &amp; friends decided in 2006 that there was One True Way™ to build a Rails application – it does not mean that now in 2021, a full 15 years later, that we need to hew as close to that as possible.</p>
-
-<p>We can explore other pathways. This is a book dedicated to charting that exploration, leading to a brighter future for your Rails application.</p>
-
-<p>The way we’re going to <em>improve</em> upon the default Rails architecture is with two suites of gems: those from the <a href="https://dry-rb.org/">dry-rb</a> suite, and those from the <a href="https://rom-rb.org">rom-rb</a> suite.</p>
-
-<p>We’ll be using these gems to clearly demarcate the lines between responsibilities for our application.</p>
-
-<p>We’ll have particular classes that will separate the code that validates user input from the code that talks to a database.</p>
-
-<p>We’ll take apart the intermingling of request-response handling and business logic from within our controllers, and move that out to another set of distinct classes.</p>
-
-<p>We’ll move code that would typically be in a view or a helper, into yet another type of distinct class: one called a <em>view component</em>.</p>
-
-<p>And with this, we’ll move forward into that bright future that’ll lead to your Rails applications being maintainable.</p>
-
-<hr />
-
-<p>_If you want to find out how to build maintainable Rails applications, read my book: <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>, available on Leanpub for $10 for the next month.</p>
 ]]></content>
  </entry>
  
