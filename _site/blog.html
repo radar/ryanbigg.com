@@ -57,7 +57,7 @@
     <a href="/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">
       <h2 class="mt-4 post-title">Rails 7, Bootstrap CSS + JavaScript with ESBuild</h2>
     </a>
-    <small>25 Apr 2023</small>
+    <small>24 Apr 2023</small>
   </div>
   <p>Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</p>
 
@@ -88,6 +88,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 <pre><code>yarn build
 </code></pre>
+
+<p>This will show us that it has built these assets:</p>
+
+<pre><code>yarn run v1.22.19
+$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
+
+  app/assets/builds/application.css      229.9kb
+  app/assets/builds/application.js       186.9kb
+  app/assets/builds/application.css.map  479.0kb
+  app/assets/builds/application.js.map   356.7kb
+</code></pre>
+
+<p>ESBuild is smart enough here to know that we’re bringing in a CSS asset in our JS file, and due to that it will generate <em>both</em> a JS and a CSS file as assets. In addition to this, sourcemaps have been generated for both the CSS and JS files too.</p>
 
 <p>To test that it’s all working, we can generate a simple view:</p>
 

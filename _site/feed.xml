@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-04-25T07:31:25+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-25T00:00:00+10:00</published><updated>2023-04-25T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-04-25T07:34:09+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
 
 &lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
 
@@ -27,6 +27,19 @@ import &quot;bootstrap/dist/css/bootstrap.min.css&quot;;
 
 &lt;pre&gt;&lt;code&gt;yarn build
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will show us that it has built these assets:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yarn run v1.22.19
+$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
+
+  app/assets/builds/application.css      229.9kb
+  app/assets/builds/application.js       186.9kb
+  app/assets/builds/application.css.map  479.0kb
+  app/assets/builds/application.js.map   356.7kb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ESBuild is smart enough here to know that we’re bringing in a CSS asset in our JS file, and due to that it will generate &lt;em&gt;both&lt;/em&gt; a JS and a CSS file as assets. In addition to this, sourcemaps have been generated for both the CSS and JS files too.&lt;/p&gt;
 
 &lt;p&gt;To test that it’s all working, we can generate a simple view:&lt;/p&gt;
 

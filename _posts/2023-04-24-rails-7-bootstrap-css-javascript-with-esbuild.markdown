@@ -39,6 +39,20 @@ After this, we can build our application's assets by running:
 yarn build
 ```
 
+This will show us that it has built these assets:
+
+```
+yarn run v1.22.19
+$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
+
+  app/assets/builds/application.css      229.9kb
+  app/assets/builds/application.js       186.9kb
+  app/assets/builds/application.css.map  479.0kb
+  app/assets/builds/application.js.map   356.7kb
+```
+
+ESBuild is smart enough here to know that we're bringing in a CSS asset in our JS file, and due to that it will generate _both_ a JS and a CSS file as assets. In addition to this, sourcemaps have been generated for both the CSS and JS files too.
+
 To test that it's all working, we can generate a simple view:
 
 ```
