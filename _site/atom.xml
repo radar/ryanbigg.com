@@ -4,13 +4,79 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-03-10T06:22:47+11:00</updated>
+ <updated>2023-04-25T07:31:25+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Rails 7, Bootstrap CSS + JavaScript with ESBuild</title>
+   <link href="http://ryanbigg.com/2023/04/rails-7-bootstrap-css-javascript-with-esbuild"/>
+   <updated>2023-04-25T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id>
+   <content type="html"><![CDATA[<p>Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</p>
+
+<p>First you’ll want to install the <code>jsbundling-rails</code> gem:</p>
+
+<pre><code>bundle add jsbundling-rails
+</code></pre>
+
+<p>Next, you’ll run the generator for this gem to setup ESBuild:</p>
+
+<pre><code>bin/rails javascript:install:esbuild
+</code></pre>
+
+<p>ESBuild will be setup to build assets in <code>app/javascript</code>, and put them into <code>app/assets/builds</code>. From there, Rails will be able to serve those assets.</p>
+
+<p>To setup Bootstrap itself, we’ll add Bootstrap and its dependencies, PopperJS and jQuery:</p>
+
+<pre><code>yarn add bootstrap @popperjs/core jquery
+</code></pre>
+
+<p>To use these dependencies, we will need to import them into our application’s build entrypoint file, which is located at <code>app/javascript/application.js</code>. The lines that we need to add to this file to get Bootstrap loaded are:</p>
+
+<pre><code class="language-js">import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+</code></pre>
+
+<p>After this, we can build our application’s assets by running:</p>
+
+<pre><code>yarn build
+</code></pre>
+
+<p>To test that it’s all working, we can generate a simple view:</p>
+
+<pre><code>rails g controller home index
+</code></pre>
+
+<p>And into <code>app/views/home/index.html.erb</code> we can put this HTML that I’ve “borrowed” from Bootstrap’s own example:</p>
+
+<pre><code class="language-html">&lt;div class="modal fade" id="exampleModalXl" tabindex="-1" aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true"&gt;
+  &lt;div class="modal-dialog modal-xl"&gt;
+    &lt;div class="modal-content"&gt;
+      &lt;div class="modal-header"&gt;
+        &lt;h1 class="modal-title fs-4" id="exampleModalXlLabel"&gt;Extra large modal&lt;/h1&gt;
+        &lt;button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"&gt;&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class="modal-body"&gt;
+        ...
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalXl"&gt;Extra large modal&lt;/button&gt;
+</code></pre>
+
+<p>When we start our Rails app with <code>bundle exec rails s</code> and go to http://localhost:3000/home/index, we’ll see a blue button. When we click the blue button, the modal will appear:</p>
+
+<p><img src="/images/css-bundling/bootstrap/modal.png" alt="Modal" /></p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Open Letter to the Rails Foundation</title>
@@ -937,6 +1003,8 @@ end
 <p><strong>UPDATE #3</strong>: As it’s now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.</p>
 
 <p><strong>UPDATE #4</strong>: As it’s now the 1st of March, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $208.</p>
+
+<p><strong>UPDATE #5</strong>: As it’s now the 1st of April, yet another payment of $35USD has been made to the Hanami organisation on GitHub. We have also donated $75 to other members of the Ruby community for their work on open source projects, with a remaining $125 “prize pool” for further pull requests for code or documentation work. This brings our total of donations up to $318.</p>
 
 <p>Here’s a helpful chart to track our donations:</p>
 
@@ -2644,29 +2712,6 @@ end
   )
 }
 </code></pre>
-]]></content>
- </entry>
- 
- <entry>
-   <title>The Bikeshed</title>
-   <link href="http://ryanbigg.com/2021/03/the-bikeshed"/>
-   <updated>2021-03-29T00:00:00+11:00</updated>
-   <id>http://ryanbigg.com/2021/03/the-bikeshed</id>
-   <content type="html"><![CDATA[<p>Hello.</p>
-
-<p>This is a meeting to discuss the bike shed project. I called this 2.5hr long meeting (running until 1pm) on a Monday so we can start the week by deciding the way forward for the bike shed project.</p>
-
-<p>As the senior consultant here I have some ideas.</p>
-
-<p>The previous bike shed colour did not test well with our beta users and we were particularly ravaged by that one guy on Twitter in an extensive 46-tweet thread. Turns out, chatruese is his ex-wife’s favourite colour. Due to the above reasons, we will be deciding on a new colour for the bike sheds.</p>
-
-<p>We are A/B testing new colours with a focus group that is including not only bike riders but also drivers, motorbike riders and those people with the electronic skateboards. The upcoming Bike Shed 2.0 project will be catering for their needs too.</p>
-
-<p>Dave 3 from our consulting team has determined that the previous consultants did a poor job architecting the bike shed and as such it is not up to code. Daves 2 through 5 recommend a rebuild, while Daves 1 and 6 are still on the fence. That is, they’re on BAU work for the Fence Alpha release that was due out a week and a half ago.</p>
-
-<p>Dave 3 estimates the rebuild of the bike shed will take approximately 3 months, which coincidentally is two weeks longer than our contract lasts for. We will talk to the management here about renewing our contract for another 12 months.</p>
-
-<p>Are there any questions before we begin?</p>
 ]]></content>
  </entry>
  

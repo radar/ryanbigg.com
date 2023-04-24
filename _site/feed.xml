@@ -1,4 +1,61 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-03-10T06:22:47+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Open Letter to the Rails Foundation</title><link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation">&lt;p&gt;I sent this email to Amanda at the &lt;a href=&quot;https://rubyonrails.org/foundation&quot;&gt;Rails Foundation&lt;/a&gt; this morning.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-04-25T07:31:25+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-25T00:00:00+10:00</published><updated>2023-04-25T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
+
+&lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bundle add jsbundling-rails
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next, you’ll run the generator for this gem to setup ESBuild:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bin/rails javascript:install:esbuild
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ESBuild will be setup to build assets in &lt;code&gt;app/javascript&lt;/code&gt;, and put them into &lt;code&gt;app/assets/builds&lt;/code&gt;. From there, Rails will be able to serve those assets.&lt;/p&gt;
+
+&lt;p&gt;To setup Bootstrap itself, we’ll add Bootstrap and its dependencies, PopperJS and jQuery:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yarn add bootstrap @popperjs/core jquery
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To use these dependencies, we will need to import them into our application’s build entrypoint file, which is located at &lt;code&gt;app/javascript/application.js&lt;/code&gt;. The lines that we need to add to this file to get Bootstrap loaded are:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-js&quot;&gt;import &quot;bootstrap&quot;;
+import &quot;bootstrap/dist/css/bootstrap.min.css&quot;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After this, we can build our application’s assets by running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yarn build
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To test that it’s all working, we can generate a simple view:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rails g controller home index
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And into &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; we can put this HTML that I’ve “borrowed” from Bootstrap’s own example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div class=&quot;modal fade&quot; id=&quot;exampleModalXl&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;exampleModalXlLabel&quot; style=&quot;display: none;&quot; aria-hidden=&quot;true&quot;&amp;gt;
+  &amp;lt;div class=&quot;modal-dialog modal-xl&quot;&amp;gt;
+    &amp;lt;div class=&quot;modal-content&quot;&amp;gt;
+      &amp;lt;div class=&quot;modal-header&quot;&amp;gt;
+        &amp;lt;h1 class=&quot;modal-title fs-4&quot; id=&quot;exampleModalXlLabel&quot;&amp;gt;Extra large modal&amp;lt;/h1&amp;gt;
+        &amp;lt;button type=&quot;button&quot; class=&quot;btn-close&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&amp;gt;&amp;lt;/button&amp;gt;
+      &amp;lt;/div&amp;gt;
+      &amp;lt;div class=&quot;modal-body&quot;&amp;gt;
+        ...
+      &amp;lt;/div&amp;gt;
+    &amp;lt;/div&amp;gt;
+  &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;
+
+
+&amp;lt;button type=&quot;button&quot; class=&quot;btn btn-primary&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#exampleModalXl&quot;&amp;gt;Extra large modal&amp;lt;/button&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When we start our Rails app with &lt;code&gt;bundle exec rails s&lt;/code&gt; and go to http://localhost:3000/home/index, we’ll see a blue button. When we click the blue button, the modal will appear:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/css-bundling/bootstrap/modal.png&quot; alt=&quot;Modal&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</summary></entry><entry><title type="html">Open Letter to the Rails Foundation</title><link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation">&lt;p&gt;I sent this email to Amanda at the &lt;a href=&quot;https://rubyonrails.org/foundation&quot;&gt;Rails Foundation&lt;/a&gt; this morning.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -847,189 +904,8 @@ end
 
 &lt;p&gt;&lt;strong&gt;UPDATE #4&lt;/strong&gt;: As it’s now the 1st of March, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $208.&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;UPDATE #5&lt;/strong&gt;: As it’s now the 1st of April, yet another payment of $35USD has been made to the Hanami organisation on GitHub. We have also donated $75 to other members of the Ruby community for their work on open source projects, with a remaining $125 “prize pool” for further pull requests for code or documentation work. This brings our total of donations up to $318.&lt;/p&gt;
+
 &lt;p&gt;Here’s a helpful chart to track our donations:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/gem-foundation/donations.png&quot; alt=&quot;The Gem Foundation donations&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I am excited to announce the launch of The Gem Foundation.</summary></entry><entry><title type="html">A replacement for strong parameters</title><link href="http://localhost:4000/2022/11/a-replacement-for-strong-parameters" rel="alternate" type="text/html" title="A replacement for strong parameters" /><published>2022-11-09T00:00:00+11:00</published><updated>2022-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/a-replacement-for-strong-parameters</id><content type="html" xml:base="http://localhost:4000/2022/11/a-replacement-for-strong-parameters">&lt;p&gt;I’m not going to take &lt;a href=&quot;https://dev.37signals.com/vanilla-rails-is-plenty&quot;&gt;this week’s (very obvious) bait about how “Vanilla Rails is plenty”&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;In the past, I’ve spent effort watching DHH’s videos and &lt;a href=&quot;https://ryanbigg.com/2018/03/on-writing-software-well-2-a-review&quot;&gt;issuing a (time-stamped) rebuttal&lt;/a&gt;, and writing up about &lt;a href=&quot;https://ryanbigg.com/2017/06/current-considered-harmful&quot;&gt;a new Rails feature I would consider harmful&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p style=&quot;font-size: 125%&quot;&gt;&lt;strong&gt;I even &lt;a href=&quot;https://leanpub.com/maintain-rails/&quot;&gt;wrote a book called Maintainable Rails&lt;/a&gt; that offers my take on how to build a maintainable Rails application. A whole 30,000 words of it!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;I am not going to follow that pattern today, even though the vanilla Rails article is &lt;em&gt;concerning&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;You know, if their apps were &lt;em&gt;maintainable&lt;/em&gt;, then they wouldn’t need to keep re-writing them completely, yeah?&lt;/p&gt;
-
-&lt;p&gt;I digress.&lt;/p&gt;
-
-&lt;p&gt;Today, I want to cover a &lt;em&gt;different&lt;/em&gt; feature of Rails that I think could be improved: strong parameters.&lt;/p&gt;
-
-&lt;p&gt;The &lt;a href=&quot;https://guides.rubyonrails.org/action_controller_overview.html#nested-parameters&quot;&gt;documentation for strong_parameters&lt;/a&gt; always makes me a little confused with all of its different kinds of brackets. It feels like someone discovered Lisp and then thought it would be good to have as many brackets in Ruby, only to abandon the idea half-way.&lt;/p&gt;
-
-&lt;p&gt;Here’s a complicated example from that documentation.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;params.permit(:name, { emails: [] },
-              friends: [ :name,
-                         { family: [ :name ], hobbies: [] }])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The documentation goes on to explain:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;This declaration permits the name, emails, and friends attributes. It is expected that emails will be an array of permitted scalar values, and that friends will be an array of resources with specific attributes: they should have a name attribute (any permitted scalar values allowed), a hobbies attribute as an array of permitted scalar values, and a family attribute which is restricted to having a name (any permitted scalar values allowed here, too).&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;The documentation also explains that the permitted scalar values are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;The permitted scalar types are `String`, `Symbol`, `NilClass`, `Numeric`, `TrueClass`, `FalseClass`, `Date`, `Time`, `DateTime`, `StringIO`, `IO`, `ActionDispatch::Http::UploadedFile`, and `Rack::Test::UploadedFile`.
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;That’s quite a few permitted types!&lt;/p&gt;
-
-&lt;p&gt;How might we approach this differently? I think we could do this in a clearer fashion with a gem called &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/1.10/&quot;&gt;dry-schema&lt;/a&gt;. The dry-schema gem allows us to define particular schemas that our data should comply with, and like strong parameters it will automatically drop keys that are not specified in the schema itself.&lt;/p&gt;
-
-&lt;h3 id=&quot;creating-the-schema&quot;&gt;Creating the schema&lt;/h3&gt;
-
-&lt;p&gt;Let’s try creating a schema from the above strong parameters code, but this time in dry-schema. I’m also going to add an extra field here called age:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;PersonSchema = Dry::Schema.Params do
-  required(:name).filled(:string)
-  required(:age).filled(:integer)
-  required(:emails).value(array[:string]).value(min_size?: 1)
-  required(:friends).array(:hash) do
-    required(:name).filled(:string)
-    required(:family).hash do
-      required(:name).filled(:string)
-    end
-  end
-  required(:hobbies).array(:string)
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With this schema we’re clearly defining the types of the data that we expect. Now we’ve limited the type of &lt;code&gt;name&lt;/code&gt; to string, so it can no longer accept a file for its value. That is probably for the best.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;required(:friends).array(:hash)&lt;/code&gt; syntax might hurt a little bit to read, but it means “an array of any length, where the values are all hashes”. The block of this method then defines the permitted keys within those hashes.&lt;/p&gt;
-
-&lt;p&gt;You could define this schema at the top of your controller, if you like, or in its own file at &lt;code&gt;app/schemas/person_schema.rb&lt;/code&gt;. It really should depend on the context in which it is used.&lt;/p&gt;
-
-&lt;p&gt;It goes further than strong parameters, because it specifies the types expected for things such as emails and hobbies, whereas strong parameters would allow any “permitted scalar values” in there, including things such as numbers. The &lt;code&gt;dry-schema&lt;/code&gt; version &lt;em&gt;also&lt;/em&gt; specifies that there has to be at least one email address.&lt;/p&gt;
-
-&lt;h3 id=&quot;using-a-valid-set-of-parameters&quot;&gt;Using a valid set of parameters&lt;/h3&gt;
-
-&lt;p&gt;A hash that would pass the checks for this schema.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;params = {
-  name: &quot;Ryan&quot;,
-  age: 34,
-  emails: [&quot;me@ryanbigg.com&quot;],
-  hobbies: [&quot;MTG&quot;, &quot;Coding&quot;],
-  friends: [
-    {
-      name: &quot;Dear&quot;,
-      family: { name: &quot;Reader&quot; }
-    }
-  ]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We can check this with:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;result = PersonSchema.(params)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;We will get a &lt;code&gt;Dry::Schema::Result&lt;/code&gt; back from this, which we can grab the output of with:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;result.output
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;type-coercions&quot;&gt;Type-coercions&lt;/h3&gt;
-
-&lt;p&gt;Another hash that would pass the checks, even though it might not look like it, is this one:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;params = {
-  name: &quot;Ryan&quot;,
-  age: &quot;34&quot;,
-  emails: [&quot;me@ryanbigg.com&quot;],
-  hobbies: [&quot;MTG&quot;, &quot;Coding&quot;],
-  friends: [
-    {
-      name: &quot;Dear&quot;,
-      family: { name: &quot;Reader&quot; }
-    }
-  ]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;age&lt;/code&gt; key here is specified as a string, but the schema says the type must be an &lt;code&gt;integer&lt;/code&gt;. Let’s look at what happens:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;result = PersonSchema.(params)
-result.output[:age] # =&amp;gt; 34
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;Dry::Schema.Params&lt;/code&gt; type will do its best to cooerce string parameter values to their matching Ruby counterparts. This will also work for things such as dates in the “YYYY-MM-DD” formats, too. No more needing to do a &lt;code&gt;Date.parse&lt;/code&gt; if that parameter is being sent to something else, like a service object instead of a model.&lt;/p&gt;
-
-&lt;h3 id=&quot;unknown-keys-are-removed&quot;&gt;Unknown Keys are removed&lt;/h3&gt;
-
-&lt;p&gt;Like with strong parameters, if we attempt to pass an extra key:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;params = {
-  name: &quot;Ryan&quot;,
-  age: 34,
-  emails: [&quot;me@ryanbigg.com&quot;],
-  hobbies: [&quot;MTG&quot;, &quot;Coding&quot;],
-  friends: [
-    {
-      name: &quot;Dear&quot;,
-      family: { name: &quot;Reader&quot; }
-    }
-  ],
-  very_smart: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then the schema will remove this additional key, proving that I am just regular smart, if that.&lt;/p&gt;
-
-&lt;h3 id=&quot;re-using-schemas&quot;&gt;Re-using schemas&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;dry-schema&lt;/code&gt; also allows us to re-use schemas. Let’s say that we have two schemas, our &lt;code&gt;PersonSchema&lt;/code&gt; and another schema called &lt;code&gt;FriendSchema&lt;/code&gt; that defines the shape of the friend keys. Heres how we could use those together:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;FriendSchema = Dry::Schema.params do
-  required(:name).filled(:string)
-  required(:family).hash do
-    required(:name).filled(:string)
-  end
-end
-
-PersonSchema = Dry::Schema.Params do
-  required(:name).filled(:string)
-  required(:age).filled(:integer)
-  required(:emails).value(array[:string]).value(min_size?: 1)
-  required(:friends).array(FriendSchema)
-  required(:hobbies).array(:string)
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is particularly helpful if you had a couple of complicated data structures that you wanted to validate at the same time, and use each of those schemas in different locations.&lt;/p&gt;
-
-&lt;p&gt;I’d like to see strong parameters do that!&lt;/p&gt;
-
-&lt;h3 id=&quot;error-messages-are-provided&quot;&gt;Error messages are provided&lt;/h3&gt;
-
-&lt;p&gt;If the hash passed in is completely invalid, like this one:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;params = {}
-result = PersonSchema.(params)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then we can retrieve error messages that are similar to Active Model validations back out:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;=&amp;gt; {:name=&amp;gt;[&quot;is missing&quot;], :age=&amp;gt;[&quot;is missing&quot;], :emails=&amp;gt;[&quot;is missing&quot;], :friends=&amp;gt;[&quot;is missing&quot;], :hobbies=&amp;gt;[&quot;is missing&quot;]}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;On top of this, the &lt;code&gt;result&lt;/code&gt; is also going to respond to &lt;code&gt;success?&lt;/code&gt; with &lt;code&gt;false&lt;/code&gt;, meaning we could use this in a controller action to check if the parameters are valid, before even passing them to their final destination. That might be a model (with, perhaps, it’s own validations), or it could
-be another service.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;I’ve only scratched the surface on what &lt;code&gt;dry-schema&lt;/code&gt; can do. I purposely wanted to keep this post short today to cover how it could replace strong parameters within Rails to provide a much better developer experience than that bracketed mess.&lt;/p&gt;
-
-&lt;p&gt;If you’d like to know what else dry-schema can do, make sure to check out &lt;a href=&quot;https://dry-rb.org/gems/dry-schema/&quot;&gt;its documentation here&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’m not going to take this week’s (very obvious) bait about how “Vanilla Rails is plenty”.</summary></entry></feed>
+&lt;p&gt;&lt;img src=&quot;/images/gem-foundation/donations.png&quot; alt=&quot;The Gem Foundation donations&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I am excited to announce the launch of The Gem Foundation.</summary></entry></feed>
