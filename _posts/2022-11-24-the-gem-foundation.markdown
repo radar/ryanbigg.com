@@ -31,6 +31,8 @@ That's _$28USD_ already donated by the Gem Foundation!
 
 **UPDATE #5**: As it's now the 1st of April, yet another payment of $35USD has been made to the Hanami organisation on GitHub. We have also donated $75 to other members of the Ruby community for their work on open source projects, with a remaining $125 "prize pool" for further pull requests for code or documentation work. This brings our total of donations up to $318.
 
+**UPDATE #6**: As it's now the 1st of May, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $353USD.
+
 Here's a helpful chart to track our donations:
 
 ![The Gem Foundation donations](/images/gem-foundation/donations.png)
