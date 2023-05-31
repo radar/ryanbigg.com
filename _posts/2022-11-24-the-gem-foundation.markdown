@@ -33,6 +33,8 @@ That's _$28USD_ already donated by the Gem Foundation!
 
 **UPDATE #6**: As it's now the 1st of May, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $353USD.
 
+**UPDATE #7**: As it's now the 1st of June, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $388USD.
+
 Here's a helpful chart to track our donations:
 
 ![The Gem Foundation donations](/images/gem-foundation/donations.png)
