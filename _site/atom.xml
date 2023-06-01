@@ -4,13 +4,358 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-04-25T10:31:41+10:00</updated>
+ <updated>2023-06-02T09:56:57+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Rails 7, React, TypeScript, ESBuild and View Components</title>
+   <link href="http://ryanbigg.com/2023/06/rails-7-react-typescript-setup"/>
+   <updated>2023-06-01T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2023/06/rails-7-react-typescript-setup</id>
+   <content type="html"><![CDATA[<p>Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the <code>react-rails</code> gem, but I would like to show you the individual steps to setting it up here instead.</p>
+
+<h3 id="installing-esbuild">Installing ESBuild</h3>
+
+<p>First you’ll want to install the <code>jsbundling-rails</code> gem:</p>
+
+<pre><code>bundle add jsbundling-rails
+</code></pre>
+
+<p>Next, you’ll run the generator for this gem to setup ESBuild:</p>
+
+<pre><code>bin/rails javascript:install:esbuild
+</code></pre>
+
+<p>This will create an <code>app/javascript/application.js</code> file that we will not need – so delete this file.</p>
+
+<p>ESBuild will be setup to build assets in <code>app/javascript</code>, and put them into <code>app/assets/builds</code>. From there, Rails will be able to serve those assets.</p>
+
+<p>This install script has added a new <code>build</code> script to <code>package.json</code>:</p>
+
+<pre><code class="language-json">"scripts": {
+  "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
+}
+</code></pre>
+
+<p>Once we’ve setup our React code we will be able to run this command to take that code and compile it into some JavaScript browsers can run.</p>
+
+<p>I like to change this script to point at an <code>entrypoints</code> subdirectory:</p>
+
+<pre><code class="language-json">"scripts": {
+  "build": "esbuild app/javascript/entrypoints/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
+}
+</code></pre>
+
+<p>This is so that I can put other directories inside <code>app/javascript</code>, such as directories including little helper functions, or bigger component structures like <code>app/javascript/Purchases/Table.tsx</code>.</p>
+
+<p>It also means that ESBuild will not build <em>everything</em> in that directory – just the files we declare as entrypoints.</p>
+
+<h3 id="installing-react--typescript">Installing React &amp; TypeScript</h3>
+
+<p>To install React and TypeScript we’ll run this <code>yarn</code> command:</p>
+
+<pre><code>yarn add react@^18.2 @react-dom@^18.2 @types/react @types/react-dom typescript
+</code></pre>
+
+<p>To configure TypeScript so that it supports React’s JSX templating, we’ll create a <code>tsconfig.json</code> file at the root of our Rails application with this content in it:</p>
+
+<pre><code class="language-json">{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+  }
+}
+</code></pre>
+
+<p>To see some React code in action and to check out setup, we can create a new file at <code>app/javascript/entrypoints/application.tsx</code> and put this code into it:</p>
+
+<pre><code class="language-tsx">import React from "react";
+import ReactDOM from "react-dom/client";
+
+const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
+
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+
+root.render(&lt;App /&gt;);
+</code></pre>
+
+<p>After this, we can build our application’s assets by running:</p>
+
+<pre><code>yarn build
+</code></pre>
+
+<p>This will show us that it has built these assets:</p>
+
+<pre><code>yarn run v1.22.19
+warning package.json: No license field
+$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
+
+  app/assets/builds/application.js      1.0mb ⚠️
+  app/assets/builds/application.js.map  1.5mb
+</code></pre>
+
+<p>To test that it’s all working, we can generate a simple view:</p>
+
+<pre><code>rails g controller home index
+</code></pre>
+
+<p>And into <code>app/views/home/index.html.erb</code> we can put a simple div with the ID of <code>root</code>. This is the element that our <code>ReactDOM.createRoot</code> code was targeting earlier:</p>
+
+<pre><code class="language-html">&lt;div id='root'&gt;&lt;/div&gt;
+</code></pre>
+
+<p>When we start our Rails app with <code>bundle exec rails s</code> and go to http://localhost:3000/home/index, we’ll see our “Hello from React!” message.</p>
+
+<p><img src="/images/css-bundling/react/hello.png" alt="Hello from React" /></p>
+
+<p>This works “out of the box” because our application layout already brings in this compiled asset:</p>
+
+<pre><code class="language-erb">&lt;%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %&gt;
+</code></pre>
+
+<h3 id="multiple-mount-points">Multiple mount points</h3>
+
+<p>If you’re running a single-page app, you can probably stop reading here and continue throwing things into <code>&lt;App&gt;</code>.</p>
+
+<p>If you’re wanting to go down a different route, then keep reading. That different route is multiple individual components, where you may wish to mount a component on a per-page basis, than one component for the whole app.</p>
+
+<p>To do this, we can create a file at <code>app/javascript/mount.tsx</code>:</p>
+
+<pre><code class="language-tsx">import React from "react";
+import ReactDOM from "react-dom/client";
+
+type Components = Record&lt;string, React.ElementType&gt;;
+
+export default function mount(components: Components): void {
+  document.addEventListener("DOMContentLoaded", () =&gt; {
+    const mountPoints = document.querySelectorAll("[data-react-component]");
+    mountPoints.forEach((mountPoint) =&gt; {
+      const { dataset } = mountPoint as HTMLElement;
+      const componentName = dataset.reactComponent;
+      if (componentName) {
+        const Component = components[componentName];
+        if (Component) {
+          const props = JSON.parse(dataset.props as string);
+          const root = ReactDOM.createRoot(mountPoint);
+          root.render(&lt;Component {...props} /&gt;);
+        } else {
+          console.warn(
+            "WARNING: No component found for: ",
+            dataset.reactComponent,
+            components
+          );
+        }
+      }
+    });
+  });
+}
+</code></pre>
+
+<p>This code attempts to find all elements that contain a <code>data-react-component</code> attribute, and then to mount components matching that name onto the page in those locations. This code also parses any props contained in a <code>data-props</code> attribute and passes those along to the component too.</p>
+
+<p>In practical terms, a page containing:</p>
+
+<pre><code class="language-html">&lt;div data-react-component='App' data-props="{}"&gt;&lt;/div&gt;
+</code></pre>
+
+<p>Would have a component called <code>App</code> mounted into the location of that div tag. This then allows us to intermix React components with our Rails application, which can be particularly helpful if we have an older Rails app that we’re enhancing with some newer React components.</p>
+
+<p>To see this in action, let’s use this new <code>mount</code> function over in <code>application.tsx</code> by replacing the code in that file with this code:</p>
+
+<pre><code>import React from "react";
+import mount from "./mount";
+
+const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
+
+mount({
+  App,
+});
+</code></pre>
+
+<p>And also the code in <code>app/views/home/index.html.erb</code> with this code:</p>
+
+<pre><code class="language-html">&lt;div data-react-component='App' data-props="{}"&gt;&lt;/div&gt;
+</code></pre>
+
+<p>We can then run <code>yarn build</code> to rebuild our assets, and then refresh our browser to see the same message as before.</p>
+
+<h3 id="view-components">View Components</h3>
+
+<p>Writing this lengthy HTML into our views every time we want to render a React component will get tiresome quickly. To save us repeating ourselves again and again, we’re going to use a gem called <code>view_component</code>. We can install this gem with:</p>
+
+<pre><code>bundle add view_component
+</code></pre>
+
+<p>We can then create a new component class using this gem, placing it into <code>app/components/react_component.rb</code>:</p>
+
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+class ReactComponent &lt; ViewComponent::Base
+  attr_reader :component, :raw_props
+
+  def initialize(component, raw_props: {})
+    @component = component
+    @raw_props = raw_props
+  end
+
+  def call
+    helpers.tag.div(
+      '',
+      data: {
+        react_component: component,
+        props: props
+      }
+    )
+  end
+
+  private
+
+  def props
+    raw_props
+  end
+end
+
+</code></pre>
+
+<p>This class is then going to place that <code>div</code> tag onto our page for us. This class will serve as a base class for any other component classes we define in our app. Those subclasses of <code>ReactComponent</code> can override <code>props</code> if they need to do work to prepare the props before they’re passed through to the component.</p>
+
+<p>Then we can use this component to render React components within our application. Let’s change the code in <code>app/views/home/index.html.erb</code> to render the <code>App</code> component by using this component class:</p>
+
+<pre><code class="language-erb">&lt;%= render ReactComponent.new("App") %&gt;
+</code></pre>
+
+<p>We can use the view component just like a partial. I’ll get to why we’re <em>not</em> using partials in a moment. It deserves its own section!</p>
+
+<p>We will need to restart the Rails server at this point so that it picks up the file in <code>app/components</code>. After restarting the server, and refreshing the browser, we’ll once again see our React component’s output.</p>
+
+<h3 id="why-view-components-over-partials">Why view components over partials</h3>
+
+<p>Why did we complicate things by bringing in a new gem rather than using the wonderful partial features Rails provides?</p>
+
+<p>The simple answer is: Ruby code belongs in Ruby files. And I don’t just mean calls to <code>tag.div</code>. I mean if you had any sort of Ruby code that needed to run before rendering this component, you could now put that code into the component class.</p>
+
+<p>As an example here, let’s create a new React component called <code>Product</code>. It will render a name and a price. We’ll put this component at <code>app/javascript/Product/index.tsx</code>:</p>
+
+<pre><code class="language-tsx">import React from "react";
+
+const Product = ({ name, price }: { name: string; price: string }) =&gt; {
+  return (
+    &lt;&gt;
+      &lt;h1&gt;
+        {name} - {price}
+      &lt;/h1&gt;
+    &lt;/&gt;
+  );
+};
+
+export default Product;
+</code></pre>
+
+<p>We can then tell our application to mount this component whenever it sees a <code>div[data-react-component=Product]</code> tag, by using the <code>mount</code> helper in <code>app/javascript/entrypoints/application.tsx</code>:</p>
+
+<pre><code>import React from "react";
+import mount from "../mount";
+import Product from "../Product";
+
+const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
+
+mount({
+  App,
+  Product,
+});
+</code></pre>
+
+<p>As we’ve now changed <code>application.tsx</code>, we will need to rebuild it with <code>yarn build</code> again. Now is a good time to say we could’ve been running <code>yarn build --watch</code> this whole time… but I preferred being explicit about when things were being rebuilt and why. Now you know the secret.</p>
+
+<p>To render this React component, we’ll create a new Ruby file to represent the Ruby-side of this component. We’ll put this component into <code>app/components/products/show_component.rb</code>:</p>
+
+<pre><code class="language-ruby">module Products
+  class ShowComponent &lt; ReactComponent
+    def initialize(raw_props)
+      super("Product", raw_props: raw_props)
+    end
+
+    def props
+      raw_props.merge(
+        price: helpers.number_to_currency(raw_props[:price])
+      )
+    end
+  end
+end
+</code></pre>
+
+<p>This component file inherits from our <code>ReactComponent</code> component class and will render that component. To use this Ruby component class, we can go back into <code>app/views/home/index.html.erb</code> and put this code there:</p>
+
+<pre><code class="language-erb">&lt;%= render Products::ShowComponent.new(name: "Shoes", price: 100) %&gt;
+</code></pre>
+
+<p>Using this component will mean that we will end up with this <code>div</code> tag on the page:</p>
+
+<pre><code class="language-html">&lt;div data-react-component="Product" data-props="{&amp;quot;name&amp;quot;:&amp;quot;Shoes&amp;quot;,&amp;quot;price&amp;quot;:100}"&gt;&lt;/div&gt;
+</code></pre>
+
+<p>Our <code>mount.tsx</code> code will see that <code>div</code> tag and mount the <code>Product</code> React component into that place, passing through the props.</p>
+
+<p>Now, the reason for this whole section: <strong>we use view components over partials because Ruby code belongs in Ruby files</strong>.</p>
+
+<p>As a quick example of this, if we want to format the price before it goes to the component, we can update our <code>ShowComponent</code> code to process those props:</p>
+
+<pre><code class="language-ruby">module Products
+  class ShowComponent &lt; ReactComponent
+    def initialize(raw_props)
+      super("Product", raw_props: raw_props)
+    end
+
+    def props
+      raw_props.merge(
+        price: helpers.number_to_currency(raw_props[:price])
+      )
+    end
+  end
+end
+</code></pre>
+
+<p>Here we’re calling a Ruby method in Ruby code in order to format the price. We’re not limited to just methods from <code>helpers</code> here – we could call any Ruby code that we wanted to. This is, in my opinion, better than interspersing Ruby and HTML code into the same file.</p>
+
+<p>What this also means is that we could pass a product through to our component from the <code>app/views/home/index.html.erb</code>, rather than passing attributes one-by-one:</p>
+
+<pre><code class="language-erb">&lt;%= render Products::ShowComponent.new(product: @product) %&gt;
+</code></pre>
+
+<p>(I’m making an assumption here about having a <code>@product</code> object set up in the controller – use your imagination!)</p>
+
+<p>And then in that component class, we can take the raw props of the product object itself and do our formatting of the price:</p>
+
+<pre><code class="language-ruby">module Products
+  class ShowComponent &lt; ReactComponent
+    def initialize(product)
+      super("Product", raw_props: product)
+    end
+
+    def props
+      {
+        name: product.name,
+        price: helpers.number_to_currency(product.price)
+      }
+    end
+  end
+end
+</code></pre>
+
+<p>The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Rails 7, Bootstrap CSS + JavaScript with ESBuild</title>
@@ -1018,6 +1363,10 @@ end
 <p><strong>UPDATE #4</strong>: As it’s now the 1st of March, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $208.</p>
 
 <p><strong>UPDATE #5</strong>: As it’s now the 1st of April, yet another payment of $35USD has been made to the Hanami organisation on GitHub. We have also donated $75 to other members of the Ruby community for their work on open source projects, with a remaining $125 “prize pool” for further pull requests for code or documentation work. This brings our total of donations up to $318.</p>
+
+<p><strong>UPDATE #6</strong>: As it’s now the 1st of May, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $353USD.</p>
+
+<p><strong>UPDATE #7</strong>: As it’s now the 1st of June, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $388USD.</p>
 
 <p>Here’s a helpful chart to track our donations:</p>
 
@@ -2568,163 +2917,6 @@ end
 <p>And that really helped me make the final decision and to know that this was the right decision to make.</p>
 
 <p>So on May 10th, I’ll start working at a new gig, still writing Rails (and tweeting about it) and some TypeScript / React for the next 3 months, working on a mid-sized team, helping everyone get to where we need to be. And possibly longer than that!</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>View Components: The Missing Link</title>
-   <link href="http://ryanbigg.com/2021/04/view-components-the-missing-link"/>
-   <updated>2021-04-07T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2021/04/view-components-the-missing-link</id>
-   <content type="html"><![CDATA[<p>There has been an uptick in making Rails play nice with React recently, made possible by gems such as <a href="https://github.com/reactjs/react-rails">react-rails</a>. The <code>react-rails</code> gem allows you to inject React components into your Rails views like this:</p>
-
-<pre><code class="language-erb">&lt;%= react_component("HelloWorld", { greeting: "Hello from react-rails." }) %&gt;
-</code></pre>
-
-<p>The first argument here is the component name, and the hash at the end is the props that get passed down to the component.</p>
-
-<p>This gem serves a very useful purpose, but I think there’s a missing link here and I want to show you what that link is, and how best to leverage it.</p>
-
-<h3 id="complicated-props-crowd-up-the-view">Complicated props crowd up the view</h3>
-
-<p>Sometimes, we want to pass a bunch of props through to a React component. Maybe it starts out as one prop and then grows to ten props. This can get really messy:</p>
-
-<pre><code class="language-erb">&lt;%= react_component("UserPicker", { users: @users.map { |user| { value: user.id, label: user.name }} }, selectedUserIds: @selected_user_ids }) %&gt;
-</code></pre>
-
-<p>As a component grows in complexity, the amount of Ruby in the view continues to grow and grow. Views are sometimes treated like a dumping ground: “well, this <em>can’t</em> go in the model and it <em>shouldn’t</em> go in the controller… guess I’ll just leave it here in the view!”</p>
-
-<p>Yes, this could be more clearly written with some line breaks:</p>
-
-<pre><code class="language-erb">&lt;%= react_component("UserPicker", {
-  users: @users.map do |user|
-    { value: user.id, label: user.name }
-  end,
-  selectedUserIds: @selected_user_ids
-}) %&gt;
-</code></pre>
-
-<p>But that still feels quite clunky!</p>
-
-<h3 id="enter-view-components">Enter, view components</h3>
-
-<p>GitHub, has released a gem called <a href="https://github.com/github/view_component/">view_component</a> which aims to solve this problem in a neat way. The <code>view_component</code> gem defines new classes where you can put complicated view logic, and separates those views into their own directory too.</p>
-
-<p>Let’s take our <code>UserPicker</code> component from above. This now becomes a class called <code>UserPickerComponent</code>, and lives at <code>app/components</code>:</p>
-
-<pre><code class="language-ruby">class UserPickerComponent &lt; ViewComponent::Base
-  attr_reader :users, :selected_user_ids
-
-  def initialize(users:, selected_user_ids:)
-    @users = users
-    @selected_user_ids = selected_user_ids
-  end
-
-  def props
-    user_props = @users.map { |user| { value: user.id, label: user.name } }
-
-    {
-      users: user_props,
-      selectedUserIds: @selected_user_ids
-    }
-  end
-end
-</code></pre>
-
-<p>That’s much nicer! Our Ruby code is now where it belongs: in a <em>Ruby</em> file. The code that converts the users to an array-of-hashes with <code>value</code> and <code>label</code> key now feels at home in this file and has stopped clogging up our ERB file.</p>
-
-<p>But where’s our ERB code that renders this React component? Isn’t that back over in <code>app/views</code>? Well, yeah it is! But we can move that code now into the <em>other half</em> of <code>view_component</code>, a special view component ERB file at <code>app/components/user_picker.html.erb</code>:</p>
-
-<pre><code class="language-erb">&lt;%= helpers.react_component "UserPicker", **props %&gt;
-</code></pre>
-
-<p>View component renders components using a combination of the Ruby class and the ERB template, both named the same.</p>
-
-<p>To access the <code>react_component</code> helper, we need to use the <code>helpers</code> method provided by <code>view_component</code>. But there’s not much difference here to what we had earlier in a view.</p>
-
-<p>The main thing to note is that our Ruby code now lives in a Ruby file, and the code to render the React component lives over in the component’s view. If we had any additional HTML that was required to be wrapped around this component, this is where it would belong too. I’ve left that out to make things simple here.</p>
-
-<p>If this is the only line of code that would be in our view, we can instead define a <code>call</code> method on the component class:</p>
-
-<h3 id="rendering-a-view-component">Rendering a view component</h3>
-
-<p>With the Ruby and ERB nicely separated into a view <em>component</em>, it’s time to add that code back to our view. We will first need to initialize the component in the controller action:</p>
-
-<pre><code class="language-ruby">def new
-  @user_picker_component = UserPickerComponent.new(
-    users: @users,
-    selected_user_ids: @selected_user_ids,
-  )
-end
-</code></pre>
-
-<p>Then we can render the component, just like we would render a partial, by calling <code>render</code> in the view for the action:</p>
-
-<pre><code class="language-erb">&lt;%= render(@user_picker_component) %&gt;
-</code></pre>
-
-<p>And there you have it, a clear separation between the responsibilities for rendering a React component within a Rails application. We now have:</p>
-
-<ul>
-  <li>The controller action: responsible for collection information based on the request, and prepares the component</li>
-  <li>The view: tells Rails where we want to put the component</li>
-  <li>The component Ruby class: container for any Ruby code that we need to run <em>before</em> rendering our React component, but <em>after</em> the controller has done its duty</li>
-  <li>The component view file: a clearly separated file that concerns itself with only rendering a React component</li>
-</ul>
-
-<h3 id="translations">Translations</h3>
-
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">How are people taking i18n translations and making them available to React components these days?</p>&mdash; Ryan Bigg (@ryanbigg) <a href="https://twitter.com/ryanbigg/status/1379259002731646979?ref_src=twsrc%5Etfw">April 6, 2021</a></blockquote>
-<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<p>A few days ago, I started experimenting with the right ways to pass translations down to these React components from Ruby.</p>
-
-<p>A few replies to the above tweet were along the lines of “just load all 644kb of JSONified I18n translations on every page load! Your users will love you!” and if this is supposed to be the latest-and-greatest of web development please let me off this wild ride.</p>
-
-<p>Having a view component means that we have somewhere that we can run calls to <code>I18n.t</code>, and then pass these as strings through to our React component. Here, let’s have a look:</p>
-
-<pre><code class="language-ruby">class UserPickerComponent &lt; ViewComponent::Base
-  attr_reader :users, :selected_user_ids
-
-  def initialize(users:, selected_user_ids:)
-    @users = users
-    @selected_user_ids = selected_user_ids
-  end
-
-  def props
-    user_props = @users.map { |user| { value: user.id, label: user.name } }
-
-    {
-      users: user_props,
-      selectedUserIds: @selected_user_ids
-      translations: translations
-    }
-  end
-
-  private
-
-  def translations
-    scope = "users.picker"
-
-    {
-      selectAUser: helpers.t("select_a_user", scope: scope)
-    }
-  end
-end
-</code></pre>
-
-<p>In the component file, we’re now defining an extra method called <code>translations</code>. This is then going to add one extra prop to our React component, and definitely <em>won’t</em> be sending 664kb of JSONified I18n translations to our users.</p>
-
-<p>To access these translations in the component, we access them the same as any other property:</p>
-
-<pre><code class="language-tsx">const UserPicker = ({ translations, users, seelectedUserIds}) =&gt; {
-
-  return (
-    // ...
-    &lt;p&gt;{translations.selectAUser}&lt;/p&gt;
-  )
-}
-</code></pre>
 ]]></content>
  </entry>
  

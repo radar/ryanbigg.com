@@ -1,4 +1,340 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-04-25T10:31:41+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-02T09:56:57+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the &lt;code&gt;react-rails&lt;/code&gt; gem, but I would like to show you the individual steps to setting it up here instead.&lt;/p&gt;
+
+&lt;h3 id=&quot;installing-esbuild&quot;&gt;Installing ESBuild&lt;/h3&gt;
+
+&lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bundle add jsbundling-rails
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Next, you’ll run the generator for this gem to setup ESBuild:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bin/rails javascript:install:esbuild
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will create an &lt;code&gt;app/javascript/application.js&lt;/code&gt; file that we will not need – so delete this file.&lt;/p&gt;
+
+&lt;p&gt;ESBuild will be setup to build assets in &lt;code&gt;app/javascript&lt;/code&gt;, and put them into &lt;code&gt;app/assets/builds&lt;/code&gt;. From there, Rails will be able to serve those assets.&lt;/p&gt;
+
+&lt;p&gt;This install script has added a new &lt;code&gt;build&lt;/code&gt; script to &lt;code&gt;package.json&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;&quot;scripts&quot;: {
+  &quot;build&quot;: &quot;esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets&quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once we’ve setup our React code we will be able to run this command to take that code and compile it into some JavaScript browsers can run.&lt;/p&gt;
+
+&lt;p&gt;I like to change this script to point at an &lt;code&gt;entrypoints&lt;/code&gt; subdirectory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;&quot;scripts&quot;: {
+  &quot;build&quot;: &quot;esbuild app/javascript/entrypoints/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets&quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is so that I can put other directories inside &lt;code&gt;app/javascript&lt;/code&gt;, such as directories including little helper functions, or bigger component structures like &lt;code&gt;app/javascript/Purchases/Table.tsx&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;It also means that ESBuild will not build &lt;em&gt;everything&lt;/em&gt; in that directory – just the files we declare as entrypoints.&lt;/p&gt;
+
+&lt;h3 id=&quot;installing-react--typescript&quot;&gt;Installing React &amp;amp; TypeScript&lt;/h3&gt;
+
+&lt;p&gt;To install React and TypeScript we’ll run this &lt;code&gt;yarn&lt;/code&gt; command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yarn add react@^18.2 @react-dom@^18.2 @types/react @types/react-dom typescript
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To configure TypeScript so that it supports React’s JSX templating, we’ll create a &lt;code&gt;tsconfig.json&lt;/code&gt; file at the root of our Rails application with this content in it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;compilerOptions&quot;: {
+    &quot;module&quot;: &quot;commonjs&quot;,
+    &quot;esModuleInterop&quot;: true,
+    &quot;forceConsistentCasingInFileNames&quot;: true,
+    &quot;strict&quot;: true,
+    &quot;skipLibCheck&quot;: true,
+    &quot;jsx&quot;: &quot;react&quot;,
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To see some React code in action and to check out setup, we can create a new file at &lt;code&gt;app/javascript/entrypoints/application.tsx&lt;/code&gt; and put this code into it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;import React from &quot;react&quot;;
+import ReactDOM from &quot;react-dom/client&quot;;
+
+const App = () =&amp;gt; &amp;lt;h1&amp;gt;Hello from React!&amp;lt;/h1&amp;gt;;
+
+const root = ReactDOM.createRoot(
+  document.getElementById(&quot;root&quot;) as HTMLElement
+);
+
+root.render(&amp;lt;App /&amp;gt;);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After this, we can build our application’s assets by running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yarn build
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will show us that it has built these assets:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;yarn run v1.22.19
+warning package.json: No license field
+$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
+
+  app/assets/builds/application.js      1.0mb ⚠️
+  app/assets/builds/application.js.map  1.5mb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To test that it’s all working, we can generate a simple view:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rails g controller home index
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And into &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; we can put a simple div with the ID of &lt;code&gt;root&lt;/code&gt;. This is the element that our &lt;code&gt;ReactDOM.createRoot&lt;/code&gt; code was targeting earlier:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div id=&apos;root&apos;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When we start our Rails app with &lt;code&gt;bundle exec rails s&lt;/code&gt; and go to http://localhost:3000/home/index, we’ll see our “Hello from React!” message.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/css-bundling/react/hello.png&quot; alt=&quot;Hello from React&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This works “out of the box” because our application layout already brings in this compiled asset:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= javascript_include_tag &quot;application&quot;, &quot;data-turbo-track&quot;: &quot;reload&quot;, defer: true %&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;multiple-mount-points&quot;&gt;Multiple mount points&lt;/h3&gt;
+
+&lt;p&gt;If you’re running a single-page app, you can probably stop reading here and continue throwing things into &lt;code&gt;&amp;lt;App&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you’re wanting to go down a different route, then keep reading. That different route is multiple individual components, where you may wish to mount a component on a per-page basis, than one component for the whole app.&lt;/p&gt;
+
+&lt;p&gt;To do this, we can create a file at &lt;code&gt;app/javascript/mount.tsx&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;import React from &quot;react&quot;;
+import ReactDOM from &quot;react-dom/client&quot;;
+
+type Components = Record&amp;lt;string, React.ElementType&amp;gt;;
+
+export default function mount(components: Components): void {
+  document.addEventListener(&quot;DOMContentLoaded&quot;, () =&amp;gt; {
+    const mountPoints = document.querySelectorAll(&quot;[data-react-component]&quot;);
+    mountPoints.forEach((mountPoint) =&amp;gt; {
+      const { dataset } = mountPoint as HTMLElement;
+      const componentName = dataset.reactComponent;
+      if (componentName) {
+        const Component = components[componentName];
+        if (Component) {
+          const props = JSON.parse(dataset.props as string);
+          const root = ReactDOM.createRoot(mountPoint);
+          root.render(&amp;lt;Component {...props} /&amp;gt;);
+        } else {
+          console.warn(
+            &quot;WARNING: No component found for: &quot;,
+            dataset.reactComponent,
+            components
+          );
+        }
+      }
+    });
+  });
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This code attempts to find all elements that contain a &lt;code&gt;data-react-component&lt;/code&gt; attribute, and then to mount components matching that name onto the page in those locations. This code also parses any props contained in a &lt;code&gt;data-props&lt;/code&gt; attribute and passes those along to the component too.&lt;/p&gt;
+
+&lt;p&gt;In practical terms, a page containing:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div data-react-component=&apos;App&apos; data-props=&quot;{}&quot;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Would have a component called &lt;code&gt;App&lt;/code&gt; mounted into the location of that div tag. This then allows us to intermix React components with our Rails application, which can be particularly helpful if we have an older Rails app that we’re enhancing with some newer React components.&lt;/p&gt;
+
+&lt;p&gt;To see this in action, let’s use this new &lt;code&gt;mount&lt;/code&gt; function over in &lt;code&gt;application.tsx&lt;/code&gt; by replacing the code in that file with this code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import React from &quot;react&quot;;
+import mount from &quot;./mount&quot;;
+
+const App = () =&amp;gt; &amp;lt;h1&amp;gt;Hello from React!&amp;lt;/h1&amp;gt;;
+
+mount({
+  App,
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And also the code in &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; with this code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div data-react-component=&apos;App&apos; data-props=&quot;{}&quot;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can then run &lt;code&gt;yarn build&lt;/code&gt; to rebuild our assets, and then refresh our browser to see the same message as before.&lt;/p&gt;
+
+&lt;h3 id=&quot;view-components&quot;&gt;View Components&lt;/h3&gt;
+
+&lt;p&gt;Writing this lengthy HTML into our views every time we want to render a React component will get tiresome quickly. To save us repeating ourselves again and again, we’re going to use a gem called &lt;code&gt;view_component&lt;/code&gt;. We can install this gem with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bundle add view_component
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can then create a new component class using this gem, placing it into &lt;code&gt;app/components/react_component.rb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;# frozen_string_literal: true
+
+class ReactComponent &amp;lt; ViewComponent::Base
+  attr_reader :component, :raw_props
+
+  def initialize(component, raw_props: {})
+    @component = component
+    @raw_props = raw_props
+  end
+
+  def call
+    helpers.tag.div(
+      &apos;&apos;,
+      data: {
+        react_component: component,
+        props: props
+      }
+    )
+  end
+
+  private
+
+  def props
+    raw_props
+  end
+end
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This class is then going to place that &lt;code&gt;div&lt;/code&gt; tag onto our page for us. This class will serve as a base class for any other component classes we define in our app. Those subclasses of &lt;code&gt;ReactComponent&lt;/code&gt; can override &lt;code&gt;props&lt;/code&gt; if they need to do work to prepare the props before they’re passed through to the component.&lt;/p&gt;
+
+&lt;p&gt;Then we can use this component to render React components within our application. Let’s change the code in &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; to render the &lt;code&gt;App&lt;/code&gt; component by using this component class:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= render ReactComponent.new(&quot;App&quot;) %&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can use the view component just like a partial. I’ll get to why we’re &lt;em&gt;not&lt;/em&gt; using partials in a moment. It deserves its own section!&lt;/p&gt;
+
+&lt;p&gt;We will need to restart the Rails server at this point so that it picks up the file in &lt;code&gt;app/components&lt;/code&gt;. After restarting the server, and refreshing the browser, we’ll once again see our React component’s output.&lt;/p&gt;
+
+&lt;h3 id=&quot;why-view-components-over-partials&quot;&gt;Why view components over partials&lt;/h3&gt;
+
+&lt;p&gt;Why did we complicate things by bringing in a new gem rather than using the wonderful partial features Rails provides?&lt;/p&gt;
+
+&lt;p&gt;The simple answer is: Ruby code belongs in Ruby files. And I don’t just mean calls to &lt;code&gt;tag.div&lt;/code&gt;. I mean if you had any sort of Ruby code that needed to run before rendering this component, you could now put that code into the component class.&lt;/p&gt;
+
+&lt;p&gt;As an example here, let’s create a new React component called &lt;code&gt;Product&lt;/code&gt;. It will render a name and a price. We’ll put this component at &lt;code&gt;app/javascript/Product/index.tsx&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;import React from &quot;react&quot;;
+
+const Product = ({ name, price }: { name: string; price: string }) =&amp;gt; {
+  return (
+    &amp;lt;&amp;gt;
+      &amp;lt;h1&amp;gt;
+        {name} - {price}
+      &amp;lt;/h1&amp;gt;
+    &amp;lt;/&amp;gt;
+  );
+};
+
+export default Product;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can then tell our application to mount this component whenever it sees a &lt;code&gt;div[data-react-component=Product]&lt;/code&gt; tag, by using the &lt;code&gt;mount&lt;/code&gt; helper in &lt;code&gt;app/javascript/entrypoints/application.tsx&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import React from &quot;react&quot;;
+import mount from &quot;../mount&quot;;
+import Product from &quot;../Product&quot;;
+
+const App = () =&amp;gt; &amp;lt;h1&amp;gt;Hello from React!&amp;lt;/h1&amp;gt;;
+
+mount({
+  App,
+  Product,
+});
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As we’ve now changed &lt;code&gt;application.tsx&lt;/code&gt;, we will need to rebuild it with &lt;code&gt;yarn build&lt;/code&gt; again. Now is a good time to say we could’ve been running &lt;code&gt;yarn build --watch&lt;/code&gt; this whole time… but I preferred being explicit about when things were being rebuilt and why. Now you know the secret.&lt;/p&gt;
+
+&lt;p&gt;To render this React component, we’ll create a new Ruby file to represent the Ruby-side of this component. We’ll put this component into &lt;code&gt;app/components/products/show_component.rb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Products
+  class ShowComponent &amp;lt; ReactComponent
+    def initialize(raw_props)
+      super(&quot;Product&quot;, raw_props: raw_props)
+    end
+
+    def props
+      raw_props.merge(
+        price: helpers.number_to_currency(raw_props[:price])
+      )
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This component file inherits from our &lt;code&gt;ReactComponent&lt;/code&gt; component class and will render that component. To use this Ruby component class, we can go back into &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; and put this code there:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= render Products::ShowComponent.new(name: &quot;Shoes&quot;, price: 100) %&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Using this component will mean that we will end up with this &lt;code&gt;div&lt;/code&gt; tag on the page:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div data-react-component=&quot;Product&quot; data-props=&quot;{&amp;amp;quot;name&amp;amp;quot;:&amp;amp;quot;Shoes&amp;amp;quot;,&amp;amp;quot;price&amp;amp;quot;:100}&quot;&amp;gt;&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Our &lt;code&gt;mount.tsx&lt;/code&gt; code will see that &lt;code&gt;div&lt;/code&gt; tag and mount the &lt;code&gt;Product&lt;/code&gt; React component into that place, passing through the props.&lt;/p&gt;
+
+&lt;p&gt;Now, the reason for this whole section: &lt;strong&gt;we use view components over partials because Ruby code belongs in Ruby files&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;As a quick example of this, if we want to format the price before it goes to the component, we can update our &lt;code&gt;ShowComponent&lt;/code&gt; code to process those props:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Products
+  class ShowComponent &amp;lt; ReactComponent
+    def initialize(raw_props)
+      super(&quot;Product&quot;, raw_props: raw_props)
+    end
+
+    def props
+      raw_props.merge(
+        price: helpers.number_to_currency(raw_props[:price])
+      )
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here we’re calling a Ruby method in Ruby code in order to format the price. We’re not limited to just methods from &lt;code&gt;helpers&lt;/code&gt; here – we could call any Ruby code that we wanted to. This is, in my opinion, better than interspersing Ruby and HTML code into the same file.&lt;/p&gt;
+
+&lt;p&gt;What this also means is that we could pass a product through to our component from the &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt;, rather than passing attributes one-by-one:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= render Products::ShowComponent.new(product: @product) %&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(I’m making an assumption here about having a &lt;code&gt;@product&lt;/code&gt; object set up in the controller – use your imagination!)&lt;/p&gt;
+
+&lt;p&gt;And then in that component class, we can take the raw props of the product object itself and do our formatting of the price:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Products
+  class ShowComponent &amp;lt; ReactComponent
+    def initialize(product)
+      super(&quot;Product&quot;, raw_props: product)
+    end
+
+    def props
+      {
+        name: product.name,
+        price: helpers.number_to_currency(product.price)
+      }
+    end
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.</summary></entry><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
 
 &lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
 
@@ -893,32 +1229,4 @@ end
 
 &lt;p&gt;There’s also a bunch of &lt;a href=&quot;https://hanamimastery.com/&quot;&gt;Hanami screencasts (HanamiMastery) recorded by Seb Wilgosz&lt;/a&gt;, which come in both video and text format.&lt;/p&gt;
 
-&lt;p&gt;Overall, I’m glad that the Hanami team has taken their time to really polish up this release, and I’m looking forward to building more things in what is shaping up to be &lt;em&gt;the&lt;/em&gt; Ruby web framework of the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve been a fan of Hanami for a number of years now. One of my favourite apps to work on is even an open-source Hanami app! I have also been writing an ActivityPub app called “Chirper” in Hanami.</summary></entry><entry><title type="html">The Gem Foundation</title><link href="http://localhost:4000/2022/11/the-gem-foundation" rel="alternate" type="text/html" title="The Gem Foundation" /><published>2022-11-24T00:00:00+11:00</published><updated>2022-11-24T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/the-gem-foundation</id><content type="html" xml:base="http://localhost:4000/2022/11/the-gem-foundation">&lt;div class=&quot;text-3xl text-center&quot;&gt;&lt;p&gt;Today, I am excited to announce the launch of &lt;strong&gt;The Gem Foundation&lt;/strong&gt;.&lt;/p&gt;&lt;/div&gt;
-
-&lt;p&gt;Its mission is assist contributors in the Ruby community in their task to further the adoption of the Ruby language, expanding the scope more broadly than just one particular web framework.&lt;/p&gt;
-
-&lt;p&gt;Because Ruby &lt;em&gt;is&lt;/em&gt; more than just a single framework.&lt;/p&gt;
-
-&lt;p&gt;Immediately after establishment of this foundation, we have already surpassed &lt;a href=&quot;https://rubyonrails.org/2022/11/14/the-rails-foundation&quot;&gt;The Rails Foundation&lt;/a&gt; in terms of dollars donated, as we have donated &lt;strong&gt;ONE SINGLE U.S. DOLLAR&lt;/strong&gt; to &lt;a href=&quot;https://ruby.social/@baweaver&quot;&gt;Brandon Weaver&lt;/a&gt;, who was the first developer to get in touch with the foundation. Brandon contributes to the Ruby community by &lt;a href=&quot;https://dev.to/baweaver&quot;&gt;writing articles on his personal blog&lt;/a&gt;, and also runs the Ruby Learning Center Discord.&lt;/p&gt;
-
-&lt;p&gt;The Gem Foundation has also donated &lt;strong&gt;TWO U.S. DOLLARS&lt;/strong&gt; to &lt;a href=&quot;https://ruby.social/@jaredwhite@indieweb.social&quot;&gt;Jared White&lt;/a&gt;, who is a contributor to &lt;a href=&quot;https://www.bridgetownrb.com/&quot;&gt;the Bridgetown&lt;/a&gt; site generator.&lt;/p&gt;
-
-&lt;p&gt;The Gem Foundation is also contributing $25/USD a month towards the &lt;a href=&quot;https://github.com/sponsors/hanami&quot;&gt;Hanami&lt;/a&gt; web framework. If you would like there to be real competition in the Ruby web framework sphere, I would encourage you to do the same.&lt;/p&gt;
-
-&lt;p&gt;That’s &lt;em&gt;$28USD&lt;/em&gt; already donated by the Gem Foundation!&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt;: Kieran Andrews from Adelaide (and of &lt;a href=&quot;https://activerailsbook.com&quot;&gt;Active Rails fame&lt;/a&gt;) has also donated &lt;em&gt;$30USD&lt;/em&gt; to the &lt;a href=&quot;https://github.com/pry/pry&quot;&gt;Pry gem&lt;/a&gt;, bringing The Gem Foundation’s donation total up to $58USD!&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE #2&lt;/strong&gt;: As it’s now the 1st of December, a payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total donations almost to $100!&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE #3&lt;/strong&gt;: As it’s now the 1st of February, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $173.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE #4&lt;/strong&gt;: As it’s now the 1st of March, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our total of donations up to $208.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;UPDATE #5&lt;/strong&gt;: As it’s now the 1st of April, yet another payment of $35USD has been made to the Hanami organisation on GitHub. We have also donated $75 to other members of the Ruby community for their work on open source projects, with a remaining $125 “prize pool” for further pull requests for code or documentation work. This brings our total of donations up to $318.&lt;/p&gt;
-
-&lt;p&gt;Here’s a helpful chart to track our donations:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/gem-foundation/donations.png&quot; alt=&quot;The Gem Foundation donations&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Today, I am excited to announce the launch of The Gem Foundation.</summary></entry></feed>
+&lt;p&gt;Overall, I’m glad that the Hanami team has taken their time to really polish up this release, and I’m looking forward to building more things in what is shaping up to be &lt;em&gt;the&lt;/em&gt; Ruby web framework of the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve been a fan of Hanami for a number of years now. One of my favourite apps to work on is even an open-source Hanami app! I have also been writing an ActivityPub app called “Chirper” in Hanami.</summary></entry></feed>
