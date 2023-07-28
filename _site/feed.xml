@@ -1,4 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-02T09:56:57+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the &lt;code&gt;react-rails&lt;/code&gt; gem, but I would like to show you the individual steps to setting it up here instead.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-07-28T10:36:09+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">How to fix: Chromedriver 115, cannot find chrome binary</title><link href="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary" rel="alternate" type="text/html" title="How to fix: Chromedriver 115, cannot find chrome binary" /><published>2023-07-28T00:00:00+10:00</published><updated>2023-07-28T00:00:00+10:00</updated><id>http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary</id><content type="html" xml:base="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary">&lt;p&gt;Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;unknown error: cannot find Chrome binary
+
+Traceback (most recent call last):
+       16: from 15  chromedriver                        0x0000000100df056c chromedriver + 4179308
+       15: from 14  chromedriver                        0x0000000100df0414 chromedriver + 4178964
+       14: from 13  chromedriver                        0x0000000100dacd1c chromedriver + 3902748
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is due to Chromedriver looking for a new binary called “Chrome for Testing”, which was &lt;a href=&quot;https://developer.chrome.com/blog/chrome-for-testing/&quot;&gt;recently released from the Chrome team&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To fix this bug, you need to &lt;a href=&quot;https://googlechromelabs.github.io/chrome-for-testing/#stable&quot;&gt;download Chrome for Testing&lt;/a&gt;, unzip it and move it into your &lt;code&gt;/Applications&lt;/code&gt; directory.&lt;/p&gt;
+
+&lt;p&gt;Mac’s Gatekeeper program will not let you open this executable by default, as it came from a &lt;code&gt;.zip&lt;/code&gt; file. To work around that problem, run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo xattr -cr &apos;/Applications/Google Chrome for Testing.app&apos;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will remove the security restriction that is blocking this application from opening.&lt;/p&gt;
+
+&lt;p&gt;Run your test suite again, and it will now work.&lt;/p&gt;</content><author><name></name></author><summary type="html">Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.</summary></entry><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the &lt;code&gt;react-rails&lt;/code&gt; gem, but I would like to show you the individual steps to setting it up here instead.&lt;/p&gt;
 
 &lt;h3 id=&quot;installing-esbuild&quot;&gt;Installing ESBuild&lt;/h3&gt;
 
@@ -1209,24 +1230,4 @@ end
 
 &lt;p&gt;Given that this feature is &lt;em&gt;currently&lt;/em&gt; not supported in either IE11 (at all) or Firefox (without enabling a configuration flag), I would be hesitant to use it in production.&lt;/p&gt;
 
-&lt;p&gt;Nevertheless, it’s pretty cool to see that CSS can do this and we do not have to reach for JavaScript.&lt;/p&gt;</content><author><name></name></author><summary type="html">Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.</summary></entry><entry><title type="html">Hanami 2.0 Thoughts</title><link href="http://localhost:4000/2022/11/hanami-20-thoughts" rel="alternate" type="text/html" title="Hanami 2.0 Thoughts" /><published>2022-11-28T00:00:00+11:00</published><updated>2022-11-28T00:00:00+11:00</updated><id>http://localhost:4000/2022/11/hanami-20-thoughts</id><content type="html" xml:base="http://localhost:4000/2022/11/hanami-20-thoughts">&lt;p&gt;&lt;a href=&quot;https://ryanbigg.com/2018/03/my-thoughts-on-hanami&quot;&gt;I’ve been a fan of Hanami&lt;/a&gt; for a number of years now. One of my favourite apps to work on is &lt;a href=&quot;https://github.com/radar/twist-v2&quot;&gt;even an open-source Hanami app!&lt;/a&gt; I have also been writing &lt;a href=&quot;https://github.com/radar/chirper&quot;&gt;an ActivityPub app called “Chirper”&lt;/a&gt; in Hanami.&lt;/p&gt;
-
-&lt;p&gt;Now that Hanami 2.0 has come out, a few people have been asking me for my thoughts on this major Hanami release.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;The headline is: it’s really, really fast. It’s really clean. And it’s really good if you’re building an API at the moment.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;It’s currently missing opinions/support on a view layer (so no templating) and DB persistence (although the Getting Started guide does recommend a way to set it up). Hanami 2.1 is supposed to come out (in early 2023) with proper baked-in support for both of those things.&lt;/p&gt;
-
-&lt;p&gt;When working on Chirper, I haven’t missed view templates as the application is all APIs. And I didn’t mind that there wasn’t a built-in configuration for databases, as the Getting Started guide for Hanami provided everything I needed there. It was refreshing to be able to “choose my own adventure” in that way, allowing me to opt for even something such as &lt;a href=&quot;https://rubygems.org/gems/sequel&quot;&gt;Sequel&lt;/a&gt; if I chose to.&lt;/p&gt;
-
-&lt;p&gt;I like that Hanami hasn’t got an opinion du jour on JavaScript and CSS assets, like Rails had with Sprockets, Webpacker, etc. It leaves that particular responsibility up to the build tools that are great at that, such as ESBuild.&lt;/p&gt;
-
-&lt;p&gt;I love that the actions are clearly separated out into their own classes, rather than all being bundled into a single class. I love that you can &lt;a href=&quot;https://github.com/radar/chirper/blob/40c4c532449deedbfaaac61dd2914fde7728cd97/app/actions/api/accounts/outbox.rb#L12-L17&quot;&gt;specify the types of parameters&lt;/a&gt; that an action receives.&lt;/p&gt;
-
-&lt;p&gt;I really enjoy the dependency injection support that &lt;a href=&quot;https://github.com/radar/chirper/blob/81504258fbe74e3269c4f7ab013d6f0009b38cb6/spec/activity_pub/processors/create_spec.rb#L3-L7&quot;&gt;allows me to test parts of the application without hitting a real database&lt;/a&gt;. This makes those tests really fast. In the class itself, dependency injection also highlights the dependencies that a particular class has. If you notice the list of &lt;code&gt;Deps&lt;/code&gt; getting long, then it’s a good sign that the class is trying to do too much; such a thing signposts the complexity of the class right at the top.&lt;/p&gt;
-
-&lt;p&gt;I love that &lt;a href=&quot;https://github.com/decafsucks/decafsucks&quot;&gt;Tim Riley, who is on the Hanami Core Team, is re-building Decaf Sucks in public&lt;/a&gt; to really show how it’s done.&lt;/p&gt;
-
-&lt;p&gt;There’s also a bunch of &lt;a href=&quot;https://hanamimastery.com/&quot;&gt;Hanami screencasts (HanamiMastery) recorded by Seb Wilgosz&lt;/a&gt;, which come in both video and text format.&lt;/p&gt;
-
-&lt;p&gt;Overall, I’m glad that the Hanami team has taken their time to really polish up this release, and I’m looking forward to building more things in what is shaping up to be &lt;em&gt;the&lt;/em&gt; Ruby web framework of the future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I’ve been a fan of Hanami for a number of years now. One of my favourite apps to work on is even an open-source Hanami app! I have also been writing an ActivityPub app called “Chirper” in Hanami.</summary></entry></feed>
+&lt;p&gt;Nevertheless, it’s pretty cool to see that CSS can do this and we do not have to reach for JavaScript.&lt;/p&gt;</content><author><name></name></author><summary type="html">Based on a question on the Ruby AU Slack, someone wanted to know how they could make a 2nd select box appear after an option in an original select box was selected.</summary></entry></feed>
