@@ -37,6 +37,22 @@ That's _$28USD_ already donated by the Gem Foundation!
 
 **UPDATE #8**: As it's now the 1st of July, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $423USD.
 
-Here's a helpful chart to track our donations:
+**UPDATE #9**: As it's now the 1st of August, yet another payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $458USD. But wait, there's more!
+
+[Roy from AppSignal](https://www.appsignal.com/) has donated $1,000USD to the Gem Foundation [to be distributed at my discretion](https://ruby.social/@roy/110654296954182817). Thanks a lot Roy!
+
+I've divvied out $200 of this to [Soutaro Matsumoto](https://github.com/soutaro/) for his work on Steep and Ruby's RBS type signature library.
+
+A second $200 was going to be sent to Jemma Issroff for her work on Ruby's YARP (Yet Another Ruby Parser), but she has instead asked the money to go towards [WNB.rb](https://www.wnb-rb.dev/), which is a virtual community for women and non-binary Rubyists.
+
+Another $100 is going towards [postmodern](https://github.com/sponsors/postmodern) who has worked on a wealth of tooling for Ruby, including chruby and ruby-install. This donation though is due to their continued work on maintaining the [Ruby Advisory Database](https://github.com/rubysec/ruby-advisory-db) and the Bundler Audit project. These projects alert developers to potential security vulnerabilities in their applications, and are incredibly useful!
+
+Another $100 is going towards [Samuel Williams (ioquatix)](https://github.com/ioquatix) for his work on Rack 3, and concurrency libraries within Ruby, such as [async](https://github.com/socketry/async). Samuel's really pushing the concurrency state-of-the-art forward, and for that I am thankful!
+
+That now leaves $400 unallocated. I've got a couple of ideas of where this money could go, but I'm going to solicit some opinions of where that money should go by asking a few more people. If you'd like to share your opinion, you can send an email to [me@ryanbigg.com](mailto:me@ryanbigg.com) with the subject "Gem Foundation Donation".
+
+So far, we have donated $1,058USD, with hopefully by next month's update that being at least $1,500. Unless some other benevolent donor like Roy comes along to sweeten the pot.
+
+As always, here's a helpful chart to track our donations:
 
 ![The Gem Foundation donations](/images/gem-foundation/donations.png)
