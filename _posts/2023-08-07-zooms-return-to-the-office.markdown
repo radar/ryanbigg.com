@@ -4,8 +4,7 @@ layout: post
 title: "Zoom's return to the office"
 ---
 
-This news [about Zoom forcing their employees back into the office for 2 days a week hybrid is bonkers](https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/).
-
+This news [about Zoom forcing their employees back into the office for 2 days a week](https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/) is just bonkers.
 
 For an Australian perspective:
 
