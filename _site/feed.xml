@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-23T07:19:21+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-23T00:00:00+10:00</published><updated>2023-08-23T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver">&lt;p&gt;&lt;a href=&quot;/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver&quot;&gt;This is a rehash of my Alpine Linux version of this post&lt;/a&gt;. I’ll skip the fluff here and jump straight to the good stuff.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-08-23T07:21:24+10:00</updated><id>/feed.xml</id><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-23T00:00:00+10:00</published><updated>2023-08-23T00:00:00+10:00</updated><id>/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver">&lt;p&gt;&lt;a href=&quot;/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver&quot;&gt;This is a rehash of my Alpine Linux version of this post&lt;/a&gt;. I’ll skip the fluff here and jump straight to the good stuff.&lt;/p&gt;
 
 &lt;p&gt;The packages needed for Chromedriver are:&lt;/p&gt;
 
@@ -10,7 +10,7 @@
 &lt;pre&gt;&lt;code&gt;libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;(There’s also a package called &lt;code&gt;chromium-shell&lt;/code&gt; that installs all of these necessary dependencies, and at least half a kitchen sink too.)&lt;/p&gt;
+&lt;p&gt;(There’s also a package called &lt;code&gt;chromium-shell&lt;/code&gt; that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)&lt;/p&gt;
 
 &lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; is therefore:&lt;/p&gt;
 
@@ -29,7 +29,82 @@ USER app
 RUN bundle config set --local path vendor/bundle
 RUN bundle install
 CMD bundle exec irb
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.</summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">&lt;p&gt;Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with &lt;a href=&quot;https://www.selenium.dev/blog/2022/introducing-selenium-manager/&quot;&gt;a new feature called Selenium Manager&lt;/a&gt;. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under &lt;code&gt;~/.cache/selenium...&lt;/code&gt;)&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And we can then build and run this image:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker build . -t ubuntu-selenium
+docker run -it ubuntu-selenium
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And confirm it works by running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;Bundler.require
+
+Selenium::WebDriver.logger.level = Logger::DEBUG
+
+options = ::Selenium::WebDriver::Chrome::Options.new
+
+options.add_argument(&quot;--headless&quot;)
+options.add_argument(&quot;--no-sandbox&quot;)
+options.add_argument(&quot;--disable-dev-shm-usage&quot;)
+options.add_argument(&quot;--disable-gpu&quot;)
+
+Selenium::WebDriver.for :chrome, capabilities: options
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This output should include things like a check for both Chrome + ChromeDriver, which will fail:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
+DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
+DEBUG Selenium [:selenium_manager] Checking chrome in PATH
+DEBUG Selenium [:selenium_manager] Running command: which chrome
+DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] chrome not found in PATH
+DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(The chrome one fails here, as &lt;code&gt;chromium&lt;/code&gt; has installed Chrome at &lt;code&gt;/usr/bin/chromium&lt;/code&gt;.)&lt;/p&gt;
+
+&lt;p&gt;After that, we’ll see log lines for downloads of Chrome + ChromeDriver:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
+DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
+DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
+DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.&lt;/p&gt;
+
+&lt;p&gt;Then we’ll see ChromeDriver starting up:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for &quot;::1&quot; port 9515)
+DEBUG Selenium [:driver_service] Executing Process [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;]
+DEBUG Selenium [:process] Starting process: [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;] with {[:out, :err]=&amp;gt;#&amp;lt;IO:&amp;lt;STDOUT&amp;gt;&amp;gt;, :pgroup=&amp;gt;true}
+DEBUG Selenium [:process]   -&amp;gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on [&quot;127.0.0.1&quot;, 9515]
+Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1692683187.222][SEVERE]: bind() failed: Address not available (99)
+ChromeDriver was started successfully.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The “address not available (99)” error here is because ChromeDriver is trying to bind to &lt;code&gt;::1:9515&lt;/code&gt;, but this Docker image is not setup with IPv6 support, so that will fail.&lt;/p&gt;
+
+&lt;p&gt;Finally, we’ll see some JSON requests to &lt;code&gt;POST session&lt;/code&gt; going back and forth from &lt;code&gt;9515&lt;/code&gt;, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:command] -&amp;gt; POST session
+DEBUG Selenium [:command]    &amp;gt;&amp;gt;&amp;gt; http://127.0.0.1:9515/session | {&quot;capabilities&quot;:{&quot;alwaysMatch&quot;:{&quot;browserName&quot;:&quot;chrome&quot;,&quot;goog:chromeOptions&quot;:{&quot;args&quot;:[&quot;--headless&quot;,&quot;--no-sandbox&quot;,&quot;--disable-dev-shm-usage&quot;,&quot;--disable-gpu&quot;],&quot;binary&quot;:&quot;/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome&quot;}}}}
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.</summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">&lt;p&gt;Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with &lt;a href=&quot;https://www.selenium.dev/blog/2022/introducing-selenium-manager/&quot;&gt;a new feature called Selenium Manager&lt;/a&gt;. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under &lt;code&gt;~/.cache/selenium...&lt;/code&gt;)&lt;/p&gt;
 
 &lt;p&gt;Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.&lt;/p&gt;
 
@@ -166,7 +241,7 @@ DEBUG Selenium [:command]    &amp;gt;&amp;gt;&amp;gt; http://127.0.0.1:9515/sess
 &lt;/ol&gt;
 
 &lt;pre&gt;&lt;code&gt;apk add gcompat glib nss libxcb libgcc chromium
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)</summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office">&lt;p&gt;This news &lt;a href=&quot;https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/&quot;&gt;about Zoom forcing their employees back into the office for 2 days a week&lt;/a&gt; is just bonkers.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)</summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="/2023/08/zooms-return-to-the-office">&lt;p&gt;This news &lt;a href=&quot;https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/&quot;&gt;about Zoom forcing their employees back into the office for 2 days a week&lt;/a&gt; is just bonkers.&lt;/p&gt;
 
 &lt;p&gt;For an Australian perspective:&lt;/p&gt;
 
@@ -182,7 +257,7 @@ DEBUG Selenium [:command]    &amp;gt;&amp;gt;&amp;gt; http://127.0.0.1:9515/sess
 
 &lt;p&gt;Environmentally: I can control the temperature in my office. There’s nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I’m sharing it with someone due to space reasons.&lt;/p&gt;
 
-&lt;p&gt;And for all of these reasons, I’m a happy employee. I get my work done, and &lt;em&gt;more of it&lt;/em&gt;, because I can choose the conditions in how that work is done. And if I need to &lt;em&gt;synergise&lt;/em&gt; with another employee, why there’s Zoom for that.&lt;/p&gt;</content><author><name></name></author><summary type="html">This news about Zoom forcing their employees back into the office for 2 days a week is just bonkers.</summary></entry><entry><title type="html">How to fix: Chromedriver 115, cannot find chrome binary</title><link href="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary" rel="alternate" type="text/html" title="How to fix: Chromedriver 115, cannot find chrome binary" /><published>2023-07-28T00:00:00+10:00</published><updated>2023-07-28T00:00:00+10:00</updated><id>http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary</id><content type="html" xml:base="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary">&lt;p&gt;Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.&lt;/p&gt;
+&lt;p&gt;And for all of these reasons, I’m a happy employee. I get my work done, and &lt;em&gt;more of it&lt;/em&gt;, because I can choose the conditions in how that work is done. And if I need to &lt;em&gt;synergise&lt;/em&gt; with another employee, why there’s Zoom for that.&lt;/p&gt;</content><author><name></name></author><summary type="html">This news about Zoom forcing their employees back into the office for 2 days a week is just bonkers.</summary></entry><entry><title type="html">How to fix: Chromedriver 115, cannot find chrome binary</title><link href="/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary" rel="alternate" type="text/html" title="How to fix: Chromedriver 115, cannot find chrome binary" /><published>2023-07-28T00:00:00+10:00</published><updated>2023-07-28T00:00:00+10:00</updated><id>/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary</id><content type="html" xml:base="/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary">&lt;p&gt;Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;unknown error: cannot find Chrome binary
 
@@ -203,7 +278,7 @@ Traceback (most recent call last):
 
 &lt;p&gt;This will remove the security restriction that is blocking this application from opening.&lt;/p&gt;
 
-&lt;p&gt;Run your test suite again, and it will now work.&lt;/p&gt;</content><author><name></name></author><summary type="html">Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.</summary></entry><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the &lt;code&gt;react-rails&lt;/code&gt; gem, but I would like to show you the individual steps to setting it up here instead.&lt;/p&gt;
+&lt;p&gt;Run your test suite again, and it will now work.&lt;/p&gt;</content><author><name></name></author><summary type="html">Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.</summary></entry><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="/2023/06/rails-7-react-typescript-setup">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the &lt;code&gt;react-rails&lt;/code&gt; gem, but I would like to show you the individual steps to setting it up here instead.&lt;/p&gt;
 
 &lt;h3 id=&quot;installing-esbuild&quot;&gt;Installing ESBuild&lt;/h3&gt;
 
@@ -539,7 +614,7 @@ end
 end
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.</summary></entry><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
+&lt;p&gt;The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.</summary></entry><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
 
 &lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
 
@@ -609,7 +684,7 @@ $ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --p
 
 &lt;p&gt;When we start our Rails app with &lt;code&gt;bundle exec rails s&lt;/code&gt; and go to http://localhost:3000/home/index, we’ll see a blue button. When we click the blue button, the modal will appear:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/css-bundling/bootstrap/modal.png&quot; alt=&quot;Modal&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</summary></entry><entry><title type="html">Open Letter to the Rails Foundation</title><link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation">&lt;p&gt;I sent this email to Amanda at the &lt;a href=&quot;https://rubyonrails.org/foundation&quot;&gt;Rails Foundation&lt;/a&gt; this morning.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/css-bundling/bootstrap/modal.png&quot; alt=&quot;Modal&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</summary></entry><entry><title type="html">Open Letter to the Rails Foundation</title><link href="/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="/2023/03/open-letter-to-the-rails-foundation">&lt;p&gt;I sent this email to Amanda at the &lt;a href=&quot;https://rubyonrails.org/foundation&quot;&gt;Rails Foundation&lt;/a&gt; this morning.&lt;/p&gt;
 
 &lt;hr /&gt;
 
@@ -636,7 +711,7 @@ foundation start funding these projects? Are we going to be waiting weeks, or mo
 
 &lt;p&gt;I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.&lt;/p&gt;
 
-&lt;p&gt;What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.&lt;/p&gt;</content><author><name></name></author><summary type="html">I sent this email to Amanda at the Rails Foundation this morning.</summary></entry><entry><title type="html">Please explain, Elastic Search</title><link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch">&lt;p&gt;I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.&lt;/p&gt;
+&lt;p&gt;What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.&lt;/p&gt;</content><author><name></name></author><summary type="html">I sent this email to Amanda at the Rails Foundation this morning.</summary></entry><entry><title type="html">Please explain, Elastic Search</title><link href="/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="/2023/03/please-explain-elasticsearch">&lt;p&gt;I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.&lt;/p&gt;
 
 &lt;p&gt;I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.&lt;/p&gt;
 
@@ -954,7 +1029,7 @@ foundation start funding these projects? Are we going to be waiting weeks, or mo
     &quot;timed_out&quot;: false,
     &quot;took&quot;: 12
 }
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</summary></entry><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</summary></entry><entry><title type="html">Why game programming and why Magic?</title><link href="/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
 
 &lt;p&gt;But why game programming when my forté is web programming, and why &lt;em&gt;this&lt;/em&gt; game specifically? Why not Uno?&lt;/p&gt;
 
@@ -1090,7 +1165,7 @@ end
 
 &lt;p&gt;If I get stuck on a card, it’s not like I &lt;em&gt;have&lt;/em&gt; to implement it. There’s thousands more out there to choose from.&lt;/p&gt;
 
-&lt;p&gt;I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find &lt;a href=&quot;https://scryfall.com/random&quot;&gt;a card at random&lt;/a&gt; and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.&lt;/p&gt;</content><author><name></name></author><summary type="html">For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.</summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
+&lt;p&gt;I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find &lt;a href=&quot;https://scryfall.com/random&quot;&gt;a card at random&lt;/a&gt; and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.&lt;/p&gt;</content><author><name></name></author><summary type="html">For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.</summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
 
 &lt;p&gt;The switches on this keyboard are not hot-swappable. They are soldered on to the board.&lt;/p&gt;
 
