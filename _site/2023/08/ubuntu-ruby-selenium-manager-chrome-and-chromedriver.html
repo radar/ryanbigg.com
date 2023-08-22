@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,700|Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2023-08-23">
+  
+
+  
+  <meta content="https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" property="og:url">
+  
+  
+  <meta content="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver">
+  
+</head>
+
+
+<body>
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <div class='text-center mb-8'>
+            <h1>Ryan Bigg</h1>
+            <a href="/blog">&#x27F5; Posts</a>
+            <a href="/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver">
+              <h2 class="post-title">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</h2>
+            </a>
+            <small>23 Aug 2023</small>
+          </div>
+          <p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+
+<p>The packages needed for Chromedriver are:</p>
+
+<pre><code>libnss3 libnspr4
+</code></pre>
+
+<p>The packages needed for Chrome are:</p>
+
+<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+</code></pre>
+
+<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too.)</p>
+
+<p>The <code>Dockerfile</code> is therefore:</p>
+
+<pre><code>FROM ruby:3.2.2
+
+RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+# OR this, but the install time is much longer:
+# RUN apt-get update &amp;&amp; apt-get install chromium-shell
+
+RUN adduser --disabled-password --gecos "" app
+COPY --chown app:app . /app
+WORKDIR /app
+USER app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+</code></pre>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

@@ -4,13 +4,53 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-08-23T06:46:50+10:00</updated>
+ <updated>2023-08-23T07:19:21+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>
+   <link href="http://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"/>
+   <updated>2023-08-23T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id>
+   <content type="html"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+
+<p>The packages needed for Chromedriver are:</p>
+
+<pre><code>libnss3 libnspr4
+</code></pre>
+
+<p>The packages needed for Chrome are:</p>
+
+<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+</code></pre>
+
+<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too.)</p>
+
+<p>The <code>Dockerfile</code> is therefore:</p>
+
+<pre><code>FROM ruby:3.2.2
+
+RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+# OR this, but the install time is much longer:
+# RUN apt-get update &amp;&amp; apt-get install chromium-shell
+
+RUN adduser --disabled-password --gecos "" app
+COPY --chown app:app . /app
+WORKDIR /app
+USER app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+</code></pre>
+]]></content>
+ </entry>
  
  <entry>
    <title>Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title>
@@ -2903,49 +2943,6 @@ GraphQL::RakeTask.new(
 <hr />
 
 <p>If you like what you see in this post, you might also like to read my book <a href="https://leanpub.com/maintain-rails/c/opinions">Maintainable Rails</a> which is just $5 at the moment. This book demonstrates how to bring the concepts shown in this post into a brand new Rails application, ultimately leading to an application that is easier to maintain in the long-term.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>On coding tests</title>
-   <link href="http://ryanbigg.com/2021/07/on-coding-tests"/>
-   <updated>2021-07-27T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2021/07/on-coding-tests</id>
-   <content type="html"><![CDATA[<p>As you might know, I’ve been <a href="https://ryanbigg.com/2021/07/job-hunt-q2-2021">job hunting recently</a>. I’m at the part of this step for some companies where we’ve had our initial conversation and now they want me to do a coding test.</p>
-
-<p>But that’s okay, because it “should only take up to 3 hours to do”. Now let’s theoretically say that I’m talking with 5 companies now. That’s <em>15 hours</em> of my time, that I have to pull out of work, life or sleep, to do these coding tests. All to prove to them that I can code!</p>
-
-<p>This strikes me as odd because I’m pretty sure I can code.</p>
-
-<p>I’ve been employed as a developer in one way or another since 2004. That’s 17 years! I’ve had to pass other coding tests in the past to get some of those jobs. I had a lot more free time in my youth and wasn’t such a crotchety old man like I am now.</p>
-
-<p>I’ve <a href="https://ryanbigg.com/books">written books</a> where I try to teach other people how to code. If I don’t know how to code, how could I teach other people to code? Mystery!</p>
-
-<p>I’ve recently <a href="https://www.youtube.com/watch?v=qWdyo3icsjU">released a 6-part screencast series</a> where I demonstrate my ability to code in not one, but THREE different languages <strong>AT THE SAME TIME</strong>! I’m clearly not a 10x developer. Maybe a 3x developer?</p>
-
-<p>I’ve even made the <a href="https://github.com/radar/twist-v2">codebase from that screencast series completely open source</a>.</p>
-
-<p>I’m also responsible for maintaining the <a href="https://github.com/ruby-i18n/i18n">12th-most-downloaded Ruby Gem – i18n</a>. Yeah, this is code that I’ve (unlikely) written or (likely) vetted &amp; approved that’s <em>probably running in your Rails application right now</em>.</p>
-
-<p>But no, these things don’t count for <em>anything</em> in the interview process. Maybe I’ve gone too far down the path of tying my self-worth up in these things. The way I feel is: if you don’t value these things I’ve <em>already done</em>, then you do not value me.</p>
-
-<hr />
-
-<p>I can read the replies now:</p>
-
-<blockquote>
-  <p>but how do we know that you really know how to code, according to our 100% bias-free baseline?</p>
-</blockquote>
-
-<blockquote>
-  <p>We have subjected our other developers to this antiquated hazing ritual so why shouldn’t we subject you to the same?</p>
-</blockquote>
-
-<p>Fact is, you don’t. Some people can code really well in interviews and have had lots of practice answering how exactly you go about reversing a purple linked list uphill both ways in the snow. Some people struggle with the pressure of developing something <em>completely solo</em> and then having that scruitinised in an hour-long live-code-review session.</p>
-
-<p>I’m personally <em>done</em> with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.</p>
-
-<p>Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.</p>
 ]]></content>
  </entry>
  

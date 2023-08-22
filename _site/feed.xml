@@ -1,4 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-23T06:46:50+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">&lt;p&gt;Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with &lt;a href=&quot;https://www.selenium.dev/blog/2022/introducing-selenium-manager/&quot;&gt;a new feature called Selenium Manager&lt;/a&gt;. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under &lt;code&gt;~/.cache/selenium...&lt;/code&gt;)&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-23T07:19:21+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-23T00:00:00+10:00</published><updated>2023-08-23T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver">&lt;p&gt;&lt;a href=&quot;/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver&quot;&gt;This is a rehash of my Alpine Linux version of this post&lt;/a&gt;. I’ll skip the fluff here and jump straight to the good stuff.&lt;/p&gt;
+
+&lt;p&gt;The packages needed for Chromedriver are:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;libnss3 libnspr4
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The packages needed for Chrome are:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(There’s also a package called &lt;code&gt;chromium-shell&lt;/code&gt; that installs all of these necessary dependencies, and at least half a kitchen sink too.)&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; is therefore:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM ruby:3.2.2
+
+RUN apt-get update &amp;amp;&amp;amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+# OR this, but the install time is much longer:
+# RUN apt-get update &amp;amp;&amp;amp; apt-get install chromium-shell
+
+RUN adduser --disabled-password --gecos &quot;&quot; app
+COPY --chown app:app . /app
+WORKDIR /app
+USER app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.</summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">&lt;p&gt;Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with &lt;a href=&quot;https://www.selenium.dev/blog/2022/introducing-selenium-manager/&quot;&gt;a new feature called Selenium Manager&lt;/a&gt;. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under &lt;code&gt;~/.cache/selenium...&lt;/code&gt;)&lt;/p&gt;
 
 &lt;p&gt;Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.&lt;/p&gt;
 
@@ -1063,252 +1094,4 @@ end
 
 &lt;p&gt;The switches on this keyboard are not hot-swappable. They are soldered on to the board.&lt;/p&gt;
 
-&lt;p&gt;(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)&lt;/p&gt;</content><author><name></name></author><summary type="html">No.</summary></entry><entry><title type="html">Ruby GraphQL field notes</title><link href="http://localhost:4000/2023/01/ruby-graphql-field-notes" rel="alternate" type="text/html" title="Ruby GraphQL field notes" /><published>2023-01-24T00:00:00+11:00</published><updated>2023-01-24T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/ruby-graphql-field-notes</id><content type="html" xml:base="http://localhost:4000/2023/01/ruby-graphql-field-notes">&lt;p&gt;Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on &lt;a href=&quot;https://github.com/radar/twist-v2/blob/master/backend/lib/twist/web/graphql/schema.rb&quot;&gt;Twist’s GraphQL API&lt;/a&gt;, and other GraphQL APIs that are deployed in production.&lt;/p&gt;
-
-&lt;p&gt;Overall sentiment is that GraphQL is an improvement over the classic REST approach because:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;It gives you clear types of fields&lt;/li&gt;
-  &lt;li&gt;You can choose which fields you wish to select&lt;/li&gt;
-  &lt;li&gt;You can choose to select from a single resource, or from multiple, disparate resources at the same time.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;I like its interoperability between Ruby and JavaScript, with good tooling existing on both sides of that divide in the &lt;a href=&quot;https://rubygems.org/gems/graphql&quot;&gt;GraphQL Rubygem&lt;/a&gt; and the &lt;a href=&quot;https://www.apollographql.com/docs/react/get-started/&quot;&gt;Apollo Client&lt;/a&gt; on the JavaScript side of things. Honorable mention to the &lt;a href=&quot;https://the-guild.dev/graphql/codegen&quot;&gt;GraphQL codegen&lt;/a&gt; library too, which provides the ability of generating TypeScript types from a GraphQL schema.&lt;/p&gt;
-
-&lt;h2 id=&quot;schema-definition&quot;&gt;Schema definition&lt;/h2&gt;
-
-&lt;p&gt;A schema can be defined in &lt;code&gt;app/graphql&lt;/code&gt; in a Rails application (since its &lt;em&gt;application&lt;/em&gt; code), or a directory of your choosing in any other Ruby project.&lt;/p&gt;
-
-&lt;p&gt;I’d recommend disabling the introspection endpoints here so that 3rd parties cannot find out that your API contains particular admin-only endpoints. I’d also recommend setting up a &lt;code&gt;max_complexity&lt;/code&gt; and a &lt;code&gt;max_depth&lt;/code&gt; value. This prevents API requests from recursively requesting data (think post -&amp;gt; comments -&amp;gt; post -&amp;gt; …), and from also building queries that might rate as “highly complex” database operations. You can read more about &lt;a href=&quot;https://graphql-ruby.org/queries/complexity_and_depth&quot;&gt;complexity and depth here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;class AppSchema &amp;lt; GraphQL::Schema
-  mutation(Types::MutationType)
-  query(Types::QueryType)
-  disable_introspection_entry_points unless Rails.env.development?
-
-  max_complexity 200
-  max_depth 20
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;schema-dumping-from-ruby&quot;&gt;Schema dumping from Ruby&lt;/h2&gt;
-
-&lt;p&gt;On that topic, the Ruby library provides the ability to dump the schema out with a custom Rake task (that I’ve put in &lt;code&gt;lib/tasks/graphql.rake&lt;/code&gt;)&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;require &quot;graphql/rake_task&quot;
-
-GraphQL::RakeTask.new(
-  schema_name: &quot;AppSchema&quot;,
-  directory: &quot;./app/javascript/graphql&quot;,
-  dependencies: [:environment]
-)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Running this Rake task:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bundle exec rake graphql:schema:dump
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Will generate two files, a &lt;code&gt;schema.json&lt;/code&gt; and a &lt;code&gt;schema.graphql&lt;/code&gt;, which are both representations of the &lt;em&gt;shape&lt;/em&gt; of the GraphQL API. Different tools (such as GraphQL codegen) can then use this schema to work with the GraphQL API.&lt;/p&gt;
-
-&lt;h2 id=&quot;queries-and-resolvers&quot;&gt;Queries and Resolvers&lt;/h2&gt;
-
-&lt;p&gt;The GraphQL Ruby library &lt;a href=&quot;https://graphql-ruby.org/fields/introduction.html&quot;&gt;recommends&lt;/a&gt; defining the fields and their resolvers within the same class:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
-  module Web
-    module GraphQL
-      class QueryType &amp;lt; ::GraphQL::Schema::Object
-        field :books, [Types::Book], null: false
-
-        def books
-          ...
-        end
-      end
-    end
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;I feel like this gets messy particularly quickly if your types have a large (&amp;gt; 5) amount of fields.&lt;/p&gt;
-
-&lt;p&gt;For top level fields like this, I would recommend defining separate resolver classes:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :books, [Types::Book], null: false, resolver: Resolvers::Books
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
-  module Web
-    module GraphQL
-      module Resolvers
-        class Books &amp;lt; Resolver
-          def resolve
-            ...
-          end
-        end
-      end
-    end
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This allows for you to have potentially complex logic for resolution separate from the field definitions, allowing you to read &lt;em&gt;what&lt;/em&gt; fields are defined by looking at the type, rather than reading &lt;em&gt;what&lt;/em&gt; the fields are and &lt;em&gt;how&lt;/em&gt; they’re also implemented.&lt;/p&gt;
-
-&lt;p&gt;If we had a resolver for a book chapter, then I’d put that class under &lt;code&gt;Resolvers::Books::Chapters&lt;/code&gt; to indicate that it’s not resolving &lt;em&gt;all&lt;/em&gt; chapters, but rather chapters for a particular book.&lt;/p&gt;
-
-&lt;h2 id=&quot;mutations&quot;&gt;Mutations&lt;/h2&gt;
-
-&lt;p&gt;Along similar lines to queries and resolvers, I also suggest using separate classes for mutations, namespacing them down the lines of the particular &lt;em&gt;context&lt;/em&gt; of the application (&lt;code&gt;Mutations::Users::Login&lt;/code&gt;), or at least along the lines of the resource thats undergoing mutation:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :add_comment, mutation: Mutations::Comments::Add
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It’s worth noting that if your &lt;code&gt;BaseMutation&lt;/code&gt; class inherits from &lt;code&gt;GraphQL::Schema::RelayClassicMutation&lt;/code&gt;, that these mutations will have an &lt;code&gt;input&lt;/code&gt; argument defined for them. In the GraphQL documentation, this would appear as:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;addComment(input: AddInput!): AddPayload
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If you have a separate class called &lt;code&gt;Post::Add&lt;/code&gt;, it will have an identical &lt;code&gt;AddInput&lt;/code&gt; type and &lt;code&gt;AddPayload&lt;/code&gt; defined. GraphQL supports only one type of each different name, and so we must differentiate these. To do this, inside the mutation class we define its &lt;code&gt;graphql_name&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Mutations
-  class Comments::Add &amp;lt; BaseMutation
-    graphql_name &quot;AddComment&quot;
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This will rename both the input and payload types:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;addComment(input: AddCommentInput!): AddCommentPayload
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;union-types&quot;&gt;Union types&lt;/h2&gt;
-
-&lt;p&gt;Occassionally, it can be helpful to return one or another type from a GraphQL query or a mutation. For this, GraphQL has &lt;em&gt;union types&lt;/em&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Twist
-  module Web
-    module GraphQL
-      module Types
-        class BookPermissionCheckResult &amp;lt; BaseUnion
-          description &quot;The result from attempting a login&quot;
-          possible_types Types::Book, Types::PermissionDenied
-
-          def self.resolve_type(object, _context)
-            if object.is_a?(Twist::Entities::Book)
-              Types::Book
-            else
-              Types::PermissionDenied
-            end
-          end
-        end
-      end
-    end
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This type is used in the &lt;code&gt;book&lt;/code&gt; field:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;field :book, Types::BookPermissionCheckResult, null: false, resolver: Resolvers::Book
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If the resolver returns a &lt;code&gt;Twist::Entities::Book&lt;/code&gt; instance, then this union type will use the GraphQL class &lt;code&gt;Types::Book&lt;/code&gt; to resolve this field. Otherwise, it uses &lt;code&gt;Types::PermissionDenied&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;In the client-side GraphQL query, utilising these union types looks like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;query {
-  book(permalink: &quot;exploding-rails&quot;) {
-    __typename
-    ... on Book {
-      id
-      title
-      defaultBranch {
-        name
-        chapters(part: FRONTMATTER) {
-          ...chapterFields
-        }
-      }
-    }
-
-    ... on PermissionDenied {
-      error
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The query uses the GraphQL &lt;code&gt;__typename&lt;/code&gt; to return the type of the &lt;code&gt;book&lt;/code&gt; field. We can then read this type on the client side to determine how to act (to show a book, or not). The fields selected within both branches of this union allow us to display information about a book if the query has gone through successfully, without having to first check for permission, and then querying for a book.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;resolve_type&lt;/code&gt; method from union classes can also return an &lt;em&gt;array&lt;/em&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def self.resolve_type(object, _context)
-  if object.success?
-    [Types::BookType, object.success]
-  else
-    [Types::PermissionDenied, object.failure]
-  end
-end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is helpful if we wish to do something with the object being resolved. In this case, we’re unwrapping that &lt;code&gt;object&lt;/code&gt; from a &lt;code&gt;Dry::Result&lt;/code&gt; wrapping. If we did not do this unwrapping, then the &lt;code&gt;BookType&lt;/code&gt; type would not be able to work on the object it receives, as the wrapped &lt;code&gt;Dry::Result&lt;/code&gt; object does not have the &lt;code&gt;title&lt;/code&gt; that &lt;code&gt;Types::Book&lt;/code&gt; would expect that object to have.&lt;/p&gt;
-
-&lt;h2 id=&quot;authentication&quot;&gt;Authentication&lt;/h2&gt;
-
-&lt;p&gt;To authenticate against the GraphQL API, I’d recommend supporting sessions as well as authentication by tokens. While requests may come into the application from the same domain, they also may not. Allowing that flexibility of your API to be queryable by a 3rd party from the outset (assuming they have the right token!) can only be a good thing. It will also allow you to make requests from within tests by providing a token.&lt;/p&gt;
-
-&lt;p&gt;You can do this with something like the following code:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;  def current_user
-
-    @current_user = super
-    @current_user ||= User.authenticate_by_token(request.authorization)
-  end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;testing&quot;&gt;Testing&lt;/h2&gt;
-
-&lt;p&gt;To test the GraphQL endpoints, I would recommend request specs over testing the schema itself by calling &lt;code&gt;Schema.execute(...)&lt;/code&gt;. This ensures that you can run tests against your API as close to how it will be used as possible.&lt;/p&gt;
-
-&lt;p&gt;To aid in this, I like adding a &lt;code&gt;GraphqlHelpers&lt;/code&gt; module with a little helper:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;  def graphql_request(query:, variables: {})
-    post &quot;/graphql&quot;,
-      params: {
-        query: query,
-        variables: variables,
-      }.to_json,
-      headers: { Authorization: user.token, &apos;Content-Type&apos;: &quot;application/json&quot; }
-  end
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;You can then use this in a test:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;query = %|
-  query {
-    book(permalink: &quot;exploding-rails&quot;) {
-      title
-    }
-  }
-|
-
-json = graphql_request(query: query)
-expect(json.dig(&quot;book&quot;, &quot;title&quot;)).to eq(&quot;Exploding Rails&quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;preventing-n1-queries&quot;&gt;Preventing N+1 queries&lt;/h2&gt;
-
-&lt;p&gt;By default, GraphQL Ruby will perform N+1 queries if you write a query such as:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;query {
-  users {
-    books {
-      chapters
-    }
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This will make one query for all the users, N queries for all of those users’ books, and M queries for all of those users’ books’ chapters.&lt;/p&gt;
-
-&lt;p&gt;To prevent N+1 queries, I’d recommend relying on the &lt;code&gt;GraphQL::Dataloader&lt;/code&gt; features &lt;a href=&quot;https://graphql-ruby.org/dataloader/overview.html&quot;&gt;shown here&lt;/a&gt;. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on Twist’s GraphQL API, and other GraphQL APIs that are deployed in production.</summary></entry></feed>
+&lt;p&gt;(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)&lt;/p&gt;</content><author><name></name></author><summary type="html">No.</summary></entry></feed>
