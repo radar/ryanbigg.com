@@ -16,7 +16,7 @@ Two hour commutes! "Give up 8 hours of your week _in traffic_ in the name of _sy
 
 ---
 
-I really enjoy the flexibility of working from home. I can put on a load of washing over my lunch break or potter around in the garden when the sun's out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.
+I really enjoy the flexibility of working from home. I can put on a load of washinxtg over my lunch break or potter around in the garden when the sun's out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.
 
 Environmentally: I can control the temperature in my office. There's nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I'm sharing it with someone due to space reasons.
 

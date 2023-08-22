@@ -4,13 +4,159 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-08-07T13:57:33+10:00</updated>
+ <updated>2023-08-23T06:46:50+10:00</updated>
  <id>http://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title>
+   <link href="http://ryanbigg.com/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"/>
+   <updated>2023-08-22T00:00:00+10:00</updated>
+   <id>http://ryanbigg.com/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id>
+   <content type="html"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
+
+<p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
+
+<p>I was seeing errors such as:</p>
+
+<pre><code>/bin/sh: ./chromedriver-linux64/chromedriver: not found
+</code></pre>
+
+<p>The file was definitely present though!</p>
+
+<p>Other answers on the internet pointed to this being an issue with missing libraries. Those answers pointed to the <code>ldd</code> tool, and sure enough that showed the libraries that were required for chromedriver. The command was:</p>
+
+<pre><code>ldd ./chromedriver-linux64/chromedriver
+</code></pre>
+
+<p>This listed the system libaries that the chromedriver executable was dependent on Then I read through those messages that were output and attempted to find packages that matched the messages.</p>
+
+<p>To make Chromedriver v116 work on Alpine Linux, you have to have these packages installed:</p>
+
+<pre><code>apk add gcompat glib nss libxcb libgcc
+</code></pre>
+
+<p>After installing these packages, Chromedriver was able to start.</p>
+
+<p>But Chromedriver is not so useful without a Chrome to drive it. I used <code>ldd</code> once again, and found a <em>huge</em> list of packages that Chrome requires. Instead of installing all of these, you can install Chrome using:</p>
+
+<pre><code>apk add chromium
+</code></pre>
+
+<p>This will then install Chromium (whatever’s latest and all of the package dependencies). This will be enough to get Chrome running.</p>
+
+<p>Ultimately, I ended up building a small Docker image to test this out properly. Here’s that image’s <code>Dockerfile</code>:</p>
+
+<pre><code>FROM ruby:3.2.2-alpine
+RUN apk update &amp;&amp; apk add gcompat glib nss libxcb libgcc chromium
+
+RUN adduser -D app
+RUN mkdir /app
+RUN chown app:app /app
+USER app
+WORKDIR /app
+COPY --chown=app:app . /app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+</code></pre>
+
+<p>I build this with:</p>
+
+<pre><code>docker build . -t selenium
+</code></pre>
+
+<p>Then I run it with:</p>
+
+<pre><code> docker run -it selenium
+</code></pre>
+
+<p>This will launch me into an IRB session. To check if Selenium can correctly download + use Chrome and ChromeDriver, I run this code, which is very similar to the code that would be used to configure this within <code>rails_helper.rb</code> in a Rails app:</p>
+
+<pre><code class="language-ruby">Bundler.require
+
+Selenium::WebDriver.logger.level = Logger::DEBUG
+
+options = ::Selenium::WebDriver::Chrome::Options.new
+
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+
+Selenium::WebDriver.for :chrome, capabilities: options
+</code></pre>
+
+<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
+DEBUG Selenium [:selenium_manager] Checking chrome in PATH
+DEBUG Selenium [:selenium_manager] Running command: which chrome
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chrome not found in PATH
+DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+</code></pre>
+
+<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
+
+<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
+DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
+DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
+DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+</code></pre>
+
+<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
+
+<p>Then we’ll see ChromeDriver starting up:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
+DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
+DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
+DEBUG Selenium [:process]   -&gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
+Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1692683187.222][SEVERE]: bind() failed: Address not available (99)
+ChromeDriver was started successfully.
+</code></pre>
+
+<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
+
+<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
+
+<pre><code>DEBUG Selenium [:command] -&gt; POST session
+DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
+</code></pre>
+
+<p>So the important thing to note here is that if you’ve got:</p>
+
+<ol>
+  <li>A Ruby image that uses <code>ruby:3.2.2-alpine</code> (or similar) as its base</li>
+  <li>And you want to use the built-in Selenium Manager to download Chrome + Chromium</li>
+  <li>You will need to have these packages installed:</li>
+</ol>
+
+<pre><code>apk add gcompat glib nss libxcb libgcc chromium
+</code></pre>
+]]></content>
+ </entry>
  
  <entry>
    <title>Zoom&apos;s return to the office</title>
@@ -29,7 +175,7 @@
 
 <hr />
 
-<p>I really enjoy the flexibility of working from home. I can put on a load of washing over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.</p>
+<p>I really enjoy the flexibility of working from home. I can put on a load of washinxtg over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.</p>
 
 <p>Environmentally: I can control the temperature in my office. There’s nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I’m sharing it with someone due to space reasons.</p>
 
@@ -2800,60 +2946,6 @@ GraphQL::RakeTask.new(
 <p>I’m personally <em>done</em> with being hazed in this way. You know I can code. I have proven this with my long tenure in this industry and the stuff I’ve put out in the world.</p>
 
 <p>Let’s just get down to business. I’ll happily trade labour for dollars. Hold the haze. Use the books, code and screencast I’ve already put out in order to judge my abilities.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Using Ruby 2.7&apos;s new triple-dot syntax to clean up service objects</title>
-   <link href="http://ryanbigg.com/2021/07/ruby-27s-new-triple-dot-syntax"/>
-   <updated>2021-07-21T00:00:00+10:00</updated>
-   <id>http://ryanbigg.com/2021/07/ruby-27s-new-triple-dot-syntax</id>
-   <content type="html"><![CDATA[<p>In big Rails projects there’s been a bit of a push to move things out to <em>service objects</em>. You might recognise these from their appearance in things like controllers:</p>
-
-<pre><code class="language-ruby">CreateBook.new.call(book_params)
-</code></pre>
-
-<p>The <code>CreateBook</code> class itself might look like this:</p>
-
-<pre><code class="language-ruby">class CreateBook
-  include Dry::Monads[:do, :result]
-
-  def call(params)
-    book_params = yield validate(params)
-    create_book(book_params)
-  end
-end
-</code></pre>
-
-<p>In order to access that instance <code>call</code> method from the controller, we must first create an instance of this <code>CreateBook</code> class. This makes our code <em>slightly</em> messy because we must always <code>new</code> before we <code>call</code>. The <code>call</code> here <em>must</em> be an instance method because we’ve included <code>Dry::Monads</code> methods within instances of this class, as per the best-practices when using that gem.</p>
-
-<p>However, we can tidy things up here by using Ruby 2.7’s new triple-dot syntax. This syntax is another special type of argument, used in the same place you might use positional or keyword arguments. We can use triple-dots to pass arguments from a class method down to an instance method, like in this example:</p>
-
-<pre><code class="language-ruby">class CreateBook
-  include Dry::Monads[:do, :result]
-
-  def self.call(...)
-    new.call(...)
-  end
-
-  def call(params)
-    book_params = yield validate(params)
-    create_book(book_params)
-  end
-end
-</code></pre>
-
-<p>Anytime the <code>call</code> method on the <em>class</em> is called, a new <code>CreateBook</code> <em>instance</em> is created, then those arguments from the class-level <code>call</code> are passed to the instance-level <code>call</code>. By defining this new <code>call</code> method on the class itself, we can then change our controller to this:</p>
-
-<pre><code class="language-ruby">CreateBook.call(book_params)
-</code></pre>
-
-<p>This makes our code out to the <code>CreateBook</code> class from wherever we’re using it slightly easier, while still allowing us to create &amp; use instances of <code>CreateBook</code> if we wish. One particular case where that might come in handy is if you wanted to inject a dependency here:</p>
-
-<pre><code class="language-ruby">CreateBook.new(book_repository: book_repo).call(book_params)
-</code></pre>
-
-<p>But that’s a story for another day.</p>
 ]]></content>
  </entry>
  

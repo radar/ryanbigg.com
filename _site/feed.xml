@@ -1,4 +1,141 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-07T13:57:33+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office">&lt;p&gt;This news &lt;a href=&quot;https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/&quot;&gt;about Zoom forcing their employees back into the office for 2 days a week&lt;/a&gt; is just bonkers.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-23T06:46:50+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">&lt;p&gt;Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with &lt;a href=&quot;https://www.selenium.dev/blog/2022/introducing-selenium-manager/&quot;&gt;a new feature called Selenium Manager&lt;/a&gt;. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under &lt;code&gt;~/.cache/selenium...&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.&lt;/p&gt;
+
+&lt;p&gt;I was seeing errors such as:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/bin/sh: ./chromedriver-linux64/chromedriver: not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The file was definitely present though!&lt;/p&gt;
+
+&lt;p&gt;Other answers on the internet pointed to this being an issue with missing libraries. Those answers pointed to the &lt;code&gt;ldd&lt;/code&gt; tool, and sure enough that showed the libraries that were required for chromedriver. The command was:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ldd ./chromedriver-linux64/chromedriver
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This listed the system libaries that the chromedriver executable was dependent on Then I read through those messages that were output and attempted to find packages that matched the messages.&lt;/p&gt;
+
+&lt;p&gt;To make Chromedriver v116 work on Alpine Linux, you have to have these packages installed:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apk add gcompat glib nss libxcb libgcc
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After installing these packages, Chromedriver was able to start.&lt;/p&gt;
+
+&lt;p&gt;But Chromedriver is not so useful without a Chrome to drive it. I used &lt;code&gt;ldd&lt;/code&gt; once again, and found a &lt;em&gt;huge&lt;/em&gt; list of packages that Chrome requires. Instead of installing all of these, you can install Chrome using:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apk add chromium
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will then install Chromium (whatever’s latest and all of the package dependencies). This will be enough to get Chrome running.&lt;/p&gt;
+
+&lt;p&gt;Ultimately, I ended up building a small Docker image to test this out properly. Here’s that image’s &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;FROM ruby:3.2.2-alpine
+RUN apk update &amp;amp;&amp;amp; apk add gcompat glib nss libxcb libgcc chromium
+
+RUN adduser -D app
+RUN mkdir /app
+RUN chown app:app /app
+USER app
+WORKDIR /app
+COPY --chown=app:app . /app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;I build this with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;docker build . -t selenium
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then I run it with:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; docker run -it selenium
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will launch me into an IRB session. To check if Selenium can correctly download + use Chrome and ChromeDriver, I run this code, which is very similar to the code that would be used to configure this within &lt;code&gt;rails_helper.rb&lt;/code&gt; in a Rails app:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;Bundler.require
+
+Selenium::WebDriver.logger.level = Logger::DEBUG
+
+options = ::Selenium::WebDriver::Chrome::Options.new
+
+options.add_argument(&quot;--headless&quot;)
+options.add_argument(&quot;--no-sandbox&quot;)
+options.add_argument(&quot;--disable-dev-shm-usage&quot;)
+options.add_argument(&quot;--disable-gpu&quot;)
+
+Selenium::WebDriver.for :chrome, capabilities: options
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This output should include things like a check for both Chrome + ChromeDriver, which will fail:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
+DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
+DEBUG Selenium [:selenium_manager] Checking chrome in PATH
+DEBUG Selenium [:selenium_manager] Running command: which chrome
+DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] chrome not found in PATH
+DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;(The chrome one fails here, as &lt;code&gt;chromium&lt;/code&gt; has installed Chrome at &lt;code&gt;/usr/bin/chromium&lt;/code&gt;.)&lt;/p&gt;
+
+&lt;p&gt;After that, we’ll see log lines for downloads of Chrome + ChromeDriver:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
+DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
+DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
+DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.&lt;/p&gt;
+
+&lt;p&gt;Then we’ll see ChromeDriver starting up:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for &quot;::1&quot; port 9515)
+DEBUG Selenium [:driver_service] Executing Process [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;]
+DEBUG Selenium [:process] Starting process: [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;] with {[:out, :err]=&amp;gt;#&amp;lt;IO:&amp;lt;STDOUT&amp;gt;&amp;gt;, :pgroup=&amp;gt;true}
+DEBUG Selenium [:process]   -&amp;gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on [&quot;127.0.0.1&quot;, 9515]
+Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1692683187.222][SEVERE]: bind() failed: Address not available (99)
+ChromeDriver was started successfully.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The “address not available (99)” error here is because ChromeDriver is trying to bind to &lt;code&gt;::1:9515&lt;/code&gt;, but this Docker image is not setup with IPv6 support, so that will fail.&lt;/p&gt;
+
+&lt;p&gt;Finally, we’ll see some JSON requests to &lt;code&gt;POST session&lt;/code&gt; going back and forth from &lt;code&gt;9515&lt;/code&gt;, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:command] -&amp;gt; POST session
+DEBUG Selenium [:command]    &amp;gt;&amp;gt;&amp;gt; http://127.0.0.1:9515/session | {&quot;capabilities&quot;:{&quot;alwaysMatch&quot;:{&quot;browserName&quot;:&quot;chrome&quot;,&quot;goog:chromeOptions&quot;:{&quot;args&quot;:[&quot;--headless&quot;,&quot;--no-sandbox&quot;,&quot;--disable-dev-shm-usage&quot;,&quot;--disable-gpu&quot;],&quot;binary&quot;:&quot;/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome&quot;}}}}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So the important thing to note here is that if you’ve got:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;A Ruby image that uses &lt;code&gt;ruby:3.2.2-alpine&lt;/code&gt; (or similar) as its base&lt;/li&gt;
+  &lt;li&gt;And you want to use the built-in Selenium Manager to download Chrome + Chromium&lt;/li&gt;
+  &lt;li&gt;You will need to have these packages installed:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;apk add gcompat glib nss libxcb libgcc chromium
+&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)</summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office">&lt;p&gt;This news &lt;a href=&quot;https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/&quot;&gt;about Zoom forcing their employees back into the office for 2 days a week&lt;/a&gt; is just bonkers.&lt;/p&gt;
 
 &lt;p&gt;For an Australian perspective:&lt;/p&gt;
 
@@ -10,7 +147,7 @@
 
 &lt;hr /&gt;
 
-&lt;p&gt;I really enjoy the flexibility of working from home. I can put on a load of washing over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.&lt;/p&gt;
+&lt;p&gt;I really enjoy the flexibility of working from home. I can put on a load of washinxtg over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.&lt;/p&gt;
 
 &lt;p&gt;Environmentally: I can control the temperature in my office. There’s nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I’m sharing it with someone due to space reasons.&lt;/p&gt;
 
@@ -1174,59 +1311,4 @@ expect(json.dig(&quot;book&quot;, &quot;title&quot;)).to eq(&quot;Exploding Rail
 
 &lt;p&gt;This will make one query for all the users, N queries for all of those users’ books, and M queries for all of those users’ books’ chapters.&lt;/p&gt;
 
-&lt;p&gt;To prevent N+1 queries, I’d recommend relying on the &lt;code&gt;GraphQL::Dataloader&lt;/code&gt; features &lt;a href=&quot;https://graphql-ruby.org/dataloader/overview.html&quot;&gt;shown here&lt;/a&gt;. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on Twist’s GraphQL API, and other GraphQL APIs that are deployed in production.</summary></entry><entry><title type="html">The method method</title><link href="http://localhost:4000/2023/01/the-method-method" rel="alternate" type="text/html" title="The method method" /><published>2023-01-20T00:00:00+11:00</published><updated>2023-01-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/the-method-method</id><content type="html" xml:base="http://localhost:4000/2023/01/the-method-method">&lt;p&gt;The &lt;code&gt;method&lt;/code&gt; method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;1.method(:+)
-=&amp;gt; #&amp;lt;Method: Integer#+(_)&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;where-is-this-method-defined&quot;&gt;Where is this method defined?&lt;/h2&gt;
-
-&lt;p&gt;With this method &lt;code&gt;method&lt;/code&gt;, you can find out where a method is defined, if it is defined in Ruby code anywhere:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;SomeModel.method(:find).source_location
-=&amp;gt; [&quot;...activerecord-x.x.x/lib/active_record/core.rb&quot;, 337]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then I can look at this source code within the Active Record gem to &lt;em&gt;find out&lt;/em&gt; how &lt;code&gt;find&lt;/code&gt; works.&lt;/p&gt;
-
-&lt;h2 id=&quot;call-me-maybe&quot;&gt;Call me, maybe?&lt;/h2&gt;
-
-&lt;p&gt;Methods can also be passed in place of traditional block arguments:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;class Maths
-  def self.square(num)
-    num ** 2
-  end
-end
-
-square = Maths.method(:square)
-
-[1, 2, 3, 4].map(&amp;amp;square)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;map&lt;/code&gt; syntax here is short-hand for:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[1, 2, 3, 4].map { |number| square.call(number) }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Which is exactly the same behaviour that a &lt;code&gt;Proc&lt;/code&gt; has:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;a_proc = -&amp;gt; (num) { num ** 2 }
-[1, 2, 3, 4].map(&amp;amp;square)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;more-documentation&quot;&gt;More documentation&lt;/h2&gt;
-
-&lt;p&gt;You can find more about the &lt;a href=&quot;https://devdocs.io/ruby~3.1/method&quot;&gt;Method class&lt;/a&gt; here. You can even find out why this code returns &lt;code&gt;true&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;def moo(arg) arg == 3; end
-
-number = 3
-case number
-when method(:moo)
-  true
-else
-  false
-end
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">The method method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:</summary></entry></feed>
+&lt;p&gt;To prevent N+1 queries, I’d recommend relying on the &lt;code&gt;GraphQL::Dataloader&lt;/code&gt; features &lt;a href=&quot;https://graphql-ruby.org/dataloader/overview.html&quot;&gt;shown here&lt;/a&gt;. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a series of my notes of working within a GraphQL application as I can think of them. This comes out of my work on Twist’s GraphQL API, and other GraphQL APIs that are deployed in production.</summary></entry></feed>
