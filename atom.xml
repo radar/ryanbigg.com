@@ -9,7 +9,7 @@ title: atom feed
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
  <updated>{{ site.time | date_to_xmlschema }}</updated>
- <id>http://ryanbigg.com/</id>
+ <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
@@ -18,9 +18,9 @@ title: atom feed
  {% for post in site.posts limit:20 %}
  <entry>
    <title>{{ post.title | xml_escape }}</title>
-   <link href="http://ryanbigg.com{{ post.url }}"/>
+   <link href="https://ryanbigg.com{{ post.url }}"/>
    <updated>{{ post.date | date_to_xmlschema }}</updated>
-   <id>http://ryanbigg.com{{ post.id }}</id>
+   <id>https://ryanbigg.com{{ post.id }}</id>
    <content type="html"><![CDATA[{{ post.content }}]]></content>
  </entry>
  {% endfor %}

@@ -1,27 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-25T12:22:53+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver">&lt;p&gt;&lt;a href=&quot;/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver&quot;&gt;This is a rehash of my Alpine Linux version of this post&lt;/a&gt;. I’ll skip the fluff here and jump straight to the good stuff.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-25T13:00:14+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
 
-&lt;p&gt;The packages needed for Chromedriver are:&lt;/p&gt;
+<p>The packages needed for Chromedriver are:</p>
 
-&lt;pre&gt;&lt;code&gt;libnss3 libnspr4
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>libnss3 libnspr4
+</code></pre>
 
-&lt;p&gt;The packages needed for Chrome are:&lt;/p&gt;
+<p>The packages needed for Chrome are:</p>
 
-&lt;pre&gt;&lt;code&gt;libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+</code></pre>
 
-&lt;p&gt;(There’s also a package called &lt;code&gt;chromium-shell&lt;/code&gt; that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)&lt;/p&gt;
+<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
 
-&lt;p&gt;The &lt;code&gt;Dockerfile&lt;/code&gt; is therefore:&lt;/p&gt;
+<p>The <code>Dockerfile</code> is therefore:</p>
 
-&lt;pre&gt;&lt;code&gt;FROM ruby:3.2.2
+<pre><code>FROM ruby:3.2.2
 
-RUN apt-get update &amp;amp;&amp;amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
 
 # OR this, but the install time is much longer:
-# RUN apt-get update &amp;amp;&amp;amp; apt-get install chromium-shell
+# RUN apt-get update &amp;&amp; apt-get install chromium-shell
 
-RUN adduser --disabled-password --gecos &quot;&quot; app
+RUN adduser --disabled-password --gecos "" app
 COPY --chown app:app . /app
 WORKDIR /app
 USER app
@@ -29,48 +29,48 @@ USER app
 RUN bundle config set --local path vendor/bundle
 RUN bundle install
 CMD bundle exec irb
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;And we can then build and run this image:&lt;/p&gt;
+<p>And we can then build and run this image:</p>
 
-&lt;pre&gt;&lt;code&gt;docker build . -t ubuntu-selenium
+<pre><code>docker build . -t ubuntu-selenium
 docker run -it ubuntu-selenium
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;And confirm it works by running:&lt;/p&gt;
+<p>And confirm it works by running:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;Bundler.require
+<pre><code class="language-ruby">Bundler.require
 
 Selenium::WebDriver.logger.level = Logger::DEBUG
 
 options = ::Selenium::WebDriver::Chrome::Options.new
 
-options.add_argument(&quot;--headless&quot;)
-options.add_argument(&quot;--no-sandbox&quot;)
-options.add_argument(&quot;--disable-dev-shm-usage&quot;)
-options.add_argument(&quot;--disable-gpu&quot;)
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
 
 Selenium::WebDriver.for :chrome, capabilities: options
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This output should include things like a check for both Chrome + ChromeDriver, which will fail:&lt;/p&gt;
+<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
 DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] Output: ""
 DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
 DEBUG Selenium [:selenium_manager] Checking chrome in PATH
 DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] Output: ""
 DEBUG Selenium [:selenium_manager] chrome not found in PATH
 DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;(The chrome one fails here, as &lt;code&gt;chromium&lt;/code&gt; has installed Chrome at &lt;code&gt;/usr/bin/chromium&lt;/code&gt;.)&lt;/p&gt;
+<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
 
-&lt;p&gt;After that, we’ll see log lines for downloads of Chrome + ChromeDriver:&lt;/p&gt;
+<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
 DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
 DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
 DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
@@ -79,67 +79,67 @@ DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
 DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
 DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
 DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.&lt;/p&gt;
+<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
 
-&lt;p&gt;Then we’ll see ChromeDriver starting up:&lt;/p&gt;
+<p>Then we’ll see ChromeDriver starting up:</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for &quot;::1&quot; port 9515)
-DEBUG Selenium [:driver_service] Executing Process [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;]
-DEBUG Selenium [:process] Starting process: [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;] with {[:out, :err]=&amp;gt;#&amp;lt;IO:&amp;lt;STDOUT&amp;gt;&amp;gt;, :pgroup=&amp;gt;true}
-DEBUG Selenium [:process]   -&amp;gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on [&quot;127.0.0.1&quot;, 9515]
+<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
+DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
+DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
+DEBUG Selenium [:process]   -&gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
 Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
 Only local connections are allowed.
 Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
 [1692683187.222][SEVERE]: bind() failed: Address not available (99)
 ChromeDriver was started successfully.
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;The “address not available (99)” error here is because ChromeDriver is trying to bind to &lt;code&gt;::1:9515&lt;/code&gt;, but this Docker image is not setup with IPv6 support, so that will fail.&lt;/p&gt;
+<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
 
-&lt;p&gt;Finally, we’ll see some JSON requests to &lt;code&gt;POST session&lt;/code&gt; going back and forth from &lt;code&gt;9515&lt;/code&gt;, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.&lt;/p&gt;
+<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:command] -&amp;gt; POST session
-DEBUG Selenium [:command]    &amp;gt;&amp;gt;&amp;gt; http://127.0.0.1:9515/session | {&quot;capabilities&quot;:{&quot;alwaysMatch&quot;:{&quot;browserName&quot;:&quot;chrome&quot;,&quot;goog:chromeOptions&quot;:{&quot;args&quot;:[&quot;--headless&quot;,&quot;--no-sandbox&quot;,&quot;--disable-dev-shm-usage&quot;,&quot;--disable-gpu&quot;],&quot;binary&quot;:&quot;/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome&quot;}}}}
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.</summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">&lt;p&gt;Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with &lt;a href=&quot;https://www.selenium.dev/blog/2022/introducing-selenium-manager/&quot;&gt;a new feature called Selenium Manager&lt;/a&gt;. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under &lt;code&gt;~/.cache/selenium...&lt;/code&gt;)&lt;/p&gt;
+<pre><code>DEBUG Selenium [:command] -&gt; POST session
+DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
 
-&lt;p&gt;Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.&lt;/p&gt;
+<p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
 
-&lt;p&gt;I was seeing errors such as:&lt;/p&gt;
+<p>I was seeing errors such as:</p>
 
-&lt;pre&gt;&lt;code&gt;/bin/sh: ./chromedriver-linux64/chromedriver: not found
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>/bin/sh: ./chromedriver-linux64/chromedriver: not found
+</code></pre>
 
-&lt;p&gt;The file was definitely present though!&lt;/p&gt;
+<p>The file was definitely present though!</p>
 
-&lt;p&gt;Other answers on the internet pointed to this being an issue with missing libraries. Those answers pointed to the &lt;code&gt;ldd&lt;/code&gt; tool, and sure enough that showed the libraries that were required for chromedriver. The command was:&lt;/p&gt;
+<p>Other answers on the internet pointed to this being an issue with missing libraries. Those answers pointed to the <code>ldd</code> tool, and sure enough that showed the libraries that were required for chromedriver. The command was:</p>
 
-&lt;pre&gt;&lt;code&gt;ldd ./chromedriver-linux64/chromedriver
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>ldd ./chromedriver-linux64/chromedriver
+</code></pre>
 
-&lt;p&gt;This listed the system libaries that the chromedriver executable was dependent on Then I read through those messages that were output and attempted to find packages that matched the messages.&lt;/p&gt;
+<p>This listed the system libaries that the chromedriver executable was dependent on Then I read through those messages that were output and attempted to find packages that matched the messages.</p>
 
-&lt;p&gt;To make Chromedriver v116 work on Alpine Linux, you have to have these packages installed:&lt;/p&gt;
+<p>To make Chromedriver v116 work on Alpine Linux, you have to have these packages installed:</p>
 
-&lt;pre&gt;&lt;code&gt;apk add gcompat glib nss libxcb libgcc
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>apk add gcompat glib nss libxcb libgcc
+</code></pre>
 
-&lt;p&gt;After installing these packages, Chromedriver was able to start.&lt;/p&gt;
+<p>After installing these packages, Chromedriver was able to start.</p>
 
-&lt;p&gt;But Chromedriver is not so useful without a Chrome to drive it. I used &lt;code&gt;ldd&lt;/code&gt; once again, and found a &lt;em&gt;huge&lt;/em&gt; list of packages that Chrome requires. Instead of installing all of these, you can install Chrome using:&lt;/p&gt;
+<p>But Chromedriver is not so useful without a Chrome to drive it. I used <code>ldd</code> once again, and found a <em>huge</em> list of packages that Chrome requires. Instead of installing all of these, you can install Chrome using:</p>
 
-&lt;pre&gt;&lt;code&gt;apk add chromium
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>apk add chromium
+</code></pre>
 
-&lt;p&gt;This will then install Chromium (whatever’s latest and all of the package dependencies). This will be enough to get Chrome running.&lt;/p&gt;
+<p>This will then install Chromium (whatever’s latest and all of the package dependencies). This will be enough to get Chrome running.</p>
 
-&lt;p&gt;Ultimately, I ended up building a small Docker image to test this out properly. Here’s that image’s &lt;code&gt;Dockerfile&lt;/code&gt;:&lt;/p&gt;
+<p>Ultimately, I ended up building a small Docker image to test this out properly. Here’s that image’s <code>Dockerfile</code>:</p>
 
-&lt;pre&gt;&lt;code&gt;FROM ruby:3.2.2-alpine
-RUN apk update &amp;amp;&amp;amp; apk add gcompat glib nss libxcb libgcc chromium
+<pre><code>FROM ruby:3.2.2-alpine
+RUN apk update &amp;&amp; apk add gcompat glib nss libxcb libgcc chromium
 
 RUN adduser -D app
 RUN mkdir /app
@@ -151,52 +151,52 @@ COPY --chown=app:app . /app
 RUN bundle config set --local path vendor/bundle
 RUN bundle install
 CMD bundle exec irb
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;I build this with:&lt;/p&gt;
+<p>I build this with:</p>
 
-&lt;pre&gt;&lt;code&gt;docker build . -t selenium
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>docker build . -t selenium
+</code></pre>
 
-&lt;p&gt;Then I run it with:&lt;/p&gt;
+<p>Then I run it with:</p>
 
-&lt;pre&gt;&lt;code&gt; docker run -it selenium
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code> docker run -it selenium
+</code></pre>
 
-&lt;p&gt;This will launch me into an IRB session. To check if Selenium can correctly download + use Chrome and ChromeDriver, I run this code, which is very similar to the code that would be used to configure this within &lt;code&gt;rails_helper.rb&lt;/code&gt; in a Rails app:&lt;/p&gt;
+<p>This will launch me into an IRB session. To check if Selenium can correctly download + use Chrome and ChromeDriver, I run this code, which is very similar to the code that would be used to configure this within <code>rails_helper.rb</code> in a Rails app:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;Bundler.require
+<pre><code class="language-ruby">Bundler.require
 
 Selenium::WebDriver.logger.level = Logger::DEBUG
 
 options = ::Selenium::WebDriver::Chrome::Options.new
 
-options.add_argument(&quot;--headless&quot;)
-options.add_argument(&quot;--no-sandbox&quot;)
-options.add_argument(&quot;--disable-dev-shm-usage&quot;)
-options.add_argument(&quot;--disable-gpu&quot;)
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
 
 Selenium::WebDriver.for :chrome, capabilities: options
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This output should include things like a check for both Chrome + ChromeDriver, which will fail:&lt;/p&gt;
+<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
 DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] Output: ""
 DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
 DEBUG Selenium [:selenium_manager] Checking chrome in PATH
 DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: &quot;&quot;
+DEBUG Selenium [:selenium_manager] Output: ""
 DEBUG Selenium [:selenium_manager] chrome not found in PATH
 DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;(The chrome one fails here, as &lt;code&gt;chromium&lt;/code&gt; has installed Chrome at &lt;code&gt;/usr/bin/chromium&lt;/code&gt;.)&lt;/p&gt;
+<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
 
-&lt;p&gt;After that, we’ll see log lines for downloads of Chrome + ChromeDriver:&lt;/p&gt;
+<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
 DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
 DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
 DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
@@ -205,203 +205,203 @@ DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
 DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
 DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
 DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.&lt;/p&gt;
+<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
 
-&lt;p&gt;Then we’ll see ChromeDriver starting up:&lt;/p&gt;
+<p>Then we’ll see ChromeDriver starting up:</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for &quot;::1&quot; port 9515)
-DEBUG Selenium [:driver_service] Executing Process [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;]
-DEBUG Selenium [:process] Starting process: [&quot;/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver&quot;, &quot;--port=9515&quot;] with {[:out, :err]=&amp;gt;#&amp;lt;IO:&amp;lt;STDOUT&amp;gt;&amp;gt;, :pgroup=&amp;gt;true}
-DEBUG Selenium [:process]   -&amp;gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on [&quot;127.0.0.1&quot;, 9515]
+<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
+DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
+DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
+DEBUG Selenium [:process]   -&gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
 Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
 Only local connections are allowed.
 Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
 [1692683187.222][SEVERE]: bind() failed: Address not available (99)
 ChromeDriver was started successfully.
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;The “address not available (99)” error here is because ChromeDriver is trying to bind to &lt;code&gt;::1:9515&lt;/code&gt;, but this Docker image is not setup with IPv6 support, so that will fail.&lt;/p&gt;
+<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
 
-&lt;p&gt;Finally, we’ll see some JSON requests to &lt;code&gt;POST session&lt;/code&gt; going back and forth from &lt;code&gt;9515&lt;/code&gt;, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.&lt;/p&gt;
+<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
 
-&lt;pre&gt;&lt;code&gt;DEBUG Selenium [:command] -&amp;gt; POST session
-DEBUG Selenium [:command]    &amp;gt;&amp;gt;&amp;gt; http://127.0.0.1:9515/session | {&quot;capabilities&quot;:{&quot;alwaysMatch&quot;:{&quot;browserName&quot;:&quot;chrome&quot;,&quot;goog:chromeOptions&quot;:{&quot;args&quot;:[&quot;--headless&quot;,&quot;--no-sandbox&quot;,&quot;--disable-dev-shm-usage&quot;,&quot;--disable-gpu&quot;],&quot;binary&quot;:&quot;/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome&quot;}}}}
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>DEBUG Selenium [:command] -&gt; POST session
+DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
+</code></pre>
 
-&lt;p&gt;So the important thing to note here is that if you’ve got:&lt;/p&gt;
+<p>So the important thing to note here is that if you’ve got:</p>
 
-&lt;ol&gt;
-  &lt;li&gt;A Ruby image that uses &lt;code&gt;ruby:3.2.2-alpine&lt;/code&gt; (or similar) as its base&lt;/li&gt;
-  &lt;li&gt;And you want to use the built-in Selenium Manager to download Chrome + Chromium&lt;/li&gt;
-  &lt;li&gt;You will need to have these packages installed:&lt;/li&gt;
-&lt;/ol&gt;
+<ol>
+  <li>A Ruby image that uses <code>ruby:3.2.2-alpine</code> (or similar) as its base</li>
+  <li>And you want to use the built-in Selenium Manager to download Chrome + Chromium</li>
+  <li>You will need to have these packages installed:</li>
+</ol>
 
-&lt;pre&gt;&lt;code&gt;apk add gcompat glib nss libxcb libgcc chromium
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)</summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office">&lt;p&gt;This news &lt;a href=&quot;https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/&quot;&gt;about Zoom forcing their employees back into the office for 2 days a week&lt;/a&gt; is just bonkers.&lt;/p&gt;
+<pre><code>apk add gcompat glib nss libxcb libgcc chromium
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office"><![CDATA[<p>This news <a href="https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/">about Zoom forcing their employees back into the office for 2 days a week</a> is just bonkers.</p>
 
-&lt;p&gt;For an Australian perspective:&lt;/p&gt;
+<p>For an Australian perspective:</p>
 
-&lt;p&gt;In Melbourne, 50 miles would mean people on Phillip Island and Geelong would need to commute into the city, a 2 hour commute one way. Geelong people could take the V/Line, thankfully. Phillip Islanders are shit out of luck and would have to drive in.&lt;/p&gt;
+<p>In Melbourne, 50 miles would mean people on Phillip Island and Geelong would need to commute into the city, a 2 hour commute one way. Geelong people could take the V/Line, thankfully. Phillip Islanders are shit out of luck and would have to drive in.</p>
 
-&lt;p&gt;In Sydney, 50 miles would mean people in Wentworth Falls, San Remo and Wollongong would also be forced to commute 2 hours into the office as well. Katoomba residents thank your lucky stars, you’re just outside of the magic number.&lt;/p&gt;
+<p>In Sydney, 50 miles would mean people in Wentworth Falls, San Remo and Wollongong would also be forced to commute 2 hours into the office as well. Katoomba residents thank your lucky stars, you’re just outside of the magic number.</p>
 
-&lt;p&gt;Two hour commutes! “Give up 8 hours of your week &lt;em&gt;in traffic&lt;/em&gt; in the name of &lt;em&gt;synergy&lt;/em&gt;.” What baloney.&lt;/p&gt;
+<p>Two hour commutes! “Give up 8 hours of your week <em>in traffic</em> in the name of <em>synergy</em>.” What baloney.</p>
 
-&lt;hr /&gt;
+<hr />
 
-&lt;p&gt;I really enjoy the flexibility of working from home. I can put on a load of washinxtg over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.&lt;/p&gt;
+<p>I really enjoy the flexibility of working from home. I can put on a load of washinxtg over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.</p>
 
-&lt;p&gt;Environmentally: I can control the temperature in my office. There’s nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I’m sharing it with someone due to space reasons.&lt;/p&gt;
+<p>Environmentally: I can control the temperature in my office. There’s nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I’m sharing it with someone due to space reasons.</p>
 
-&lt;p&gt;And for all of these reasons, I’m a happy employee. I get my work done, and &lt;em&gt;more of it&lt;/em&gt;, because I can choose the conditions in how that work is done. And if I need to &lt;em&gt;synergise&lt;/em&gt; with another employee, why there’s Zoom for that.&lt;/p&gt;</content><author><name></name></author><summary type="html">This news about Zoom forcing their employees back into the office for 2 days a week is just bonkers.</summary></entry><entry><title type="html">How to fix: Chromedriver 115, cannot find chrome binary</title><link href="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary" rel="alternate" type="text/html" title="How to fix: Chromedriver 115, cannot find chrome binary" /><published>2023-07-28T00:00:00+10:00</published><updated>2023-07-28T00:00:00+10:00</updated><id>http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary</id><content type="html" xml:base="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary">&lt;p&gt;Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.&lt;/p&gt;
+<p>And for all of these reasons, I’m a happy employee. I get my work done, and <em>more of it</em>, because I can choose the conditions in how that work is done. And if I need to <em>synergise</em> with another employee, why there’s Zoom for that.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This news about Zoom forcing their employees back into the office for 2 days a week is just bonkers.]]></summary></entry><entry><title type="html">How to fix: Chromedriver 115, cannot find chrome binary</title><link href="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary" rel="alternate" type="text/html" title="How to fix: Chromedriver 115, cannot find chrome binary" /><published>2023-07-28T00:00:00+10:00</published><updated>2023-07-28T00:00:00+10:00</updated><id>http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary</id><content type="html" xml:base="http://localhost:4000/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary"><![CDATA[<p>Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.</p>
 
-&lt;pre&gt;&lt;code&gt;unknown error: cannot find Chrome binary
+<pre><code>unknown error: cannot find Chrome binary
 
 Traceback (most recent call last):
        16: from 15  chromedriver                        0x0000000100df056c chromedriver + 4179308
        15: from 14  chromedriver                        0x0000000100df0414 chromedriver + 4178964
        14: from 13  chromedriver                        0x0000000100dacd1c chromedriver + 3902748
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This is due to Chromedriver looking for a new binary called “Chrome for Testing”, which was &lt;a href=&quot;https://developer.chrome.com/blog/chrome-for-testing/&quot;&gt;recently released from the Chrome team&lt;/a&gt;.&lt;/p&gt;
+<p>This is due to Chromedriver looking for a new binary called “Chrome for Testing”, which was <a href="https://developer.chrome.com/blog/chrome-for-testing/">recently released from the Chrome team</a>.</p>
 
-&lt;p&gt;To fix this bug, you need to &lt;a href=&quot;https://googlechromelabs.github.io/chrome-for-testing/#stable&quot;&gt;download Chrome for Testing&lt;/a&gt;, unzip it and move it into your &lt;code&gt;/Applications&lt;/code&gt; directory.&lt;/p&gt;
+<p>To fix this bug, you need to <a href="https://googlechromelabs.github.io/chrome-for-testing/#stable">download Chrome for Testing</a>, unzip it and move it into your <code>/Applications</code> directory.</p>
 
-&lt;p&gt;Mac’s Gatekeeper program will not let you open this executable by default, as it came from a &lt;code&gt;.zip&lt;/code&gt; file. To work around that problem, run:&lt;/p&gt;
+<p>Mac’s Gatekeeper program will not let you open this executable by default, as it came from a <code>.zip</code> file. To work around that problem, run:</p>
 
-&lt;pre&gt;&lt;code&gt;sudo xattr -cr &apos;/Applications/Google Chrome for Testing.app&apos;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>sudo xattr -cr '/Applications/Google Chrome for Testing.app'
+</code></pre>
 
-&lt;p&gt;This will remove the security restriction that is blocking this application from opening.&lt;/p&gt;
+<p>This will remove the security restriction that is blocking this application from opening.</p>
 
-&lt;p&gt;Run your test suite again, and it will now work.&lt;/p&gt;</content><author><name></name></author><summary type="html">Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.</summary></entry><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the &lt;code&gt;react-rails&lt;/code&gt; gem, but I would like to show you the individual steps to setting it up here instead.&lt;/p&gt;
+<p>Run your test suite again, and it will now work.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.]]></summary></entry><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title><link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup"><![CDATA[<p>Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the <code>react-rails</code> gem, but I would like to show you the individual steps to setting it up here instead.</p>
 
-&lt;h3 id=&quot;installing-esbuild&quot;&gt;Installing ESBuild&lt;/h3&gt;
+<h3 id="installing-esbuild">Installing ESBuild</h3>
 
-&lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
+<p>First you’ll want to install the <code>jsbundling-rails</code> gem:</p>
 
-&lt;pre&gt;&lt;code&gt;bundle add jsbundling-rails
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>bundle add jsbundling-rails
+</code></pre>
 
-&lt;p&gt;Next, you’ll run the generator for this gem to setup ESBuild:&lt;/p&gt;
+<p>Next, you’ll run the generator for this gem to setup ESBuild:</p>
 
-&lt;pre&gt;&lt;code&gt;bin/rails javascript:install:esbuild
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>bin/rails javascript:install:esbuild
+</code></pre>
 
-&lt;p&gt;This will create an &lt;code&gt;app/javascript/application.js&lt;/code&gt; file that we will not need – so delete this file.&lt;/p&gt;
+<p>This will create an <code>app/javascript/application.js</code> file that we will not need – so delete this file.</p>
 
-&lt;p&gt;ESBuild will be setup to build assets in &lt;code&gt;app/javascript&lt;/code&gt;, and put them into &lt;code&gt;app/assets/builds&lt;/code&gt;. From there, Rails will be able to serve those assets.&lt;/p&gt;
+<p>ESBuild will be setup to build assets in <code>app/javascript</code>, and put them into <code>app/assets/builds</code>. From there, Rails will be able to serve those assets.</p>
 
-&lt;p&gt;This install script has added a new &lt;code&gt;build&lt;/code&gt; script to &lt;code&gt;package.json&lt;/code&gt;:&lt;/p&gt;
+<p>This install script has added a new <code>build</code> script to <code>package.json</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;&quot;scripts&quot;: {
-  &quot;build&quot;: &quot;esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets&quot;
+<pre><code class="language-json">"scripts": {
+  "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Once we’ve setup our React code we will be able to run this command to take that code and compile it into some JavaScript browsers can run.&lt;/p&gt;
+<p>Once we’ve setup our React code we will be able to run this command to take that code and compile it into some JavaScript browsers can run.</p>
 
-&lt;p&gt;I like to change this script to point at an &lt;code&gt;entrypoints&lt;/code&gt; subdirectory:&lt;/p&gt;
+<p>I like to change this script to point at an <code>entrypoints</code> subdirectory:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;&quot;scripts&quot;: {
-  &quot;build&quot;: &quot;esbuild app/javascript/entrypoints/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets&quot;
+<pre><code class="language-json">"scripts": {
+  "build": "esbuild app/javascript/entrypoints/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This is so that I can put other directories inside &lt;code&gt;app/javascript&lt;/code&gt;, such as directories including little helper functions, or bigger component structures like &lt;code&gt;app/javascript/Purchases/Table.tsx&lt;/code&gt;.&lt;/p&gt;
+<p>This is so that I can put other directories inside <code>app/javascript</code>, such as directories including little helper functions, or bigger component structures like <code>app/javascript/Purchases/Table.tsx</code>.</p>
 
-&lt;p&gt;It also means that ESBuild will not build &lt;em&gt;everything&lt;/em&gt; in that directory – just the files we declare as entrypoints.&lt;/p&gt;
+<p>It also means that ESBuild will not build <em>everything</em> in that directory – just the files we declare as entrypoints.</p>
 
-&lt;h3 id=&quot;installing-react--typescript&quot;&gt;Installing React &amp;amp; TypeScript&lt;/h3&gt;
+<h3 id="installing-react--typescript">Installing React &amp; TypeScript</h3>
 
-&lt;p&gt;To install React and TypeScript we’ll run this &lt;code&gt;yarn&lt;/code&gt; command:&lt;/p&gt;
+<p>To install React and TypeScript we’ll run this <code>yarn</code> command:</p>
 
-&lt;pre&gt;&lt;code&gt;yarn add react@^18.2 @react-dom@^18.2 @types/react @types/react-dom typescript
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>yarn add react@^18.2 @react-dom@^18.2 @types/react @types/react-dom typescript
+</code></pre>
 
-&lt;p&gt;To configure TypeScript so that it supports React’s JSX templating, we’ll create a &lt;code&gt;tsconfig.json&lt;/code&gt; file at the root of our Rails application with this content in it:&lt;/p&gt;
+<p>To configure TypeScript so that it supports React’s JSX templating, we’ll create a <code>tsconfig.json</code> file at the root of our Rails application with this content in it:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;compilerOptions&quot;: {
-    &quot;module&quot;: &quot;commonjs&quot;,
-    &quot;esModuleInterop&quot;: true,
-    &quot;forceConsistentCasingInFileNames&quot;: true,
-    &quot;strict&quot;: true,
-    &quot;skipLibCheck&quot;: true,
-    &quot;jsx&quot;: &quot;react&quot;,
+<pre><code class="language-json">{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "jsx": "react",
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;To see some React code in action and to check out setup, we can create a new file at &lt;code&gt;app/javascript/entrypoints/application.tsx&lt;/code&gt; and put this code into it:&lt;/p&gt;
+<p>To see some React code in action and to check out setup, we can create a new file at <code>app/javascript/entrypoints/application.tsx</code> and put this code into it:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;import React from &quot;react&quot;;
-import ReactDOM from &quot;react-dom/client&quot;;
+<pre><code class="language-tsx">import React from "react";
+import ReactDOM from "react-dom/client";
 
-const App = () =&amp;gt; &amp;lt;h1&amp;gt;Hello from React!&amp;lt;/h1&amp;gt;;
+const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
 
 const root = ReactDOM.createRoot(
-  document.getElementById(&quot;root&quot;) as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 
-root.render(&amp;lt;App /&amp;gt;);
-&lt;/code&gt;&lt;/pre&gt;
+root.render(&lt;App /&gt;);
+</code></pre>
 
-&lt;p&gt;After this, we can build our application’s assets by running:&lt;/p&gt;
+<p>After this, we can build our application’s assets by running:</p>
 
-&lt;pre&gt;&lt;code&gt;yarn build
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>yarn build
+</code></pre>
 
-&lt;p&gt;This will show us that it has built these assets:&lt;/p&gt;
+<p>This will show us that it has built these assets:</p>
 
-&lt;pre&gt;&lt;code&gt;yarn run v1.22.19
+<pre><code>yarn run v1.22.19
 warning package.json: No license field
 $ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
 
   app/assets/builds/application.js      1.0mb ⚠️
   app/assets/builds/application.js.map  1.5mb
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;To test that it’s all working, we can generate a simple view:&lt;/p&gt;
+<p>To test that it’s all working, we can generate a simple view:</p>
 
-&lt;pre&gt;&lt;code&gt;rails g controller home index
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>rails g controller home index
+</code></pre>
 
-&lt;p&gt;And into &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; we can put a simple div with the ID of &lt;code&gt;root&lt;/code&gt;. This is the element that our &lt;code&gt;ReactDOM.createRoot&lt;/code&gt; code was targeting earlier:&lt;/p&gt;
+<p>And into <code>app/views/home/index.html.erb</code> we can put a simple div with the ID of <code>root</code>. This is the element that our <code>ReactDOM.createRoot</code> code was targeting earlier:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div id=&apos;root&apos;&amp;gt;&amp;lt;/div&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-html">&lt;div id='root'&gt;&lt;/div&gt;
+</code></pre>
 
-&lt;p&gt;When we start our Rails app with &lt;code&gt;bundle exec rails s&lt;/code&gt; and go to http://localhost:3000/home/index, we’ll see our “Hello from React!” message.&lt;/p&gt;
+<p>When we start our Rails app with <code>bundle exec rails s</code> and go to http://localhost:3000/home/index, we’ll see our “Hello from React!” message.</p>
 
-&lt;p&gt;&lt;img src=&quot;/images/css-bundling/react/hello.png&quot; alt=&quot;Hello from React&quot; /&gt;&lt;/p&gt;
+<p><img src="/images/css-bundling/react/hello.png" alt="Hello from React" /></p>
 
-&lt;p&gt;This works “out of the box” because our application layout already brings in this compiled asset:&lt;/p&gt;
+<p>This works “out of the box” because our application layout already brings in this compiled asset:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= javascript_include_tag &quot;application&quot;, &quot;data-turbo-track&quot;: &quot;reload&quot;, defer: true %&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-erb">&lt;%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %&gt;
+</code></pre>
 
-&lt;h3 id=&quot;multiple-mount-points&quot;&gt;Multiple mount points&lt;/h3&gt;
+<h3 id="multiple-mount-points">Multiple mount points</h3>
 
-&lt;p&gt;If you’re running a single-page app, you can probably stop reading here and continue throwing things into &lt;code&gt;&amp;lt;App&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+<p>If you’re running a single-page app, you can probably stop reading here and continue throwing things into <code>&lt;App&gt;</code>.</p>
 
-&lt;p&gt;If you’re wanting to go down a different route, then keep reading. That different route is multiple individual components, where you may wish to mount a component on a per-page basis, than one component for the whole app.&lt;/p&gt;
+<p>If you’re wanting to go down a different route, then keep reading. That different route is multiple individual components, where you may wish to mount a component on a per-page basis, than one component for the whole app.</p>
 
-&lt;p&gt;To do this, we can create a file at &lt;code&gt;app/javascript/mount.tsx&lt;/code&gt;:&lt;/p&gt;
+<p>To do this, we can create a file at <code>app/javascript/mount.tsx</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;import React from &quot;react&quot;;
-import ReactDOM from &quot;react-dom/client&quot;;
+<pre><code class="language-tsx">import React from "react";
+import ReactDOM from "react-dom/client";
 
-type Components = Record&amp;lt;string, React.ElementType&amp;gt;;
+type Components = Record&lt;string, React.ElementType&gt;;
 
 export default function mount(components: Components): void {
-  document.addEventListener(&quot;DOMContentLoaded&quot;, () =&amp;gt; {
-    const mountPoints = document.querySelectorAll(&quot;[data-react-component]&quot;);
-    mountPoints.forEach((mountPoint) =&amp;gt; {
+  document.addEventListener("DOMContentLoaded", () =&gt; {
+    const mountPoints = document.querySelectorAll("[data-react-component]");
+    mountPoints.forEach((mountPoint) =&gt; {
       const { dataset } = mountPoint as HTMLElement;
       const componentName = dataset.reactComponent;
       if (componentName) {
@@ -409,10 +409,10 @@ export default function mount(components: Components): void {
         if (Component) {
           const props = JSON.parse(dataset.props as string);
           const root = ReactDOM.createRoot(mountPoint);
-          root.render(&amp;lt;Component {...props} /&amp;gt;);
+          root.render(&lt;Component {...props} /&gt;);
         } else {
           console.warn(
-            &quot;WARNING: No component found for: &quot;,
+            "WARNING: No component found for: ",
             dataset.reactComponent,
             components
           );
@@ -421,48 +421,48 @@ export default function mount(components: Components): void {
     });
   });
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This code attempts to find all elements that contain a &lt;code&gt;data-react-component&lt;/code&gt; attribute, and then to mount components matching that name onto the page in those locations. This code also parses any props contained in a &lt;code&gt;data-props&lt;/code&gt; attribute and passes those along to the component too.&lt;/p&gt;
+<p>This code attempts to find all elements that contain a <code>data-react-component</code> attribute, and then to mount components matching that name onto the page in those locations. This code also parses any props contained in a <code>data-props</code> attribute and passes those along to the component too.</p>
 
-&lt;p&gt;In practical terms, a page containing:&lt;/p&gt;
+<p>In practical terms, a page containing:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div data-react-component=&apos;App&apos; data-props=&quot;{}&quot;&amp;gt;&amp;lt;/div&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-html">&lt;div data-react-component='App' data-props="{}"&gt;&lt;/div&gt;
+</code></pre>
 
-&lt;p&gt;Would have a component called &lt;code&gt;App&lt;/code&gt; mounted into the location of that div tag. This then allows us to intermix React components with our Rails application, which can be particularly helpful if we have an older Rails app that we’re enhancing with some newer React components.&lt;/p&gt;
+<p>Would have a component called <code>App</code> mounted into the location of that div tag. This then allows us to intermix React components with our Rails application, which can be particularly helpful if we have an older Rails app that we’re enhancing with some newer React components.</p>
 
-&lt;p&gt;To see this in action, let’s use this new &lt;code&gt;mount&lt;/code&gt; function over in &lt;code&gt;application.tsx&lt;/code&gt; by replacing the code in that file with this code:&lt;/p&gt;
+<p>To see this in action, let’s use this new <code>mount</code> function over in <code>application.tsx</code> by replacing the code in that file with this code:</p>
 
-&lt;pre&gt;&lt;code&gt;import React from &quot;react&quot;;
-import mount from &quot;./mount&quot;;
+<pre><code>import React from "react";
+import mount from "./mount";
 
-const App = () =&amp;gt; &amp;lt;h1&amp;gt;Hello from React!&amp;lt;/h1&amp;gt;;
+const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
 
 mount({
   App,
 });
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;And also the code in &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; with this code:&lt;/p&gt;
+<p>And also the code in <code>app/views/home/index.html.erb</code> with this code:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div data-react-component=&apos;App&apos; data-props=&quot;{}&quot;&amp;gt;&amp;lt;/div&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-html">&lt;div data-react-component='App' data-props="{}"&gt;&lt;/div&gt;
+</code></pre>
 
-&lt;p&gt;We can then run &lt;code&gt;yarn build&lt;/code&gt; to rebuild our assets, and then refresh our browser to see the same message as before.&lt;/p&gt;
+<p>We can then run <code>yarn build</code> to rebuild our assets, and then refresh our browser to see the same message as before.</p>
 
-&lt;h3 id=&quot;view-components&quot;&gt;View Components&lt;/h3&gt;
+<h3 id="view-components">View Components</h3>
 
-&lt;p&gt;Writing this lengthy HTML into our views every time we want to render a React component will get tiresome quickly. To save us repeating ourselves again and again, we’re going to use a gem called &lt;code&gt;view_component&lt;/code&gt;. We can install this gem with:&lt;/p&gt;
+<p>Writing this lengthy HTML into our views every time we want to render a React component will get tiresome quickly. To save us repeating ourselves again and again, we’re going to use a gem called <code>view_component</code>. We can install this gem with:</p>
 
-&lt;pre&gt;&lt;code&gt;bundle add view_component
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>bundle add view_component
+</code></pre>
 
-&lt;p&gt;We can then create a new component class using this gem, placing it into &lt;code&gt;app/components/react_component.rb&lt;/code&gt;:&lt;/p&gt;
+<p>We can then create a new component class using this gem, placing it into <code>app/components/react_component.rb</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;# frozen_string_literal: true
+<pre><code class="language-ruby"># frozen_string_literal: true
 
-class ReactComponent &amp;lt; ViewComponent::Base
+class ReactComponent &lt; ViewComponent::Base
   attr_reader :component, :raw_props
 
   def initialize(component, raw_props: {})
@@ -472,7 +472,7 @@ class ReactComponent &amp;lt; ViewComponent::Base
 
   def call
     helpers.tag.div(
-      &apos;&apos;,
+      '',
       data: {
         react_component: component,
         props: props
@@ -487,64 +487,64 @@ class ReactComponent &amp;lt; ViewComponent::Base
   end
 end
 
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This class is then going to place that &lt;code&gt;div&lt;/code&gt; tag onto our page for us. This class will serve as a base class for any other component classes we define in our app. Those subclasses of &lt;code&gt;ReactComponent&lt;/code&gt; can override &lt;code&gt;props&lt;/code&gt; if they need to do work to prepare the props before they’re passed through to the component.&lt;/p&gt;
+<p>This class is then going to place that <code>div</code> tag onto our page for us. This class will serve as a base class for any other component classes we define in our app. Those subclasses of <code>ReactComponent</code> can override <code>props</code> if they need to do work to prepare the props before they’re passed through to the component.</p>
 
-&lt;p&gt;Then we can use this component to render React components within our application. Let’s change the code in &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; to render the &lt;code&gt;App&lt;/code&gt; component by using this component class:&lt;/p&gt;
+<p>Then we can use this component to render React components within our application. Let’s change the code in <code>app/views/home/index.html.erb</code> to render the <code>App</code> component by using this component class:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= render ReactComponent.new(&quot;App&quot;) %&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-erb">&lt;%= render ReactComponent.new("App") %&gt;
+</code></pre>
 
-&lt;p&gt;We can use the view component just like a partial. I’ll get to why we’re &lt;em&gt;not&lt;/em&gt; using partials in a moment. It deserves its own section!&lt;/p&gt;
+<p>We can use the view component just like a partial. I’ll get to why we’re <em>not</em> using partials in a moment. It deserves its own section!</p>
 
-&lt;p&gt;We will need to restart the Rails server at this point so that it picks up the file in &lt;code&gt;app/components&lt;/code&gt;. After restarting the server, and refreshing the browser, we’ll once again see our React component’s output.&lt;/p&gt;
+<p>We will need to restart the Rails server at this point so that it picks up the file in <code>app/components</code>. After restarting the server, and refreshing the browser, we’ll once again see our React component’s output.</p>
 
-&lt;h3 id=&quot;why-view-components-over-partials&quot;&gt;Why view components over partials&lt;/h3&gt;
+<h3 id="why-view-components-over-partials">Why view components over partials</h3>
 
-&lt;p&gt;Why did we complicate things by bringing in a new gem rather than using the wonderful partial features Rails provides?&lt;/p&gt;
+<p>Why did we complicate things by bringing in a new gem rather than using the wonderful partial features Rails provides?</p>
 
-&lt;p&gt;The simple answer is: Ruby code belongs in Ruby files. And I don’t just mean calls to &lt;code&gt;tag.div&lt;/code&gt;. I mean if you had any sort of Ruby code that needed to run before rendering this component, you could now put that code into the component class.&lt;/p&gt;
+<p>The simple answer is: Ruby code belongs in Ruby files. And I don’t just mean calls to <code>tag.div</code>. I mean if you had any sort of Ruby code that needed to run before rendering this component, you could now put that code into the component class.</p>
 
-&lt;p&gt;As an example here, let’s create a new React component called &lt;code&gt;Product&lt;/code&gt;. It will render a name and a price. We’ll put this component at &lt;code&gt;app/javascript/Product/index.tsx&lt;/code&gt;:&lt;/p&gt;
+<p>As an example here, let’s create a new React component called <code>Product</code>. It will render a name and a price. We’ll put this component at <code>app/javascript/Product/index.tsx</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-tsx&quot;&gt;import React from &quot;react&quot;;
+<pre><code class="language-tsx">import React from "react";
 
-const Product = ({ name, price }: { name: string; price: string }) =&amp;gt; {
+const Product = ({ name, price }: { name: string; price: string }) =&gt; {
   return (
-    &amp;lt;&amp;gt;
-      &amp;lt;h1&amp;gt;
+    &lt;&gt;
+      &lt;h1&gt;
         {name} - {price}
-      &amp;lt;/h1&amp;gt;
-    &amp;lt;/&amp;gt;
+      &lt;/h1&gt;
+    &lt;/&gt;
   );
 };
 
 export default Product;
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;We can then tell our application to mount this component whenever it sees a &lt;code&gt;div[data-react-component=Product]&lt;/code&gt; tag, by using the &lt;code&gt;mount&lt;/code&gt; helper in &lt;code&gt;app/javascript/entrypoints/application.tsx&lt;/code&gt;:&lt;/p&gt;
+<p>We can then tell our application to mount this component whenever it sees a <code>div[data-react-component=Product]</code> tag, by using the <code>mount</code> helper in <code>app/javascript/entrypoints/application.tsx</code>:</p>
 
-&lt;pre&gt;&lt;code&gt;import React from &quot;react&quot;;
-import mount from &quot;../mount&quot;;
-import Product from &quot;../Product&quot;;
+<pre><code>import React from "react";
+import mount from "../mount";
+import Product from "../Product";
 
-const App = () =&amp;gt; &amp;lt;h1&amp;gt;Hello from React!&amp;lt;/h1&amp;gt;;
+const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
 
 mount({
   App,
   Product,
 });
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;As we’ve now changed &lt;code&gt;application.tsx&lt;/code&gt;, we will need to rebuild it with &lt;code&gt;yarn build&lt;/code&gt; again. Now is a good time to say we could’ve been running &lt;code&gt;yarn build --watch&lt;/code&gt; this whole time… but I preferred being explicit about when things were being rebuilt and why. Now you know the secret.&lt;/p&gt;
+<p>As we’ve now changed <code>application.tsx</code>, we will need to rebuild it with <code>yarn build</code> again. Now is a good time to say we could’ve been running <code>yarn build --watch</code> this whole time… but I preferred being explicit about when things were being rebuilt and why. Now you know the secret.</p>
 
-&lt;p&gt;To render this React component, we’ll create a new Ruby file to represent the Ruby-side of this component. We’ll put this component into &lt;code&gt;app/components/products/show_component.rb&lt;/code&gt;:&lt;/p&gt;
+<p>To render this React component, we’ll create a new Ruby file to represent the Ruby-side of this component. We’ll put this component into <code>app/components/products/show_component.rb</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Products
-  class ShowComponent &amp;lt; ReactComponent
+<pre><code class="language-ruby">module Products
+  class ShowComponent &lt; ReactComponent
     def initialize(raw_props)
-      super(&quot;Product&quot;, raw_props: raw_props)
+      super("Product", raw_props: raw_props)
     end
 
     def props
@@ -554,28 +554,28 @@ mount({
     end
   end
 end
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This component file inherits from our &lt;code&gt;ReactComponent&lt;/code&gt; component class and will render that component. To use this Ruby component class, we can go back into &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; and put this code there:&lt;/p&gt;
+<p>This component file inherits from our <code>ReactComponent</code> component class and will render that component. To use this Ruby component class, we can go back into <code>app/views/home/index.html.erb</code> and put this code there:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= render Products::ShowComponent.new(name: &quot;Shoes&quot;, price: 100) %&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-erb">&lt;%= render Products::ShowComponent.new(name: "Shoes", price: 100) %&gt;
+</code></pre>
 
-&lt;p&gt;Using this component will mean that we will end up with this &lt;code&gt;div&lt;/code&gt; tag on the page:&lt;/p&gt;
+<p>Using this component will mean that we will end up with this <code>div</code> tag on the page:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div data-react-component=&quot;Product&quot; data-props=&quot;{&amp;amp;quot;name&amp;amp;quot;:&amp;amp;quot;Shoes&amp;amp;quot;,&amp;amp;quot;price&amp;amp;quot;:100}&quot;&amp;gt;&amp;lt;/div&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-html">&lt;div data-react-component="Product" data-props="{&amp;quot;name&amp;quot;:&amp;quot;Shoes&amp;quot;,&amp;quot;price&amp;quot;:100}"&gt;&lt;/div&gt;
+</code></pre>
 
-&lt;p&gt;Our &lt;code&gt;mount.tsx&lt;/code&gt; code will see that &lt;code&gt;div&lt;/code&gt; tag and mount the &lt;code&gt;Product&lt;/code&gt; React component into that place, passing through the props.&lt;/p&gt;
+<p>Our <code>mount.tsx</code> code will see that <code>div</code> tag and mount the <code>Product</code> React component into that place, passing through the props.</p>
 
-&lt;p&gt;Now, the reason for this whole section: &lt;strong&gt;we use view components over partials because Ruby code belongs in Ruby files&lt;/strong&gt;.&lt;/p&gt;
+<p>Now, the reason for this whole section: <strong>we use view components over partials because Ruby code belongs in Ruby files</strong>.</p>
 
-&lt;p&gt;As a quick example of this, if we want to format the price before it goes to the component, we can update our &lt;code&gt;ShowComponent&lt;/code&gt; code to process those props:&lt;/p&gt;
+<p>As a quick example of this, if we want to format the price before it goes to the component, we can update our <code>ShowComponent</code> code to process those props:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Products
-  class ShowComponent &amp;lt; ReactComponent
+<pre><code class="language-ruby">module Products
+  class ShowComponent &lt; ReactComponent
     def initialize(raw_props)
-      super(&quot;Product&quot;, raw_props: raw_props)
+      super("Product", raw_props: raw_props)
     end
 
     def props
@@ -585,23 +585,23 @@ end
     end
   end
 end
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Here we’re calling a Ruby method in Ruby code in order to format the price. We’re not limited to just methods from &lt;code&gt;helpers&lt;/code&gt; here – we could call any Ruby code that we wanted to. This is, in my opinion, better than interspersing Ruby and HTML code into the same file.&lt;/p&gt;
+<p>Here we’re calling a Ruby method in Ruby code in order to format the price. We’re not limited to just methods from <code>helpers</code> here – we could call any Ruby code that we wanted to. This is, in my opinion, better than interspersing Ruby and HTML code into the same file.</p>
 
-&lt;p&gt;What this also means is that we could pass a product through to our component from the &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt;, rather than passing attributes one-by-one:&lt;/p&gt;
+<p>What this also means is that we could pass a product through to our component from the <code>app/views/home/index.html.erb</code>, rather than passing attributes one-by-one:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-erb&quot;&gt;&amp;lt;%= render Products::ShowComponent.new(product: @product) %&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-erb">&lt;%= render Products::ShowComponent.new(product: @product) %&gt;
+</code></pre>
 
-&lt;p&gt;(I’m making an assumption here about having a &lt;code&gt;@product&lt;/code&gt; object set up in the controller – use your imagination!)&lt;/p&gt;
+<p>(I’m making an assumption here about having a <code>@product</code> object set up in the controller – use your imagination!)</p>
 
-&lt;p&gt;And then in that component class, we can take the raw props of the product object itself and do our formatting of the price:&lt;/p&gt;
+<p>And then in that component class, we can take the raw props of the product object itself and do our formatting of the price:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Products
-  class ShowComponent &amp;lt; ReactComponent
+<pre><code class="language-ruby">module Products
+  class ShowComponent &lt; ReactComponent
     def initialize(product)
-      super(&quot;Product&quot;, raw_props: product)
+      super("Product", raw_props: product)
     end
 
     def props
@@ -612,475 +612,475 @@ end
     end
   end
 end
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.</summary></entry><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild">&lt;p&gt;Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.&lt;/p&gt;
+<p>The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.]]></summary></entry><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title><link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild"><![CDATA[<p>Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</p>
 
-&lt;p&gt;First you’ll want to install the &lt;code&gt;jsbundling-rails&lt;/code&gt; gem:&lt;/p&gt;
+<p>First you’ll want to install the <code>jsbundling-rails</code> gem:</p>
 
-&lt;pre&gt;&lt;code&gt;bundle add jsbundling-rails
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>bundle add jsbundling-rails
+</code></pre>
 
-&lt;p&gt;Next, you’ll run the generator for this gem to setup ESBuild:&lt;/p&gt;
+<p>Next, you’ll run the generator for this gem to setup ESBuild:</p>
 
-&lt;pre&gt;&lt;code&gt;bin/rails javascript:install:esbuild
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>bin/rails javascript:install:esbuild
+</code></pre>
 
-&lt;p&gt;ESBuild will be setup to build assets in &lt;code&gt;app/javascript&lt;/code&gt;, and put them into &lt;code&gt;app/assets/builds&lt;/code&gt;. From there, Rails will be able to serve those assets.&lt;/p&gt;
+<p>ESBuild will be setup to build assets in <code>app/javascript</code>, and put them into <code>app/assets/builds</code>. From there, Rails will be able to serve those assets.</p>
 
-&lt;p&gt;To setup Bootstrap itself, we’ll add Bootstrap and its dependencies, PopperJS and jQuery:&lt;/p&gt;
+<p>To setup Bootstrap itself, we’ll add Bootstrap and its dependencies, PopperJS and jQuery:</p>
 
-&lt;pre&gt;&lt;code&gt;yarn add bootstrap @popperjs/core jquery
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>yarn add bootstrap @popperjs/core jquery
+</code></pre>
 
-&lt;p&gt;To use these dependencies, we will need to import them into our application’s build entrypoint file, which is located at &lt;code&gt;app/javascript/application.js&lt;/code&gt;. The lines that we need to add to this file to get Bootstrap loaded are:&lt;/p&gt;
+<p>To use these dependencies, we will need to import them into our application’s build entrypoint file, which is located at <code>app/javascript/application.js</code>. The lines that we need to add to this file to get Bootstrap loaded are:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-js&quot;&gt;import &quot;bootstrap&quot;;
-import &quot;bootstrap/dist/css/bootstrap.min.css&quot;;
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-js">import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+</code></pre>
 
-&lt;p&gt;After this, we can build our application’s assets by running:&lt;/p&gt;
+<p>After this, we can build our application’s assets by running:</p>
 
-&lt;pre&gt;&lt;code&gt;yarn build
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>yarn build
+</code></pre>
 
-&lt;p&gt;This will show us that it has built these assets:&lt;/p&gt;
+<p>This will show us that it has built these assets:</p>
 
-&lt;pre&gt;&lt;code&gt;yarn run v1.22.19
+<pre><code>yarn run v1.22.19
 $ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
 
   app/assets/builds/application.css      229.9kb
   app/assets/builds/application.js       186.9kb
   app/assets/builds/application.css.map  479.0kb
   app/assets/builds/application.js.map   356.7kb
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;ESBuild is smart enough here to know that we’re bringing in a CSS asset in our JS file, and due to that it will generate &lt;em&gt;both&lt;/em&gt; a JS and a CSS file as assets. In addition to this, sourcemaps have been generated for both the CSS and JS files too.&lt;/p&gt;
+<p>ESBuild is smart enough here to know that we’re bringing in a CSS asset in our JS file, and due to that it will generate <em>both</em> a JS and a CSS file as assets. In addition to this, sourcemaps have been generated for both the CSS and JS files too.</p>
 
-&lt;p&gt;To test that it’s all working, we can generate a simple view:&lt;/p&gt;
+<p>To test that it’s all working, we can generate a simple view:</p>
 
-&lt;pre&gt;&lt;code&gt;rails g controller home index
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code>rails g controller home index
+</code></pre>
 
-&lt;p&gt;And into &lt;code&gt;app/views/home/index.html.erb&lt;/code&gt; we can put this HTML that I’ve “borrowed” from Bootstrap’s own example:&lt;/p&gt;
+<p>And into <code>app/views/home/index.html.erb</code> we can put this HTML that I’ve “borrowed” from Bootstrap’s own example:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-html&quot;&gt;&amp;lt;div class=&quot;modal fade&quot; id=&quot;exampleModalXl&quot; tabindex=&quot;-1&quot; aria-labelledby=&quot;exampleModalXlLabel&quot; style=&quot;display: none;&quot; aria-hidden=&quot;true&quot;&amp;gt;
-  &amp;lt;div class=&quot;modal-dialog modal-xl&quot;&amp;gt;
-    &amp;lt;div class=&quot;modal-content&quot;&amp;gt;
-      &amp;lt;div class=&quot;modal-header&quot;&amp;gt;
-        &amp;lt;h1 class=&quot;modal-title fs-4&quot; id=&quot;exampleModalXlLabel&quot;&amp;gt;Extra large modal&amp;lt;/h1&amp;gt;
-        &amp;lt;button type=&quot;button&quot; class=&quot;btn-close&quot; data-bs-dismiss=&quot;modal&quot; aria-label=&quot;Close&quot;&amp;gt;&amp;lt;/button&amp;gt;
-      &amp;lt;/div&amp;gt;
-      &amp;lt;div class=&quot;modal-body&quot;&amp;gt;
+<pre><code class="language-html">&lt;div class="modal fade" id="exampleModalXl" tabindex="-1" aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true"&gt;
+  &lt;div class="modal-dialog modal-xl"&gt;
+    &lt;div class="modal-content"&gt;
+      &lt;div class="modal-header"&gt;
+        &lt;h1 class="modal-title fs-4" id="exampleModalXlLabel"&gt;Extra large modal&lt;/h1&gt;
+        &lt;button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"&gt;&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div class="modal-body"&gt;
         ...
-      &amp;lt;/div&amp;gt;
-    &amp;lt;/div&amp;gt;
-  &amp;lt;/div&amp;gt;
-&amp;lt;/div&amp;gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 
 
-&amp;lt;button type=&quot;button&quot; class=&quot;btn btn-primary&quot; data-bs-toggle=&quot;modal&quot; data-bs-target=&quot;#exampleModalXl&quot;&amp;gt;Extra large modal&amp;lt;/button&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalXl"&gt;Extra large modal&lt;/button&gt;
+</code></pre>
 
-&lt;p&gt;When we start our Rails app with &lt;code&gt;bundle exec rails s&lt;/code&gt; and go to http://localhost:3000/home/index, we’ll see a blue button. When we click the blue button, the modal will appear:&lt;/p&gt;
+<p>When we start our Rails app with <code>bundle exec rails s</code> and go to http://localhost:3000/home/index, we’ll see a blue button. When we click the blue button, the modal will appear:</p>
 
-&lt;p&gt;&lt;img src=&quot;/images/css-bundling/bootstrap/modal.png&quot; alt=&quot;Modal&quot; /&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</summary></entry><entry><title type="html">Open Letter to the Rails Foundation</title><link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation">&lt;p&gt;I sent this email to Amanda at the &lt;a href=&quot;https://rubyonrails.org/foundation&quot;&gt;Rails Foundation&lt;/a&gt; this morning.&lt;/p&gt;
+<p><img src="/images/css-bundling/bootstrap/modal.png" alt="Modal" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.]]></summary></entry><entry><title type="html">Open Letter to the Rails Foundation</title><link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation"><![CDATA[<p>I sent this email to Amanda at the <a href="https://rubyonrails.org/foundation">Rails Foundation</a> this morning.</p>
 
-&lt;hr /&gt;
+<hr />
 
-&lt;p&gt;Hello, my name is Ryan and I run the Gem Foundation: https://ryanbigg.com/2022/11/the-gem-foundation.&lt;/p&gt;
+<p>Hello, my name is Ryan and I run the Gem Foundation: https://ryanbigg.com/2022/11/the-gem-foundation.</p>
 
-&lt;p&gt;(Just quietly between you and me, id rather you answer this email than David. We’ve got… history.)&lt;/p&gt;
+<p>(Just quietly between you and me, id rather you answer this email than David. We’ve got… history.)</p>
 
-&lt;p&gt;I’ve also written several books on Ruby, including the same Rails book 3, almost 4 times: Rails 3 in Action, Rails 4 in Action and Active Rails 1st and 2nd editions. Oh and I wrote a bunch of the Rails guides too. And contributed enough on Rails answers on Stack Overflow to earn me 100k rep, as well as a cool SO T-shirt and socks. I also took over the #rubyonrails IRC channel there for a time.&lt;/p&gt;
+<p>I’ve also written several books on Ruby, including the same Rails book 3, almost 4 times: Rails 3 in Action, Rails 4 in Action and Active Rails 1st and 2nd editions. Oh and I wrote a bunch of the Rails guides too. And contributed enough on Rails answers on Stack Overflow to earn me 100k rep, as well as a cool SO T-shirt and socks. I also took over the #rubyonrails IRC channel there for a time.</p>
 
-&lt;p&gt;Point is: I have written multiple of millions of words about Rails to further its adoption.&lt;/p&gt;
+<p>Point is: I have written multiple of millions of words about Rails to further its adoption.</p>
 
-&lt;p&gt;As we approach the 4 month mark of the Rails Foundation launch, I am absolutely STUNNED that there has been not a single cent that has left the organisation’s coffers since its inception.&lt;/p&gt;
+<p>As we approach the 4 month mark of the Rails Foundation launch, I am absolutely STUNNED that there has been not a single cent that has left the organisation’s coffers since its inception.</p>
 
-&lt;p&gt;The announcement was grandiose in nature. A fat sack of cash for those who do unpaid labour for Rails. Sounds delightful. I like money for the way it buys hot chocolates for my daughter who then proceeds to wear them more than drink them, amongst other things.&lt;/p&gt;
+<p>The announcement was grandiose in nature. A fat sack of cash for those who do unpaid labour for Rails. Sounds delightful. I like money for the way it buys hot chocolates for my daughter who then proceeds to wear them more than drink them, amongst other things.</p>
 
-&lt;p&gt;Why hasn’t the Rails Foundation donated money to Rails Girls? Why haven’t they incentivised mentoring through FirstRubyFriend for Rails-focussed mentoring? Current and past guide authors: do they get funding? Rails gem authors or those gems that Rails depends on outside of its immediate vicinity? (Oh I maintain i18n as well btw, and GitHub recently sent me an award for that.)&lt;/p&gt;
+<p>Why hasn’t the Rails Foundation donated money to Rails Girls? Why haven’t they incentivised mentoring through FirstRubyFriend for Rails-focussed mentoring? Current and past guide authors: do they get funding? Rails gem authors or those gems that Rails depends on outside of its immediate vicinity? (Oh I maintain i18n as well btw, and GitHub recently sent me an award for that.)</p>
 
-&lt;p&gt;You want to further adoption of Rails. So do I. I love most parts of Rails. I say most parts because after 15 years with a thing you start being really good at seeing the warts. Overall, it’s a framework that’s provided me with a stable income (and some tiny level of notoriety) over the last 15 years.&lt;/p&gt;
+<p>You want to further adoption of Rails. So do I. I love most parts of Rails. I say most parts because after 15 years with a thing you start being really good at seeing the warts. Overall, it’s a framework that’s provided me with a stable income (and some tiny level of notoriety) over the last 15 years.</p>
 
-&lt;p&gt;The framework and its related resources are a monumental achievement of open source collaboration.&lt;/p&gt;
+<p>The framework and its related resources are a monumental achievement of open source collaboration.</p>
 
-&lt;p&gt;So my question today is when will the Rails
-foundation start funding these projects? Are we going to be waiting weeks, or months?&lt;/p&gt;
+<p>So my question today is when will the Rails
+foundation start funding these projects? Are we going to be waiting weeks, or months?</p>
 
-&lt;p&gt;I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.&lt;/p&gt;
+<p>I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.</p>
 
-&lt;p&gt;What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.&lt;/p&gt;</content><author><name></name></author><summary type="html">I sent this email to Amanda at the Rails Foundation this morning.</summary></entry><entry><title type="html">Please explain, Elastic Search</title><link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch">&lt;p&gt;I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.&lt;/p&gt;
+<p>What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I sent this email to Amanda at the Rails Foundation this morning.]]></summary></entry><entry><title type="html">Please explain, Elastic Search</title><link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch"><![CDATA[<p>I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</p>
 
-&lt;p&gt;I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.&lt;/p&gt;
+<p>I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.</p>
 
-&lt;p&gt;Let’s go through the whole process, from indexing to searching to explaining. I’ll be using &lt;a href=&quot;https://httpie.io/&quot;&gt;the wonderful httpie tool&lt;/a&gt; to interact with Elastic Search in this post.&lt;/p&gt;
+<p>Let’s go through the whole process, from indexing to searching to explaining. I’ll be using <a href="https://httpie.io/">the wonderful httpie tool</a> to interact with Elastic Search in this post.</p>
 
-&lt;h2 id=&quot;indexing-a-document&quot;&gt;Indexing a document&lt;/h2&gt;
+<h2 id="indexing-a-document">Indexing a document</h2>
 
-&lt;p&gt;To index a document in ElasticSearch, we need an index that this document can be inserted into. We can create this index with:&lt;/p&gt;
+<p>To index a document in ElasticSearch, we need an index that this document can be inserted into. We can create this index with:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http put http://localhost:9200/posts
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http put http://localhost:9200/posts
+</code></pre>
 
-&lt;p&gt;Running this command will show us the index has been created:&lt;/p&gt;
+<p>Running this command will show us the index has been created:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;acknowledged&quot;: true,
-  &quot;index&quot;: &quot;posts&quot;,
-  &quot;shards_acknowledged&quot;: true
+<pre><code class="language-json">{
+  "acknowledged": true,
+  "index": "posts",
+  "shards_acknowledged": true
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Next, we can add a new document into this index. For this example, I’ll create a small JSON file containing the data that we want to index, calling the file &lt;code&gt;post.json&lt;/code&gt;:&lt;/p&gt;
+<p>Next, we can add a new document into this index. For this example, I’ll create a small JSON file containing the data that we want to index, calling the file <code>post.json</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;id&quot;: 1,
-  &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
-  &quot;date&quot;: &quot;2023-03-03&quot;,
-  &quot;user_id&quot;: 101,
+<pre><code class="language-json">{
+  "id": 1,
+  "title": "Please explain, Elastic Search",
+  "date": "2023-03-03",
+  "user_id": 101,
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;We can then add this document to the index by running:&lt;/p&gt;
+<p>We can then add this document to the index by running:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http put http://localhost:9200/posts/_doc/1 &amp;lt; post.json
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http put http://localhost:9200/posts/_doc/1 &lt; post.json
+</code></pre>
 
-&lt;p&gt;When we run this command, we’ll see the document has been inserted successfully, as indicated by the “result” field:&lt;/p&gt;
+<p>When we run this command, we’ll see the document has been inserted successfully, as indicated by the “result” field:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    &quot;_id&quot;: &quot;1&quot;,
-    &quot;_index&quot;: &quot;posts&quot;,
-    &quot;_primary_term&quot;: 1,
-    &quot;_seq_no&quot;: 0,
-    &quot;_shards&quot;: {
-        &quot;failed&quot;: 0,
-        &quot;successful&quot;: 1,
-        &quot;total&quot;: 2
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_shards": {
+        "failed": 0,
+        "successful": 1,
+        "total": 2
     },
-    &quot;_type&quot;: &quot;_doc&quot;,
-    &quot;_version&quot;: 1,
-    &quot;result&quot;: &quot;created&quot;
+    "_type": "_doc",
+    "_version": 1,
+    "result": "created"
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Let’s also add a document that &lt;em&gt;should not&lt;/em&gt; be returned by our search query:&lt;/p&gt;
+<p>Let’s also add a document that <em>should not</em> be returned by our search query:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;id&quot;: 2,
-  &quot;title&quot;: &quot;We should not see this post&quot;,
-  &quot;date&quot;: &quot;2023-02-02&quot;,
-  &quot;user_id&quot;: 155,
+<pre><code class="language-json">{
+  "id": 2,
+  "title": "We should not see this post",
+  "date": "2023-02-02",
+  "user_id": 155,
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;I’ll save this in a file called &lt;code&gt;post-2.json&lt;/code&gt;, and insert it:&lt;/p&gt;
+<p>I’ll save this in a file called <code>post-2.json</code>, and insert it:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http put http://localhost:9200/posts/_doc/2 &amp;lt; post-2.json
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http put http://localhost:9200/posts/_doc/2 &lt; post-2.json
+</code></pre>
 
-&lt;h2 id=&quot;viewing-a-document&quot;&gt;Viewing a document&lt;/h2&gt;
+<h2 id="viewing-a-document">Viewing a document</h2>
 
-&lt;p&gt;We can then see the document in this index using either the search API, or using the document API. Let’s look first at the search API:&lt;/p&gt;
+<p>We can then see the document in this index using either the search API, or using the document API. Let’s look first at the search API:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_search
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http get http://localhost:9200/posts/_search
+</code></pre>
 
-&lt;p&gt;This shows:&lt;/p&gt;
+<p>This shows:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    &quot;_shards&quot;: {
-        &quot;failed&quot;: 0,
-        &quot;skipped&quot;: 0,
-        &quot;successful&quot;: 1,
-        &quot;total&quot;: 1
+<pre><code class="language-json">{
+    "_shards": {
+        "failed": 0,
+        "skipped": 0,
+        "successful": 1,
+        "total": 1
     },
-    &quot;hits&quot;: {
-        &quot;hits&quot;: [
+    "hits": {
+        "hits": [
             {
-                &quot;_id&quot;: &quot;1&quot;,
-                &quot;_index&quot;: &quot;posts&quot;,
-                &quot;_score&quot;: 1.0,
-                &quot;_source&quot;: {
-                    &quot;date&quot;: &quot;2023-03-03&quot;,
-                    &quot;id&quot;: 1,
-                    &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
-                    &quot;user_id&quot;: 101
+                "_id": "1",
+                "_index": "posts",
+                "_score": 1.0,
+                "_source": {
+                    "date": "2023-03-03",
+                    "id": 1,
+                    "title": "Please explain, Elastic Search",
+                    "user_id": 101
                 },
-                &quot;_type&quot;: &quot;_doc&quot;
+                "_type": "_doc"
             }
         ],
-        &quot;max_score&quot;: 1.0,
-        &quot;total&quot;: {
-            &quot;relation&quot;: &quot;eq&quot;,
-            &quot;value&quot;: 1
+        "max_score": 1.0,
+        "total": {
+            "relation": "eq",
+            "value": 1
         }
     },
-    &quot;timed_out&quot;: false,
-    &quot;took&quot;: 3
+    "timed_out": false,
+    "took": 3
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;Alternatively, we can request this document using the same URL we used for the &lt;code&gt;PUT&lt;/code&gt; operation to add the document into the index:&lt;/p&gt;
+<p>Alternatively, we can request this document using the same URL we used for the <code>PUT</code> operation to add the document into the index:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_doc/1
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http get http://localhost:9200/posts/_doc/1
+</code></pre>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    &quot;_id&quot;: &quot;1&quot;,
-    &quot;_index&quot;: &quot;posts&quot;,
-    &quot;_primary_term&quot;: 1,
-    &quot;_seq_no&quot;: 0,
-    &quot;_source&quot;: {
-        &quot;date&quot;: &quot;2023-03-03&quot;,
-        &quot;id&quot;: 1,
-        &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
-        &quot;user_id&quot;: 101
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_primary_term": 1,
+    "_seq_no": 0,
+    "_source": {
+        "date": "2023-03-03",
+        "id": 1,
+        "title": "Please explain, Elastic Search",
+        "user_id": 101
     },
-    &quot;_type&quot;: &quot;_doc&quot;,
-    &quot;_version&quot;: 1,
-    &quot;found&quot;: true
+    "_type": "_doc",
+    "_version": 1,
+    "found": true
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;h2 id=&quot;searching-for-a-document&quot;&gt;Searching for a document&lt;/h2&gt;
+<h2 id="searching-for-a-document">Searching for a document</h2>
 
-&lt;p&gt;Elastic Search has a very flexible query API, but it can be a bit wordy sometimes. Let’s write some search JSON to find a post based on a particular date range, and a user ID. I’m going to put this one into a file called &lt;code&gt;query.json&lt;/code&gt;, and we’re going to write this in such a way that it does &lt;em&gt;not&lt;/em&gt; find our document by writing the wrong user ID, and the wrong date range.&lt;/p&gt;
+<p>Elastic Search has a very flexible query API, but it can be a bit wordy sometimes. Let’s write some search JSON to find a post based on a particular date range, and a user ID. I’m going to put this one into a file called <code>query.json</code>, and we’re going to write this in such a way that it does <em>not</em> find our document by writing the wrong user ID, and the wrong date range.</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;query&quot;: {
-    &quot;bool&quot;: {
-      &quot;must&quot;: [
+<pre><code class="language-json">{
+  "query": {
+    "bool": {
+      "must": [
         {
-          &quot;range&quot;: {
-            &quot;date&quot;: { &quot;gte&quot;: &quot;2023-02-01&quot;, &quot;lte&quot;: &quot;2023-02-28&quot; }
+          "range": {
+            "date": { "gte": "2023-02-01", "lte": "2023-02-28" }
           }
         },
         {
-          &quot;term&quot;: { &quot;user_id&quot;: 100 }
+          "term": { "user_id": 100 }
         }
       ]
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;We can then run this query by using the search API:&lt;/p&gt;
+<p>We can then run this query by using the search API:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_search &amp;lt; query.json
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; query.json
+</code></pre>
 
-&lt;p&gt;This will return no results, as our query is wrong:&lt;/p&gt;
+<p>This will return no results, as our query is wrong:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    &quot;_shards&quot;: {
-        &quot;failed&quot;: 0,
-        &quot;skipped&quot;: 0,
-        &quot;successful&quot;: 1,
-        &quot;total&quot;: 1
+<pre><code class="language-json">{
+    "_shards": {
+        "failed": 0,
+        "skipped": 0,
+        "successful": 1,
+        "total": 1
     },
-    &quot;hits&quot;: {
-        &quot;hits&quot;: [],
-        &quot;max_score&quot;: null,
-        &quot;total&quot;: {
-            &quot;relation&quot;: &quot;eq&quot;,
-            &quot;value&quot;: 0
+    "hits": {
+        "hits": [],
+        "max_score": null,
+        "total": {
+            "relation": "eq",
+            "value": 0
         }
     },
-    &quot;timed_out&quot;: false,
-    &quot;took&quot;: 2
+    "timed_out": false,
+    "took": 2
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;h2 id=&quot;explaining-a-query&quot;&gt;Explaining a query&lt;/h2&gt;
+<h2 id="explaining-a-query">Explaining a query</h2>
 
-&lt;p&gt;To get information from Elastic Search on why a particular document hasn’t matched a query, we can use the Explain API.&lt;/p&gt;
+<p>To get information from Elastic Search on why a particular document hasn’t matched a query, we can use the Explain API.</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_explain/1/ &amp;lt; query.json
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http get http://localhost:9200/posts/_explain/1/ &lt; query.json
+</code></pre>
 
-&lt;p&gt;When we run this query, we see a &lt;em&gt;huge&lt;/em&gt; amount of output:&lt;/p&gt;
+<p>When we run this query, we see a <em>huge</em> amount of output:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    &quot;_id&quot;: &quot;1&quot;,
-    &quot;_index&quot;: &quot;posts&quot;,
-    &quot;_type&quot;: &quot;_doc&quot;,
-    &quot;explanation&quot;: {
-        &quot;description&quot;: &quot;Failure to meet condition(s) of required/prohibited clause(s)&quot;,
-        &quot;details&quot;: [
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_type": "_doc",
+    "explanation": {
+        "description": "Failure to meet condition(s) of required/prohibited clause(s)",
+        "details": [
             {
-                &quot;description&quot;: &quot;no match on required clause (date:[1675209600000 TO 1677628799999])&quot;,
-                &quot;details&quot;: [
+                "description": "no match on required clause (date:[1675209600000 TO 1677628799999])",
+                "details": [
                     {
-                        &quot;description&quot;: &quot;date:[1675209600000 TO 1677628799999] doesn&apos;t match id 0&quot;,
-                        &quot;details&quot;: [],
-                        &quot;value&quot;: 0.0
+                        "description": "date:[1675209600000 TO 1677628799999] doesn't match id 0",
+                        "details": [],
+                        "value": 0.0
                     }
                 ],
-                &quot;value&quot;: 0.0
+                "value": 0.0
             },
             {
-                &quot;description&quot;: &quot;no match on required clause (user_id:[100 TO 100])&quot;,
-                &quot;details&quot;: [
+                "description": "no match on required clause (user_id:[100 TO 100])",
+                "details": [
                     {
-                        &quot;description&quot;: &quot;user_id:[100 TO 100] doesn&apos;t match id 0&quot;,
-                        &quot;details&quot;: [],
-                        &quot;value&quot;: 0.0
+                        "description": "user_id:[100 TO 100] doesn't match id 0",
+                        "details": [],
+                        "value": 0.0
                     }
                 ],
-                &quot;value&quot;: 0.0
+                "value": 0.0
             }
         ],
-        &quot;value&quot;: 0.0
+        "value": 0.0
     },
-    &quot;matched&quot;: false
+    "matched": false
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;This shows us that the query did not match because both the &lt;code&gt;date&lt;/code&gt; and &lt;code&gt;user_id&lt;/code&gt; fields are wrong. Important to note here is that the &lt;code&gt;date&lt;/code&gt; field range values are returned in milliseconds-from-epoch, rather than the &lt;code&gt;2023-03-03&lt;/code&gt; format we might expect.&lt;/p&gt;
+<p>This shows us that the query did not match because both the <code>date</code> and <code>user_id</code> fields are wrong. Important to note here is that the <code>date</code> field range values are returned in milliseconds-from-epoch, rather than the <code>2023-03-03</code> format we might expect.</p>
 
-&lt;p&gt;Let’s fix up the query so that it now matches, putting the query into another file called &lt;code&gt;fixed-query.json&lt;/code&gt;:&lt;/p&gt;
+<p>Let’s fix up the query so that it now matches, putting the query into another file called <code>fixed-query.json</code>:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-  &quot;query&quot;: {
-    &quot;bool&quot;: {
-      &quot;must&quot;: [
+<pre><code class="language-json">{
+  "query": {
+    "bool": {
+      "must": [
         {
-          &quot;range&quot;: {
-            &quot;date&quot;: { &quot;gte&quot;: &quot;2023-03-01&quot;, &quot;lte&quot;: &quot;2023-03-31&quot; }
+          "range": {
+            "date": { "gte": "2023-03-01", "lte": "2023-03-31" }
           }
         },
         {
-          &quot;term&quot;: { &quot;user_id&quot;: 101 }
+          "term": { "user_id": 101 }
         }
       ]
     }
   }
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;We can then run this corrected query through the explain endpoint:&lt;/p&gt;
+<p>We can then run this corrected query through the explain endpoint:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http post http://localhost:9200/posts/_explain/1 &amp;lt; fixed-query.json
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http post http://localhost:9200/posts/_explain/1 &lt; fixed-query.json
+</code></pre>
 
-&lt;p&gt;The output will show that our query now matches this document:&lt;/p&gt;
+<p>The output will show that our query now matches this document:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
-    &quot;_id&quot;: &quot;1&quot;,
-    &quot;_index&quot;: &quot;posts&quot;,
-    &quot;_type&quot;: &quot;_doc&quot;,
-    &quot;explanation&quot;: {
-        &quot;description&quot;: &quot;sum of:&quot;,
-        &quot;details&quot;: [
+<pre><code class="language-json">{
+    "_id": "1",
+    "_index": "posts",
+    "_type": "_doc",
+    "explanation": {
+        "description": "sum of:",
+        "details": [
             {
-                &quot;description&quot;: &quot;date:[1677628800000 TO 1680307199999]&quot;,
-                &quot;details&quot;: [],
-                &quot;value&quot;: 1.0
+                "description": "date:[1677628800000 TO 1680307199999]",
+                "details": [],
+                "value": 1.0
             },
             {
-                &quot;description&quot;: &quot;user_id:[101 TO 101]&quot;,
-                &quot;details&quot;: [],
-                &quot;value&quot;: 1.0
+                "description": "user_id:[101 TO 101]",
+                "details": [],
+                "value": 1.0
             }
         ],
-        &quot;value&quot;: 2.0
+        "value": 2.0
     },
-    &quot;matched&quot;: true
+    "matched": true
 }
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;And if we attempt to search with this query, we’ll see it returned in the hits for this query too:&lt;/p&gt;
+<p>And if we attempt to search with this query, we’ll see it returned in the hits for this query too:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-text&quot;&gt;http get http://localhost:9200/posts/_search &amp;lt; fixed-query.json
-&lt;/code&gt;&lt;/pre&gt;
+<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; fixed-query.json
+</code></pre>
 
-&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;
+<pre><code class="language-json">
 {
-    &quot;_shards&quot;: {
-        &quot;failed&quot;: 0,
-        &quot;skipped&quot;: 0,
-        &quot;successful&quot;: 1,
-        &quot;total&quot;: 1
+    "_shards": {
+        "failed": 0,
+        "skipped": 0,
+        "successful": 1,
+        "total": 1
     },
-    &quot;hits&quot;: {
-        &quot;hits&quot;: [
+    "hits": {
+        "hits": [
             {
-                &quot;_id&quot;: &quot;1&quot;,
-                &quot;_index&quot;: &quot;posts&quot;,
-                &quot;_score&quot;: 2.0,
-                &quot;_source&quot;: {
-                    &quot;date&quot;: &quot;2023-03-03&quot;,
-                    &quot;id&quot;: 1,
-                    &quot;title&quot;: &quot;Please explain, Elastic Search&quot;,
-                    &quot;user_id&quot;: 101
+                "_id": "1",
+                "_index": "posts",
+                "_score": 2.0,
+                "_source": {
+                    "date": "2023-03-03",
+                    "id": 1,
+                    "title": "Please explain, Elastic Search",
+                    "user_id": 101
                 },
-                &quot;_type&quot;: &quot;_doc&quot;
+                "_type": "_doc"
             }
         ],
-        &quot;max_score&quot;: 2.0,
-        &quot;total&quot;: {
-            &quot;relation&quot;: &quot;eq&quot;,
-            &quot;value&quot;: 1
+        "max_score": 2.0,
+        "total": {
+            "relation": "eq",
+            "value": 1
         }
     },
-    &quot;timed_out&quot;: false,
-    &quot;took&quot;: 12
+    "timed_out": false,
+    "took": 12
 }
-&lt;/code&gt;&lt;/pre&gt;</content><author><name></name></author><summary type="html">I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</summary></entry><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic">&lt;p&gt;For about the past 5 months, I’ve been fiddling with a little Ruby project called &lt;a href=&quot;https://github.com/radar/mtg&quot;&gt;“Magic: The Gathering: The Ruby Project”&lt;/a&gt;. It’s my attempt to make Magic: The Gathering, in Ruby.&lt;/p&gt;
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.]]></summary></entry><entry><title type="html">Why game programming and why Magic?</title><link href="http://localhost:4000/2023/02/why-game-programming-and-why-magic" rel="alternate" type="text/html" title="Why game programming and why Magic?" /><published>2023-02-07T00:00:00+11:00</published><updated>2023-02-07T00:00:00+11:00</updated><id>http://localhost:4000/2023/02/why-game-programming-and-why-magic</id><content type="html" xml:base="http://localhost:4000/2023/02/why-game-programming-and-why-magic"><![CDATA[<p>For about the past 5 months, I’ve been fiddling with a little Ruby project called <a href="https://github.com/radar/mtg">“Magic: The Gathering: The Ruby Project”</a>. It’s my attempt to make Magic: The Gathering, in Ruby.</p>
 
-&lt;p&gt;But why game programming when my forté is web programming, and why &lt;em&gt;this&lt;/em&gt; game specifically? Why not Uno?&lt;/p&gt;
+<p>But why game programming when my forté is web programming, and why <em>this</em> game specifically? Why not Uno?</p>
 
-&lt;p&gt;Because I wanted a challenge!&lt;/p&gt;
+<p>Because I wanted a challenge!</p>
 
-&lt;p&gt;I had played Magic first &lt;a href=&quot;https://apps.apple.com/us/app/magic-the-gathering-arena/id1496227521&quot;&gt;through their Arena app on iOS&lt;/a&gt;, which (mostly) works, save a few little issues here and there. Last year I started playing Magic weekly at a local game shop in town. I love the different mechanics of the different cards and figuring out how they all interact best. &lt;em&gt;Especially&lt;/em&gt; when they syngerise together.&lt;/p&gt;
+<p>I had played Magic first <a href="https://apps.apple.com/us/app/magic-the-gathering-arena/id1496227521">through their Arena app on iOS</a>, which (mostly) works, save a few little issues here and there. Last year I started playing Magic weekly at a local game shop in town. I love the different mechanics of the different cards and figuring out how they all interact best. <em>Especially</em> when they syngerise together.</p>
 
-&lt;p&gt;What’s appealing about this game is that while there’s a rulebook (I’ll get to that in a minute), the &lt;em&gt;cards themselves&lt;/em&gt; make up the rules. If the creators want to change the rules of the game, they can print more cards with different text on them.&lt;/p&gt;
+<p>What’s appealing about this game is that while there’s a rulebook (I’ll get to that in a minute), the <em>cards themselves</em> make up the rules. If the creators want to change the rules of the game, they can print more cards with different text on them.</p>
 
-&lt;p&gt;This is Rule 101.1 of Magic:&lt;/p&gt;
+<p>This is Rule 101.1 of Magic:</p>
 
-&lt;blockquote&gt;
-  &lt;p&gt;101.1. Whenever a card’s text directly contradicts these rules, the card takes precedence.&lt;/p&gt;
-&lt;/blockquote&gt;
+<blockquote>
+  <p>101.1. Whenever a card’s text directly contradicts these rules, the card takes precedence.</p>
+</blockquote>
 
-&lt;p&gt;Some of the cards are simple, like &lt;a href=&quot;https://scryfall.com/card/a25/33/savannah-lions&quot;&gt;Savannah Lions&lt;/a&gt;. It costs one white mana to play, and it has 2 power and 1 toughness.&lt;/p&gt;
+<p>Some of the cards are simple, like <a href="https://scryfall.com/card/a25/33/savannah-lions">Savannah Lions</a>. It costs one white mana to play, and it has 2 power and 1 toughness.</p>
 
-&lt;p&gt;Others, like &lt;a href=&quot;https://scryfall.com/card/eld/171/questing-beast&quot;&gt;Questing Beast&lt;/a&gt; with all its words, and &lt;a href=&quot;https://scryfall.com/card/isd/181/garruk-relentless-garruk-the-veil-cursed&quot;&gt;Garruk Relentless&lt;/a&gt; with all its words on one side, &lt;em&gt;and then even more words on the other side&lt;/em&gt;, are not so simple.&lt;/p&gt;
+<p>Others, like <a href="https://scryfall.com/card/eld/171/questing-beast">Questing Beast</a> with all its words, and <a href="https://scryfall.com/card/isd/181/garruk-relentless-garruk-the-veil-cursed">Garruk Relentless</a> with all its words on one side, <em>and then even more words on the other side</em>, are not so simple.</p>
 
-&lt;p&gt;This Rule 101.1, the &lt;em&gt;first&lt;/em&gt; of Magic’s several “Golden Rules”, is contained in &lt;a href=&quot;https://media.wizards.com/2023/downloads/MagicCompRules%2020230203.pdf&quot;&gt;this two-hundred-and-seventy-eight PDF page document&lt;/a&gt;, where all of Magic’s non-card-defined rules are written down. Some of the rules even have examples with them.&lt;/p&gt;
+<p>This Rule 101.1, the <em>first</em> of Magic’s several “Golden Rules”, is contained in <a href="https://media.wizards.com/2023/downloads/MagicCompRules%2020230203.pdf">this two-hundred-and-seventy-eight PDF page document</a>, where all of Magic’s non-card-defined rules are written down. Some of the rules even have examples with them.</p>
 
-&lt;p&gt;If you wanted to find out all of the creature types, you’d look at Rule 205.3m.&lt;/p&gt;
+<p>If you wanted to find out all of the creature types, you’d look at Rule 205.3m.</p>
 
-&lt;p&gt;Want to know how combat is designed to run? Start on page 74 with Rule 506, and finish on Page 84 with rule 511.&lt;/p&gt;
+<p>Want to know how combat is designed to run? Start on page 74 with Rule 506, and finish on Page 84 with rule 511.</p>
 
-&lt;hr /&gt;
+<hr />
 
-&lt;p&gt;Now this MTG-in-Ruby project is not a line-for-line reproduction of the rulebook or even a card-for-card replication attempt from A-Z. It started as an attempt to reproduce the features of a stack of random cards that were on my desk, and progressed from there to attempting to implement all of the &lt;a href=&quot;https://scryfall.com/sets/m21?as=grid&amp;amp;order=set&quot;&gt;Core Set 2021&lt;/a&gt; cards. I needed to set myself a goal, and even though that goal is &lt;em&gt;extremely ambitious&lt;/em&gt;, it’s still a goal and something to aim for.&lt;/p&gt;
+<p>Now this MTG-in-Ruby project is not a line-for-line reproduction of the rulebook or even a card-for-card replication attempt from A-Z. It started as an attempt to reproduce the features of a stack of random cards that were on my desk, and progressed from there to attempting to implement all of the <a href="https://scryfall.com/sets/m21?as=grid&amp;order=set">Core Set 2021</a> cards. I needed to set myself a goal, and even though that goal is <em>extremely ambitious</em>, it’s still a goal and something to aim for.</p>
 
-&lt;p&gt;I’ve gotten most of the white cards done, and that leaves only about 300 more cards of that set. And &lt;a href=&quot;https://en.wikipedia.org/wiki/List_of_Magic:_The_Gathering_sets&quot;&gt;there are quite a few sets&lt;/a&gt; .&lt;/p&gt;
+<p>I’ve gotten most of the white cards done, and that leaves only about 300 more cards of that set. And <a href="https://en.wikipedia.org/wiki/List_of_Magic:_The_Gathering_sets">there are quite a few sets</a> .</p>
 
-&lt;p&gt;What I’m particularly proud of here is that I have a clean DSL for being able to define cards and their abilities. For a simple card like &lt;a href=&quot;https://scryfall.com/card/khm/34/story-seeker&quot;&gt;Story Seeker&lt;/a&gt;, I can define it like:&lt;/p&gt;
+<p>What I’m particularly proud of here is that I have a clean DSL for being able to define cards and their abilities. For a simple card like <a href="https://scryfall.com/card/khm/34/story-seeker">Story Seeker</a>, I can define it like:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Magic
+<pre><code class="language-ruby">module Magic
   module Cards
-    StorySeeker = Creature(&quot;Story Seeker&quot;) do
+    StorySeeker = Creature("Story Seeker") do
       cost generic: 1, white: 1
-      type &quot;Creature -- Dwarf Cleric&quot;
+      type "Creature -- Dwarf Cleric"
       keywords :lifelink
       power 2
       toughness 2
     end
   end
 end
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;The one thing here I’d change is making those types into constants rather than being strings. I’ve been too lazy to address that yet, as it hasn’t been a problem. Here’s a quick riff on what that might look like:&lt;/p&gt;
+<p>The one thing here I’d change is making those types into constants rather than being strings. I’ve been too lazy to address that yet, as it hasn’t been a problem. Here’s a quick riff on what that might look like:</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;module Magic
+<pre><code class="language-ruby">module Magic
   module Cards
-    StorySeeker = Creature(&quot;Story Seeker&quot;) do
+    StorySeeker = Creature("Story Seeker") do
       cost generic: 1, white: 1
       type Types::Creature[:Dwarf, :Cleric]
       keywords :lifelink
@@ -1089,22 +1089,22 @@ end
     end
   end
 end
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;While writing this post I built &lt;a href=&quot;https://github.com/radar/mtg/commit/8cb9efe66248a1672d0e56a04bc8e92d19209385&quot;&gt;this exact interface&lt;/a&gt;. I’d love to go back to revisit it sometime to handle when an &lt;em&gt;invalid&lt;/em&gt; type is passed, but it’ll work for the time-being.&lt;/p&gt;
+<p>While writing this post I built <a href="https://github.com/radar/mtg/commit/8cb9efe66248a1672d0e56a04bc8e92d19209385">this exact interface</a>. I’d love to go back to revisit it sometime to handle when an <em>invalid</em> type is passed, but it’ll work for the time-being.</p>
 
-&lt;hr /&gt;
+<hr />
 
-&lt;p&gt;The cards themselves are &lt;em&gt;usually&lt;/em&gt; straightforward to implement. It’s how they interact that’s the tricky part. For this, I try to come up with scenarios that might happen in real games, and then model those in the tests themselves.&lt;/p&gt;
+<p>The cards themselves are <em>usually</em> straightforward to implement. It’s how they interact that’s the tricky part. For this, I try to come up with scenarios that might happen in real games, and then model those in the tests themselves.</p>
 
-&lt;p&gt;One of these that I’m particularly proud about is the mana-cost-reducing effect of &lt;a href=&quot;https://scryfall.com/card/nec/152/foundry-inspector&quot;&gt;Foundry Inspector&lt;/a&gt;. I started working on this card by writing the test for it first and working up from there.&lt;/p&gt;
+<p>One of these that I’m particularly proud about is the mana-cost-reducing effect of <a href="https://scryfall.com/card/nec/152/foundry-inspector">Foundry Inspector</a>. I started working on this card by writing the test for it first and working up from there.</p>
 
-&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt; require &apos;spec_helper&apos;
+<pre><code class="language-ruby"> require 'spec_helper'
 
-RSpec.describe Magic::Game, &quot;Mana spend -- Foundry Inspector + Free Sol Ring&quot; do
-  include_context &quot;two player game&quot;
+RSpec.describe Magic::Game, "Mana spend -- Foundry Inspector + Free Sol Ring" do
+  include_context "two player game"
 
-  context &quot;when at first main phase&quot; do
+  context "when at first main phase" do
     before do
       current_turn.untap!
       current_turn.upkeep!
@@ -1112,16 +1112,16 @@ RSpec.describe Magic::Game, &quot;Mana spend -- Foundry Inspector + Free Sol Rin
       current_turn.first_main!
     end
 
-    context &quot;foundry inspector reduces sol ring cost&quot; do
-      let(:foundry_inspector) { Card(&quot;Foundry Inspector&quot;) }
-      let(:sol_ring) { Card(&quot;Sol Ring&quot;) }
+    context "foundry inspector reduces sol ring cost" do
+      let(:foundry_inspector) { Card("Foundry Inspector") }
+      let(:sol_ring) { Card("Sol Ring") }
 
       before do
         p1.hand.add(foundry_inspector)
         p1.hand.add(sol_ring)
       end
 
-      it &quot;casts a foundry inspector and then a sol ring&quot; do
+      it "casts a foundry inspector and then a sol ring" do
         p1.add_mana(red: 3)
         action = Magic::Actions::Cast.new(player: p1, card: foundry_inspector)
         expect(action.can_perform?).to eq(true)
@@ -1139,34 +1139,34 @@ RSpec.describe Magic::Game, &quot;Mana spend -- Foundry Inspector + Free Sol Rin
     end
   end
 end
-&lt;/code&gt;&lt;/pre&gt;
+</code></pre>
 
-&lt;p&gt;The body of the test ensures that we can pay 3 red mana to cast the Foundry Inspector, and then by casting that we can then cast the &lt;a href=&quot;https://scryfall.com/card/dmc/190/sol-ring&quot;&gt;Sol Ring&lt;/a&gt; by not paying any mana at all. It finishes by using some more DSL code to ensure that the Sol Ring has been registered as a permanent controlled by Player 1.&lt;/p&gt;
+<p>The body of the test ensures that we can pay 3 red mana to cast the Foundry Inspector, and then by casting that we can then cast the <a href="https://scryfall.com/card/dmc/190/sol-ring">Sol Ring</a> by not paying any mana at all. It finishes by using some more DSL code to ensure that the Sol Ring has been registered as a permanent controlled by Player 1.</p>
 
-&lt;hr /&gt;
+<hr />
 
-&lt;p&gt;If you’re looking for where the proverbial bodies are buried on this particular project, well, there are &lt;em&gt;plenty&lt;/em&gt;. This project was coded up over nights, after work and sometimes even after a glass of Port or two. Caution was thrown to the wind, and past that.&lt;/p&gt;
+<p>If you’re looking for where the proverbial bodies are buried on this particular project, well, there are <em>plenty</em>. This project was coded up over nights, after work and sometimes even after a glass of Port or two. Caution was thrown to the wind, and past that.</p>
 
-&lt;p&gt;The worst of it would be demonstrated in &lt;code&gt;attacking_creature_creates_attacking_token_spec.rb&lt;/code&gt;, where a card called &lt;a href=&quot;https://scryfall.com/card/m21/18/falconer-adept&quot;&gt;Falconer Adept&lt;/a&gt; has a triggered ability of:&lt;/p&gt;
+<p>The worst of it would be demonstrated in <code>attacking_creature_creates_attacking_token_spec.rb</code>, where a card called <a href="https://scryfall.com/card/m21/18/falconer-adept">Falconer Adept</a> has a triggered ability of:</p>
 
-&lt;blockquote&gt;
-  &lt;p&gt;Whenever Falconer Adept attacks, create a 1/1 white Bird creature token with flying that’s tapped and attacking.&lt;/p&gt;
-&lt;/blockquote&gt;
+<blockquote>
+  <p>Whenever Falconer Adept attacks, create a 1/1 white Bird creature token with flying that’s tapped and attacking.</p>
+</blockquote>
 
-&lt;p&gt;What this means is that you can declare that Falconer Adept is attacking as a part of the &lt;em&gt;regular&lt;/em&gt; “Declare Attackers” phase of combat, and then by doing that, a different game object (a Bird token) is created, where you will need to delcare what that Bird token is attacking. In effect, “Declare Attackers” happens &lt;em&gt;twice&lt;/em&gt;.&lt;/p&gt;
+<p>What this means is that you can declare that Falconer Adept is attacking as a part of the <em>regular</em> “Declare Attackers” phase of combat, and then by doing that, a different game object (a Bird token) is created, where you will need to delcare what that Bird token is attacking. In effect, “Declare Attackers” happens <em>twice</em>.</p>
 
-&lt;p&gt;You can see how this code is handled in the &lt;code&gt;Turn&lt;/code&gt; class’s state machine, particularly anywhere the &lt;code&gt;final_attackers_declared&lt;/code&gt; method is used.&lt;/p&gt;
+<p>You can see how this code is handled in the <code>Turn</code> class’s state machine, particularly anywhere the <code>final_attackers_declared</code> method is used.</p>
 
-&lt;p&gt;This one took me a &lt;em&gt;long&lt;/em&gt; time to implement.&lt;/p&gt;
+<p>This one took me a <em>long</em> time to implement.</p>
 
-&lt;hr /&gt;
+<hr />
 
-&lt;p&gt;I like fiddling with this project. It’s outside my regular wheelhouse and is teaching me more about event-driven game programming.&lt;/p&gt;
+<p>I like fiddling with this project. It’s outside my regular wheelhouse and is teaching me more about event-driven game programming.</p>
 
-&lt;p&gt;If I get stuck on a card, it’s not like I &lt;em&gt;have&lt;/em&gt; to implement it. There’s thousands more out there to choose from.&lt;/p&gt;
+<p>If I get stuck on a card, it’s not like I <em>have</em> to implement it. There’s thousands more out there to choose from.</p>
 
-&lt;p&gt;I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find &lt;a href=&quot;https://scryfall.com/random&quot;&gt;a card at random&lt;/a&gt; and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.&lt;/p&gt;</content><author><name></name></author><summary type="html">For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.</summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">&lt;p&gt;No.&lt;/p&gt;
+<p>I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find <a href="https://scryfall.com/random">a card at random</a> and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.]]></summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable"><![CDATA[<p>No.</p>
 
-&lt;p&gt;The switches on this keyboard are not hot-swappable. They are soldered on to the board.&lt;/p&gt;
+<p>The switches on this keyboard are not hot-swappable. They are soldered on to the board.</p>
 
-&lt;p&gt;(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)&lt;/p&gt;</content><author><name></name></author><summary type="html">No.</summary></entry></feed>
+<p>(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[No.]]></summary></entry></feed>
