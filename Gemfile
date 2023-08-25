@@ -6,3 +6,4 @@ gem 'json'
 gem "babosa"
 
 gem "webrick", "~> 1.7"
+gem "pry"
