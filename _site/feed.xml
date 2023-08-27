@@ -1,110 +1,83 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-25T13:00:14+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-28T07:06:06+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Saving time with fzf</title><link href="http://localhost:4000/2023/08/saving-time-with-fzf" rel="alternate" type="text/html" title="Saving time with fzf" /><published>2023-08-27T00:00:00+10:00</published><updated>2023-08-27T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/saving-time-with-fzf</id><content type="html" xml:base="http://localhost:4000/2023/08/saving-time-with-fzf"><![CDATA[<p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
 
-<p>The packages needed for Chromedriver are:</p>
+<h2 id="command-history">Command history</h2>
 
-<pre><code>libnss3 libnspr4
+<p>The thing I use fzf for the most is command history. To access the history, I use Ctrl+R and I get a list of my most recent commands:</p>
+
+<pre><code>10024 z ryanbigg
+10026 bundle exec jekyll serve
 </code></pre>
 
-<p>The packages needed for Chrome are:</p>
+<p>(The numbers represent the position of that command in my <code>.zsh_history</code> file.)</p>
 
-<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+<p>If I then write the word “serve”, fzf will only show me commands with that word in it:</p>
+
+<pre><code>10026 serve
 </code></pre>
 
-<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
+<p>I usually use this for running some different Rails apps on certain ports. So I would hit Ctrl+R, and then type a particular port number such as 3004 to get:</p>
 
-<p>The <code>Dockerfile</code> is therefore:</p>
-
-<pre><code>FROM ruby:3.2.2
-
-RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-
-# OR this, but the install time is much longer:
-# RUN apt-get update &amp;&amp; apt-get install chromium-shell
-
-RUN adduser --disabled-password --gecos "" app
-COPY --chown app:app . /app
-WORKDIR /app
-USER app
-
-RUN bundle config set --local path vendor/bundle
-RUN bundle install
-CMD bundle exec irb
+<pre><code>10007 bundle exec rails s -p 3004
 </code></pre>
 
-<p>And we can then build and run this image:</p>
+<p>Instead of typing out the full command, I can type Ctrl+R and 4 keystrokes later arrive at the right command.</p>
 
-<pre><code>docker build . -t ubuntu-selenium
-docker run -it ubuntu-selenium
+<h2 id="files-in-current-directory">Files in current directory</h2>
+
+<p>Another thing I use fzf for is its relative file searching. Most of the time, I’m using this to run RSpec tests. I type:</p>
+
+<pre><code>ber
 </code></pre>
 
-<p>And confirm it works by running:</p>
+<p>(Which is my alias for “bundle exec rspec”), and then I hit Ctrl+T and I get a list of files in my terminal:</p>
 
-<pre><code class="language-ruby">Bundler.require
-
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-options = ::Selenium::WebDriver::Chrome::Options.new
-
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-
-Selenium::WebDriver.for :chrome, capabilities: options
+<pre><code>app
+app/models
+app/models/category.rb
+...
 </code></pre>
 
-<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
+<p>Then I can type a few words, or even parts of words, to get what I’m after. In this example, I’d like to find the file at <code>spec/requests/graphql/queries/repo_categories_spec.rb</code>. What a mouthful! With <code>fzf</code>, I can type <code>repocat</code> and arrive at that spec in only seven keystrokes:</p>
 
-<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
-DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
-DEBUG Selenium [:selenium_manager] Checking chrome in PATH
-DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chrome not found in PATH
-DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+<pre><code>spec/requests/graphql/queries/repo_categories_spec.rb
+&lt;other files here&gt;
 </code></pre>
 
-<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
+<p>When I hit enter here, my <code>ber</code> command becomes:</p>
 
-<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
-DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
-DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+<pre><code>ber spec/requests/graphql/queries/repo_categories_spec.rb
 </code></pre>
 
-<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
+<p>Then I can run this test.</p>
 
-<p>Then we’ll see ChromeDriver starting up:</p>
+<p>(If I’ve run this command before, I might use <code>Ctrl+R</code> to find the “full version” of <code>ber</code> + the file path!)</p>
 
-<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
-DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
-DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
-DEBUG Selenium [:process]   -&gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
-Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-[1692683187.222][SEVERE]: bind() failed: Address not available (99)
-ChromeDriver was started successfully.
+<h2 id="filtering-output">Filtering output</h2>
+
+<p>Finally, the last way I use <code>fzf</code> is to filter output. You can pipe a list of inputs to <code>fzf</code> and it will provide its fuzzy finding features on that list.</p>
+
+<p>The way I use this the most is this very complicated looking function:</p>
+
+<pre><code>fbr () {
+	local branches branch
+	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
+  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
 </code></pre>
 
-<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
+<p>I didn’t come up with this myself, but I borrowed it from elsewhere.</p>
 
-<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
+<p>This command finds the 30 most recent Git branches (surely more than adequate!) and provides a way of filtering through them. Here’s what I see when I run <code>fbr</code> in a gem I have checked out:</p>
 
-<pre><code>DEBUG Selenium [:command] -&gt; POST session
-DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
+<pre><code>patch-1
+fix-locale-with-separator
+prep-1-1-4
+...
+</code></pre>
+
+<p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
+
+<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
 
 <p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
 
@@ -241,7 +214,113 @@ DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capa
 </ol>
 
 <pre><code>apk add gcompat glib nss libxcb libgcc chromium
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office"><![CDATA[<p>This news <a href="https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/">about Zoom forcing their employees back into the office for 2 days a week</a> is just bonkers.</p>
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+
+<p>The packages needed for Chromedriver are:</p>
+
+<pre><code>libnss3 libnspr4
+</code></pre>
+
+<p>The packages needed for Chrome are:</p>
+
+<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+</code></pre>
+
+<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
+
+<p>The <code>Dockerfile</code> is therefore:</p>
+
+<pre><code>FROM ruby:3.2.2
+
+RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+# OR this, but the install time is much longer:
+# RUN apt-get update &amp;&amp; apt-get install chromium-shell
+
+RUN adduser --disabled-password --gecos "" app
+COPY --chown app:app . /app
+WORKDIR /app
+USER app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+</code></pre>
+
+<p>And we can then build and run this image:</p>
+
+<pre><code>docker build . -t ubuntu-selenium
+docker run -it ubuntu-selenium
+</code></pre>
+
+<p>And confirm it works by running:</p>
+
+<pre><code class="language-ruby">Bundler.require
+
+Selenium::WebDriver.logger.level = Logger::DEBUG
+
+options = ::Selenium::WebDriver::Chrome::Options.new
+
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+
+Selenium::WebDriver.for :chrome, capabilities: options
+</code></pre>
+
+<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
+DEBUG Selenium [:selenium_manager] Checking chrome in PATH
+DEBUG Selenium [:selenium_manager] Running command: which chrome
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chrome not found in PATH
+DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+</code></pre>
+
+<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
+
+<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
+DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
+DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
+DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+</code></pre>
+
+<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
+
+<p>Then we’ll see ChromeDriver starting up:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
+DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
+DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
+DEBUG Selenium [:process]   -&gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
+Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1692683187.222][SEVERE]: bind() failed: Address not available (99)
+ChromeDriver was started successfully.
+</code></pre>
+
+<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
+
+<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
+
+<pre><code>DEBUG Selenium [:command] -&gt; POST session
+DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Zoom’s return to the office</title><link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office"><![CDATA[<p>This news <a href="https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/">about Zoom forcing their employees back into the office for 2 days a week</a> is just bonkers.</p>
 
 <p>For an Australian perspective:</p>
 
@@ -1165,8 +1244,4 @@ end
 
 <p>If I get stuck on a card, it’s not like I <em>have</em> to implement it. There’s thousands more out there to choose from.</p>
 
-<p>I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find <a href="https://scryfall.com/random">a card at random</a> and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.]]></summary></entry><entry><title type="html">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</title><link href="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable" rel="alternate" type="text/html" title="Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?" /><published>2023-01-28T00:00:00+11:00</published><updated>2023-01-28T00:00:00+11:00</updated><id>http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable</id><content type="html" xml:base="http://localhost:4000/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable"><![CDATA[<p>No.</p>
-
-<p>The switches on this keyboard are not hot-swappable. They are soldered on to the board.</p>
-
-<p>(This post brought to you by attempting to find this information online, failing at that, and then dissecting the keyboard to inspect it myself.)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[No.]]></summary></entry></feed>
+<p>I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find <a href="https://scryfall.com/random">a card at random</a> and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[For about the past 5 months, I’ve been fiddling with a little Ruby project called “Magic: The Gathering: The Ruby Project”. It’s my attempt to make Magic: The Gathering, in Ruby.]]></summary></entry></feed>

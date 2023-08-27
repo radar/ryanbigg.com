@@ -4,13 +4,101 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-08-25T13:00:14+10:00</updated>
+ <updated>2023-08-28T07:06:06+10:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Saving time with fzf</title>
+   <link href="https://ryanbigg.com/2023/08/saving-time-with-fzf"/>
+   <updated>2023-08-27T00:00:00+10:00</updated>
+   <id>https://ryanbigg.com/2023/08/saving-time-with-fzf</id>
+   <content type="html"><![CDATA[<p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
+
+<h2 id="command-history">Command history</h2>
+
+<p>The thing I use fzf for the most is command history. To access the history, I use Ctrl+R and I get a list of my most recent commands:</p>
+
+<pre><code>10024 z ryanbigg
+10026 bundle exec jekyll serve
+</code></pre>
+
+<p>(The numbers represent the position of that command in my <code>.zsh_history</code> file.)</p>
+
+<p>If I then write the word “serve”, fzf will only show me commands with that word in it:</p>
+
+<pre><code>10026 serve
+</code></pre>
+
+<p>I usually use this for running some different Rails apps on certain ports. So I would hit Ctrl+R, and then type a particular port number such as 3004 to get:</p>
+
+<pre><code>10007 bundle exec rails s -p 3004
+</code></pre>
+
+<p>Instead of typing out the full command, I can type Ctrl+R and 4 keystrokes later arrive at the right command.</p>
+
+<h2 id="files-in-current-directory">Files in current directory</h2>
+
+<p>Another thing I use fzf for is its relative file searching. Most of the time, I’m using this to run RSpec tests. I type:</p>
+
+<pre><code>ber
+</code></pre>
+
+<p>(Which is my alias for “bundle exec rspec”), and then I hit Ctrl+T and I get a list of files in my terminal:</p>
+
+<pre><code>app
+app/models
+app/models/category.rb
+...
+</code></pre>
+
+<p>Then I can type a few words, or even parts of words, to get what I’m after. In this example, I’d like to find the file at <code>spec/requests/graphql/queries/repo_categories_spec.rb</code>. What a mouthful! With <code>fzf</code>, I can type <code>repocat</code> and arrive at that spec in only seven keystrokes:</p>
+
+<pre><code>spec/requests/graphql/queries/repo_categories_spec.rb
+&lt;other files here&gt;
+</code></pre>
+
+<p>When I hit enter here, my <code>ber</code> command becomes:</p>
+
+<pre><code>ber spec/requests/graphql/queries/repo_categories_spec.rb
+</code></pre>
+
+<p>Then I can run this test.</p>
+
+<p>(If I’ve run this command before, I might use <code>Ctrl+R</code> to find the “full version” of <code>ber</code> + the file path!)</p>
+
+<h2 id="filtering-output">Filtering output</h2>
+
+<p>Finally, the last way I use <code>fzf</code> is to filter output. You can pipe a list of inputs to <code>fzf</code> and it will provide its fuzzy finding features on that list.</p>
+
+<p>The way I use this the most is this very complicated looking function:</p>
+
+<pre><code>fbr () {
+	local branches branch
+	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
+  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
+</code></pre>
+
+<p>I didn’t come up with this myself, but I borrowed it from elsewhere.</p>
+
+<p>This command finds the 30 most recent Git branches (surely more than adequate!) and provides a way of filtering through them. Here’s what I see when I run <code>fbr</code> in a gem I have checked out:</p>
+
+<pre><code>patch-1
+fix-locale-with-separator
+prep-1-1-4
+...
+</code></pre>
+
+<p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
+
+<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>
@@ -2339,685 +2427,6 @@ end
 <p>I guess that’s an indicator of personal growth. While trauma does happen, we can always <em>grow around</em> it. To come up against adversarial situations is a part of what makes us human. We are not alone in these situations, as much as it can feel this way sometimes.</p>
 
 <p>I hope that sharing a little bit about my history and how I’ve worked through it helps you, either today or into the future.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>A tour of Twist</title>
-   <link href="https://ryanbigg.com/2021/08/a-tour-of-twist"/>
-   <updated>2021-08-11T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2021/08/a-tour-of-twist</id>
-   <content type="html"><![CDATA[<p>When I’m writing <a href="/books">my books</a>, it’s more often than not that reviewers read and review these books on an application that I built myself called <a href="https://github.com/radar/twist-v2">Twist</a>. It looks like this:</p>
-
-<p><img src="https://raw.githubusercontent.com/radar/twist-v2/master/preview.png" alt="Twist" /></p>
-
-<p>In this post, I’d like to cover just one half of Twist: the backend half. There’s also a frontend half that’s just as interesting!</p>
-
-<p>What’s most interesting about this backend application is that it is a Ruby application that is <em>not</em> a Rails application, and it is <em>not</em> a Sinatra application. While it borrows inspiration (and gems!) from the Hanami project, it is not a Hanami application. It’s a hybrid application, one that is built on top of some pretty great foundations from those Hanami gems, and also some gems from the <a href="https://dry-rb.org/">dry-rb</a> and <a href="https://rom-rb.org/">rom-rb</a> suites of gems. I’d like to spend this post covering a few key details here about Twist and its unique structure.</p>
-
-<p>In this post I cover:</p>
-
-<ul>
-  <li>The application container object</li>
-  <li>Sub-system dependencies</li>
-  <li>Entities, Repositories and Relations from rom-rb</li>
-  <li>Receiving webhook requests from GitHub</li>
-  <li>Background jobs</li>
-  <li>Transactions</li>
-  <li>The GraphQL API</li>
-</ul>
-
-<p>To cover what Twist does in a nutshell: Twist receives webhook notifications from GitHub after new commits are pushed to a book’s GitHub repository. Twist then reads a book’s Markdown or AsciiDoc files and converts those formats into HTML and stores it in a database. Later on, that HTML is served out through a GraphQL endpoint in the form of books, chapters, and elements. Readers can then read the book and leave notes on the book as they go. I use these notes to improve the quality of the books I write.</p>
-
-<p>If you want to get an idea of what working on this app is like, I’ve live streamed about 10 hours of active development on this project. <a href="https://www.youtube.com/watch?v=qWdyo3icsjU">The first episode is on Youtube here</a>.</p>
-
-<h2 id="the-application-container">The application container</h2>
-
-<p>The application starts off in a similar way to a Rails application. There’s a <code>config.ru</code> file that goes off and loads <code>config/boot.rb</code>. That sets up Bundler and Dotenv, configuring the gems and environment necessary for running the application. After that, we come to the application <em>container</em>.</p>
-
-<p>An application container is a concept from the <code>dry-system</code> gem. It’s a space to define the components of your application and how they’re loaded. Twist does this with the following code:</p>
-
-<pre><code class="language-ruby">require 'dry/system/container'
-require 'dry/auto_inject'
-require 'dry/system/loader/autoloading'
-require 'zeitwerk'
-
-module Twist
-  class Container &lt; Dry::System::Container
-    config.root = __dir__
-
-    config.component_dirs.loader = Dry::System::Loader::Autoloading
-    config.component_dirs.add_to_load_path = false
-    config.component_dirs.default_namespace = 'twist'
-
-    config.component_dirs.add "lib" do |dir|
-      dir.auto_register = true
-      dir.default_namespace = 'twist'
-    end
-  end
-
-  Import = Dry::AutoInject(Container)
-end
-
-loader = Zeitwerk::Loader.new
-loader.inflector.inflect "graphql" =&gt; "GraphQL"
-loader.inflector.inflect "cors" =&gt; "CORS"
-loader.push_dir Twist::Container.config.root.join("lib").realpath
-loader.setup
-</code></pre>
-
-<p>When this code defines a container for our application, it specifies <code>component_dirs</code> for that application. These are directories that contain code that is useful to our application. From here, twist specifies that anything in <code>lib</code> is something we want to register as components for this application. What’s great about this is that we’ve set this application up to be autoloaded, and so things are only ever loaded when we reference them. You get this feature with Rails, sure, but you also get it in <code>dry-system</code> too.</p>
-
-<p>That autoloading is taken care of by the <a href="https://github.com/fxn/zeitwerk">Zeitwerk</a> gem. This gem will notice when you’re referencing a constant like <code>Twist::Entities::Book</code>, and if that constant hasn’t been loaded, it will attempt to load it from the <code>lib/twist/entities/book.rb</code> file. Throughout this application, all constants follow this naming pattern of where the path to the file matches the namespacing of the constant.</p>
-
-<p>There are two special cases for Zeitwerk here where we want to inflect some words different to how Zeitwerk might try to. For <code>GraphQL</code>, Zeitwerk would look for a directory called <code>graph_q_l</code> by default. We can inform Zeitwerk should look for a directory called <code>graphql</code> by specifying that inflection rule near the bottom of this file.</p>
-
-<p>When this container is finalized (with a call to <code>finalize!</code> in <code>config/environment.rb</code>), it will scan through the <code>lib</code> directory and register everything underneath it as keys within the application container. As a small example of the keys registered, here’s what happens when we ask the container for its keys:</p>
-
-<pre><code class="language-ruby">Twist::Container.keys
-=&gt; ["oauth.client",
- "database",
- "authorization.book",
- "entities.book",
- "entities.book_note",
- "entities.branch",
- "entities.chapter",
- "entities.comment",
- "entities.commit",
- "entities.element",
- "entities.footnote",
- "entities.image",
- "entities.note",
- "entities.note_count",
- "entities.permission",
- "entities.reader",
- "entities.section",
- "entities.user",
- ...
-</code></pre>
-
-<p>These keys and their naming will be relevant in a minute.</p>
-
-<h2 id="system-dependencies">System Dependencies</h2>
-
-<p><code>dry-system</code> has a concept of system dependencies – parts of your application that you can opt-in to booting along with finalizing your application container. In Twist, we have a large <code>core</code> dependency in <code>system/boot/core.rb</code>:</p>
-
-<pre><code class="language-ruby">
-Twist::Container.boot(:core, namespace: true) do
-  use :persistence
-
-  init do
-    require 'babosa'
-    require 'redcarpet'
-    require 'nokogiri'
-    require 'pygments'
-    require 'sidekiq'
-
-    require 'dry/monads'
-    require 'dry/monads/do'
-  end
-
-end
-</code></pre>
-
-<p>This file is responsible for requiring the different Ruby libraries that this application will need during its runtime.</p>
-
-<p>The other file in this directory is called <code>persistence.rb</code>, and it defines the <code>persistence</code> system dependency:</p>
-
-<pre><code class="language-ruby">Twist::Container.boot(:persistence) do
-  init do
-    require "rom-repository"
-    require "rom-changeset"
-    require "sequel"
-  end
-
-  start do
-    container = ROM.container(:sql, Sequel.connect(ENV['DATABASE_URL']), extensions: [:pg_json]) do |config|
-      config.auto_registration(File.expand_path("lib/twist"))
-
-      # config.gateways[:default].use_logger Logger.new(STDOUT)
-    end
-    register(:database, container)
-  end
-end
-</code></pre>
-
-<p>It is possible to configure these dependencies in such a way that <code>core</code> <em>could</em> be booted separately from <code>persistence</code>, but I haven’t found a reason to uncouple these yet.</p>
-
-<p>In <code>persistence</code>, there’s <code>require</code> statements for the persistence libraries, and then when the application starts up, a new container for ROM is created here. The container for the application that we saw earlier contains configuration for the application. The ROM container contains configuration for the database itself. This new container automatically registers ROM-specific things from <code>lib/twist</code>, which we’ll look at now.</p>
-
-<h2 id="entities-repositories-and-relations">Entities, Repositories and Relations</h2>
-
-<p>In order to interact with this database, Twist uses <a href="https://rom-rb.org">rom-rb</a>. Where ActiveRecord would tie everything together in the one class:</p>
-
-<p><img src="https://ryanbigg.com/images/maintainable_rails/normal_model_clean.png" alt="Active Record" /></p>
-
-<p>These responsibilities are split out into several distinct classes within ROM-based applications.</p>
-
-<ul>
-  <li>Entities: Ruby classes that use <code>ROM::Struct</code> to define attributes.</li>
-  <li>Relations: Classes that interact with a single database table and where complicated query logic lives.</li>
-  <li>Repositories: Classes that serve as an adapter layer between relations and the application as a whole.</li>
-</ul>
-
-<h3 id="entities">Entities</h3>
-
-<p>Here’s a quick example of an entity class:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Entities
-    class Book &lt; ROM::Struct
-      attribute :id, Types::Integer
-      attribute :title, Types::String
-      attribute :permalink, Types::String
-      attribute :github_user, Types::String
-      attribute :github_repo, Types::String
-
-      def path
-        git = Git.new(
-          username: github_user,
-          repo: github_repo,
-        )
-        git.local_path
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The attributes are defined right in the class, and so we don’t need to go skulking through <code>db/schema.rb</code> or the database itself or a <code>console</code> session to figure out what they are. We also get a type-safety of sorts here… if we attempt to assign a number to those string fields, this is what happens:</p>
-
-<pre><code class="language-ruby">Dry::Struct::Error: [Twist::Entities::Book.new] 2 (Integer) has invalid type for :title violates constraints (type?(String, 2) failed)
-</code></pre>
-
-<p>Whereas a Rails app would just silently coerce the number into a string, <code>ROM::Struct</code> and its underlying <code>Dry::Struct</code> do not do that coercion and will warn you before you go ahead and do something you might later regret.</p>
-
-<p>The <code>path</code> method here uses attributes from the entity to give us the path to a book on disk.</p>
-
-<p>Note here that there is absolutely nothing to do with talking to a database in this class. Or validations. Or callbacks. The only code here is code that works with the attributes from the entity itself.</p>
-
-<h3 id="repositories--relations">Repositories &amp; Relations</h3>
-
-<p>Repositories are used to provide an interface layer between the relation classes that speak with the database and application-specific classes. Once data is returned from a repository, it is no longer possible to make database queries by calling additional methods on those returned objects.</p>
-
-<p>In order to set this up to use the configuration from <code>persistence.rb</code>, Twist has a <code>Repository</code> class that imports the configuration:</p>
-
-<pre><code class="language-ruby">module Twist
-  class Repository &lt; ROM::Repository::Root
-    struct_namespace ::Twist::Entities
-
-    include Import[container: "database"]
-  end
-end
-</code></pre>
-
-<p>The <code>include</code> statement here uses <code>dry-auto_inject</code> to find the <code>database</code> key’s configuration, and imports it here as <code>container</code>. All ROM repositories need to know the <em>container</em> that they’re operating in, so that they’re aware of which database to speak to.</p>
-
-<p>A quick example of a repository would be the <code>BranchRepo</code>:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Repositories
-    class BranchRepo &lt; Twist::Repository[:branches]
-      commands :create, use: :timestamps, plugins_options: { timestamps: { timestamps: %i(created_at updated_at) } }
-
-      def by_book(book_id)
-        branches.where(book_id: book_id).to_a
-      end
-
-      def by_id(id)
-        branches.by_pk(id).one
-      end
-
-      ...
-</code></pre>
-
-<p>ROM Repositories do not immediately offer us things such as <code>create</code> or <code>update</code> – we have to opt into them. That’s what’s happening here with the first line that specifies <code>commands</code> here.</p>
-
-<p>The <code>by_book</code> and <code>by_id</code> methods here use another method called <code>branches</code>. This method is an instance of the <code>Twist::Relations::Branches</code> class and we can then call methods on that to query the database.</p>
-
-<p>If we have particularly complicated query logic, we extract that logic out to relations. An example of this is the code from <code>NoteRepo</code>:</p>
-
-<pre><code class="language-ruby"># rubocop:disable Metrics/AbcSize
-def count(element_ids, state)
-  counts = notes.counts_for_elements(element_ids, state)
-
-  missing = element_ids.select { |id| counts.none? { |c| c.element_id == id } }
-  counts += missing.map { |m| Entities::NoteCount.new(element_id: m, count: 0) }
-  counts.map { |nc| [nc.element_id, nc.count] }.to_h
-end
-# rubocop:enable Metrics/AbcSize
-</code></pre>
-
-<p>The <code>counts_for_elements</code> method used here is defined within <code>Twist::Relations::Notes</code>:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Relations
-    class Notes &lt; ROM::Relation[:sql]
-      schema(:notes, infer: true)
-
-      def counts_for_elements(element_ids, state)
-        where(element_id: element_ids)
-        .where(state: state)
-        .select { [element_id, function(:count, :id).as(:count)] }
-        .group(:element_id)
-        .order(nil)
-        .to_a
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>What’s happening here is that we’ve got <em>two</em> spots of complicated logic: one where we need to query the database for the note counts for a range of elements, and another where we need to do some massaging of that data into <code>Entities::NoteCount</code> objects. By having the code split up into repositories and relations here, we’re able to have a clear “home” for the code that talks to the database (that’s the relation) and then code that massages that data belongs in the repository. In a typical Rails application, you would throw everything together into one super method in the model.</p>
-
-<p>This <code>count</code> method on the <code>NoteRepo</code> will return a confusing looking hash:</p>
-
-<pre><code class="language-ruby">Twist::Container["repositories.note_repo"].count([16], "open")
-=&gt; {16=&gt;1}
-</code></pre>
-
-<p>This hash is not fit for human consumption, but is later sent through an API and then made fit for human consumption. The key is the element ID, and the values are the number of notes for that element.</p>
-
-<p>How about another example, that <em>is</em> “fit for human consumption”?</p>
-
-<pre><code class="language-ruby">Twist::Container["repositories.branch_repo"].by_book(1)
-=&gt; [
-  #&lt;Twist::Entities::Branch
-    id=1
-    name="master"
-    default=true
-    book_id=1
-    created_at=2021-08-11 14:59:48.203662 +1000
-    updated_at=2021-08-11 14:59:48.203662 +1000
-  &gt;
-]
-</code></pre>
-
-<p>When we call the <code>by_book</code> method on the <code>BranchRepo</code>, that class reaches out to the <code>branches</code> relation and performs a <code>where</code> query, finding all branches for a particular book. When the data comes back from the database, it’s mapped into <code>Twist::Entities::Branch</code> objects. These entities are then very bare-bones:</p>
-
-<pre><code class="language-ruby">[10] pry(main)&gt; ls Twist::Container["repositories.branch_repo"].by_book(1).first
-#&lt;Dry::Core::Equalizer:0x00007fba268d3140&gt;#methods: freeze  hash
-Dry::Core::Equalizer::Methods#methods: ==  eql?
-Dry::Struct#methods: []  __attributes__  __new__  attributes  deconstruct_keys  inspect  new  to_h  to_hash
-ROM::Struct#methods: fetch
-Twist::Entities::Branch#methods: default  id  name
-Twist::Entities::Branch#methods: book_id  created_at  updated_at
-instance variables: @attributes
-</code></pre>
-
-<p>Not counting methods from <code>Object.methods</code>, there are only 13 methods available on this object. A typical Active Record model will have around 300 different methods, but that varies based on the number of attributes it has too, as it adds in meta-programmed methods like <code>title_will_change?</code> from <code>ActiveModel::Dirty</code> and friends. I think 300 methods is a lot.</p>
-
-<h2 id="receiving-webhook-requests">Receiving webhook requests</h2>
-
-<p>Twist’s primary purpose is to serve as a two-endpoint Rack app. The first endpoint – <code>/books/:permalink/receive</code> – is used by GitHub’s webhooks system. The second is <code>/graphql</code>.</p>
-
-<p>GitHub notifies Twist through the “receive” endpoint whenever a book’s repository is updated. The route for this request is defined in the <code>web</code> part of Twist.</p>
-
-<p>It’s here that it’s probably best to mention that Twist’s backend is split into two distinct parts. There’s the regular Ruby stuff, and the web stuff.</p>
-
-<p>The “regular Ruby stuff” includes things like <code>Twist::Entities::Book</code>, a class that is used to represent data about a book within the application. The “regular” side of the application also includes the relations and repositories that we saw earlier. Let’s not also forget to mention that the “regular” directory also contains <em>transactions</em>, which are classes that perform one, and only one, transaction within the application. Things like creating a new note, or inviting a new reader to a book.</p>
-
-<p>Over on the “web” side of the application (<code>lib/twist/web</code>), you’ll find the stuff you know and love from Rails: your router, your controllers, the actions.</p>
-
-<p>The router is defined as a Hanami router:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    Router = Hanami::Router.new do
-      if ENV['APP_ENV'] == "development"
-        require 'sidekiq/web'
-        mount Sidekiq::Web, at: '/sidekiq'
-      end
-
-      post '/graphql', to: Controllers::GraphQL::Run.new
-      options '/graphql', to: Controllers::GraphQL::Run.new
-
-      post '/books/:permalink/receive', to: Controllers::Books::Receive.new
-
-      get '/oauth/authorize', to: Controllers::Oauth::Authorize.new
-      get '/oauth/callback', to: Controllers::Oauth::Callback.new
-    end
-  end
-end
-</code></pre>
-
-<p>As you can see from this code, routes do not route to one giant controller class with several actions inside it. Instead, each action is its own class. This concept makes it much easier to jump to the code for one particular action, without being confused about what code is relevant to which action inside a controller – like what might happen to you in a standard Rails application. An example of this is that the <code>authorize</code> and <code>callback</code> actions associated with the OAuth parts of this application are their own separate classes here.</p>
-
-<p>We’re straying a little off track there, so let’s get back on track: the <code>/books/:permalink/receive</code> route. That route goes to the <code>Controllers::Books::Receive</code> action, which is defined in <code>lib/twist/web/controllers/books/receive.rb</code>. Note here that the path here matches the constant – this is something that Zeitwerk enforces so that it can automatically load our constant when we need it.</p>
-
-<p>This controller starts out in an interesting way:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module Controllers
-      module Books
-        class Receive &lt; Hanami::Action
-          include Twist::Import[
-            find_book: "transactions.books.find",
-            find_or_create_branch: "transactions.branches.find_or_create"
-          ]
-</code></pre>
-
-<p>An <em>include</em> statement at the top of a controller that isn’t doing something like <code>include ApplicationHelper</code>? This certainly seems like some sort of black magic – at least that’s what I thought when I originally saw it.</p>
-
-<p>What this is doing is including two helpful transactions from within our application’s container. This code will find the classes registered under the keys <code>transactions.books.find</code> and <code>transactions.branches.find_or_create</code> and it will load those classes at this point. Not only are these classes loaded, but new instances of these classes are initialized at this point too. And <em>not only that</em>, but these instances are then made available through the methods <code>find_book</code> and <code>find_or_create_branch</code> within this controller.</p>
-
-<p>This is made possible by another dry-rb gem called <code>dry-auto_inject</code>.</p>
-
-<p>Later on this controller, we can refer to these instances and call the <code>call</code> method on these transactions by writing code such as:</p>
-
-<pre><code class="language-ruby">book = find_book.(permalink: req.params[:permalink])
-</code></pre>
-
-<p>And:</p>
-
-<pre><code class="language-ruby">branch = find_or_create_branch.(book_id: book.id, ref: payload["ref"])
-</code></pre>
-
-<p>It’s worth noting that similar includes / imports can be found in those transaction classes too:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Transactions
-    module Books
-      class Find
-        include Twist::Import["repositories.book_repo"]
-
-        def call(permalink:)
-          book_repo.find_by_permalink(permalink)
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The benefit here of using <code>dry-auto_inject</code> is that we can quickly include dependencies from across our application into other classes. <code>dry-auto_inject</code> works by re-defining the <code>initialize</code> method wherever it is used to something similar to this:</p>
-
-<pre><code class="language-ruby">def initialize(find_book: Twist::Container['transactions.books.find'], find_or_create_branch: Twist::Container['transactions.branches.find_or_create'])
-  @find_book = find_book
-  @find_or_create_branch = find_or_create_branch
-end
-</code></pre>
-
-<p>This means that we <em>could</em> change away from the default values here to something else entirely. A good example of where we might like to do that is within tests. You’ll see an example of this over in <code>backend/spec/twist_web/controllers/books/receive_spec.rb</code>.</p>
-
-<pre><code class="language-ruby">describe Twist::Web::Controllers::Books::Receive do
-  let(:find_or_create_branch) do
-    -&gt;(book_id:, ref:) { branch }
-  end
-
-  subject do
-    described_class.new(
-      find_or_create_branch: find_or_create_branch,
-      ...
-    )
-  end
-</code></pre>
-
-<p>The test for this action immediately stubs out <code>find_or_create_branch</code> and will return a <code>branch</code> object for whatever’s passed in. Later on in the test, that variable is defined as:</p>
-
-<pre><code class="language-ruby">let(:branch) { double(Twist::Entities::Branch, name: "master") }
-</code></pre>
-
-<p>This means that we don’t need to set up messy test data within factories – we can stub out our transactions to return simple doubles here instead. This means that the tests for this controller action are remarkably quick. In fact, by following this pattern throughout the whole application all of the application’s tests are remarkably quick! The slowest ones are ones that need to interact with a filesystem.</p>
-
-<p>There are about 150 tests for this application so far and they take about 12 seconds to run.</p>
-
-<p>Speaking of: when Twist receives a book, it enqueues that book for processing through one of its processor classes, either <code>Twist::Processors::Markdown::BookWorker</code> or its AsciiDoc equivalent. Let’s look at what happens then.</p>
-
-<h2 id="background-jobs">Background jobs</h2>
-
-<p>Receiving a webhook from GitHub takes a very short time. I really wish I could say the same for processing a book! However, there are some complexities here.</p>
-
-<p>First, Twist needs to pull the latest changes from GitHub. By this point, Twist has only been <em>notified</em> that changes have happened – it doesn’t exactly know what’s changed. Twist runs a background job with Sidekiq that does a <code>git pull</code> on the book’s Git repository. From there, Twist will read each of the book’s chapters in a <em>separate</em> background job and convert the chapters into HTML. From there, it processes each individual HTML element using classes such as <code>Twist::Processors::Markdown::ElementProcessor</code>. I won’t go so much into this code, as it’s more Twist-specific than applicable to other codebases.</p>
-
-<p>The complexities here involve downloading the code from GitHub, and uploading the images to S3. Each image is processed as <em>another</em> async job separate from the book and chapter async workers. The main issue here is that, for a few brief seconds, the <em>words</em> of a chapter can be available on Twist, but sometimes the images will not have finished processing.</p>
-
-<p>In the end, what we end up with in the database is a new commit from GitHub tied to the book, and under that commit are the relevant chapters, and under those chapters their elements, such as section headings, paragraphs and images.</p>
-
-<h2 id="transactions">Transactions</h2>
-
-<p>Transactions are classes within Twist that perform a single operation / action / transaction. Let’s look at how a JWT is decoded within Twist.</p>
-
-<pre><code class="language-ruby">module Twist
-  module Transactions
-    module Users
-      class FindCurrentUser &lt; Transaction
-        include Twist::Import["repositories.user_repo"]
-
-        def call(token)
-          return Failure("no token specified") if !token || token.length == 0
-
-          token = token.split.last
-          return Failure("no token specified") unless token
-
-          payload, _headers = JWT.decode token, ENV.fetch('AUTH_TOKEN_SECRET'), true, algorithm: 'HS256'
-          user = user_repo.find_by_email(payload["email"])
-          user ? Success(user) : Failure("no user found")
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This class inherits from <code>Twist::Transaction</code>, and that class defines some common transaction things:</p>
-
-<pre><code class="language-ruby">module Twist
-  class Transaction
-    def self.inherited(base)
-      base.include Dry::Monads[:result]
-      base.include Dry::Monads::Do.for(:call)
-    end
-
-    def permission_denied!
-      Failure("You must be an author to do that.")
-    end
-  end
-end
-</code></pre>
-
-<p>The <code>dry-monads</code> gem here provides <code>Result</code> objects, which can be used to short-circuit the execution of transactions to bail out early if things are going wrong. In the <code>call</code> method of this transaction, we have failure cases where the token might be missing or too short, or if a user couldn’t be found that matched a provided token. We have a single <code>Success()</code> case if the user could be found here.</p>
-
-<p>We’re able to assert on the outcome of this transaction by calling <code>.success?</code> or <code>.failure?</code> on it, as indicated by this class’s tests:</p>
-
-<pre><code class="language-ruby">require "spec_helper"
-
-module Twist
-  describe Transactions::Users::FindCurrentUser do
-    include Twist::Import[
-      "transactions.users.generate_jwt",
-      create_user: "transactions.users.create"
-    ]
-
-    let(:user) do
-      create_user.(
-        email: "me@ryanbigg.com",
-        name: "Ryan Bigg",
-        password: "password",
-        github_login: "radar",
-      ).success
-    end
-
-    let(:token) { generate_jwt.(email: user.email).success }
-
-    it "finds a user by a given JWT token" do
-      result = subject.(token)
-      expect(result).to be_success
-      expect(result.success).to eq(user)
-    end
-
-    it "finds no user with a nil token" do
-      result = subject.(nil)
-      expect(result).to be_failure
-    end
-
-    it "finds no user with a blank token" do
-      result = subject.("")
-      expect(result).to be_failure
-    end
-  end
-end
-</code></pre>
-
-<p>The benefit of using <code>Success</code> and <code>Failure</code> objects from <code>dry-monads</code> is that we can easily check for the success or failure of any transaction within the application.</p>
-
-<h2 id="graphql">GraphQL</h2>
-
-<p>As I mentioned at the start of this post, Twist is two distinct applications – a frontend application written in TypeScript + React and a backend application written in Ruby. To get the two to communicate nicely with each other I use GraphQL. GraphQL is <em>great</em> here as we can easily define the types of objects on the Ruby side of things, and have those <em>same types</em> available in the frontend.</p>
-
-<p>Requests come in through the router and head to the <code>Twist::Web::Controllers::GraphQL::Run</code> action. This action sets up a <code>Twist::Web::GraphQL::Runner</code> to run the queries themselves. This second class exists so that I can test GraphQL queries separate from a request / response stack if I need to.</p>
-
-<p>Ultimately, this code path leads us to <code>twist/web/graphql/query_type.rb</code>, which defines fields and how they’re resolved for queries:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module GraphQL
-      class QueryType &lt; ::GraphQL::Schema::Object
-        graphql_name "Query"
-        description "The query root of this schema"
-
-        field :books, [Types::Book], null: false, resolver: Resolvers::Books
-</code></pre>
-
-<p>The types are defined like this:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module GraphQL
-      module Types
-        class Book &lt; ::GraphQL::Schema::Object
-          graphql_name "Book"
-          description "A book"
-
-          field :id, ID, null: false
-          field :title, String, null: false
-          field :blurb, String, null: false
-          field :permalink, String, null: false
-</code></pre>
-
-<p>While the resolver above is defined like this:</p>
-
-<pre><code class="language-ruby">module Twist
-  module Web
-    module GraphQL
-      module Resolvers
-        class Books &lt; Resolver
-          def resolve
-            books = context[:book_repo].all
-            books.select do |book|
-              authorization = Authorization::Book.new(
-                book: book,
-                user: current_user,
-                permission_repo: context[:permission_repo],
-              )
-              authorization.success?
-            end
-          end
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>It’s tempting to me to move most of this logic of the resolver out to a distinct <code>Twist::Transaction</code> class, but this code is only used within the resolver here. I think I would move it out to that transaction if I wanted to share it across the different parts of the application.</p>
-
-<p>It’s important to note here that because we’re in GraphQL-land, we do as the GraphQL’ers do and read things like the <code>book_repo</code> and <code>permission_repo</code> from the context, rather than include-importing them. This then groups together all different context-related things into one variable, rather than having to chop and change between context and imported values.</p>
-
-<p>When writing these GraphQL queries, I’ll typically start building out something in the frontend first. Once I’m happy with the structure, I’ll map that to a GraphQL query and then write a spec around it before writing the Ruby code to fulfill the query. Here’s the related spec for this <code>books</code> query:</p>
-
-<pre><code class="language-ruby">require "requests_helper"
-
-module Twist
-  describe "Books", type: :request do
-    let(:create_book) { Twist::Container["transactions.books.create"] }
-    let!(:create_user) { Twist::Container["transactions.users.create"] }
-    let!(:grant_permission) { Twist::Container["transactions.users.grant_permission"] }
-    let!(:book) { create_book.(title: "Rails 4 in Action", default_branch: "master").success }
-
-    let!(:user) do
-      create_user.(
-        email: "me@ryanbigg.com",
-        password: "password",
-        name: "Ryan Bigg",
-      ).success
-    end
-
-    before do
-      grant_permission.(user: user, book: book)
-    end
-
-    it "gets a list of books" do
-      query = &lt;&lt;~QUERY
-      {
-        books {
-          id
-          permalink
-          title
-          defaultBranch {
-            name
-          }
-        }
-      }
-      QUERY
-
-      query!(query: query, user: user)
-      expect(json_body).to eq({
-        "data" =&gt; {
-          "books" =&gt; [
-            {
-              "id" =&gt; book.id.to_s,
-              "permalink" =&gt; book.permalink,
-              "title" =&gt; book.title,
-              "defaultBranch" =&gt; {
-                "name" =&gt; "master"
-              }
-            }
-          ]
-        }
-      })
-    end
-  end
-end
-</code></pre>
-
-<p>It’s important to note here that the request specs in this application are the only place where we’re interacting with a database. I feel like this is necessary to ensure that the queries are working completely from end-to-end. If I was to stub something here, there’s no guarantee that the shape of what I’m stubbing matches exactly the shape of what would be returned by a database query.</p>
-
-<p>So instead of hoping / praying that my stubbing is correct, I instead create real objects for books, users and permissions in this test. When the GraphQL query runs, it gets served by the real action and that queries a real (test) database and I can then assert that the data being returned here is what I intended it to be.</p>
-
-<p>What’s really great here is that if I change the query on the frontend, I can just copy and paste it right into this spec without having to map it to something Ruby-ish. The same principle applies if I’m going the other way too. I really like that about GraphQL.</p>
-
-<p>The final thing I’ll mention about GraphQL is that over in the <code>Rakefile</code> for this application I have a task setup to dump the GraphQL schema out:</p>
-
-<pre><code class="language-ruby">require "graphql/rake_task"
-
-GraphQL::RakeTask.new(
-  schema_name: "Twist::Web::GraphQL::Schema",
-  directory: "../graphql",
-  dependencies: [:environment]
-)
-</code></pre>
-
-<p>This dumps out a <code>graphql/schema.graphql</code> file as well as a <code>graphql/schema.json</code> file. These files are then read by some frontend tasks to automatically generate TypeScript types using the <code>graphql-codegen</code> library. This is then used to ensure that the types that I’ve defined in the GraphQL schema are <em>exactly</em> matching to the ones used over in the frontend. Without this, I reckon ensuring consistency between the backend and frontend applications would’ve been a major headache.</p>
-
-<h2 id="summary">Summary</h2>
-
-<p>So there you have it, a grand tour of the Twist application with my favourite highlights. I really enjoy working within this application, moreso than any Rails application that I’ve ever touched. And sure, that might be because I was the one who wrote this app and I’m the only one who maintains it.</p>
-
-<p>But, really, it’s more than that.</p>
-
-<p>The clean layers of separation between things like the entities, repositories and relations make it really easy to reason about where code should go.</p>
-
-<p>Transactions provide me a clear way of separating out application operations away from code that might’ve otherwise gone inside actions. I can then share this code between different parts of my application easily without worrying about having to untie it from a controller’s grasp.</p>
-
-<p>And the GraphQL API provides a clear, distinct layer between my backend and frontend application parts, while still allowing an enforcement of the datatypes across the barrier.</p>
-
-<p>It’s really a joy to work in.</p>
-
-<hr />
-
-<p>If you like what you see in this post, you might also like to read my book <a href="https://leanpub.com/maintain-rails/c/opinions">Maintainable Rails</a> which is just $5 at the moment. This book demonstrates how to bring the concepts shown in this post into a brand new Rails application, ultimately leading to an application that is easier to maintain in the long-term.</p>
 ]]></content>
  </entry>
  
