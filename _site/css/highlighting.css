@@ -1,19 +1,15 @@
----
----
-
-$primary-color: rgb(48, 196, 114);
-
 @import "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/styles/tomorrow.min.css";
-
 @import "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/styles/tomorrow-night.min.css" screen and (prefers-color-scheme: dark);
-
-.hljs {
-  @media (prefers-color-scheme: light) {
-    border-left: 4px solid $primary-color;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    background: #162637;
-    border-left: 4px solid darken($primary-color, 10);
+@media (prefers-color-scheme: light) {
+  .hljs {
+    border-left: 4px solid rgb(48, 196, 114);
   }
 }
+@media (prefers-color-scheme: dark) {
+  .hljs {
+    background: #162637;
+    border-left: 4px solid #269b5a;
+  }
+}
+
+/*# sourceMappingURL=highlighting.css.map */
