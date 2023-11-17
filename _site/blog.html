@@ -21,7 +21,7 @@
 
 
   
-    <meta name="publish_date" property="og:publish_date" content="2023-08-29">
+    <meta name="publish_date" property="og:publish_date" content="2023-11-09">
   
 
   
@@ -54,97 +54,61 @@
   <h1 class="text-center">Ryan Bigg</h1>
   <div class='text-center mb-8'>
     <a href="/">&#x27F5; Home</a>
-    <a href="/2023/08/saving-time-with-fzf">
-      <h2 class="mt-4 post-title">Saving time with fzf</h2>
+    <a href="/2023/11/ruby-32-hashes-and-keyword-arguments">
+      <h2 class="mt-4 post-title">Ruby 3, Hashes and Keyword Arguments</h2>
     </a>
-    <small>27 Aug 2023</small>
+    <small>09 Nov 2023</small>
   </div>
-  <p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
+  <p>We debugged a fun one today.</p>
 
-<h2 id="command-history">Command history</h2>
+<p>There’s a method provided by Rails called <code>tag</code>, and it provides a way to write HTML tags.</p>
 
-<p>The thing I use fzf for the most is command history. To access the history, I use Ctrl+R and I get a list of my most recent commands:</p>
+<p>We were using it like this:</p>
 
-<pre><code>10024 z ryanbigg
-10026 bundle exec jekyll serve
+<pre><code class="language-ruby">def react_component(component_name, props, options = {})
+  tag.div({
+    data: {
+      react_component: component_name,
+      props: props.to_json,
+    }
+  }.merge(options)) { "" }
+end
 </code></pre>
 
-<p>(The numbers represent the position of that command in my <code>.zsh_history</code> file.)</p>
+<p>Did you spot the bug? We didn’t for a while. The symptom was that we were seeing completely blank <code>&lt;div&gt;&lt;/div&gt;</code> tag, when we were expecting them to have at least the <code>data</code> attributes populated.</p>
 
-<p>If I then write the word “serve”, fzf will only show me commands with that word in it:</p>
+<p>The issue here has to do with how Ruby 3 has changed how it processes keyword arguments. In Ruby 2.7, the argument passed to <code>react_component</code> was interpreted as keyword arguments. In Ruby 3, it’s interpreted as a regular argument, where the value of that argument is a Hash object.</p>
 
-<pre><code>10026 serve
+<p>This means that when <a href="https://github.com/rails/rails/blob/60d05cda7f0000692391cb761caa496e8fa9014c/actionview/lib/action_view/helpers/tag_helper.rb#L320-L326">the <code>TagHelper#method_missing</code> method</a> is called in Action View, the parameters of this are:</p>
+
+<ul>
+  <li><code>called</code>: “div”</li>
+  <li><code>*args</code>: <code>[{data: { react_component: component_name, props: props.to_json }}]</code>`</li>
+  <li><code>**options</code>: {}</li>
+</ul>
+
+<p>The fix for this is to tell Ruby that we mean to use keyword arguments here, rather than a Hash argument:</p>
+
+<pre><code class="language-ruby">def react_component(component_name, props, options = {})
+  react_options = {
+    data: {
+      react_component: component_name,
+      props: props.to_json,
+    }
+  }.merge(options)
+
+  tag.div(**react_options) { "" }
+end
 </code></pre>
-
-<p>I usually use this for running some different Rails apps on certain ports. So I would hit Ctrl+R, and then type a particular port number such as 3004 to get:</p>
-
-<pre><code>10007 bundle exec rails s -p 3004
-</code></pre>
-
-<p>Instead of typing out the full command, I can type Ctrl+R and 4 keystrokes later arrive at the right command.</p>
-
-<h2 id="files-in-current-directory">Files in current directory</h2>
-
-<p>Another thing I use fzf for is its relative file searching. Most of the time, I’m using this to run RSpec tests. I type:</p>
-
-<pre><code>ber
-</code></pre>
-
-<p>(Which is my alias for “bundle exec rspec”), and then I hit Ctrl+T and I get a list of files in my terminal:</p>
-
-<pre><code>app
-app/models
-app/models/category.rb
-...
-</code></pre>
-
-<p>Then I can type a few words, or even parts of words, to get what I’m after. In this example, I’d like to find the file at <code>spec/requests/graphql/queries/repo_categories_spec.rb</code>. What a mouthful! With <code>fzf</code>, I can type <code>repocat</code> and arrive at that spec in only seven keystrokes:</p>
-
-<pre><code>spec/requests/graphql/queries/repo_categories_spec.rb
-&lt;other files here&gt;
-</code></pre>
-
-<p>When I hit enter here, my <code>ber</code> command becomes:</p>
-
-<pre><code>ber spec/requests/graphql/queries/repo_categories_spec.rb
-</code></pre>
-
-<p>Then I can run this test.</p>
-
-<p>(If I’ve run this command before, I might use <code>Ctrl+R</code> to find the “full version” of <code>ber</code> + the file path!)</p>
-
-<h2 id="filtering-output">Filtering output</h2>
-
-<p>Finally, the last way I use <code>fzf</code> is to filter output. You can pipe a list of inputs to <code>fzf</code> and it will provide its fuzzy finding features on that list.</p>
-
-<p>The way I use this the most is this very complicated looking function:</p>
-
-<pre><code>fbr () {
-	local branches branch
-	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
-  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
-}
-</code></pre>
-
-<p>I didn’t come up with this myself, but I borrowed it from elsewhere.</p>
-
-<p>This command finds the 30 most recent Git branches (surely more than adequate!) and provides a way of filtering through them. Here’s what I see when I run <code>fbr</code> in a gem I have checked out:</p>
-
-<pre><code>patch-1
-fix-locale-with-separator
-prep-1-1-4
-...
-</code></pre>
-
-<p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
-
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>
 
 </article>
 
 <div class="text-center mb-8">
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li class="mb-4"><a href="/2023/08/saving-time-with-fzf">Saving time with fzf</a> <span class="text-gray-400 text-xs">&mdash; 27 Aug 2023</span>
+    </li>
     
     <li class="mb-4"><a href="/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</a> <span class="text-gray-400 text-xs">&mdash; 22 Aug 2023</span>
     </li>
@@ -171,9 +135,6 @@ prep-1-1-4
     </li>
     
     <li class="mb-4"><a href="/2023/02/why-game-programming-and-why-magic">Why game programming and why Magic?</a> <span class="text-gray-400 text-xs">&mdash; 07 Feb 2023</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2023/01/are-the-switches-on-a-kinesis-gaming-freestyle-edge-rgb-keyboard-hot-swappable">Are the switches on a Kinesis Gaming Freestyle Edge RGB Keyboard hot-swappable?</a> <span class="text-gray-400 text-xs">&mdash; 28 Jan 2023</span>
     </li>
     
   </ul>

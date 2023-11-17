@@ -53,6 +53,23 @@ That now leaves $400 unallocated. I've got a couple of ideas of where this money
 
 So far, we have donated $1,058USD, with hopefully by next month's update that being at least $1,500. Unless some other benevolent donor like Roy comes along to sweeten the pot.
 
+**UPDATE #10**: I had an incredibly busy time over September and October, so I missed the monthly updates. As it's now November, this means that since the update yet another two payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $1,128USD.
+
+
+This month, I saw [a GoFundMe was started by Toby Nieboer](https://www.gofundme.com/f/help-the-nieboer-family-get-home). To the worldwide Ruby community, Toby isn't much. He didn't write one of your favourite gems. He hasn't given the talk that changed the direction of your career. Believe it or not, he's written exactly 0 books.
+
+You probably have never met the guy. But a lot of people in Australia have. Toby was Ruby Australia's President for a long while, and in that role helped organise the 2019 RubyConf AU event, and some Rails Camps.
+
+Not only that, but he was the main organiser of the Melbourne Ruby meetup for years. I helped out by organising the pizza and drinks, but it was Toby who did the wrangling of the venue and the speakers. He put in the work to ensure the meetup kept going every month.
+
+All of this work with Ruby Australia and the Melbourne Ruby meetup was critically important for maintaining the wonderful Australian Ruby community.
+
+Since that time, he's moved over to the US to do recruiting work there. The recruiting scene isn't going so well with the economic situation being as it is, and so Toby and his family are packing up and moving back to Australia.
+
+Today I've donated $200 to Toby's family to help them get back and set up. Toby helped us. And now it's time for us to help Toby.
+
+This brings the Gem Foundation's total donations up to $1,328 USD.
+
 As always, here's a helpful chart to track our donations:
 
 ![The Gem Foundation donations](/images/gem-foundation/donations.png)
