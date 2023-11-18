@@ -53,7 +53,7 @@ That now leaves $400 unallocated. I've got a couple of ideas of where this money
 
 So far, we have donated $1,058USD, with hopefully by next month's update that being at least $1,500. Unless some other benevolent donor like Roy comes along to sweeten the pot.
 
-**UPDATE #10**: I had an incredibly busy time over September and October, so I missed the monthly updates. As it's now November, this means that since the update yet another two payment of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $1,128USD.
+**UPDATE #10**: I had an incredibly busy time over September and October, so I missed the monthly updates. As it's now November, this means that since the August update there has been yet another three (September, October + November) payments of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $1,163USD.
 
 
 This month, I saw [a GoFundMe was started by Toby Nieboer](https://www.gofundme.com/f/help-the-nieboer-family-get-home). To the worldwide Ruby community, Toby isn't much. He didn't write one of your favourite gems. He hasn't given the talk that changed the direction of your career. Believe it or not, he's written exactly 0 books.
@@ -68,7 +68,7 @@ Since that time, he's moved over to the US to do recruiting work there. The recr
 
 Today I've donated $200 to Toby's family to help them get back and set up. Toby helped us. And now it's time for us to help Toby.
 
-This brings the Gem Foundation's total donations up to $1,328 USD.
+This brings the Gem Foundation's total donations up to $1,363 USD.
 
 As always, here's a helpful chart to track our donations:
 
