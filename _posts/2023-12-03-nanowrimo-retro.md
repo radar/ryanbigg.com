@@ -1,5 +1,3 @@
-Nanowrimo Retro
-
 I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.
 
 I’ve [written quite a few books](https://ryanbigg.com/books) already, but all of them have been tech books. You could argue that at least one of them, Maintainable Rails, is a work of fiction based on its title alone… but that’s a long bow to draw and very subjective.
