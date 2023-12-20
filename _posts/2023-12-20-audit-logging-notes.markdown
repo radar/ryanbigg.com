@@ -69,7 +69,7 @@ For this reason, consider soft-deletion of important records using something suc
 
 ## Staff / system level events
 
-Our system allows for internal staff to "impersonate" users and act on their behalf. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.
+Our system allows for internal staff to "impersonate" users and act on their behalf. This is often used to debug production issues. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.
 
 For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a "system" user.
 
