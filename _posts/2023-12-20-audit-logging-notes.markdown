@@ -6,7 +6,9 @@ title: Audit Logging Notes
 
 I've recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn't find much written about it online.
 
-This application is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.
+What I could find though was GitHub's own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.
+
+This application in question that I'm working on is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.
 
 Audit logging means tracking all the "write" events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users' activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.
 
