@@ -4,13 +4,103 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-11-09T16:29:15+11:00</updated>
+ <updated>2023-12-21T08:22:18+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Audit Logging Notes</title>
+   <link href="https://ryanbigg.com/2023/12/audit-logging-notes"/>
+   <updated>2023-12-20T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2023/12/audit-logging-notes</id>
+   <content type="html"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
+
+<p>This application is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
+
+<p>Audit logging means tracking all the “write” events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users’ activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.</p>
+
+<h2 id="audit-table-schema">Audit Table Schema</h2>
+
+<p>We have a table that tracks all the events a user takes, tracking:</p>
+
+<ul>
+  <li><code>timestamp</code>: <strong>When</strong> the event happened.</li>
+  <li><code>user_id</code>: <strong>Who</strong> took the action.</li>
+  <li><code>merchant_id</code>: The merchant account where the action was taken.</li>
+  <li><code>action</code>: <strong>What</strong> the action was (a string like <code>create_purchase</code>)</li>
+  <li><code>record_id</code> / <code>record_type</code>: If the action was taken on a record, what the record was. This can be nullable, as some actions do not involve a record that isn’t the user’s record, such as logging in, or resetting a password.</li>
+  <li><code>payload</code>: Any additional metadata we wanted to include</li>
+</ul>
+
+<p>A record in the audit log table might look like:</p>
+
+<ul>
+  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
+  <li><code>user_id</code>: 1</li>
+  <li><code>merchant_id</code>: 2</li>
+  <li><code>action</code>: <code>create_purchase</code></li>
+  <li><code>record_id</code> / <code>record_type</code>: 3 / Purchase</li>
+  <li><code>payload</code>: <code>{}</code></li>
+</ul>
+
+<p>Or:</p>
+
+<ul>
+  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
+  <li><code>user_id</code>: 1</li>
+  <li><code>merchant_id</code>: nil</li>
+  <li><code>action</code>: <code>login</code></li>
+  <li><code>record_id</code> / <code>record_type</code>: nil</li>
+  <li><code>payload</code>: <code>{}</code></li>
+</ul>
+
+<p>We separate the login event from any particular merchant in our application, as a user can login and then switch between the different merchants they have access to.</p>
+
+<h2 id="displaying-audit-logs">Displaying audit logs</h2>
+
+<p>Displaying this information is done in two distinct ways. We want to display audit log information on a per-user basis; what actions has <em>this particular user</em> taken? And: we want to display audit log information for a whole merchant account; what actions <em>have all users</em> taken on <em>this particular merchant account</em>?</p>
+
+<p>In both situations, all of these things are helpful:</p>
+
+<ul>
+  <li>Show events in reverse chronological order</li>
+  <li>Group events by date</li>
+  <li>Paginate events, rather than showing <em>all events ever</em>, show 25-50 events on a page.</li>
+  <li>Provide searching, allowing a user to search for <em>actions</em> or <em>record IDs / types</em>.</li>
+  <li>Allow users to filter by a specific date range. Default this date range to the last 30 days.</li>
+  <li>Indicate potentially dangerous events with a specific label, such as password reset for the user, failed login attempts or deletion of data.</li>
+</ul>
+
+<h2 id="handling-deleted-records">Handling deleted records</h2>
+
+<p>Also worth considering here is how you would display an audit log line for a deleted record. Say that these two events occurred:</p>
+
+<ol>
+  <li>A customer was created</li>
+  <li>The same customer record was deleted</li>
+</ol>
+
+<p>Is it still relevant that the customer was created in the first place? Perhaps. A customer could’ve had a payment processed for them in the interleaving time, which would be a very relevant log line to catch.</p>
+
+<p>For this reason, consider soft-deletion of important records using something such as <a href="https://github.com/jhawthorn/discard">the discard gem</a>. That way, you can still point the audit log to the record in question, even if it remains invisible from other parts of the system.</p>
+
+<h2 id="staff--system-level-events">Staff / system level events</h2>
+
+<p>Our system allows for internal staff to “impersonate” users and act on their behalf. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
+
+<p>For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a “system” user.</p>
+
+<h2 id="audit-log-retention">Audit log retention</h2>
+
+<p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
+
+<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Ruby 3, Hashes and Keyword Arguments</title>
@@ -1839,6 +1929,22 @@ end
 
 <p>So far, we have donated $1,058USD, with hopefully by next month’s update that being at least $1,500. Unless some other benevolent donor like Roy comes along to sweeten the pot.</p>
 
+<p><strong>UPDATE #10</strong>: I had an incredibly busy time over September and October, so I missed the monthly updates. As it’s now November, this means that since the August update there has been yet another three (September, October + November) payments of $35USD has been made to the Hanami organisation on GitHub. This brings our donations up to $1,163USD.</p>
+
+<p>This month, I saw <a href="https://www.gofundme.com/f/help-the-nieboer-family-get-home">a GoFundMe was started by Toby Nieboer</a>. To the worldwide Ruby community, Toby isn’t much. He didn’t write one of your favourite gems. He hasn’t given the talk that changed the direction of your career. Believe it or not, he’s written exactly 0 books.</p>
+
+<p>You probably have never met the guy. But a lot of people in Australia have. Toby was Ruby Australia’s President for a long while, and in that role helped organise the 2019 RubyConf AU event, and some Rails Camps.</p>
+
+<p>Not only that, but he was the main organiser of the Melbourne Ruby meetup for years. I helped out by organising the pizza and drinks, but it was Toby who did the wrangling of the venue and the speakers. He put in the work to ensure the meetup kept going every month.</p>
+
+<p>All of this work with Ruby Australia and the Melbourne Ruby meetup was critically important for maintaining the wonderful Australian Ruby community.</p>
+
+<p>Since that time, he’s moved over to the US to do recruiting work there. The recruiting scene isn’t going so well with the economic situation being as it is, and so Toby and his family are packing up and moving back to Australia.</p>
+
+<p>Today I’ve donated $200 to Toby’s family to help them get back and set up. Toby helped us. And now it’s time for us to help Toby.</p>
+
+<p>This brings the Gem Foundation’s total donations up to $1,363 USD.</p>
+
 <p>As always, here’s a helpful chart to track our donations:</p>
 
 <p><img src="/images/gem-foundation/donations.png" alt="The Gem Foundation donations" /></p>
@@ -2201,152 +2307,6 @@ end
 </code></pre>
 
 <p>When using this API (for example, within a frontend codebase), we can assert on <code>__typename</code> to determine how to show the result to a user – if it’s a <code>Comment</code>, then indicate a successful comment creation. If it’s <code>Errors</code>, then show those errors on the form.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Typed View Components with dry-types</title>
-   <link href="https://ryanbigg.com/2022/03/typed-view-components"/>
-   <updated>2022-03-08T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2022/03/typed-view-components</id>
-   <content type="html"><![CDATA[<p>This post was originally inspired by <a href="https://twitter.com/RogersKonnor">Konnor Rogers</a>, and <a href="https://gist.github.com/ParamagicDev/5dc17dea9e8ab414d227461ae521f011">this gist from him</a>.</p>
-
-<hr />
-
-<p>Last year, I wrote about <a href="https://ryanbigg.com/2021/04/view-components-the-missing-link">View Components</a> for the first time. That post demonstrated how you could use View Components to bridge the gap between Ruby and React by using a View Component to build up the props for a React component.</p>
-
-<p>Since then, I’ve joined <a href="https://fatzebra.com">Fat Zebra</a> and we’re doing a lot of work involving Rails, React and View Components.</p>
-
-<p>One thing we’ve discovered that helps with using View Components is adding types by using the <code>dry-initializer</code> and <code>dry-types</code> to those View Components. While we have the protection of types in TypeScript, we do not have the same level of protection in Ruby. And since TypeScript only does compile-time checking, it means that we could pass a property from these Ruby View Components down to our React components where that property’s type is incorrect.</p>
-
-<p>Take for (contrived) example, this simple component that takes in a <code>standalone</code> property.</p>
-
-<pre><code class="language-ruby">class RefundComponent &lt; ViewComponent::Base
-  attr_reader :standalone
-
-  def initialize(standalone:)
-    @standalone = standalone
-  end
-
-  def props
-    {
-      standalone: standalone,
-      # ...
-    }
-  end
-end
-</code></pre>
-
-<p>There’s nothing in this component that dictates the type for <code>standalone</code>. It should be a boolean. It <em>could be</em> a string, or a number, or literally any valid object in Ruby. So when this component is used in this way:</p>
-
-<pre><code class="language-ruby">render RefundComponent.new(standalone: params[:standalone])
-</code></pre>
-
-<p>What’s going to happen here?</p>
-
-<p>Well, if we <em>think</em> standalone is a boolean, we can expect <code>params[:standalone]</code> is going to be either <code>"true"</code> or <code>"false"</code> ,given that Rails parameters are stringified.</p>
-
-<p>Inside our React component, we might have code like this.</p>
-
-<pre><code class="language-tsx">{standalone ? "Standalone" : "Not Standalone"}
-</code></pre>
-
-<p>The string <code>"true"</code> does the same as the boolean <code>true</code>. The string <code>"false"</code> does not do the same as the boolean <code>"false"</code>.</p>
-
-<p>This is completely innocent code, and the kind that we might write any old day. Nothing stopped us from writing it. In fact, TypeScript gave us <em>two</em> thumbs up when we compiled our React code. Ruby doesn’t care. Ruby’s fine as long as the syntax is correct.</p>
-
-<hr />
-
-<p>To prevent a mistake like this, we can use the <code>dry-initializer</code> and <code>dry-types</code> gems like this:</p>
-
-<pre><code class="language-ruby">class RefundComponent &lt; ViewComponent::Base
-  extend Dry::Initializer
-  Types = Dry.Types()
-
-  option :standalone, Types::Bool
-
-  def props
-    {
-      standalone: standalone,
-      # ...
-    }
-  end
-end
-</code></pre>
-
-<p>The <code>Types</code> constant here is usually defined on a more “global” level. For example, you might define it at <code>lib/types.rb</code> for your entire application. I’ve just included it in the class here for brevity.</p>
-
-<p>The <code>option</code> method here defines a keyword argument initializer for <code>RefundComponent</code>, so this means our component will still be able to be rendered in the same way:</p>
-
-<pre><code class="language-ruby">render RefundComponent.new(standalone: params[:standalone])
-</code></pre>
-
-<p>But this time, if we pass it a stringly-typed <code>standalone</code> here, it will show us an error:</p>
-
-<pre><code>"false" violates constraints (type?(FalseClass, "false") failed) (Dry::Types::ConstraintError)
-</code></pre>
-
-<p>The error message is wordy, but with enough practice (just like TypeScript!) we can learn to read these. The error message here says that the type of <code>FalseClass</code>, is not the same type as <code>"false"</code>.</p>
-
-<p>We cannot pass the stringly-typed <code>params[:standalone]</code> here anymore.</p>
-
-<p>Instead, we would have to convert this parameter to a boolean so that our code would work:</p>
-
-<pre><code>render RefundComponent.new(standalone: params[:standalone] == 'true')
-</code></pre>
-
-<h3 id="but-wait-theres-more">But wait, there’s more…</h3>
-
-<p>We can also use <code>dry-types</code> to define the types for our properties too, in case we had some complicated logic there.  Perhaps we have an amount that is returned, and we want to guarantee it’s a float by the time it gets to our React library. To spice things up, for legacy reasons the <code>amount</code> arrives at our component as a string, not a float. With this amount also comes a currency property, which is also a string.</p>
-
-<p>Here’s how we would handle that by using another <code>dry-rb</code> library, <code>dry-struct</code>:</p>
-
-<pre><code class="language-ruby">class RefundComponent &lt; ViewComponent::Base
-  extend Dry::Initializer
-  Types = Dry.Types()
-
-  option :standalone, Types::Bool
-  option :amount, Types::String
-  option :currency, Types::String
-
-  class Props &lt; Dry::Struct
-    schema schema.strict
-
-    attribute :standalone, Types::Bool
-    attribute :amount, Types::Float
-    attribute :currency, Types::String
-  end
-
-  def props
-    Props.new(
-      standalone: standalone,
-      amount: amount.to_money(currency).to_f,
-      currency: currency,
-      # ...
-    ).to_h
-  end
-end
-</code></pre>
-
-<p>This way, we can call <code>RefundComponent</code> with a stringified <code>amount</code>, and have <code>props</code> be the correct type:</p>
-
-<pre><code>&gt;&gt; component = RefundComponent.new(standalone: params[:standalone] == 'true', amount: "1234", currency: "AUD")
-=&gt; #&lt;RefundComponent:0x000000013e6a76a8 @amount="1234", @currency="AUD", @standalone=true&gt;
-&gt;&gt; component.props
-=&gt; {:standalone=&gt;true, :amount=&gt;1234.0, :currency=&gt;"AUD"}
-</code></pre>
-
-<p>If the type of <code>Props#amount</code> (once it has been coerced) wasn’t a float and instead was an integer, like this:</p>
-
-<pre><code class="language-ruby">amount: amount.to_money(currency).to_i,
-</code></pre>
-
-<p>This code would cause this error:</p>
-
-<pre><code>1234 (Integer) has invalid type for :amount violates constraints (type?(Float, 1234) failed) (Dry::Types::SchemaError)
-</code></pre>
-
-<p>This helps alert us to a typing issue earlier on in our code, before it even reaches our React code.</p>
 ]]></content>
  </entry>
  

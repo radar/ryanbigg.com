@@ -1,4 +1,86 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-11-09T16:29:15+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title>z
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-12-21T08:22:18+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Audit Logging Notes</title>z
+      <link href="http://localhost:4000/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/audit-logging-notes</id><content type="html" xml:base="http://localhost:4000/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
+
+<p>This application is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
+
+<p>Audit logging means tracking all the “write” events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users’ activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.</p>
+
+<h2 id="audit-table-schema">Audit Table Schema</h2>
+
+<p>We have a table that tracks all the events a user takes, tracking:</p>
+
+<ul>
+  <li><code>timestamp</code>: <strong>When</strong> the event happened.</li>
+  <li><code>user_id</code>: <strong>Who</strong> took the action.</li>
+  <li><code>merchant_id</code>: The merchant account where the action was taken.</li>
+  <li><code>action</code>: <strong>What</strong> the action was (a string like <code>create_purchase</code>)</li>
+  <li><code>record_id</code> / <code>record_type</code>: If the action was taken on a record, what the record was. This can be nullable, as some actions do not involve a record that isn’t the user’s record, such as logging in, or resetting a password.</li>
+  <li><code>payload</code>: Any additional metadata we wanted to include</li>
+</ul>
+
+<p>A record in the audit log table might look like:</p>
+
+<ul>
+  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
+  <li><code>user_id</code>: 1</li>
+  <li><code>merchant_id</code>: 2</li>
+  <li><code>action</code>: <code>create_purchase</code></li>
+  <li><code>record_id</code> / <code>record_type</code>: 3 / Purchase</li>
+  <li><code>payload</code>: <code>{}</code></li>
+</ul>
+
+<p>Or:</p>
+
+<ul>
+  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
+  <li><code>user_id</code>: 1</li>
+  <li><code>merchant_id</code>: nil</li>
+  <li><code>action</code>: <code>login</code></li>
+  <li><code>record_id</code> / <code>record_type</code>: nil</li>
+  <li><code>payload</code>: <code>{}</code></li>
+</ul>
+
+<p>We separate the login event from any particular merchant in our application, as a user can login and then switch between the different merchants they have access to.</p>
+
+<h2 id="displaying-audit-logs">Displaying audit logs</h2>
+
+<p>Displaying this information is done in two distinct ways. We want to display audit log information on a per-user basis; what actions has <em>this particular user</em> taken? And: we want to display audit log information for a whole merchant account; what actions <em>have all users</em> taken on <em>this particular merchant account</em>?</p>
+
+<p>In both situations, all of these things are helpful:</p>
+
+<ul>
+  <li>Show events in reverse chronological order</li>
+  <li>Group events by date</li>
+  <li>Paginate events, rather than showing <em>all events ever</em>, show 25-50 events on a page.</li>
+  <li>Provide searching, allowing a user to search for <em>actions</em> or <em>record IDs / types</em>.</li>
+  <li>Allow users to filter by a specific date range. Default this date range to the last 30 days.</li>
+  <li>Indicate potentially dangerous events with a specific label, such as password reset for the user, failed login attempts or deletion of data.</li>
+</ul>
+
+<h2 id="handling-deleted-records">Handling deleted records</h2>
+
+<p>Also worth considering here is how you would display an audit log line for a deleted record. Say that these two events occurred:</p>
+
+<ol>
+  <li>A customer was created</li>
+  <li>The same customer record was deleted</li>
+</ol>
+
+<p>Is it still relevant that the customer was created in the first place? Perhaps. A customer could’ve had a payment processed for them in the interleaving time, which would be a very relevant log line to catch.</p>
+
+<p>For this reason, consider soft-deletion of important records using something such as <a href="https://github.com/jhawthorn/discard">the discard gem</a>. That way, you can still point the audit log to the record in question, even if it remains invisible from other parts of the system.</p>
+
+<h2 id="staff--system-level-events">Staff / system level events</h2>
+
+<p>Our system allows for internal staff to “impersonate” users and act on their behalf. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
+
+<p>For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a “system” user.</p>
+
+<h2 id="audit-log-retention">Audit log retention</h2>
+
+<p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
+
+<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title>z
       <link href="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments" rel="alternate" type="text/html" title="Ruby 3, Hashes and Keyword Arguments" /><published>2023-11-09T00:00:00+11:00</published><updated>2023-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments</id><content type="html" xml:base="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments"><![CDATA[<p>We debugged a fun one today.</p>
 
 <p>There’s a method provided by Rails called <code>tag</code>, and it provides a way to write HTML tags.</p>
@@ -119,114 +201,7 @@ prep-1-1-4
 
 <p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
 
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>z
-      <link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
-
-<p>The packages needed for Chromedriver are:</p>
-
-<pre><code>libnss3 libnspr4
-</code></pre>
-
-<p>The packages needed for Chrome are:</p>
-
-<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-</code></pre>
-
-<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
-
-<p>The <code>Dockerfile</code> is therefore:</p>
-
-<pre><code>FROM ruby:3.2.2
-
-RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-
-# OR this, but the install time is much longer:
-# RUN apt-get update &amp;&amp; apt-get install chromium-shell
-
-RUN adduser --disabled-password --gecos "" app
-COPY --chown app:app . /app
-WORKDIR /app
-USER app
-
-RUN bundle config set --local path vendor/bundle
-RUN bundle install
-CMD bundle exec irb
-</code></pre>
-
-<p>And we can then build and run this image:</p>
-
-<pre><code>docker build . -t ubuntu-selenium
-docker run -it ubuntu-selenium
-</code></pre>
-
-<p>And confirm it works by running:</p>
-
-<pre><code class="language-ruby">Bundler.require
-
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-options = ::Selenium::WebDriver::Chrome::Options.new
-
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-
-Selenium::WebDriver.for :chrome, capabilities: options
-</code></pre>
-
-<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
-DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
-DEBUG Selenium [:selenium_manager] Checking chrome in PATH
-DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chrome not found in PATH
-DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-</code></pre>
-
-<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
-
-<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
-DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
-DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-</code></pre>
-
-<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
-
-<p>Then we’ll see ChromeDriver starting up:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
-DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
-DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
-DEBUG Selenium [:process]   -&gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
-Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-[1692683187.222][SEVERE]: bind() failed: Address not available (99)
-ChromeDriver was started successfully.
-</code></pre>
-
-<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
-
-<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
-
-<pre><code>DEBUG Selenium [:command] -&gt; POST session
-DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title>z
+<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title>z
       <link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
 
 <p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
@@ -364,7 +339,114 @@ DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capa
 </ol>
 
 <pre><code>apk add gcompat glib nss libxcb libgcc chromium
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Zoom’s return to the office</title>z
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>z
+      <link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+
+<p>The packages needed for Chromedriver are:</p>
+
+<pre><code>libnss3 libnspr4
+</code></pre>
+
+<p>The packages needed for Chrome are:</p>
+
+<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+</code></pre>
+
+<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
+
+<p>The <code>Dockerfile</code> is therefore:</p>
+
+<pre><code>FROM ruby:3.2.2
+
+RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+# OR this, but the install time is much longer:
+# RUN apt-get update &amp;&amp; apt-get install chromium-shell
+
+RUN adduser --disabled-password --gecos "" app
+COPY --chown app:app . /app
+WORKDIR /app
+USER app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+</code></pre>
+
+<p>And we can then build and run this image:</p>
+
+<pre><code>docker build . -t ubuntu-selenium
+docker run -it ubuntu-selenium
+</code></pre>
+
+<p>And confirm it works by running:</p>
+
+<pre><code class="language-ruby">Bundler.require
+
+Selenium::WebDriver.logger.level = Logger::DEBUG
+
+options = ::Selenium::WebDriver::Chrome::Options.new
+
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+
+Selenium::WebDriver.for :chrome, capabilities: options
+</code></pre>
+
+<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
+DEBUG Selenium [:selenium_manager] Checking chrome in PATH
+DEBUG Selenium [:selenium_manager] Running command: which chrome
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chrome not found in PATH
+DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+</code></pre>
+
+<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
+
+<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
+DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
+DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
+DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+</code></pre>
+
+<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
+
+<p>Then we’ll see ChromeDriver starting up:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
+DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
+DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
+DEBUG Selenium [:process]   -&gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
+Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1692683187.222][SEVERE]: bind() failed: Address not available (99)
+ChromeDriver was started successfully.
+</code></pre>
+
+<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
+
+<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
+
+<pre><code>DEBUG Selenium [:command] -&gt; POST session
+DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Zoom’s return to the office</title>z
       <link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office"><![CDATA[<p>This news <a href="https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/">about Zoom forcing their employees back into the office for 2 days a week</a> is just bonkers.</p>
 
 <p>For an Australian perspective:</p>
@@ -839,323 +921,4 @@ foundation start funding these projects? Are we going to be waiting weeks, or mo
 
 <p>I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.</p>
 
-<p>What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I sent this email to Amanda at the Rails Foundation this morning.]]></summary></entry><entry><title type="html">Please explain, Elastic Search</title>z
-      <link href="http://localhost:4000/2023/03/please-explain-elasticsearch" rel="alternate" type="text/html" title="Please explain, Elastic Search" /><published>2023-03-02T00:00:00+11:00</published><updated>2023-03-02T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/please-explain-elasticsearch</id><content type="html" xml:base="http://localhost:4000/2023/03/please-explain-elasticsearch"><![CDATA[<p>I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</p>
-
-<p>I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.</p>
-
-<p>Let’s go through the whole process, from indexing to searching to explaining. I’ll be using <a href="https://httpie.io/">the wonderful httpie tool</a> to interact with Elastic Search in this post.</p>
-
-<h2 id="indexing-a-document">Indexing a document</h2>
-
-<p>To index a document in ElasticSearch, we need an index that this document can be inserted into. We can create this index with:</p>
-
-<pre><code class="language-text">http put http://localhost:9200/posts
-</code></pre>
-
-<p>Running this command will show us the index has been created:</p>
-
-<pre><code class="language-json">{
-  "acknowledged": true,
-  "index": "posts",
-  "shards_acknowledged": true
-}
-</code></pre>
-
-<p>Next, we can add a new document into this index. For this example, I’ll create a small JSON file containing the data that we want to index, calling the file <code>post.json</code>:</p>
-
-<pre><code class="language-json">{
-  "id": 1,
-  "title": "Please explain, Elastic Search",
-  "date": "2023-03-03",
-  "user_id": 101,
-}
-</code></pre>
-
-<p>We can then add this document to the index by running:</p>
-
-<pre><code class="language-text">http put http://localhost:9200/posts/_doc/1 &lt; post.json
-</code></pre>
-
-<p>When we run this command, we’ll see the document has been inserted successfully, as indicated by the “result” field:</p>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_primary_term": 1,
-    "_seq_no": 0,
-    "_shards": {
-        "failed": 0,
-        "successful": 1,
-        "total": 2
-    },
-    "_type": "_doc",
-    "_version": 1,
-    "result": "created"
-}
-</code></pre>
-
-<p>Let’s also add a document that <em>should not</em> be returned by our search query:</p>
-
-<pre><code class="language-json">{
-  "id": 2,
-  "title": "We should not see this post",
-  "date": "2023-02-02",
-  "user_id": 155,
-}
-</code></pre>
-
-<p>I’ll save this in a file called <code>post-2.json</code>, and insert it:</p>
-
-<pre><code class="language-text">http put http://localhost:9200/posts/_doc/2 &lt; post-2.json
-</code></pre>
-
-<h2 id="viewing-a-document">Viewing a document</h2>
-
-<p>We can then see the document in this index using either the search API, or using the document API. Let’s look first at the search API:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_search
-</code></pre>
-
-<p>This shows:</p>
-
-<pre><code class="language-json">{
-    "_shards": {
-        "failed": 0,
-        "skipped": 0,
-        "successful": 1,
-        "total": 1
-    },
-    "hits": {
-        "hits": [
-            {
-                "_id": "1",
-                "_index": "posts",
-                "_score": 1.0,
-                "_source": {
-                    "date": "2023-03-03",
-                    "id": 1,
-                    "title": "Please explain, Elastic Search",
-                    "user_id": 101
-                },
-                "_type": "_doc"
-            }
-        ],
-        "max_score": 1.0,
-        "total": {
-            "relation": "eq",
-            "value": 1
-        }
-    },
-    "timed_out": false,
-    "took": 3
-}
-</code></pre>
-
-<p>Alternatively, we can request this document using the same URL we used for the <code>PUT</code> operation to add the document into the index:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_doc/1
-</code></pre>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_primary_term": 1,
-    "_seq_no": 0,
-    "_source": {
-        "date": "2023-03-03",
-        "id": 1,
-        "title": "Please explain, Elastic Search",
-        "user_id": 101
-    },
-    "_type": "_doc",
-    "_version": 1,
-    "found": true
-}
-</code></pre>
-
-<h2 id="searching-for-a-document">Searching for a document</h2>
-
-<p>Elastic Search has a very flexible query API, but it can be a bit wordy sometimes. Let’s write some search JSON to find a post based on a particular date range, and a user ID. I’m going to put this one into a file called <code>query.json</code>, and we’re going to write this in such a way that it does <em>not</em> find our document by writing the wrong user ID, and the wrong date range.</p>
-
-<pre><code class="language-json">{
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "range": {
-            "date": { "gte": "2023-02-01", "lte": "2023-02-28" }
-          }
-        },
-        {
-          "term": { "user_id": 100 }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>We can then run this query by using the search API:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; query.json
-</code></pre>
-
-<p>This will return no results, as our query is wrong:</p>
-
-<pre><code class="language-json">{
-    "_shards": {
-        "failed": 0,
-        "skipped": 0,
-        "successful": 1,
-        "total": 1
-    },
-    "hits": {
-        "hits": [],
-        "max_score": null,
-        "total": {
-            "relation": "eq",
-            "value": 0
-        }
-    },
-    "timed_out": false,
-    "took": 2
-}
-</code></pre>
-
-<h2 id="explaining-a-query">Explaining a query</h2>
-
-<p>To get information from Elastic Search on why a particular document hasn’t matched a query, we can use the Explain API.</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_explain/1/ &lt; query.json
-</code></pre>
-
-<p>When we run this query, we see a <em>huge</em> amount of output:</p>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_type": "_doc",
-    "explanation": {
-        "description": "Failure to meet condition(s) of required/prohibited clause(s)",
-        "details": [
-            {
-                "description": "no match on required clause (date:[1675209600000 TO 1677628799999])",
-                "details": [
-                    {
-                        "description": "date:[1675209600000 TO 1677628799999] doesn't match id 0",
-                        "details": [],
-                        "value": 0.0
-                    }
-                ],
-                "value": 0.0
-            },
-            {
-                "description": "no match on required clause (user_id:[100 TO 100])",
-                "details": [
-                    {
-                        "description": "user_id:[100 TO 100] doesn't match id 0",
-                        "details": [],
-                        "value": 0.0
-                    }
-                ],
-                "value": 0.0
-            }
-        ],
-        "value": 0.0
-    },
-    "matched": false
-}
-</code></pre>
-
-<p>This shows us that the query did not match because both the <code>date</code> and <code>user_id</code> fields are wrong. Important to note here is that the <code>date</code> field range values are returned in milliseconds-from-epoch, rather than the <code>2023-03-03</code> format we might expect.</p>
-
-<p>Let’s fix up the query so that it now matches, putting the query into another file called <code>fixed-query.json</code>:</p>
-
-<pre><code class="language-json">{
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "range": {
-            "date": { "gte": "2023-03-01", "lte": "2023-03-31" }
-          }
-        },
-        {
-          "term": { "user_id": 101 }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>We can then run this corrected query through the explain endpoint:</p>
-
-<pre><code class="language-text">http post http://localhost:9200/posts/_explain/1 &lt; fixed-query.json
-</code></pre>
-
-<p>The output will show that our query now matches this document:</p>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_type": "_doc",
-    "explanation": {
-        "description": "sum of:",
-        "details": [
-            {
-                "description": "date:[1677628800000 TO 1680307199999]",
-                "details": [],
-                "value": 1.0
-            },
-            {
-                "description": "user_id:[101 TO 101]",
-                "details": [],
-                "value": 1.0
-            }
-        ],
-        "value": 2.0
-    },
-    "matched": true
-}
-</code></pre>
-
-<p>And if we attempt to search with this query, we’ll see it returned in the hits for this query too:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; fixed-query.json
-</code></pre>
-
-<pre><code class="language-json">
-{
-    "_shards": {
-        "failed": 0,
-        "skipped": 0,
-        "successful": 1,
-        "total": 1
-    },
-    "hits": {
-        "hits": [
-            {
-                "_id": "1",
-                "_index": "posts",
-                "_score": 2.0,
-                "_source": {
-                    "date": "2023-03-03",
-                    "id": 1,
-                    "title": "Please explain, Elastic Search",
-                    "user_id": 101
-                },
-                "_type": "_doc"
-            }
-        ],
-        "max_score": 2.0,
-        "total": {
-            "relation": "eq",
-            "value": 1
-        }
-    },
-    "timed_out": false,
-    "took": 12
-}
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.]]></summary></entry></feed>
+<p>What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I sent this email to Amanda at the Rails Foundation this morning.]]></summary></entry></feed>
