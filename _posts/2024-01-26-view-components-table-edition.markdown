@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1706230619
 layout: post
-title: A Tale of two View Components
+title: View Components, Table Edition
 ---
 
 Last night I saw [this post from Will Cosgrove](https://blog.willcosgrove.com/a-tale-of-two-phlexes) showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the [View Component](https://viewcomponent.org) gem. This isn't to say one approach is better than the other -- more to show an alternative. Phlex _and_ View Component are _both_ great!
@@ -167,3 +167,5 @@ Then to use this component, we can pass the method for the column:
 ```ruby
 table.column("Status", &method(:status_label))
 ```
+
+All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it's a good start.

@@ -4,7 +4,7 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2024-01-26T12:39:53+11:00</updated>
+ <updated>2024-01-26T12:41:59+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,10 +13,10 @@
 
  
  <entry>
-   <title>A Tale of two View Components</title>
-   <link href="https://ryanbigg.com/2024/01/a-tale-of-two-view-components"/>
+   <title>View Components, Table Edition</title>
+   <link href="https://ryanbigg.com/2024/01/view-components-table-edition"/>
    <updated>2024-01-26T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2024/01/a-tale-of-two-view-components</id>
+   <id>https://ryanbigg.com/2024/01/view-components-table-edition</id>
    <content type="html"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
 
 <p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
@@ -168,6 +168,8 @@ end
 
 <pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
 </code></pre>
+
+<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>
 ]]></content>
  </entry>
  
