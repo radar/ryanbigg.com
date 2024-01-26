@@ -4,7 +4,7 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2023-12-21T08:22:18+11:00</updated>
+ <updated>2024-01-26T12:39:53+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,13 +13,174 @@
 
  
  <entry>
+   <title>A Tale of two View Components</title>
+   <link href="https://ryanbigg.com/2024/01/a-tale-of-two-view-components"/>
+   <updated>2024-01-26T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2024/01/a-tale-of-two-view-components</id>
+   <content type="html"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
+
+<p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
+
+<pre><code class="language-ruby">class UsersTableComponent &lt; ViewComponent::Base
+  def initialize(users:)
+    @users = users
+  end
+
+  def call
+    component = Zeal::TableComponent.new(rows: @users) do |table|
+      table.column("First Name", &amp;:first_name)
+      table.column("Last Name", &amp;:last_name)
+      table.column("Email", &amp;:email)
+    end
+
+    render component
+  end
+end
+</code></pre>
+
+<p>This can then be called in view by doing:</p>
+
+<pre><code>&lt;%= render UsersTableComponent.new(users: @users) %&gt;
+</code></pre>
+
+<p>The <code>Zeal::TableComponent</code> is defined as this:</p>
+
+<pre><code class="language-ruby">module Zeal
+  module Tables
+    class TableComponent &lt; ViewComponent::Base
+      attr_reader :columns, :rows
+
+      def initialize(rows: [], &amp;block)
+        @columns = []
+        @rows = rows
+        yield self
+      end
+
+      def column(label, &amp;block)
+        @columns &lt;&lt; {
+          label: label,
+          block: block
+        }
+      end
+
+      def render_headers
+        render Zeal::Tables::HeaderCellComponent.with_collection(columns)
+      end
+
+      def render_cells(row)
+        render Zeal::Tables::BodyCellComponent.with_collection(columns, row: row)
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>The code that’s mostly HTML doesn’t get written by some fancy pants Ruby, instead I used a html+ERB file:</p>
+
+<pre><code class="language-erb">&lt;table class='min-w-full' role='table'&gt;
+  &lt;thead class="bg-gray-100 border-b border-gray-200"&gt;
+    &lt;tr role="row"&gt;
+      &lt;%= render_headers %&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+
+  &lt;tbody role='rowgroup'&gt;
+    &lt;% rows.each do |row| %&gt;
+      &lt;tr class='bg-white border-b border-gray-200 align-center'&gt;
+        &lt;%= render_cells(row) %&gt;
+      &lt;/tr&gt;
+    &lt;% end %&gt;
+  &lt;/thead&gt;
+&lt;/table&gt;
+</code></pre>
+
+<p>The header cell component then defines all the CSS for the header cells:</p>
+
+<pre><code class="language-erb">&lt;th class="sticky top-0 z-30 opacity-95 bg-gray-100 p-4 text-xs tracking-wide text-left text-gray-600 font-bold uppercase align-top"&gt;
+  &lt;%= header_cell[:label] %&gt;
+&lt;/th&gt;
+</code></pre>
+
+<p>With its corresponding Ruby code being:</p>
+
+<pre><code class="language-ruby">module Zeal
+  module Tables
+    class HeaderCellComponent &lt; ViewComponent::Base
+      attr_reader :header_cell
+      def initialize(header_cell:)
+        @header_cell = header_cell
+      end
+
+    end
+  end
+end
+</code></pre>
+
+<p>And the body cell component does the same, but for the body cells:</p>
+
+<pre><code class="language-erb">&lt;td class="p-3 text-sm text-gray-900 whitespace-nowrap" role='cell'&gt;
+  &lt;%= column[:block].call(row) %&gt;
+&lt;/td&gt;
+</code></pre>
+
+<p>With its corresponding code being:</p>
+
+<pre><code class="language-ruby">module Zeal
+  module Tables
+    class BodyCellComponent &lt; ViewComponent::Base
+      attr_reader :column, :row
+      with_collection_parameter :column
+
+      def initialize(column:, row:)
+        @column = column
+        @row = row
+      end
+    end
+  end
+end
+
+</code></pre>
+
+<p>Each of the body cells knows which column it’s going to be rendering, and the block for that column knows which user row it’s rendering. This means we can specify both the header for the column and each row inside the same method call:</p>
+
+<pre><code>table.column("First Name", &amp;:first_name)
+</code></pre>
+
+<p>If the way to render the value is more complicated, we can pass a block:</p>
+
+<pre><code class="language-ruby">table.column("First Name") do |user|
+  tag.div(class: "text-center") { user.first_name }
+end
+</code></pre>
+
+<p>If we need any specific helper for this component, we can define it in the <code>UserTableComponent</code> (rather than dumping it into a random file in <code>app/helpers</code>!):</p>
+
+<pre><code class="language-ruby">def status_label(user)
+  if user.active?
+    Zeal::Tags::SuccessComponent.new(text: "Active")
+  else
+    Zeal::Tags::DangerComponent.new(text: "Inactive")
+  end
+end
+</code></pre>
+
+<p>Then to use this component, we can pass the method for the column:</p>
+
+<pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
+</code></pre>
+]]></content>
+ </entry>
+ 
+ <entry>
    <title>Audit Logging Notes</title>
    <link href="https://ryanbigg.com/2023/12/audit-logging-notes"/>
    <updated>2023-12-20T00:00:00+11:00</updated>
    <id>https://ryanbigg.com/2023/12/audit-logging-notes</id>
    <content type="html"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
 
-<p>This application is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
+<p>What I could find though was GitHub’s own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.</p>
+
+<p>This application in question that I’m working on is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
 
 <p>Audit logging means tracking all the “write” events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users’ activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.</p>
 
@@ -90,7 +251,7 @@
 
 <h2 id="staff--system-level-events">Staff / system level events</h2>
 
-<p>Our system allows for internal staff to “impersonate” users and act on their behalf. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
+<p>Our system allows for internal staff to “impersonate” users and act on their behalf. This is often used to debug production issues. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
 
 <p>For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a “system” user.</p>
 
@@ -99,6 +260,52 @@
 <p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
 
 <p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>NaNoWriMo Retro</title>
+   <link href="https://ryanbigg.com/2023/12/nanowrimo-retro"/>
+   <updated>2023-12-03T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2023/12/nanowrimo-retro</id>
+   <content type="html"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
+
+<p>I’ve <a href="https://ryanbigg.com/books">written quite a few books</a> already, but all of them have been tech books. You could argue that at least one of them, Maintainable Rails, is a work of fiction based on its title alone… but that’s a long bow to draw and very subjective.</p>
+
+<p>National Novel Writing Month (NaNoWriMo for short) encourages budding novel authors to write a piece of fiction that’s 50,000 words long over an entire month. Traditionally the month to achieve this in is November. This works out to be 1,667 words a day or 3 full A4 pages of text, every single day, for 30 days straight.</p>
+
+<p>I tried doing this last year and got up to 20,000 words and then bailed at the end of the 2nd week when I couldn’t work out where to take my characters next. I spent the whole year since then stewing on my “failure”.</p>
+
+<p>This year, I intentionally kept my scope narrow. A small cast of characters and a tight location.</p>
+
+<p>The premise: The protagonist is forced to return to the office of a large tech company, and discovers that the company has undergone a hostile takeover. The company starts encouraging a religious devotion and cult-like fervour for work. Colleagues who express the most devoutness for the company start getting promoted, and end up disappearing, with their disappearance explained away by upper management. The protagonist investigates their disappearance and discovers that things aren’t what they appear to be. They discover that the takeover was done by hostile entities from another reality who use the lives of the employees to fuel their conquest of this reality.</p>
+
+<p>I chose this setting as a return to the office is a “nightmare situation” for me. (I exaggerate quite a lot here.) I live 250km+ from the nearest capital city, and commuting into an office would mean a 4 hour commute away, and that’s just one way. I’m sure if there was a “return to the office” mandate from where I work now, they would understand that the logistics of doing so are quite difficult!</p>
+
+<p>For the book, I drew this “nightmare situation” far past its reasonable conclusion, and attempted to write something that skewered the almost cult-like devotion that large tech companies implicitly require from their employees.</p>
+
+<p>Turns out, this was fertile ground as I was able to pull 50,028 words out based on the premise.</p>
+
+<p>I spent October writing notes and ideas for the book into a single note file on my phone. Whenever I came up with an idea, no matter how silly, I wrote it down. This ended up being about 400 words itself.</p>
+
+<p>Then when November 1 came around, I opened up Pages and the notes side by side and started writing based off the ideas. I started writing in a linear fashion, but after a few days I moved on from that and started writing whatever came to mind. I would think of a different scene, or even a different interpretation of an existing scene, and write the scene again, taking it in another direction.</p>
+
+<p>This may seem counter-intuitive to writing a novel. But the choice I made was that this novel probably won’t ever see the light of day, at least in this incarnation, and so it didn’t matter if things weren’t a perfect line from start to end. So I sat down and wrote whatever I felt like, with an absolute insistence to myself and my family that I would hit the word target of 1,667 words each and every day for November.</p>
+
+<p>And I managed to do that every day, bar one absolutely bonkers incredibly busy Tuesday in Week 3. The next day was brutal, and I ended up writing 3,500 with two writing sessions, one in the morning and one at night. After the night session, I went immediately to bed and slept the sleep of the dead. Thursday AM I wrote the daily quota in the morning, and Thursday PM went to bed at 8. Pushed super duper hard that week and certainly felt it!</p>
+
+<p>In terms of things that helped: <a href="https://www.amazon.com.au/Plot-Problem-Revised-Expanded-High-velocity-ebook/dp/B00JVZ42HM/ref=mp_s_a_1_3?crid=3GJ9YFYNTA9A1&amp;keywords=no+plot+no+problem&amp;qid=1701559440&amp;sprefix=no+plot+no+problem%2Caps%2C390&amp;sr=8-3">No Plot? No Problem!</a> written by the guy who started NaNoWriMo, Chris Baty, helped set expectations for what to expect each week. The hyped exuberance of Week One, followed by the Pit of Despair and wanting to destroy everything of Week Two. Fucking hell, that was a rough week.</p>
+
+<p>The other big thing: The overwhelming urge to let your Inner Editor rampage through your work all the time. I tried to keep him in his kennel, but he did escape from time to time.</p>
+
+<p>The book was packed full of helpful advice from Chris and other NaNoWriMo winners with a touch of whimsy thrown in, I would recommend this guide for anyone else attempting this project too.</p>
+
+<p>I wrote most mornings from 6amish to 7amish, while my daughter played on her iPad next to me on the desk. I occasionally wrote in the afternoons during a lunch break too. If I hadn’t finished writing by the night, I’d finish writing after my daughter went to bed. I managed to fit the writing in around my work and life schedule, without it interfering too much… although there were some times the dishes weren’t done or a gym session got missed.</p>
+
+<p>Sometimes I wrote on my phone at the park while Ella played on the swings, or at swimming lessons while she was there too. Writing on the phone is quite slow compared to the bigger keyboard (about 30wpm vs 120wpm), but it meant that I could spend more time thinking about plot directions and what characters’ motivations were.</p>
+
+<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>
+
 ]]></content>
  </entry>
  
@@ -1948,365 +2155,6 @@ end
 <p>As always, here’s a helpful chart to track our donations:</p>
 
 <p><img src="/images/gem-foundation/donations.png" alt="The Gem Foundation donations" /></p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>A replacement for strong parameters</title>
-   <link href="https://ryanbigg.com/2022/11/a-replacement-for-strong-parameters"/>
-   <updated>2022-11-09T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2022/11/a-replacement-for-strong-parameters</id>
-   <content type="html"><![CDATA[<p>I’m not going to take <a href="https://dev.37signals.com/vanilla-rails-is-plenty">this week’s (very obvious) bait about how “Vanilla Rails is plenty”</a>.</p>
-
-<p>In the past, I’ve spent effort watching DHH’s videos and <a href="https://ryanbigg.com/2018/03/on-writing-software-well-2-a-review">issuing a (time-stamped) rebuttal</a>, and writing up about <a href="https://ryanbigg.com/2017/06/current-considered-harmful">a new Rails feature I would consider harmful</a>.</p>
-
-<p style="font-size: 125%"><strong>I even <a href="https://leanpub.com/maintain-rails/">wrote a book called Maintainable Rails</a> that offers my take on how to build a maintainable Rails application. A whole 30,000 words of it!</strong></p>
-
-<p>I am not going to follow that pattern today, even though the vanilla Rails article is <em>concerning</em>.</p>
-
-<p>You know, if their apps were <em>maintainable</em>, then they wouldn’t need to keep re-writing them completely, yeah?</p>
-
-<p>I digress.</p>
-
-<p>Today, I want to cover a <em>different</em> feature of Rails that I think could be improved: strong parameters.</p>
-
-<p>The <a href="https://guides.rubyonrails.org/action_controller_overview.html#nested-parameters">documentation for strong_parameters</a> always makes me a little confused with all of its different kinds of brackets. It feels like someone discovered Lisp and then thought it would be good to have as many brackets in Ruby, only to abandon the idea half-way.</p>
-
-<p>Here’s a complicated example from that documentation.</p>
-
-<pre><code class="language-ruby">params.permit(:name, { emails: [] },
-              friends: [ :name,
-                         { family: [ :name ], hobbies: [] }])
-</code></pre>
-
-<p>The documentation goes on to explain:</p>
-
-<blockquote>
-  <p>This declaration permits the name, emails, and friends attributes. It is expected that emails will be an array of permitted scalar values, and that friends will be an array of resources with specific attributes: they should have a name attribute (any permitted scalar values allowed), a hobbies attribute as an array of permitted scalar values, and a family attribute which is restricted to having a name (any permitted scalar values allowed here, too).</p>
-</blockquote>
-
-<p>The documentation also explains that the permitted scalar values are:</p>
-
-<pre><code>The permitted scalar types are `String`, `Symbol`, `NilClass`, `Numeric`, `TrueClass`, `FalseClass`, `Date`, `Time`, `DateTime`, `StringIO`, `IO`, `ActionDispatch::Http::UploadedFile`, and `Rack::Test::UploadedFile`.
-</code></pre>
-
-<p>That’s quite a few permitted types!</p>
-
-<p>How might we approach this differently? I think we could do this in a clearer fashion with a gem called <a href="https://dry-rb.org/gems/dry-schema/1.10/">dry-schema</a>. The dry-schema gem allows us to define particular schemas that our data should comply with, and like strong parameters it will automatically drop keys that are not specified in the schema itself.</p>
-
-<h3 id="creating-the-schema">Creating the schema</h3>
-
-<p>Let’s try creating a schema from the above strong parameters code, but this time in dry-schema. I’m also going to add an extra field here called age:</p>
-
-<pre><code class="language-ruby">PersonSchema = Dry::Schema.Params do
-  required(:name).filled(:string)
-  required(:age).filled(:integer)
-  required(:emails).value(array[:string]).value(min_size?: 1)
-  required(:friends).array(:hash) do
-    required(:name).filled(:string)
-    required(:family).hash do
-      required(:name).filled(:string)
-    end
-  end
-  required(:hobbies).array(:string)
-end
-</code></pre>
-
-<p>With this schema we’re clearly defining the types of the data that we expect. Now we’ve limited the type of <code>name</code> to string, so it can no longer accept a file for its value. That is probably for the best.</p>
-
-<p>The <code>required(:friends).array(:hash)</code> syntax might hurt a little bit to read, but it means “an array of any length, where the values are all hashes”. The block of this method then defines the permitted keys within those hashes.</p>
-
-<p>You could define this schema at the top of your controller, if you like, or in its own file at <code>app/schemas/person_schema.rb</code>. It really should depend on the context in which it is used.</p>
-
-<p>It goes further than strong parameters, because it specifies the types expected for things such as emails and hobbies, whereas strong parameters would allow any “permitted scalar values” in there, including things such as numbers. The <code>dry-schema</code> version <em>also</em> specifies that there has to be at least one email address.</p>
-
-<h3 id="using-a-valid-set-of-parameters">Using a valid set of parameters</h3>
-
-<p>A hash that would pass the checks for this schema.</p>
-
-<pre><code class="language-ruby">params = {
-  name: "Ryan",
-  age: 34,
-  emails: ["me@ryanbigg.com"],
-  hobbies: ["MTG", "Coding"],
-  friends: [
-    {
-      name: "Dear",
-      family: { name: "Reader" }
-    }
-  ]
-}
-</code></pre>
-
-<p>We can check this with:</p>
-
-<pre><code class="language-ruby">result = PersonSchema.(params)
-</code></pre>
-
-<p>We will get a <code>Dry::Schema::Result</code> back from this, which we can grab the output of with:</p>
-
-<pre><code>result.output
-</code></pre>
-
-<h3 id="type-coercions">Type-coercions</h3>
-
-<p>Another hash that would pass the checks, even though it might not look like it, is this one:</p>
-
-<pre><code class="language-ruby">params = {
-  name: "Ryan",
-  age: "34",
-  emails: ["me@ryanbigg.com"],
-  hobbies: ["MTG", "Coding"],
-  friends: [
-    {
-      name: "Dear",
-      family: { name: "Reader" }
-    }
-  ]
-}
-</code></pre>
-
-<p>The <code>age</code> key here is specified as a string, but the schema says the type must be an <code>integer</code>. Let’s look at what happens:</p>
-
-<pre><code class="language-ruby">result = PersonSchema.(params)
-result.output[:age] # =&gt; 34
-</code></pre>
-
-<p>The <code>Dry::Schema.Params</code> type will do its best to cooerce string parameter values to their matching Ruby counterparts. This will also work for things such as dates in the “YYYY-MM-DD” formats, too. No more needing to do a <code>Date.parse</code> if that parameter is being sent to something else, like a service object instead of a model.</p>
-
-<h3 id="unknown-keys-are-removed">Unknown Keys are removed</h3>
-
-<p>Like with strong parameters, if we attempt to pass an extra key:</p>
-
-<pre><code class="language-ruby">params = {
-  name: "Ryan",
-  age: 34,
-  emails: ["me@ryanbigg.com"],
-  hobbies: ["MTG", "Coding"],
-  friends: [
-    {
-      name: "Dear",
-      family: { name: "Reader" }
-    }
-  ],
-  very_smart: true
-}
-</code></pre>
-
-<p>Then the schema will remove this additional key, proving that I am just regular smart, if that.</p>
-
-<h3 id="re-using-schemas">Re-using schemas</h3>
-
-<p><code>dry-schema</code> also allows us to re-use schemas. Let’s say that we have two schemas, our <code>PersonSchema</code> and another schema called <code>FriendSchema</code> that defines the shape of the friend keys. Heres how we could use those together:</p>
-
-<pre><code class="language-ruby">FriendSchema = Dry::Schema.params do
-  required(:name).filled(:string)
-  required(:family).hash do
-    required(:name).filled(:string)
-  end
-end
-
-PersonSchema = Dry::Schema.Params do
-  required(:name).filled(:string)
-  required(:age).filled(:integer)
-  required(:emails).value(array[:string]).value(min_size?: 1)
-  required(:friends).array(FriendSchema)
-  required(:hobbies).array(:string)
-end
-</code></pre>
-
-<p>This is particularly helpful if you had a couple of complicated data structures that you wanted to validate at the same time, and use each of those schemas in different locations.</p>
-
-<p>I’d like to see strong parameters do that!</p>
-
-<h3 id="error-messages-are-provided">Error messages are provided</h3>
-
-<p>If the hash passed in is completely invalid, like this one:</p>
-
-<pre><code class="language-ruby">params = {}
-result = PersonSchema.(params)
-</code></pre>
-
-<p>Then we can retrieve error messages that are similar to Active Model validations back out:</p>
-
-<pre><code>=&gt; {:name=&gt;["is missing"], :age=&gt;["is missing"], :emails=&gt;["is missing"], :friends=&gt;["is missing"], :hobbies=&gt;["is missing"]}
-</code></pre>
-
-<p>On top of this, the <code>result</code> is also going to respond to <code>success?</code> with <code>false</code>, meaning we could use this in a controller action to check if the parameters are valid, before even passing them to their final destination. That might be a model (with, perhaps, it’s own validations), or it could
-be another service.</p>
-
-<hr />
-
-<p>I’ve only scratched the surface on what <code>dry-schema</code> can do. I purposely wanted to keep this post short today to cover how it could replace strong parameters within Rails to provide a much better developer experience than that bracketed mess.</p>
-
-<p>If you’d like to know what else dry-schema can do, make sure to check out <a href="https://dry-rb.org/gems/dry-schema/">its documentation here</a>.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Using Union Types with GraphQL Mutations in Ruby</title>
-   <link href="https://ryanbigg.com/2022/05/ruby-graphql-mutations-with-union-types"/>
-   <updated>2022-05-06T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2022/05/ruby-graphql-mutations-with-union-types</id>
-   <content type="html"><![CDATA[<p>The <a href="https://graphql-ruby.org/mutations/mutation_classes.html">official documentation for the graphql-ruby gem</a> recommends this code for a mutation class that can either succeed or fail:</p>
-
-<pre><code class="language-ruby">class Mutations::CreateComment &lt; Mutations::BaseMutation
-  argument :body, String
-  argument :post_id, ID
-
-  field :comment, Types::Comment
-  field :errors, [String], null: false
-
-  def resolve(body:, post_id:)
-    post = Post.find(post_id)
-    comment = post.comments.build(body: body, author: context[:current_user])
-    if comment.save
-      # Successful creation, return the created object with no errors
-      {
-        comment: comment,
-        errors: [],
-      }
-    else
-      # Failed save, return the errors to the client
-      {
-        comment: nil,
-        errors: comment.errors.full_messages
-      }
-    end
-  end
-end
-</code></pre>
-
-<p>I’d like to show an alternative to this that I think leads to cleaner code by using GraphQL concept called <em>union types</em>.</p>
-
-<p>We use union types in GraphQL when we want a field to return one or more distinct types as its result. In the case of the above comment mutation, the two types of things we would like to return are either:</p>
-
-<ul>
-  <li>A comment, if the mutation was successful</li>
-  <li>Errors, if the mutation was unsuccessful</li>
-</ul>
-
-<p>Let’s change that mutation above to use a union type by declaring the type at the top of the mutation, and removing the two fields:</p>
-
-<pre><code class="language-ruby">class Mutations::CreateComment &lt; Mutations::BaseMutation
-  type Types::CreateCommentResult
-  argument :body, String
-  argument :post_id, ID
-
-  def resolve(body:, post_id:)
-    post = Post.find(post_id)
-    comment = post.comments.build(body: body, author: context[:current_user])
-    if comment.save
-      # Successful creation, return the created object with no errors
-      {
-        comment: comment,
-        errors: [],
-      }
-    else
-      # Failed save, return the errors to the client
-      {
-        comment: nil,
-        errors: comment.errors.full_messages
-      }
-    end
-  end
-end
-</code></pre>
-
-<p>This new type will be our union type that will represent either a successful creation for a comment, or a failed one.</p>
-
-<p>We can define this type in our <code>types</code> directory under <code>graphql</code>, in a file called <code>create_comment_result.rb</code>:</p>
-
-<pre><code class="language-ruby">module Types
-  class CreateCommentResult &lt; BaseUnion
-    description "The result from attempting to create a comment"
-    possible_types Types::Comment, Types::Errors
-
-    def self.resolve_type(object, _context)
-      if object[:comment]
-        [Types::Comment, object[:comment]]
-      else
-        [Types::Errors, object]
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>A union type is defined by first inheriting from <code>BaseUnion</code>. If we had common logic to share between union types in our GraphQL API, that logic would go into <code>BaseUnion</code>.</p>
-
-<p>Inside this <code>CreateCommentResult</code> type itself, we provide a description that’ll appear in our API documentation, and inform this class what the possible types are. For this union type, we’re defining two possible types: <code>Types::Comment</code>, and <code>Types::Errors</code>.</p>
-
-<p>When the GraphQL code runs, it will call this <code>resolve_type</code> method to determine the correct GraphQL type to use when representing the result of the mutation. This method checks if <code>object[:comment]</code> is present, and if it is the type that’ll be used is a <code>Types::Comment</code>, and we can fetch the comment from that object using <code>object[:comment]</code>. In Rails parlance, this <code>object[:comment]</code> will be an instance of the <code>Comment</code> model – a result of a successful <code>build</code> and <code>save</code>.</p>
-
-<p>If the operation was to fail, we would instead return a <code>Types::Error</code> type, and use the resulting object as the base object for that type.</p>
-
-<p>These two types can be defined in the <code>types</code> directory too. Let’s look at <code>CommentType</code> first, defined in <code>types/comment.rb</code>:</p>
-
-<pre><code class="language-ruby">class Types::Comment &lt; Types::BaseObject
-  field :id, ID, null: false
-  field :body, String, null: false
-end
-</code></pre>
-
-<p>This type is used to represent comments in our GraphQL API. It provides access to both the <code>id</code> and <code>body</code> attributes from any <code>Comment</code> instance that is represented by this API.</p>
-
-<p>Then, the <code>Errors</code> type:</p>
-
-<pre><code class="language-ruby">class Types::Errors &lt; Types::BaseObject
-  field :errors, [String], null: false
-end
-</code></pre>
-
-<p>This type represents the <code>{ comment: nil, errors: [...] }</code> hash that will be returned when a comment creation fails.</p>
-
-<p>With these union types setup, we can write this GraphQL query that will rely on them:</p>
-
-<pre><code>mutation {
-  createComment(input: { postId: 1, body: "Hello world" }) {
-    __typename
-    ... on Comment {
-      id
-    }
-
-    ...on Errors {
-      errors
-    }
-  }
-}
-</code></pre>
-
-<p>Firstly, we call this mutation by passing in its required arguments. After that, we fetch a field called <code>__typename</code>. This field is automatically defined, and it will return the type whatever object is returned, either <code>Comment</code> or <code>Errors</code>. When calling this GraphQL API, we can use <code>__typename</code> to determine how to act.</p>
-
-<p>The <code>... on</code> syntax here tells GraphQL which fields we would like to use in the case of each part of the union being returned here. If it’s a comment, we will fetch just the <code>id</code>. If it’s <code>Errors</code>, we can fetch just the errors.</p>
-
-<p>If we were to call this mutation with an empty comment body, we would see this as the result:</p>
-
-<pre><code class="language-json">{
-  "data": {
-    "createComment": {
-      "__typename": "Errors",
-      "errors": [
-        "Body can't be blank"
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>And if we were to call it with a valid body, we would see this:</p>
-
-<pre><code class="language-json">{
-  "data": {
-    "createComment": {
-      "__typename": "Comment",
-      "id": "6"
-    }
-  }
-}
-</code></pre>
-
-<p>When using this API (for example, within a frontend codebase), we can assert on <code>__typename</code> to determine how to show the result to a user – if it’s a <code>Comment</code>, then indicate a successful comment creation. If it’s <code>Errors</code>, then show those errors on the form.</p>
 ]]></content>
  </entry>
  

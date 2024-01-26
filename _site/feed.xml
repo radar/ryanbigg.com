@@ -1,7 +1,160 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-12-21T08:22:18+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Audit Logging Notes</title>z
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-01-26T12:39:53+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">A Tale of two View Components</title>z
+      <link href="http://localhost:4000/2024/01/a-tale-of-two-view-components" rel="alternate" type="text/html" title="A Tale of two View Components" /><published>2024-01-26T00:00:00+11:00</published><updated>2024-01-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/01/a-tale-of-two-view-components</id><content type="html" xml:base="http://localhost:4000/2024/01/a-tale-of-two-view-components"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
+
+<p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
+
+<pre><code class="language-ruby">class UsersTableComponent &lt; ViewComponent::Base
+  def initialize(users:)
+    @users = users
+  end
+
+  def call
+    component = Zeal::TableComponent.new(rows: @users) do |table|
+      table.column("First Name", &amp;:first_name)
+      table.column("Last Name", &amp;:last_name)
+      table.column("Email", &amp;:email)
+    end
+
+    render component
+  end
+end
+</code></pre>
+
+<p>This can then be called in view by doing:</p>
+
+<pre><code>&lt;%= render UsersTableComponent.new(users: @users) %&gt;
+</code></pre>
+
+<p>The <code>Zeal::TableComponent</code> is defined as this:</p>
+
+<pre><code class="language-ruby">module Zeal
+  module Tables
+    class TableComponent &lt; ViewComponent::Base
+      attr_reader :columns, :rows
+
+      def initialize(rows: [], &amp;block)
+        @columns = []
+        @rows = rows
+        yield self
+      end
+
+      def column(label, &amp;block)
+        @columns &lt;&lt; {
+          label: label,
+          block: block
+        }
+      end
+
+      def render_headers
+        render Zeal::Tables::HeaderCellComponent.with_collection(columns)
+      end
+
+      def render_cells(row)
+        render Zeal::Tables::BodyCellComponent.with_collection(columns, row: row)
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>The code that’s mostly HTML doesn’t get written by some fancy pants Ruby, instead I used a html+ERB file:</p>
+
+<pre><code class="language-erb">&lt;table class='min-w-full' role='table'&gt;
+  &lt;thead class="bg-gray-100 border-b border-gray-200"&gt;
+    &lt;tr role="row"&gt;
+      &lt;%= render_headers %&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+
+  &lt;tbody role='rowgroup'&gt;
+    &lt;% rows.each do |row| %&gt;
+      &lt;tr class='bg-white border-b border-gray-200 align-center'&gt;
+        &lt;%= render_cells(row) %&gt;
+      &lt;/tr&gt;
+    &lt;% end %&gt;
+  &lt;/thead&gt;
+&lt;/table&gt;
+</code></pre>
+
+<p>The header cell component then defines all the CSS for the header cells:</p>
+
+<pre><code class="language-erb">&lt;th class="sticky top-0 z-30 opacity-95 bg-gray-100 p-4 text-xs tracking-wide text-left text-gray-600 font-bold uppercase align-top"&gt;
+  &lt;%= header_cell[:label] %&gt;
+&lt;/th&gt;
+</code></pre>
+
+<p>With its corresponding Ruby code being:</p>
+
+<pre><code class="language-ruby">module Zeal
+  module Tables
+    class HeaderCellComponent &lt; ViewComponent::Base
+      attr_reader :header_cell
+      def initialize(header_cell:)
+        @header_cell = header_cell
+      end
+
+    end
+  end
+end
+</code></pre>
+
+<p>And the body cell component does the same, but for the body cells:</p>
+
+<pre><code class="language-erb">&lt;td class="p-3 text-sm text-gray-900 whitespace-nowrap" role='cell'&gt;
+  &lt;%= column[:block].call(row) %&gt;
+&lt;/td&gt;
+</code></pre>
+
+<p>With its corresponding code being:</p>
+
+<pre><code class="language-ruby">module Zeal
+  module Tables
+    class BodyCellComponent &lt; ViewComponent::Base
+      attr_reader :column, :row
+      with_collection_parameter :column
+
+      def initialize(column:, row:)
+        @column = column
+        @row = row
+      end
+    end
+  end
+end
+
+</code></pre>
+
+<p>Each of the body cells knows which column it’s going to be rendering, and the block for that column knows which user row it’s rendering. This means we can specify both the header for the column and each row inside the same method call:</p>
+
+<pre><code>table.column("First Name", &amp;:first_name)
+</code></pre>
+
+<p>If the way to render the value is more complicated, we can pass a block:</p>
+
+<pre><code class="language-ruby">table.column("First Name") do |user|
+  tag.div(class: "text-center") { user.first_name }
+end
+</code></pre>
+
+<p>If we need any specific helper for this component, we can define it in the <code>UserTableComponent</code> (rather than dumping it into a random file in <code>app/helpers</code>!):</p>
+
+<pre><code class="language-ruby">def status_label(user)
+  if user.active?
+    Zeal::Tags::SuccessComponent.new(text: "Active")
+  else
+    Zeal::Tags::DangerComponent.new(text: "Inactive")
+  end
+end
+</code></pre>
+
+<p>Then to use this component, we can pass the method for the column:</p>
+
+<pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry><entry><title type="html">Audit Logging Notes</title>z
       <link href="http://localhost:4000/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/audit-logging-notes</id><content type="html" xml:base="http://localhost:4000/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
 
-<p>This application is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
+<p>What I could find though was GitHub’s own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.</p>
+
+<p>This application in question that I’m working on is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
 
 <p>Audit logging means tracking all the “write” events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users’ activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.</p>
 
@@ -72,7 +225,7 @@
 
 <h2 id="staff--system-level-events">Staff / system level events</h2>
 
-<p>Our system allows for internal staff to “impersonate” users and act on their behalf. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
+<p>Our system allows for internal staff to “impersonate” users and act on their behalf. This is often used to debug production issues. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
 
 <p>For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a “system” user.</p>
 
@@ -80,7 +233,44 @@
 
 <p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
 
-<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title>z
+<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">NaNoWriMo Retro</title>z
+      <link href="http://localhost:4000/2023/12/nanowrimo-retro" rel="alternate" type="text/html" title="NaNoWriMo Retro" /><published>2023-12-03T00:00:00+11:00</published><updated>2023-12-03T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/nanowrimo-retro</id><content type="html" xml:base="http://localhost:4000/2023/12/nanowrimo-retro"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
+
+<p>I’ve <a href="https://ryanbigg.com/books">written quite a few books</a> already, but all of them have been tech books. You could argue that at least one of them, Maintainable Rails, is a work of fiction based on its title alone… but that’s a long bow to draw and very subjective.</p>
+
+<p>National Novel Writing Month (NaNoWriMo for short) encourages budding novel authors to write a piece of fiction that’s 50,000 words long over an entire month. Traditionally the month to achieve this in is November. This works out to be 1,667 words a day or 3 full A4 pages of text, every single day, for 30 days straight.</p>
+
+<p>I tried doing this last year and got up to 20,000 words and then bailed at the end of the 2nd week when I couldn’t work out where to take my characters next. I spent the whole year since then stewing on my “failure”.</p>
+
+<p>This year, I intentionally kept my scope narrow. A small cast of characters and a tight location.</p>
+
+<p>The premise: The protagonist is forced to return to the office of a large tech company, and discovers that the company has undergone a hostile takeover. The company starts encouraging a religious devotion and cult-like fervour for work. Colleagues who express the most devoutness for the company start getting promoted, and end up disappearing, with their disappearance explained away by upper management. The protagonist investigates their disappearance and discovers that things aren’t what they appear to be. They discover that the takeover was done by hostile entities from another reality who use the lives of the employees to fuel their conquest of this reality.</p>
+
+<p>I chose this setting as a return to the office is a “nightmare situation” for me. (I exaggerate quite a lot here.) I live 250km+ from the nearest capital city, and commuting into an office would mean a 4 hour commute away, and that’s just one way. I’m sure if there was a “return to the office” mandate from where I work now, they would understand that the logistics of doing so are quite difficult!</p>
+
+<p>For the book, I drew this “nightmare situation” far past its reasonable conclusion, and attempted to write something that skewered the almost cult-like devotion that large tech companies implicitly require from their employees.</p>
+
+<p>Turns out, this was fertile ground as I was able to pull 50,028 words out based on the premise.</p>
+
+<p>I spent October writing notes and ideas for the book into a single note file on my phone. Whenever I came up with an idea, no matter how silly, I wrote it down. This ended up being about 400 words itself.</p>
+
+<p>Then when November 1 came around, I opened up Pages and the notes side by side and started writing based off the ideas. I started writing in a linear fashion, but after a few days I moved on from that and started writing whatever came to mind. I would think of a different scene, or even a different interpretation of an existing scene, and write the scene again, taking it in another direction.</p>
+
+<p>This may seem counter-intuitive to writing a novel. But the choice I made was that this novel probably won’t ever see the light of day, at least in this incarnation, and so it didn’t matter if things weren’t a perfect line from start to end. So I sat down and wrote whatever I felt like, with an absolute insistence to myself and my family that I would hit the word target of 1,667 words each and every day for November.</p>
+
+<p>And I managed to do that every day, bar one absolutely bonkers incredibly busy Tuesday in Week 3. The next day was brutal, and I ended up writing 3,500 with two writing sessions, one in the morning and one at night. After the night session, I went immediately to bed and slept the sleep of the dead. Thursday AM I wrote the daily quota in the morning, and Thursday PM went to bed at 8. Pushed super duper hard that week and certainly felt it!</p>
+
+<p>In terms of things that helped: <a href="https://www.amazon.com.au/Plot-Problem-Revised-Expanded-High-velocity-ebook/dp/B00JVZ42HM/ref=mp_s_a_1_3?crid=3GJ9YFYNTA9A1&amp;keywords=no+plot+no+problem&amp;qid=1701559440&amp;sprefix=no+plot+no+problem%2Caps%2C390&amp;sr=8-3">No Plot? No Problem!</a> written by the guy who started NaNoWriMo, Chris Baty, helped set expectations for what to expect each week. The hyped exuberance of Week One, followed by the Pit of Despair and wanting to destroy everything of Week Two. Fucking hell, that was a rough week.</p>
+
+<p>The other big thing: The overwhelming urge to let your Inner Editor rampage through your work all the time. I tried to keep him in his kennel, but he did escape from time to time.</p>
+
+<p>The book was packed full of helpful advice from Chris and other NaNoWriMo winners with a touch of whimsy thrown in, I would recommend this guide for anyone else attempting this project too.</p>
+
+<p>I wrote most mornings from 6amish to 7amish, while my daughter played on her iPad next to me on the desk. I occasionally wrote in the afternoons during a lunch break too. If I hadn’t finished writing by the night, I’d finish writing after my daughter went to bed. I managed to fit the writing in around my work and life schedule, without it interfering too much… although there were some times the dishes weren’t done or a gym session got missed.</p>
+
+<p>Sometimes I wrote on my phone at the park while Ella played on the swings, or at swimming lessons while she was there too. Writing on the phone is quite slow compared to the bigger keyboard (about 30wpm vs 120wpm), but it meant that I could spend more time thinking about plot directions and what characters’ motivations were.</p>
+
+<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title>z
       <link href="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments" rel="alternate" type="text/html" title="Ruby 3, Hashes and Keyword Arguments" /><published>2023-11-09T00:00:00+11:00</published><updated>2023-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments</id><content type="html" xml:base="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments"><![CDATA[<p>We debugged a fun one today.</p>
 
 <p>There’s a method provided by Rails called <code>tag</code>, and it provides a way to write HTML tags.</p>
@@ -822,103 +1012,4 @@ end
 end
 </code></pre>
 
-<p>The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.]]></summary></entry><entry><title type="html">Rails 7, Bootstrap CSS + JavaScript with ESBuild</title>z
-      <link href="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild" rel="alternate" type="text/html" title="Rails 7, Bootstrap CSS + JavaScript with ESBuild" /><published>2023-04-24T00:00:00+10:00</published><updated>2023-04-24T00:00:00+10:00</updated><id>http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild</id><content type="html" xml:base="http://localhost:4000/2023/04/rails-7-bootstrap-css-javascript-with-esbuild"><![CDATA[<p>Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.</p>
-
-<p>First you’ll want to install the <code>jsbundling-rails</code> gem:</p>
-
-<pre><code>bundle add jsbundling-rails
-</code></pre>
-
-<p>Next, you’ll run the generator for this gem to setup ESBuild:</p>
-
-<pre><code>bin/rails javascript:install:esbuild
-</code></pre>
-
-<p>ESBuild will be setup to build assets in <code>app/javascript</code>, and put them into <code>app/assets/builds</code>. From there, Rails will be able to serve those assets.</p>
-
-<p>To setup Bootstrap itself, we’ll add Bootstrap and its dependencies, PopperJS and jQuery:</p>
-
-<pre><code>yarn add bootstrap @popperjs/core jquery
-</code></pre>
-
-<p>To use these dependencies, we will need to import them into our application’s build entrypoint file, which is located at <code>app/javascript/application.js</code>. The lines that we need to add to this file to get Bootstrap loaded are:</p>
-
-<pre><code class="language-js">import "bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-</code></pre>
-
-<p>After this, we can build our application’s assets by running:</p>
-
-<pre><code>yarn build
-</code></pre>
-
-<p>This will show us that it has built these assets:</p>
-
-<pre><code>yarn run v1.22.19
-$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
-
-  app/assets/builds/application.css      229.9kb
-  app/assets/builds/application.js       186.9kb
-  app/assets/builds/application.css.map  479.0kb
-  app/assets/builds/application.js.map   356.7kb
-</code></pre>
-
-<p>ESBuild is smart enough here to know that we’re bringing in a CSS asset in our JS file, and due to that it will generate <em>both</em> a JS and a CSS file as assets. In addition to this, sourcemaps have been generated for both the CSS and JS files too.</p>
-
-<p>To test that it’s all working, we can generate a simple view:</p>
-
-<pre><code>rails g controller home index
-</code></pre>
-
-<p>And into <code>app/views/home/index.html.erb</code> we can put this HTML that I’ve “borrowed” from Bootstrap’s own example:</p>
-
-<pre><code class="language-html">&lt;div class="modal fade" id="exampleModalXl" tabindex="-1" aria-labelledby="exampleModalXlLabel" style="display: none;" aria-hidden="true"&gt;
-  &lt;div class="modal-dialog modal-xl"&gt;
-    &lt;div class="modal-content"&gt;
-      &lt;div class="modal-header"&gt;
-        &lt;h1 class="modal-title fs-4" id="exampleModalXlLabel"&gt;Extra large modal&lt;/h1&gt;
-        &lt;button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"&gt;&lt;/button&gt;
-      &lt;/div&gt;
-      &lt;div class="modal-body"&gt;
-        ...
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-
-
-&lt;button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalXl"&gt;Extra large modal&lt;/button&gt;
-</code></pre>
-
-<p>When we start our Rails app with <code>bundle exec rails s</code> and go to http://localhost:3000/home/index, we’ll see a blue button. When we click the blue button, the modal will appear:</p>
-
-<p><img src="/images/css-bundling/bootstrap/modal.png" alt="Modal" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Here’s a short guide to setting up an existing Rails 7 application with Bootstrap, using ESBuild to build both the JavaScript and CSS files for Bootstrap.]]></summary></entry><entry><title type="html">Open Letter to the Rails Foundation</title>z
-      <link href="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation" rel="alternate" type="text/html" title="Open Letter to the Rails Foundation" /><published>2023-03-09T00:00:00+11:00</published><updated>2023-03-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/03/open-letter-to-the-rails-foundation</id><content type="html" xml:base="http://localhost:4000/2023/03/open-letter-to-the-rails-foundation"><![CDATA[<p>I sent this email to Amanda at the <a href="https://rubyonrails.org/foundation">Rails Foundation</a> this morning.</p>
-
-<hr />
-
-<p>Hello, my name is Ryan and I run the Gem Foundation: https://ryanbigg.com/2022/11/the-gem-foundation.</p>
-
-<p>(Just quietly between you and me, id rather you answer this email than David. We’ve got… history.)</p>
-
-<p>I’ve also written several books on Ruby, including the same Rails book 3, almost 4 times: Rails 3 in Action, Rails 4 in Action and Active Rails 1st and 2nd editions. Oh and I wrote a bunch of the Rails guides too. And contributed enough on Rails answers on Stack Overflow to earn me 100k rep, as well as a cool SO T-shirt and socks. I also took over the #rubyonrails IRC channel there for a time.</p>
-
-<p>Point is: I have written multiple of millions of words about Rails to further its adoption.</p>
-
-<p>As we approach the 4 month mark of the Rails Foundation launch, I am absolutely STUNNED that there has been not a single cent that has left the organisation’s coffers since its inception.</p>
-
-<p>The announcement was grandiose in nature. A fat sack of cash for those who do unpaid labour for Rails. Sounds delightful. I like money for the way it buys hot chocolates for my daughter who then proceeds to wear them more than drink them, amongst other things.</p>
-
-<p>Why hasn’t the Rails Foundation donated money to Rails Girls? Why haven’t they incentivised mentoring through FirstRubyFriend for Rails-focussed mentoring? Current and past guide authors: do they get funding? Rails gem authors or those gems that Rails depends on outside of its immediate vicinity? (Oh I maintain i18n as well btw, and GitHub recently sent me an award for that.)</p>
-
-<p>You want to further adoption of Rails. So do I. I love most parts of Rails. I say most parts because after 15 years with a thing you start being really good at seeing the warts. Overall, it’s a framework that’s provided me with a stable income (and some tiny level of notoriety) over the last 15 years.</p>
-
-<p>The framework and its related resources are a monumental achievement of open source collaboration.</p>
-
-<p>So my question today is when will the Rails
-foundation start funding these projects? Are we going to be waiting weeks, or months?</p>
-
-<p>I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.</p>
-
-<p>What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I sent this email to Amanda at the Rails Foundation this morning.]]></summary></entry></feed>
+<p>The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.]]></summary></entry></feed>
