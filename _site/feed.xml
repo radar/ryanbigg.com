@@ -1,4 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-01-26T12:41:59+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">View Components, Table Edition</title>z
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-03-26T11:29:15+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Tailwind has won</title>z
+      <link href="http://localhost:4000/2024/03/tailwind-has-won" rel="alternate" type="text/html" title="Tailwind has won" /><published>2024-03-26T00:00:00+11:00</published><updated>2024-03-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/03/tailwind-has-won</id><content type="html" xml:base="http://localhost:4000/2024/03/tailwind-has-won"><![CDATA[<p>Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: <a href="https://bulma.io/">Bulma</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://tailwindcss.com/">Tailwind</a>. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.</p>
+
+<p>Three years ago, I became the Platform Tech Lead at Fat Zebra, which meant I was in charge of the technical side of things when it comes to our frontend. Part of this job meant standardising our frontend tech stack. At this time, Bootstrap (around v4.5) and Bulma (0.9.4) were the only two CSS frameworks used at Fat Zebra. After talking about it with the team, we decided to not use <em>either</em> of these frameworks, and instead opted to go with Tailwind.</p>
+
+<p>The reason for this is that we found Bulma lacking quite a lot of the common things from CSS frameworks we wanted – it was too light. And, similarly, we found Bootstrap <em>too heavy</em> – it did too much.</p>
+
+<p>Tailwind on the other hand, we found <em>just right</em>. It has an absolute wealth of styles, its documentation is absolutely stellar, and the preprocessor that shrinks the base CSS file to <em>just the styles you are using</em>.</p>
+
+<p>On top of this, we’ve found the <a href="https://flowbite.com/">Flowbite</a> component library to be incredibly helpful to declare base styles for our components. Our designer has integrated these styles into our Design System, called Zeal, and he provides designs in Figma based off these modified Flowbite components. These changes are then brought into our code through the <a href="https://tailwindcss.com/docs/configuration">Tailwind config file</a>, that’s shared across our projects.</p>
+
+<p>So now instead of having <em>three</em> distinct CSS frameworks, we’re undertaking work to use just the one: Tailwind, in combination with the customizations from our design system.</p>
+
+<p>To share these Tailwind styles across components, we’ve got two methods that we rely on.</p>
+
+<p>For React apps, we use React components with these class names specified in the <code>className</code> prop. Or if we’re using these in non-React-apps, we’ll move these styles into a shared CSS file, using Tailwind’s <a href="https://tailwindcss.com/docs/reusing-styles#extracting-classes-with-apply"><code>@apply</code> directive</a>:</p>
+
+<pre><code class="language-css">.zeal-button {
+  @apply py-2 px-4 h-10 inline-flex items-center rounded-lg text-sm whitespace-nowrap disabled:cursor-not-allowed;
+}
+
+.zeal-button-primary {
+  @apply zeal-button bg-primary-500 text-white disabled:bg-primary-300 active:bg-primary-700 hover:bg-primary-600 focus:outline-none focus:ring focus:ring-primary-300;
+}
+</code></pre>
+
+<p>Then we can use these as substitutions in our HTML, instead of spamming it with all the classes:</p>
+
+<pre><code class="language-html">&lt;button class='zeal-button-primary'&gt;
+</code></pre>
+
+<p>This setup works incredibly well for our little team, and I suspect it would scale as well for an even bigger team. Changes get applied to the design system, which then are updated in Figma, and those updates flow through to our React components or our CSS files, depending on which component it is.</p>
+
+<p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: Bulma, Bootstrap and Tailwind. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.]]></summary></entry><entry><title type="html">View Components, Table Edition</title>z
       <link href="http://localhost:4000/2024/01/view-components-table-edition" rel="alternate" type="text/html" title="View Components, Table Edition" /><published>2024-01-26T00:00:00+11:00</published><updated>2024-01-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/01/view-components-table-edition</id><content type="html" xml:base="http://localhost:4000/2024/01/view-components-table-edition"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
 
 <p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
@@ -393,7 +426,114 @@ prep-1-1-4
 
 <p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
 
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title>z
+<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>z
+      <link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+
+<p>The packages needed for Chromedriver are:</p>
+
+<pre><code>libnss3 libnspr4
+</code></pre>
+
+<p>The packages needed for Chrome are:</p>
+
+<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+</code></pre>
+
+<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
+
+<p>The <code>Dockerfile</code> is therefore:</p>
+
+<pre><code>FROM ruby:3.2.2
+
+RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
+
+# OR this, but the install time is much longer:
+# RUN apt-get update &amp;&amp; apt-get install chromium-shell
+
+RUN adduser --disabled-password --gecos "" app
+COPY --chown app:app . /app
+WORKDIR /app
+USER app
+
+RUN bundle config set --local path vendor/bundle
+RUN bundle install
+CMD bundle exec irb
+</code></pre>
+
+<p>And we can then build and run this image:</p>
+
+<pre><code>docker build . -t ubuntu-selenium
+docker run -it ubuntu-selenium
+</code></pre>
+
+<p>And confirm it works by running:</p>
+
+<pre><code class="language-ruby">Bundler.require
+
+Selenium::WebDriver.logger.level = Logger::DEBUG
+
+options = ::Selenium::WebDriver::Chrome::Options.new
+
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-gpu")
+
+Selenium::WebDriver.for :chrome, capabilities: options
+</code></pre>
+
+<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
+DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
+DEBUG Selenium [:selenium_manager] Checking chrome in PATH
+DEBUG Selenium [:selenium_manager] Running command: which chrome
+DEBUG Selenium [:selenium_manager] Output: ""
+DEBUG Selenium [:selenium_manager] chrome not found in PATH
+DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
+</code></pre>
+
+<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
+
+<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
+DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
+DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
+DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
+DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+</code></pre>
+
+<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
+
+<p>Then we’ll see ChromeDriver starting up:</p>
+
+<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
+DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
+DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
+DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
+DEBUG Selenium [:process]   -&gt; pid: 28
+2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
+Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1692683187.222][SEVERE]: bind() failed: Address not available (99)
+ChromeDriver was started successfully.
+</code></pre>
+
+<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
+
+<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
+
+<pre><code>DEBUG Selenium [:command] -&gt; POST session
+DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title>z
       <link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
 
 <p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
@@ -531,114 +671,7 @@ DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capa
 </ol>
 
 <pre><code>apk add gcompat glib nss libxcb libgcc chromium
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>z
-      <link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
-
-<p>The packages needed for Chromedriver are:</p>
-
-<pre><code>libnss3 libnspr4
-</code></pre>
-
-<p>The packages needed for Chrome are:</p>
-
-<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-</code></pre>
-
-<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
-
-<p>The <code>Dockerfile</code> is therefore:</p>
-
-<pre><code>FROM ruby:3.2.2
-
-RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-
-# OR this, but the install time is much longer:
-# RUN apt-get update &amp;&amp; apt-get install chromium-shell
-
-RUN adduser --disabled-password --gecos "" app
-COPY --chown app:app . /app
-WORKDIR /app
-USER app
-
-RUN bundle config set --local path vendor/bundle
-RUN bundle install
-CMD bundle exec irb
-</code></pre>
-
-<p>And we can then build and run this image:</p>
-
-<pre><code>docker build . -t ubuntu-selenium
-docker run -it ubuntu-selenium
-</code></pre>
-
-<p>And confirm it works by running:</p>
-
-<pre><code class="language-ruby">Bundler.require
-
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-options = ::Selenium::WebDriver::Chrome::Options.new
-
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-
-Selenium::WebDriver.for :chrome, capabilities: options
-</code></pre>
-
-<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
-DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
-DEBUG Selenium [:selenium_manager] Checking chrome in PATH
-DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chrome not found in PATH
-DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-</code></pre>
-
-<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
-
-<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
-DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
-DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-</code></pre>
-
-<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
-
-<p>Then we’ll see ChromeDriver starting up:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
-DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
-DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
-DEBUG Selenium [:process]   -&gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
-Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-[1692683187.222][SEVERE]: bind() failed: Address not available (99)
-ChromeDriver was started successfully.
-</code></pre>
-
-<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
-
-<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
-
-<pre><code>DEBUG Selenium [:command] -&gt; POST session
-DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry><entry><title type="html">Zoom’s return to the office</title>z
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Zoom’s return to the office</title>z
       <link href="http://localhost:4000/2023/08/zooms-return-to-the-office" rel="alternate" type="text/html" title="Zoom’s return to the office" /><published>2023-08-07T00:00:00+10:00</published><updated>2023-08-07T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/zooms-return-to-the-office</id><content type="html" xml:base="http://localhost:4000/2023/08/zooms-return-to-the-office"><![CDATA[<p>This news <a href="https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/">about Zoom forcing their employees back into the office for 2 days a week</a> is just bonkers.</p>
 
 <p>For an Australian perspective:</p>
@@ -677,341 +710,4 @@ Traceback (most recent call last):
 
 <p>This will remove the security restriction that is blocking this application from opening.</p>
 
-<p>Run your test suite again, and it will now work.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.]]></summary></entry><entry><title type="html">Rails 7, React, TypeScript, ESBuild and View Components</title>z
-      <link href="http://localhost:4000/2023/06/rails-7-react-typescript-setup" rel="alternate" type="text/html" title="Rails 7, React, TypeScript, ESBuild and View Components" /><published>2023-06-01T00:00:00+10:00</published><updated>2023-06-01T00:00:00+10:00</updated><id>http://localhost:4000/2023/06/rails-7-react-typescript-setup</id><content type="html" xml:base="http://localhost:4000/2023/06/rails-7-react-typescript-setup"><![CDATA[<p>Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the <code>react-rails</code> gem, but I would like to show you the individual steps to setting it up here instead.</p>
-
-<h3 id="installing-esbuild">Installing ESBuild</h3>
-
-<p>First you’ll want to install the <code>jsbundling-rails</code> gem:</p>
-
-<pre><code>bundle add jsbundling-rails
-</code></pre>
-
-<p>Next, you’ll run the generator for this gem to setup ESBuild:</p>
-
-<pre><code>bin/rails javascript:install:esbuild
-</code></pre>
-
-<p>This will create an <code>app/javascript/application.js</code> file that we will not need – so delete this file.</p>
-
-<p>ESBuild will be setup to build assets in <code>app/javascript</code>, and put them into <code>app/assets/builds</code>. From there, Rails will be able to serve those assets.</p>
-
-<p>This install script has added a new <code>build</code> script to <code>package.json</code>:</p>
-
-<pre><code class="language-json">"scripts": {
-  "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
-}
-</code></pre>
-
-<p>Once we’ve setup our React code we will be able to run this command to take that code and compile it into some JavaScript browsers can run.</p>
-
-<p>I like to change this script to point at an <code>entrypoints</code> subdirectory:</p>
-
-<pre><code class="language-json">"scripts": {
-  "build": "esbuild app/javascript/entrypoints/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
-}
-</code></pre>
-
-<p>This is so that I can put other directories inside <code>app/javascript</code>, such as directories including little helper functions, or bigger component structures like <code>app/javascript/Purchases/Table.tsx</code>.</p>
-
-<p>It also means that ESBuild will not build <em>everything</em> in that directory – just the files we declare as entrypoints.</p>
-
-<h3 id="installing-react--typescript">Installing React &amp; TypeScript</h3>
-
-<p>To install React and TypeScript we’ll run this <code>yarn</code> command:</p>
-
-<pre><code>yarn add react@^18.2 @react-dom@^18.2 @types/react @types/react-dom typescript
-</code></pre>
-
-<p>To configure TypeScript so that it supports React’s JSX templating, we’ll create a <code>tsconfig.json</code> file at the root of our Rails application with this content in it:</p>
-
-<pre><code class="language-json">{
-  "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "jsx": "react",
-  }
-}
-</code></pre>
-
-<p>To see some React code in action and to check out setup, we can create a new file at <code>app/javascript/entrypoints/application.tsx</code> and put this code into it:</p>
-
-<pre><code class="language-tsx">import React from "react";
-import ReactDOM from "react-dom/client";
-
-const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
-
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-
-root.render(&lt;App /&gt;);
-</code></pre>
-
-<p>After this, we can build our application’s assets by running:</p>
-
-<pre><code>yarn build
-</code></pre>
-
-<p>This will show us that it has built these assets:</p>
-
-<pre><code>yarn run v1.22.19
-warning package.json: No license field
-$ esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets
-
-  app/assets/builds/application.js      1.0mb ⚠️
-  app/assets/builds/application.js.map  1.5mb
-</code></pre>
-
-<p>To test that it’s all working, we can generate a simple view:</p>
-
-<pre><code>rails g controller home index
-</code></pre>
-
-<p>And into <code>app/views/home/index.html.erb</code> we can put a simple div with the ID of <code>root</code>. This is the element that our <code>ReactDOM.createRoot</code> code was targeting earlier:</p>
-
-<pre><code class="language-html">&lt;div id='root'&gt;&lt;/div&gt;
-</code></pre>
-
-<p>When we start our Rails app with <code>bundle exec rails s</code> and go to http://localhost:3000/home/index, we’ll see our “Hello from React!” message.</p>
-
-<p><img src="/images/css-bundling/react/hello.png" alt="Hello from React" /></p>
-
-<p>This works “out of the box” because our application layout already brings in this compiled asset:</p>
-
-<pre><code class="language-erb">&lt;%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %&gt;
-</code></pre>
-
-<h3 id="multiple-mount-points">Multiple mount points</h3>
-
-<p>If you’re running a single-page app, you can probably stop reading here and continue throwing things into <code>&lt;App&gt;</code>.</p>
-
-<p>If you’re wanting to go down a different route, then keep reading. That different route is multiple individual components, where you may wish to mount a component on a per-page basis, than one component for the whole app.</p>
-
-<p>To do this, we can create a file at <code>app/javascript/mount.tsx</code>:</p>
-
-<pre><code class="language-tsx">import React from "react";
-import ReactDOM from "react-dom/client";
-
-type Components = Record&lt;string, React.ElementType&gt;;
-
-export default function mount(components: Components): void {
-  document.addEventListener("DOMContentLoaded", () =&gt; {
-    const mountPoints = document.querySelectorAll("[data-react-component]");
-    mountPoints.forEach((mountPoint) =&gt; {
-      const { dataset } = mountPoint as HTMLElement;
-      const componentName = dataset.reactComponent;
-      if (componentName) {
-        const Component = components[componentName];
-        if (Component) {
-          const props = JSON.parse(dataset.props as string);
-          const root = ReactDOM.createRoot(mountPoint);
-          root.render(&lt;Component {...props} /&gt;);
-        } else {
-          console.warn(
-            "WARNING: No component found for: ",
-            dataset.reactComponent,
-            components
-          );
-        }
-      }
-    });
-  });
-}
-</code></pre>
-
-<p>This code attempts to find all elements that contain a <code>data-react-component</code> attribute, and then to mount components matching that name onto the page in those locations. This code also parses any props contained in a <code>data-props</code> attribute and passes those along to the component too.</p>
-
-<p>In practical terms, a page containing:</p>
-
-<pre><code class="language-html">&lt;div data-react-component='App' data-props="{}"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>Would have a component called <code>App</code> mounted into the location of that div tag. This then allows us to intermix React components with our Rails application, which can be particularly helpful if we have an older Rails app that we’re enhancing with some newer React components.</p>
-
-<p>To see this in action, let’s use this new <code>mount</code> function over in <code>application.tsx</code> by replacing the code in that file with this code:</p>
-
-<pre><code>import React from "react";
-import mount from "./mount";
-
-const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
-
-mount({
-  App,
-});
-</code></pre>
-
-<p>And also the code in <code>app/views/home/index.html.erb</code> with this code:</p>
-
-<pre><code class="language-html">&lt;div data-react-component='App' data-props="{}"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>We can then run <code>yarn build</code> to rebuild our assets, and then refresh our browser to see the same message as before.</p>
-
-<h3 id="view-components">View Components</h3>
-
-<p>Writing this lengthy HTML into our views every time we want to render a React component will get tiresome quickly. To save us repeating ourselves again and again, we’re going to use a gem called <code>view_component</code>. We can install this gem with:</p>
-
-<pre><code>bundle add view_component
-</code></pre>
-
-<p>We can then create a new component class using this gem, placing it into <code>app/components/react_component.rb</code>:</p>
-
-<pre><code class="language-ruby"># frozen_string_literal: true
-
-class ReactComponent &lt; ViewComponent::Base
-  attr_reader :component, :raw_props
-
-  def initialize(component, raw_props: {})
-    @component = component
-    @raw_props = raw_props
-  end
-
-  def call
-    helpers.tag.div(
-      '',
-      data: {
-        react_component: component,
-        props: props
-      }
-    )
-  end
-
-  private
-
-  def props
-    raw_props
-  end
-end
-
-</code></pre>
-
-<p>This class is then going to place that <code>div</code> tag onto our page for us. This class will serve as a base class for any other component classes we define in our app. Those subclasses of <code>ReactComponent</code> can override <code>props</code> if they need to do work to prepare the props before they’re passed through to the component.</p>
-
-<p>Then we can use this component to render React components within our application. Let’s change the code in <code>app/views/home/index.html.erb</code> to render the <code>App</code> component by using this component class:</p>
-
-<pre><code class="language-erb">&lt;%= render ReactComponent.new("App") %&gt;
-</code></pre>
-
-<p>We can use the view component just like a partial. I’ll get to why we’re <em>not</em> using partials in a moment. It deserves its own section!</p>
-
-<p>We will need to restart the Rails server at this point so that it picks up the file in <code>app/components</code>. After restarting the server, and refreshing the browser, we’ll once again see our React component’s output.</p>
-
-<h3 id="why-view-components-over-partials">Why view components over partials</h3>
-
-<p>Why did we complicate things by bringing in a new gem rather than using the wonderful partial features Rails provides?</p>
-
-<p>The simple answer is: Ruby code belongs in Ruby files. And I don’t just mean calls to <code>tag.div</code>. I mean if you had any sort of Ruby code that needed to run before rendering this component, you could now put that code into the component class.</p>
-
-<p>As an example here, let’s create a new React component called <code>Product</code>. It will render a name and a price. We’ll put this component at <code>app/javascript/Product/index.tsx</code>:</p>
-
-<pre><code class="language-tsx">import React from "react";
-
-const Product = ({ name, price }: { name: string; price: string }) =&gt; {
-  return (
-    &lt;&gt;
-      &lt;h1&gt;
-        {name} - {price}
-      &lt;/h1&gt;
-    &lt;/&gt;
-  );
-};
-
-export default Product;
-</code></pre>
-
-<p>We can then tell our application to mount this component whenever it sees a <code>div[data-react-component=Product]</code> tag, by using the <code>mount</code> helper in <code>app/javascript/entrypoints/application.tsx</code>:</p>
-
-<pre><code>import React from "react";
-import mount from "../mount";
-import Product from "../Product";
-
-const App = () =&gt; &lt;h1&gt;Hello from React!&lt;/h1&gt;;
-
-mount({
-  App,
-  Product,
-});
-</code></pre>
-
-<p>As we’ve now changed <code>application.tsx</code>, we will need to rebuild it with <code>yarn build</code> again. Now is a good time to say we could’ve been running <code>yarn build --watch</code> this whole time… but I preferred being explicit about when things were being rebuilt and why. Now you know the secret.</p>
-
-<p>To render this React component, we’ll create a new Ruby file to represent the Ruby-side of this component. We’ll put this component into <code>app/components/products/show_component.rb</code>:</p>
-
-<pre><code class="language-ruby">module Products
-  class ShowComponent &lt; ReactComponent
-    def initialize(raw_props)
-      super("Product", raw_props: raw_props)
-    end
-
-    def props
-      raw_props.merge(
-        price: helpers.number_to_currency(raw_props[:price])
-      )
-    end
-  end
-end
-</code></pre>
-
-<p>This component file inherits from our <code>ReactComponent</code> component class and will render that component. To use this Ruby component class, we can go back into <code>app/views/home/index.html.erb</code> and put this code there:</p>
-
-<pre><code class="language-erb">&lt;%= render Products::ShowComponent.new(name: "Shoes", price: 100) %&gt;
-</code></pre>
-
-<p>Using this component will mean that we will end up with this <code>div</code> tag on the page:</p>
-
-<pre><code class="language-html">&lt;div data-react-component="Product" data-props="{&amp;quot;name&amp;quot;:&amp;quot;Shoes&amp;quot;,&amp;quot;price&amp;quot;:100}"&gt;&lt;/div&gt;
-</code></pre>
-
-<p>Our <code>mount.tsx</code> code will see that <code>div</code> tag and mount the <code>Product</code> React component into that place, passing through the props.</p>
-
-<p>Now, the reason for this whole section: <strong>we use view components over partials because Ruby code belongs in Ruby files</strong>.</p>
-
-<p>As a quick example of this, if we want to format the price before it goes to the component, we can update our <code>ShowComponent</code> code to process those props:</p>
-
-<pre><code class="language-ruby">module Products
-  class ShowComponent &lt; ReactComponent
-    def initialize(raw_props)
-      super("Product", raw_props: raw_props)
-    end
-
-    def props
-      raw_props.merge(
-        price: helpers.number_to_currency(raw_props[:price])
-      )
-    end
-  end
-end
-</code></pre>
-
-<p>Here we’re calling a Ruby method in Ruby code in order to format the price. We’re not limited to just methods from <code>helpers</code> here – we could call any Ruby code that we wanted to. This is, in my opinion, better than interspersing Ruby and HTML code into the same file.</p>
-
-<p>What this also means is that we could pass a product through to our component from the <code>app/views/home/index.html.erb</code>, rather than passing attributes one-by-one:</p>
-
-<pre><code class="language-erb">&lt;%= render Products::ShowComponent.new(product: @product) %&gt;
-</code></pre>
-
-<p>(I’m making an assumption here about having a <code>@product</code> object set up in the controller – use your imagination!)</p>
-
-<p>And then in that component class, we can take the raw props of the product object itself and do our formatting of the price:</p>
-
-<pre><code class="language-ruby">module Products
-  class ShowComponent &lt; ReactComponent
-    def initialize(product)
-      super("Product", raw_props: product)
-    end
-
-    def props
-      {
-        name: product.name,
-        price: helpers.number_to_currency(product.price)
-      }
-    end
-  end
-end
-</code></pre>
-
-<p>The View Component class finally gives our Ruby view code a proper home to live: in a Ruby file, NOT a HTML file!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Here’s a short guide to setting up an existing Rails 7 application with React, TypeScript, ESBuild. One approach here would be to use the react-rails gem, but I would like to show you the individual steps to setting it up here instead.]]></summary></entry></feed>
+<p>Run your test suite again, and it will now work.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.]]></summary></entry></feed>
