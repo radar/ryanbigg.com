@@ -20,6 +20,6 @@ GM gets jealous of fig tree in big city Botanic Gardens (lots of pro gardeners t
 
 Weeding will be prioritised next weekend. This weekend is for planting new things that the GM purchased and spraying the bugs, but only ones VIP buyer has pointed out. It rains the next 3 weekends, and the weeds run wild. More things come in to plant in the mean time. You weed in between planting, without telling GM.
 
-Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.
+Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.b
 
 There appears to be a new plant variety released at least weekly. You haven't yet learned the last five you've picked up.
