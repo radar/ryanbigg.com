@@ -1,4 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-05-15T06:42:12+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">code is like garden</title><link href="http://localhost:4000/2024/05/code-is-like-garden" rel="alternate" type="text/html" title="code is like garden" /><published>2024-05-04T00:00:00+10:00</published><updated>2024-05-04T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/code-is-like-garden</id><content type="html" xml:base="http://localhost:4000/2024/05/code-is-like-garden"><![CDATA[<p>Code is like garden.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://ryanbigg.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://ryanbigg.com/" rel="alternate" type="text/html" /><updated>2024-05-15T06:56:58+10:00</updated><id>https://ryanbigg.com/feed.xml</id><entry><title type="html">What was that branch?</title><link href="https://ryanbigg.com/2024/05/what-was-that-branch" rel="alternate" type="text/html" title="What was that branch?" /><published>2024-05-14T00:00:00+10:00</published><updated>2024-05-14T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/what-was-that-branch</id><content type="html" xml:base="https://ryanbigg.com/2024/05/what-was-that-branch"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
+
+<p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
+
+<pre><code>fbr () {
+	local branches branch
+	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
+  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
+</code></pre>
+
+<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, and I move up and down the list with the arrow keys, then hit enter when I find the branch I want.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.]]></summary></entry><entry><title type="html">code is like garden</title><link href="https://ryanbigg.com/2024/05/code-is-like-garden" rel="alternate" type="text/html" title="code is like garden" /><published>2024-05-04T00:00:00+10:00</published><updated>2024-05-04T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/code-is-like-garden</id><content type="html" xml:base="https://ryanbigg.com/2024/05/code-is-like-garden"><![CDATA[<p>Code is like garden.</p>
 
 <p>Sometimes, you come into garden and find out past gardener put sun-loving plant in the cupboard at the back of the shed. You discover more sheds and cupboards later on.</p>
 
@@ -16,7 +27,7 @@
 
 <p>Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.</p>
 
-<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Code is like garden.]]></summary></entry><entry><title type="html">One year with the Ergodox EZ</title><link href="http://localhost:4000/2024/04/one-year-with-the-ergodox-ez" rel="alternate" type="text/html" title="One year with the Ergodox EZ" /><published>2024-04-29T00:00:00+10:00</published><updated>2024-04-29T00:00:00+10:00</updated><id>http://localhost:4000/2024/04/one-year-with-the-ergodox-ez</id><content type="html" xml:base="http://localhost:4000/2024/04/one-year-with-the-ergodox-ez"><![CDATA[<p>A year ago I upgraded from a <a href="https://kinesis-ergo.com/keyboards/freestyle-edge-rgb/">Kinesis Freestyle Edge</a> to an <a href="https://ergodox-ez.com">Ergodox EZ</a>. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)</p>
+<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Code is like garden.]]></summary></entry><entry><title type="html">One year with the Ergodox EZ</title><link href="https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez" rel="alternate" type="text/html" title="One year with the Ergodox EZ" /><published>2024-04-29T00:00:00+10:00</published><updated>2024-04-29T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez</id><content type="html" xml:base="https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez"><![CDATA[<p>A year ago I upgraded from a <a href="https://kinesis-ergo.com/keyboards/freestyle-edge-rgb/">Kinesis Freestyle Edge</a> to an <a href="https://ergodox-ez.com">Ergodox EZ</a>. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)</p>
 
 <p>I used <a href="https://monkeytype.com">Monkeytype</a> to practice typing on the keyboard, and the stats there show that it took me about a month to go from the initial speed of 40wpm (quite painful) back up to 90wpm. That’s when I started feeling properly comfortable with it. I can now do about 130wpm on this keyboard, which is the same speed I could do on the Freestyle and my laptop keyboard.</p>
 
@@ -49,7 +60,7 @@
 
 <p>For reasons that are completely opaque to me, there can be up to 32 different layers on the keyboard. I cannot imagine ever needing more than the few that I have right now. Even thinking about the keyboard contortion that would be required to switch to a 32nd layer and not the 28th layer is giving me a headache.</p>
 
-<p>Finally: a word on the switches inside the keyboard itself. The keyboard came with Cherry Brown switches which are what I would consider to be the greatest argument ever against working from the office. They were ridiculously loud. And stiff enough that even someone who types as hard as I do noticed how hard I had to press. I’ve since replaced the switches with Cherry Reds which are quieter and not as stiff. I think this has made maybe a 5-10% improvement on my accuracy and speed for this keyboard.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A year ago I upgraded from a Kinesis Freestyle Edge to an Ergodox EZ. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)]]></summary></entry><entry><title type="html">Tailwind has won</title><link href="http://localhost:4000/2024/03/tailwind-has-won" rel="alternate" type="text/html" title="Tailwind has won" /><published>2024-03-26T00:00:00+11:00</published><updated>2024-03-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/03/tailwind-has-won</id><content type="html" xml:base="http://localhost:4000/2024/03/tailwind-has-won"><![CDATA[<p>Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: <a href="https://bulma.io/">Bulma</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://tailwindcss.com/">Tailwind</a>. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.</p>
+<p>Finally: a word on the switches inside the keyboard itself. The keyboard came with Cherry Brown switches which are what I would consider to be the greatest argument ever against working from the office. They were ridiculously loud. And stiff enough that even someone who types as hard as I do noticed how hard I had to press. I’ve since replaced the switches with Cherry Reds which are quieter and not as stiff. I think this has made maybe a 5-10% improvement on my accuracy and speed for this keyboard.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A year ago I upgraded from a Kinesis Freestyle Edge to an Ergodox EZ. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)]]></summary></entry><entry><title type="html">Tailwind has won</title><link href="https://ryanbigg.com/2024/03/tailwind-has-won" rel="alternate" type="text/html" title="Tailwind has won" /><published>2024-03-26T00:00:00+11:00</published><updated>2024-03-26T00:00:00+11:00</updated><id>https://ryanbigg.com/2024/03/tailwind-has-won</id><content type="html" xml:base="https://ryanbigg.com/2024/03/tailwind-has-won"><![CDATA[<p>Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: <a href="https://bulma.io/">Bulma</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://tailwindcss.com/">Tailwind</a>. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.</p>
 
 <p>Three years ago, I became the Platform Tech Lead at Fat Zebra, which meant I was in charge of the technical side of things when it comes to our frontend. Part of this job meant standardising our frontend tech stack. At this time, Bootstrap (around v4.5) and Bulma (0.9.4) were the only two CSS frameworks used at Fat Zebra. After talking about it with the team, we decided to not use <em>either</em> of these frameworks, and instead opted to go with Tailwind.</p>
 
@@ -81,7 +92,7 @@
 
 <p>This setup works incredibly well for our little team, and I suspect it would scale as well for an even bigger team. Changes get applied to the design system, which then are updated in Figma, and those updates flow through to our React components or our CSS files, depending on which component it is.</p>
 
-<p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: Bulma, Bootstrap and Tailwind. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.]]></summary></entry><entry><title type="html">View Components, Table Edition</title><link href="http://localhost:4000/2024/01/view-components-table-edition" rel="alternate" type="text/html" title="View Components, Table Edition" /><published>2024-01-26T00:00:00+11:00</published><updated>2024-01-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/01/view-components-table-edition</id><content type="html" xml:base="http://localhost:4000/2024/01/view-components-table-edition"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
+<p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: Bulma, Bootstrap and Tailwind. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.]]></summary></entry><entry><title type="html">View Components, Table Edition</title><link href="https://ryanbigg.com/2024/01/view-components-table-edition" rel="alternate" type="text/html" title="View Components, Table Edition" /><published>2024-01-26T00:00:00+11:00</published><updated>2024-01-26T00:00:00+11:00</updated><id>https://ryanbigg.com/2024/01/view-components-table-edition</id><content type="html" xml:base="https://ryanbigg.com/2024/01/view-components-table-edition"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
 
 <p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
 
@@ -233,7 +244,7 @@ end
 <pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
 </code></pre>
 
-<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry><entry><title type="html">Audit Logging Notes</title><link href="http://localhost:4000/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/audit-logging-notes</id><content type="html" xml:base="http://localhost:4000/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
+<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry><entry><title type="html">Audit Logging Notes</title><link href="https://ryanbigg.com/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>https://ryanbigg.com/2023/12/audit-logging-notes</id><content type="html" xml:base="https://ryanbigg.com/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
 
 <p>What I could find though was GitHub’s own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.</p>
 
@@ -316,7 +327,7 @@ end
 
 <p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
 
-<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">NaNoWriMo Retro</title><link href="http://localhost:4000/2023/12/nanowrimo-retro" rel="alternate" type="text/html" title="NaNoWriMo Retro" /><published>2023-12-03T00:00:00+11:00</published><updated>2023-12-03T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/nanowrimo-retro</id><content type="html" xml:base="http://localhost:4000/2023/12/nanowrimo-retro"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
+<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">NaNoWriMo Retro</title><link href="https://ryanbigg.com/2023/12/nanowrimo-retro" rel="alternate" type="text/html" title="NaNoWriMo Retro" /><published>2023-12-03T00:00:00+11:00</published><updated>2023-12-03T00:00:00+11:00</updated><id>https://ryanbigg.com/2023/12/nanowrimo-retro</id><content type="html" xml:base="https://ryanbigg.com/2023/12/nanowrimo-retro"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
 
 <p>I’ve <a href="https://ryanbigg.com/books">written quite a few books</a> already, but all of them have been tech books. You could argue that at least one of them, Maintainable Rails, is a work of fiction based on its title alone… but that’s a long bow to draw and very subjective.</p>
 
@@ -352,7 +363,7 @@ end
 
 <p>Sometimes I wrote on my phone at the park while Ella played on the swings, or at swimming lessons while she was there too. Writing on the phone is quite slow compared to the bigger keyboard (about 30wpm vs 120wpm), but it meant that I could spend more time thinking about plot directions and what characters’ motivations were.</p>
 
-<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title><link href="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments" rel="alternate" type="text/html" title="Ruby 3, Hashes and Keyword Arguments" /><published>2023-11-09T00:00:00+11:00</published><updated>2023-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments</id><content type="html" xml:base="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments"><![CDATA[<p>We debugged a fun one today.</p>
+<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title><link href="https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments" rel="alternate" type="text/html" title="Ruby 3, Hashes and Keyword Arguments" /><published>2023-11-09T00:00:00+11:00</published><updated>2023-11-09T00:00:00+11:00</updated><id>https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments</id><content type="html" xml:base="https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments"><![CDATA[<p>We debugged a fun one today.</p>
 
 <p>There’s a method provided by Rails called <code>tag</code>, and it provides a way to write HTML tags.</p>
 
@@ -392,7 +403,7 @@ end
 
   tag.div(**react_options) { "" }
 end
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[We debugged a fun one today.]]></summary></entry><entry><title type="html">Saving time with fzf</title><link href="http://localhost:4000/2023/08/saving-time-with-fzf" rel="alternate" type="text/html" title="Saving time with fzf" /><published>2023-08-27T00:00:00+10:00</published><updated>2023-08-27T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/saving-time-with-fzf</id><content type="html" xml:base="http://localhost:4000/2023/08/saving-time-with-fzf"><![CDATA[<p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[We debugged a fun one today.]]></summary></entry><entry><title type="html">Saving time with fzf</title><link href="https://ryanbigg.com/2023/08/saving-time-with-fzf" rel="alternate" type="text/html" title="Saving time with fzf" /><published>2023-08-27T00:00:00+10:00</published><updated>2023-08-27T00:00:00+10:00</updated><id>https://ryanbigg.com/2023/08/saving-time-with-fzf</id><content type="html" xml:base="https://ryanbigg.com/2023/08/saving-time-with-fzf"><![CDATA[<p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
 
 <h2 id="command-history">Command history</h2>
 
@@ -471,144 +482,7 @@ prep-1-1-4
 
 <p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
 
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Alpine Linux, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver"><![CDATA[<p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
-
-<p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
-
-<p>I was seeing errors such as:</p>
-
-<pre><code>/bin/sh: ./chromedriver-linux64/chromedriver: not found
-</code></pre>
-
-<p>The file was definitely present though!</p>
-
-<p>Other answers on the internet pointed to this being an issue with missing libraries. Those answers pointed to the <code>ldd</code> tool, and sure enough that showed the libraries that were required for chromedriver. The command was:</p>
-
-<pre><code>ldd ./chromedriver-linux64/chromedriver
-</code></pre>
-
-<p>This listed the system libaries that the chromedriver executable was dependent on Then I read through those messages that were output and attempted to find packages that matched the messages.</p>
-
-<p>To make Chromedriver v116 work on Alpine Linux, you have to have these packages installed:</p>
-
-<pre><code>apk add gcompat glib nss libxcb libgcc
-</code></pre>
-
-<p>After installing these packages, Chromedriver was able to start.</p>
-
-<p>But Chromedriver is not so useful without a Chrome to drive it. I used <code>ldd</code> once again, and found a <em>huge</em> list of packages that Chrome requires. Instead of installing all of these, you can install Chrome using:</p>
-
-<pre><code>apk add chromium
-</code></pre>
-
-<p>This will then install Chromium (whatever’s latest and all of the package dependencies). This will be enough to get Chrome running.</p>
-
-<p>Ultimately, I ended up building a small Docker image to test this out properly. Here’s that image’s <code>Dockerfile</code>:</p>
-
-<pre><code>FROM ruby:3.2.2-alpine
-RUN apk update &amp;&amp; apk add gcompat glib nss libxcb libgcc chromium
-
-RUN adduser -D app
-RUN mkdir /app
-RUN chown app:app /app
-USER app
-WORKDIR /app
-COPY --chown=app:app . /app
-
-RUN bundle config set --local path vendor/bundle
-RUN bundle install
-CMD bundle exec irb
-</code></pre>
-
-<p>I build this with:</p>
-
-<pre><code>docker build . -t selenium
-</code></pre>
-
-<p>Then I run it with:</p>
-
-<pre><code> docker run -it selenium
-</code></pre>
-
-<p>This will launch me into an IRB session. To check if Selenium can correctly download + use Chrome and ChromeDriver, I run this code, which is very similar to the code that would be used to configure this within <code>rails_helper.rb</code> in a Rails app:</p>
-
-<pre><code class="language-ruby">Bundler.require
-
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-options = ::Selenium::WebDriver::Chrome::Options.new
-
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-
-Selenium::WebDriver.for :chrome, capabilities: options
-</code></pre>
-
-<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
-DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
-DEBUG Selenium [:selenium_manager] Checking chrome in PATH
-DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chrome not found in PATH
-DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-</code></pre>
-
-<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
-
-<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
-DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
-DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-</code></pre>
-
-<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
-
-<p>Then we’ll see ChromeDriver starting up:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
-DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
-DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
-DEBUG Selenium [:process]   -&gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
-Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-[1692683187.222][SEVERE]: bind() failed: Address not available (99)
-ChromeDriver was started successfully.
-</code></pre>
-
-<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
-
-<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
-
-<pre><code>DEBUG Selenium [:command] -&gt; POST session
-DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
-</code></pre>
-
-<p>So the important thing to note here is that if you’ve got:</p>
-
-<ol>
-  <li>A Ruby image that uses <code>ruby:3.2.2-alpine</code> (or similar) as its base</li>
-  <li>And you want to use the built-in Selenium Manager to download Chrome + Chromium</li>
-  <li>You will need to have these packages installed:</li>
-</ol>
-
-<pre><code>apk add gcompat glib nss libxcb libgcc chromium
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with a new feature called Selenium Manager. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under ~/.cache/selenium...)]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="http://localhost:4000/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
+<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
 
 <p>The packages needed for Chromedriver are:</p>
 

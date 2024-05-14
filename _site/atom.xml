@@ -4,13 +4,33 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2024-05-15T06:42:12+10:00</updated>
+ <updated>2024-05-15T06:56:58+10:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>What was that branch?</title>
+   <link href="https://ryanbigg.com/2024/05/what-was-that-branch"/>
+   <updated>2024-05-14T00:00:00+10:00</updated>
+   <id>https://ryanbigg.com/2024/05/what-was-that-branch</id>
+   <content type="html"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
+
+<p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
+
+<pre><code>fbr () {
+	local branches branch
+	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
+  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
+</code></pre>
+
+<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, and I move up and down the list with the arrow keys, then hit enter when I find the branch I want.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>code is like garden</title>
@@ -2073,70 +2093,6 @@ expect(json.dig("book", "title")).to eq("Exploding Rails")
 <p>This will make one query for all the users, N queries for all of those users’ books, and M queries for all of those users’ books’ chapters.</p>
 
 <p>To prevent N+1 queries, I’d recommend relying on the <code>GraphQL::Dataloader</code> features <a href="https://graphql-ruby.org/dataloader/overview.html">shown here</a>. This will collect all the IDs for the relevant resources, and then perform one large fetch for each of the users, each of the users’ books, and each of the users’ books’ chapters, resulting in only 3 queries.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>The method method</title>
-   <link href="https://ryanbigg.com/2023/01/the-method-method"/>
-   <updated>2023-01-20T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2023/01/the-method-method</id>
-   <content type="html"><![CDATA[<p>The <code>method</code> method in Ruby is one of my favourite methods in Ruby. It gives you an object that represents an underlying method. It’s helpful for demonstrating that integer addition in Ruby is a method call:</p>
-
-<pre><code>1.method(:+)
-=&gt; #&lt;Method: Integer#+(_)&gt;
-</code></pre>
-
-<h2 id="where-is-this-method-defined">Where is this method defined?</h2>
-
-<p>With this method <code>method</code>, you can find out where a method is defined, if it is defined in Ruby code anywhere:</p>
-
-<pre><code>SomeModel.method(:find).source_location
-=&gt; ["...activerecord-x.x.x/lib/active_record/core.rb", 337]
-</code></pre>
-
-<p>Then I can look at this source code within the Active Record gem to <em>find out</em> how <code>find</code> works.</p>
-
-<h2 id="call-me-maybe">Call me, maybe?</h2>
-
-<p>Methods can also be passed in place of traditional block arguments:</p>
-
-<pre><code>class Maths
-  def self.square(num)
-    num ** 2
-  end
-end
-
-square = Maths.method(:square)
-
-[1, 2, 3, 4].map(&amp;square)
-</code></pre>
-
-<p>The <code>map</code> syntax here is short-hand for:</p>
-
-<pre><code>[1, 2, 3, 4].map { |number| square.call(number) }
-</code></pre>
-
-<p>Which is exactly the same behaviour that a <code>Proc</code> has:</p>
-
-<pre><code>a_proc = -&gt; (num) { num ** 2 }
-[1, 2, 3, 4].map(&amp;square)
-</code></pre>
-
-<h2 id="more-documentation">More documentation</h2>
-
-<p>You can find more about the <a href="https://devdocs.io/ruby~3.1/method">Method class</a> here. You can even find out why this code returns <code>true</code>:</p>
-
-<pre><code>def moo(arg) arg == 3; end
-
-number = 3
-case number
-when method(:moo)
-  true
-else
-  false
-end
-</code></pre>
 ]]></content>
  </entry>
  

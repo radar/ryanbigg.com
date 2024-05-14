@@ -55,36 +55,32 @@
   <h1 class="text-center">Ryan Bigg</h1>
   <div class='text-center mb-8'>
     <a href="/">&#x27F5; Home</a>
-    <a href="/2024/05/code-is-like-garden">
-      <h2 class="mt-4 post-title">code is like garden</h2>
+    <a href="/2024/05/what-was-that-branch">
+      <h2 class="mt-4 post-title">What was that branch?</h2>
     </a>
-    <small>04 May 2024</small>
+    <small>14 May 2024</small>
   </div>
-  <p>Code is like garden.</p>
+  <p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
 
-<p>Sometimes, you come into garden and find out past gardener put sun-loving plant in the cupboard at the back of the shed. You discover more sheds and cupboards later on.</p>
+<p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
 
-<p>The materials used in shed construction make you think past gardener may have been ticking off a list of known elements, rather than trying to build sturdy shed.</p>
+<pre><code>fbr () {
+	local branches branch
+	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
+  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+}
+</code></pre>
 
-<p>Past gardener put picket fence going vertically up the side of one shed. You ask other gardeners why the fence is there and they say “it’s always been that way”. No other shed has a fence.</p>
-
-<p>Some gardeners like a particular brand of hand trowel and get into religious arguments over which hand trowel is better.</p>
-
-<p>Sometimes, GM (Garden Manager) ask how long it takes to grow a tree. GM gets grumpy when asked what kind of tree they are talking about.</p>
-
-<p>GM gets jealous of fig tree in big city Botanic Gardens (lots of pro gardeners there). Wants you to grow one exactly like it in 3 months, same size and fruit quantity. The fig tree in the gardens is over four stories tall and has existed for decades. You will be the only gardener tasked with growing this tree.</p>
-
-<p>Weeding will be prioritised next weekend. This weekend is for planting new things that the GM purchased and spraying the bugs, but only ones VIP buyer has pointed out. It rains the next 3 weekends, and the weeds run wild. More things come in to plant in the mean time. You weed in between planting, without telling GM.</p>
-
-<p>Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.</p>
-
-<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>
+<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, and I move up and down the list with the arrow keys, then hit enter when I find the branch I want.</p>
 
 </article>
 
 <div class="text-center mb-8">
   <h2>In case you missed it...</h2>
   <ul>
+    
+    <li class="mb-4"><a href="/2024/05/code-is-like-garden">code is like garden</a> <span class="text-gray-400 text-xs">&mdash; 04 May 2024</span>
+    </li>
     
     <li class="mb-4"><a href="/2024/04/one-year-with-the-ergodox-ez">One year with the Ergodox EZ</a> <span class="text-gray-400 text-xs">&mdash; 29 Apr 2024</span>
     </li>
@@ -111,9 +107,6 @@
     </li>
     
     <li class="mb-4"><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</a> <span class="text-gray-400 text-xs">&mdash; 22 Aug 2023</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2023/08/zooms-return-to-the-office">Zoom's return to the office</a> <span class="text-gray-400 text-xs">&mdash; 07 Aug 2023</span>
     </li>
     
   </ul>
