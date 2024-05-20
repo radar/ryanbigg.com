@@ -52,4 +52,6 @@ You then don't end up exposing any way of doing database queries to the view, wh
 
 In the view file itself you might or might not get smart tab-completion like you do within TypeScript-powered GraphQL code, but I think that's a fair trade-off.
 
+This whole approach trades off React's "reactivity" as well, so there's no state management going on here or DOM updating when the state changes. There are probably ways around this (like Hotwire, etc.) but I haven't gone down those paths yet.
+
 Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.
