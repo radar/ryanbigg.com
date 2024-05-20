@@ -1,4 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://ryanbigg.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://ryanbigg.com/" rel="alternate" type="text/html" /><updated>2024-05-15T06:56:58+10:00</updated><id>https://ryanbigg.com/feed.xml</id><entry><title type="html">What was that branch?</title><link href="https://ryanbigg.com/2024/05/what-was-that-branch" rel="alternate" type="text/html" title="What was that branch?" /><published>2024-05-14T00:00:00+10:00</published><updated>2024-05-14T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/what-was-that-branch</id><content type="html" xml:base="https://ryanbigg.com/2024/05/what-was-that-branch"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://ryanbigg.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://ryanbigg.com/" rel="alternate" type="text/html" /><updated>2024-05-21T06:58:48+10:00</updated><id>https://ryanbigg.com/feed.xml</id><entry><title type="html">Thought Experiment: Without React or GraphQL</title><link href="https://ryanbigg.com/2024/05/without-react-or-graphql" rel="alternate" type="text/html" title="Thought Experiment: Without React or GraphQL" /><published>2024-05-20T00:00:00+10:00</published><updated>2024-05-20T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/without-react-or-graphql</id><content type="html" xml:base="https://ryanbigg.com/2024/05/without-react-or-graphql"><![CDATA[<p>I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">GraphQL for Rails Developers</a> and its frontend companion Apollo in the <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">Apollo Handbook</a>. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.</p>
+
+<p>But in saying that, I acknowledge there is no silver bullet for software development. So what would I do if I <em>couldn’t</em> use React or GraphQL?</p>
+
+<p>To replace React on the frontend, I would use <a href="https://viewcomponent.org/">View Component</a> as I have written about <a href="https://ryanbigg.com/2024/01/view-components-table-edition">here</a> and <a href="https://ryanbigg.com/2023/06/rails-7-react-typescript-setup">here</a>. I could also be convinced to use <a href="https://www.phlex.fun/">Phlex</a>.</p>
+
+<p>I think having a typed layer between your database and view is just something that <em>makes sense</em>, and so to that end I would define a <em>separate</em> class for the data types for these components, using <code>dry-types</code> and then pass objects of those classes to the view, in a way that if you squint hard enough you could see it as the Presenter Pattern. I proposed something similar to this <a href="https://ryanbigg.com/2022/03/typed-view-components">two years ago in my “Typed View Components” post</a></p>
+
+<p>Riffing on the example from that post, I would have this as:</p>
+
+<pre><code class="language-ruby">class RefundComponent &lt; ViewComponent::Base
+  extend Dry::Initializer
+  Types = Dry.Types()
+
+  class Refund &lt; Dry::Struct
+    schema schema.strict
+
+    attribute :standalone, Types::Bool
+    attribute :amount, Types::Float
+    attribute :currency, Types::String
+  end
+
+  option :refund, Refund
+end
+</code></pre>
+
+<p>This allows you to keep together the logic of the component (both its Ruby code and its associated views) and the presenter in one directory.</p>
+
+<p>In the controller, the code would look like this:</p>
+
+<pre><code class="language-ruby">refund = RefundComponent::Refund.new(
+  standalone: @refund.standalone?
+  amount: @refund.amount,
+  currency: @refund.currency,
+)
+
+@refund_component = RefundComponent.new(refund: refund)
+</code></pre>
+
+<p>This would still give us an interface <em>similar</em> to GraphQL, where the connecting layer between the database and the frontend is still typed. I think it’s teetering on the edge of being too verbose, but in all things trade-offs.</p>
+
+<p>You then don’t end up exposing any way of doing database queries to the view, which would help prevent N+1 queries. And you can test your views in isolation from the database too. The <code>refund</code> passed to the component doesn’t have to come from the database; it could be a stubbed object, as long as it responds to the right methods.</p>
+
+<p>In the view file itself you might or might not get smart tab-completion like you do within TypeScript-powered GraphQL code, but I think that’s a fair trade-off.</p>
+
+<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my GraphQL for Rails Developers and its frontend companion Apollo in the Apollo Handbook. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.]]></summary></entry><entry><title type="html">What was that branch?</title><link href="https://ryanbigg.com/2024/05/what-was-that-branch" rel="alternate" type="text/html" title="What was that branch?" /><published>2024-05-14T00:00:00+10:00</published><updated>2024-05-14T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/what-was-that-branch</id><content type="html" xml:base="https://ryanbigg.com/2024/05/what-was-that-branch"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
 
 <p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
 
@@ -482,110 +527,4 @@ prep-1-1-4
 
 <p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
 
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry><entry><title type="html">Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title><link href="https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver" rel="alternate" type="text/html" title="Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver" /><published>2023-08-22T00:00:00+10:00</published><updated>2023-08-22T00:00:00+10:00</updated><id>https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id><content type="html" xml:base="https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
-
-<p>The packages needed for Chromedriver are:</p>
-
-<pre><code>libnss3 libnspr4
-</code></pre>
-
-<p>The packages needed for Chrome are:</p>
-
-<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-</code></pre>
-
-<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
-
-<p>The <code>Dockerfile</code> is therefore:</p>
-
-<pre><code>FROM ruby:3.2.2
-
-RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-
-# OR this, but the install time is much longer:
-# RUN apt-get update &amp;&amp; apt-get install chromium-shell
-
-RUN adduser --disabled-password --gecos "" app
-COPY --chown app:app . /app
-WORKDIR /app
-USER app
-
-RUN bundle config set --local path vendor/bundle
-RUN bundle install
-CMD bundle exec irb
-</code></pre>
-
-<p>And we can then build and run this image:</p>
-
-<pre><code>docker build . -t ubuntu-selenium
-docker run -it ubuntu-selenium
-</code></pre>
-
-<p>And confirm it works by running:</p>
-
-<pre><code class="language-ruby">Bundler.require
-
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-options = ::Selenium::WebDriver::Chrome::Options.new
-
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-
-Selenium::WebDriver.for :chrome, capabilities: options
-</code></pre>
-
-<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
-DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
-DEBUG Selenium [:selenium_manager] Checking chrome in PATH
-DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chrome not found in PATH
-DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-</code></pre>
-
-<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
-
-<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
-DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
-DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-</code></pre>
-
-<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
-
-<p>Then we’ll see ChromeDriver starting up:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
-DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
-DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
-DEBUG Selenium [:process]   -&gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
-Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-[1692683187.222][SEVERE]: bind() failed: Address not available (99)
-ChromeDriver was started successfully.
-</code></pre>
-
-<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
-
-<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
-
-<pre><code>DEBUG Selenium [:command] -&gt; POST session
-DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a rehash of my Alpine Linux version of this post. I’ll skip the fluff here and jump straight to the good stuff.]]></summary></entry></feed>
+<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry></feed>
