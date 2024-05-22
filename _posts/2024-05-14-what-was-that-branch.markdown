@@ -16,4 +16,4 @@ fbr () {
 }
 ```
 
-This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using `fzf-tmux`. To pick a branch, and I move up and down the list with the arrow keys, then hit enter when I find the branch I want.
+This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using `fzf-tmux`. To pick a branch, I can type part of the branch name if I remember it, and `fzf` will filter the list of branches to just the ones that match that. When I find the branch I want, I hit enter and this will swap over to the branch.
