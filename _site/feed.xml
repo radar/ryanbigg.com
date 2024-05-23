@@ -1,4 +1,100 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://ryanbigg.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://ryanbigg.com/" rel="alternate" type="text/html" /><updated>2024-05-21T06:58:48+10:00</updated><id>https://ryanbigg.com/feed.xml</id><entry><title type="html">Thought Experiment: Without React or GraphQL</title><link href="https://ryanbigg.com/2024/05/without-react-or-graphql" rel="alternate" type="text/html" title="Thought Experiment: Without React or GraphQL" /><published>2024-05-20T00:00:00+10:00</published><updated>2024-05-20T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/without-react-or-graphql</id><content type="html" xml:base="https://ryanbigg.com/2024/05/without-react-or-graphql"><![CDATA[<p>I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">GraphQL for Rails Developers</a> and its frontend companion Apollo in the <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">Apollo Handbook</a>. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-05-23T20:55:06+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Scheduling with Ice Cube</title><link href="http://localhost:4000/2024/05/scheduling-with-ice-cube" rel="alternate" type="text/html" title="Scheduling with Ice Cube" /><published>2024-05-22T00:00:00+10:00</published><updated>2024-05-22T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/scheduling-with-ice-cube</id><content type="html" xml:base="http://localhost:4000/2024/05/scheduling-with-ice-cube"><![CDATA[<p>I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the <em>end of the month</em> for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the <em>month</em> but also the <em>year</em>, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.</p>
+
+<p>The frequency of these payments that we allow for in our system are weekly, fortnightly, every-4-weeks, monthly, quarterly, half-yearly, and yearly. When a schedule is created, we use the start date for the schedule as the basis for the ongoing payments. Schedules can optionally have an end date too, where those payments will stop happening.</p>
+
+<p>On top of that, weekly and fortnightly payments can optionally have a day of the week chosen for payments, which means that they sometimes don’t line up with the declared start date.</p>
+
+<p>Monthly payments can also have the same option, but instead of day of the week it’s day of the month. If someone selects the 31st as their billing day, we need to consider what we’d do in months like February, April, June, September and November, which don’t have those days.</p>
+
+<p>All of this sounds like quite the headache, given it involves the two most difficult things: <em>time</em> and <em>money</em>. Putting the money thing to one side for the moment, we’ll stay focussed on just the <em>time</em> thing.</p>
+
+<p>To help with the scheduling calculation, we use the <a href="https://rubygems.org/gems/ice_cube">ice_cube</a> gem.</p>
+
+<p>Let’s say that we have a schedule that:</p>
+
+<ul>
+  <li>Starts today: <code>2024-05-22</code>.</li>
+  <li>Has no end date</li>
+  <li>Reoccurs monthly</li>
+  <li>Day of the month: 31st</li>
+</ul>
+
+<p>With <code>ice_cube</code>, we can write code to generate schedules:</p>
+
+<pre><code class="language-ruby">start_date = Date.parse('2024-05-22')
+
+schedule_rule = IceCube::Rule.monthly.day_of_month(31)
+
+schedule = IceCube::Schedule.new(start_date) do |s|
+  s.add_recurrence_rule(schedule_rule)
+end
+
+puts schedule.first(10)
+</code></pre>
+
+<p>This seems innocent enough. But if we run it, we’ll see that it’s not quite right:</p>
+
+<pre><code class="language-text">2024-05-31 00:00:00 +1000
+2024-07-31 00:00:00 +1000
+2024-08-31 00:00:00 +1000
+2024-10-31 00:00:00 +1100
+2024-12-31 00:00:00 +1100
+2025-01-31 00:00:00 +1100
+2025-03-31 00:00:00 +1100
+2025-05-31 00:00:00 +1000
+2025-07-31 00:00:00 +1000
+2025-08-31 00:00:00 +1000
+</code></pre>
+
+<p>We asked for a monthly recurring schedule, but we also said that this has to be on the 31st day of the month. The <code>ice_cube</code> gem dutifully follows our instructions, and sets a reoccurring schedule for all months with 31 days and the first 5 months there are May, July, August, October, and December.</p>
+
+<p>We would also see this bug if we specified the 30th or 29th for the day of the month.</p>
+
+<p>To fix this, we can instead specify a negative day:</p>
+
+<pre><code class="language-ruby">start_date = Date.parse('2024-05-22')
+
+schedule_rule = IceCube::Rule.monthly.day_of_month(-1)
+
+schedule = IceCube::Schedule.new(start_date) do |s|
+  s.add_recurrence_rule(schedule_rule)
+end
+
+puts schedule.next_occurrences(10)
+</code></pre>
+
+<p>This will produce the following schedule:</p>
+
+<pre><code class="language-text">2024-05-31 00:00:00 +1000
+2024-06-30 00:00:00 +1000
+2024-07-31 00:00:00 +1000
+2024-08-31 00:00:00 +1000
+2024-09-30 00:00:00 +1000
+2024-10-31 00:00:00 +1100
+2024-11-30 00:00:00 +1100
+2024-12-31 00:00:00 +1100
+2025-01-31 00:00:00 +1100
+2025-02-28 00:00:00 +1100
+</code></pre>
+
+<p>We can do similar scheduling rules for the things I mentioned earlier too, such as scheduling things on Mondays:</p>
+
+<pre><code class="language-ruby">schedule_rule = IceCube::Rule.weekly.day(:monday)
+</code></pre>
+
+<pre><code class="language-text">2024-05-27 00:00:00 +1000
+2024-06-03 00:00:00 +1000
+2024-06-10 00:00:00 +1000
+2024-06-17 00:00:00 +1000
+2024-06-24 00:00:00 +1000
+2024-07-01 00:00:00 +1000
+2024-07-08 00:00:00 +1000
+2024-07-15 00:00:00 +1000
+2024-07-22 00:00:00 +1000
+2024-07-29 00:00:00 +1000
+</code></pre>
+
+<p>The <a href="https://github.com/ice-cube-ruby/ice_cube">README for the gem</a> contains plenty of other examples.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the end of the month for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the month but also the year, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.]]></summary></entry><entry><title type="html">Thought Experiment: Without React or GraphQL</title><link href="http://localhost:4000/2024/05/without-react-or-graphql" rel="alternate" type="text/html" title="Thought Experiment: Without React or GraphQL" /><published>2024-05-20T00:00:00+10:00</published><updated>2024-05-20T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/without-react-or-graphql</id><content type="html" xml:base="http://localhost:4000/2024/05/without-react-or-graphql"><![CDATA[<p>I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">GraphQL for Rails Developers</a> and its frontend companion Apollo in the <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">Apollo Handbook</a>. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.</p>
 
 <p>But in saying that, I acknowledge there is no silver bullet for software development. So what would I do if I <em>couldn’t</em> use React or GraphQL?</p>
 
@@ -43,7 +139,9 @@ end
 
 <p>In the view file itself you might or might not get smart tab-completion like you do within TypeScript-powered GraphQL code, but I think that’s a fair trade-off.</p>
 
-<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my GraphQL for Rails Developers and its frontend companion Apollo in the Apollo Handbook. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.]]></summary></entry><entry><title type="html">What was that branch?</title><link href="https://ryanbigg.com/2024/05/what-was-that-branch" rel="alternate" type="text/html" title="What was that branch?" /><published>2024-05-14T00:00:00+10:00</published><updated>2024-05-14T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/what-was-that-branch</id><content type="html" xml:base="https://ryanbigg.com/2024/05/what-was-that-branch"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
+<p>This whole approach trades off React’s “reactivity” as well, so there’s no state management going on here or DOM updating when the state changes. There are probably ways around this (like Hotwire, etc.) but I haven’t gone down those paths yet.</p>
+
+<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my GraphQL for Rails Developers and its frontend companion Apollo in the Apollo Handbook. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.]]></summary></entry><entry><title type="html">What was that branch?</title><link href="http://localhost:4000/2024/05/what-was-that-branch" rel="alternate" type="text/html" title="What was that branch?" /><published>2024-05-14T00:00:00+10:00</published><updated>2024-05-14T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/what-was-that-branch</id><content type="html" xml:base="http://localhost:4000/2024/05/what-was-that-branch"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
 
 <p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
 
@@ -54,7 +152,7 @@ end
 }
 </code></pre>
 
-<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, and I move up and down the list with the arrow keys, then hit enter when I find the branch I want.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.]]></summary></entry><entry><title type="html">code is like garden</title><link href="https://ryanbigg.com/2024/05/code-is-like-garden" rel="alternate" type="text/html" title="code is like garden" /><published>2024-05-04T00:00:00+10:00</published><updated>2024-05-04T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/05/code-is-like-garden</id><content type="html" xml:base="https://ryanbigg.com/2024/05/code-is-like-garden"><![CDATA[<p>Code is like garden.</p>
+<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, I can type part of the branch name if I remember it, and <code>fzf</code> will filter the list of branches to just the ones that match that. When I find the branch I want, I hit enter and this will swap over to the branch.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.]]></summary></entry><entry><title type="html">code is like garden</title><link href="http://localhost:4000/2024/05/code-is-like-garden" rel="alternate" type="text/html" title="code is like garden" /><published>2024-05-04T00:00:00+10:00</published><updated>2024-05-04T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/code-is-like-garden</id><content type="html" xml:base="http://localhost:4000/2024/05/code-is-like-garden"><![CDATA[<p>Code is like garden.</p>
 
 <p>Sometimes, you come into garden and find out past gardener put sun-loving plant in the cupboard at the back of the shed. You discover more sheds and cupboards later on.</p>
 
@@ -72,7 +170,7 @@ end
 
 <p>Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.</p>
 
-<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Code is like garden.]]></summary></entry><entry><title type="html">One year with the Ergodox EZ</title><link href="https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez" rel="alternate" type="text/html" title="One year with the Ergodox EZ" /><published>2024-04-29T00:00:00+10:00</published><updated>2024-04-29T00:00:00+10:00</updated><id>https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez</id><content type="html" xml:base="https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez"><![CDATA[<p>A year ago I upgraded from a <a href="https://kinesis-ergo.com/keyboards/freestyle-edge-rgb/">Kinesis Freestyle Edge</a> to an <a href="https://ergodox-ez.com">Ergodox EZ</a>. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)</p>
+<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Code is like garden.]]></summary></entry><entry><title type="html">One year with the Ergodox EZ</title><link href="http://localhost:4000/2024/04/one-year-with-the-ergodox-ez" rel="alternate" type="text/html" title="One year with the Ergodox EZ" /><published>2024-04-29T00:00:00+10:00</published><updated>2024-04-29T00:00:00+10:00</updated><id>http://localhost:4000/2024/04/one-year-with-the-ergodox-ez</id><content type="html" xml:base="http://localhost:4000/2024/04/one-year-with-the-ergodox-ez"><![CDATA[<p>A year ago I upgraded from a <a href="https://kinesis-ergo.com/keyboards/freestyle-edge-rgb/">Kinesis Freestyle Edge</a> to an <a href="https://ergodox-ez.com">Ergodox EZ</a>. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)</p>
 
 <p>I used <a href="https://monkeytype.com">Monkeytype</a> to practice typing on the keyboard, and the stats there show that it took me about a month to go from the initial speed of 40wpm (quite painful) back up to 90wpm. That’s when I started feeling properly comfortable with it. I can now do about 130wpm on this keyboard, which is the same speed I could do on the Freestyle and my laptop keyboard.</p>
 
@@ -105,7 +203,7 @@ end
 
 <p>For reasons that are completely opaque to me, there can be up to 32 different layers on the keyboard. I cannot imagine ever needing more than the few that I have right now. Even thinking about the keyboard contortion that would be required to switch to a 32nd layer and not the 28th layer is giving me a headache.</p>
 
-<p>Finally: a word on the switches inside the keyboard itself. The keyboard came with Cherry Brown switches which are what I would consider to be the greatest argument ever against working from the office. They were ridiculously loud. And stiff enough that even someone who types as hard as I do noticed how hard I had to press. I’ve since replaced the switches with Cherry Reds which are quieter and not as stiff. I think this has made maybe a 5-10% improvement on my accuracy and speed for this keyboard.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A year ago I upgraded from a Kinesis Freestyle Edge to an Ergodox EZ. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)]]></summary></entry><entry><title type="html">Tailwind has won</title><link href="https://ryanbigg.com/2024/03/tailwind-has-won" rel="alternate" type="text/html" title="Tailwind has won" /><published>2024-03-26T00:00:00+11:00</published><updated>2024-03-26T00:00:00+11:00</updated><id>https://ryanbigg.com/2024/03/tailwind-has-won</id><content type="html" xml:base="https://ryanbigg.com/2024/03/tailwind-has-won"><![CDATA[<p>Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: <a href="https://bulma.io/">Bulma</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://tailwindcss.com/">Tailwind</a>. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.</p>
+<p>Finally: a word on the switches inside the keyboard itself. The keyboard came with Cherry Brown switches which are what I would consider to be the greatest argument ever against working from the office. They were ridiculously loud. And stiff enough that even someone who types as hard as I do noticed how hard I had to press. I’ve since replaced the switches with Cherry Reds which are quieter and not as stiff. I think this has made maybe a 5-10% improvement on my accuracy and speed for this keyboard.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A year ago I upgraded from a Kinesis Freestyle Edge to an Ergodox EZ. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)]]></summary></entry><entry><title type="html">Tailwind has won</title><link href="http://localhost:4000/2024/03/tailwind-has-won" rel="alternate" type="text/html" title="Tailwind has won" /><published>2024-03-26T00:00:00+11:00</published><updated>2024-03-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/03/tailwind-has-won</id><content type="html" xml:base="http://localhost:4000/2024/03/tailwind-has-won"><![CDATA[<p>Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: <a href="https://bulma.io/">Bulma</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://tailwindcss.com/">Tailwind</a>. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.</p>
 
 <p>Three years ago, I became the Platform Tech Lead at Fat Zebra, which meant I was in charge of the technical side of things when it comes to our frontend. Part of this job meant standardising our frontend tech stack. At this time, Bootstrap (around v4.5) and Bulma (0.9.4) were the only two CSS frameworks used at Fat Zebra. After talking about it with the team, we decided to not use <em>either</em> of these frameworks, and instead opted to go with Tailwind.</p>
 
@@ -137,7 +235,7 @@ end
 
 <p>This setup works incredibly well for our little team, and I suspect it would scale as well for an even bigger team. Changes get applied to the design system, which then are updated in Figma, and those updates flow through to our React components or our CSS files, depending on which component it is.</p>
 
-<p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: Bulma, Bootstrap and Tailwind. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.]]></summary></entry><entry><title type="html">View Components, Table Edition</title><link href="https://ryanbigg.com/2024/01/view-components-table-edition" rel="alternate" type="text/html" title="View Components, Table Edition" /><published>2024-01-26T00:00:00+11:00</published><updated>2024-01-26T00:00:00+11:00</updated><id>https://ryanbigg.com/2024/01/view-components-table-edition</id><content type="html" xml:base="https://ryanbigg.com/2024/01/view-components-table-edition"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
+<p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: Bulma, Bootstrap and Tailwind. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.]]></summary></entry><entry><title type="html">View Components, Table Edition</title><link href="http://localhost:4000/2024/01/view-components-table-edition" rel="alternate" type="text/html" title="View Components, Table Edition" /><published>2024-01-26T00:00:00+11:00</published><updated>2024-01-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/01/view-components-table-edition</id><content type="html" xml:base="http://localhost:4000/2024/01/view-components-table-edition"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
 
 <p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
 
@@ -289,7 +387,7 @@ end
 <pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
 </code></pre>
 
-<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry><entry><title type="html">Audit Logging Notes</title><link href="https://ryanbigg.com/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>https://ryanbigg.com/2023/12/audit-logging-notes</id><content type="html" xml:base="https://ryanbigg.com/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
+<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry><entry><title type="html">Audit Logging Notes</title><link href="http://localhost:4000/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/audit-logging-notes</id><content type="html" xml:base="http://localhost:4000/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
 
 <p>What I could find though was GitHub’s own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.</p>
 
@@ -372,7 +470,7 @@ end
 
 <p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
 
-<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">NaNoWriMo Retro</title><link href="https://ryanbigg.com/2023/12/nanowrimo-retro" rel="alternate" type="text/html" title="NaNoWriMo Retro" /><published>2023-12-03T00:00:00+11:00</published><updated>2023-12-03T00:00:00+11:00</updated><id>https://ryanbigg.com/2023/12/nanowrimo-retro</id><content type="html" xml:base="https://ryanbigg.com/2023/12/nanowrimo-retro"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
+<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry><entry><title type="html">NaNoWriMo Retro</title><link href="http://localhost:4000/2023/12/nanowrimo-retro" rel="alternate" type="text/html" title="NaNoWriMo Retro" /><published>2023-12-03T00:00:00+11:00</published><updated>2023-12-03T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/nanowrimo-retro</id><content type="html" xml:base="http://localhost:4000/2023/12/nanowrimo-retro"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
 
 <p>I’ve <a href="https://ryanbigg.com/books">written quite a few books</a> already, but all of them have been tech books. You could argue that at least one of them, Maintainable Rails, is a work of fiction based on its title alone… but that’s a long bow to draw and very subjective.</p>
 
@@ -408,7 +506,7 @@ end
 
 <p>Sometimes I wrote on my phone at the park while Ella played on the swings, or at swimming lessons while she was there too. Writing on the phone is quite slow compared to the bigger keyboard (about 30wpm vs 120wpm), but it meant that I could spend more time thinking about plot directions and what characters’ motivations were.</p>
 
-<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title><link href="https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments" rel="alternate" type="text/html" title="Ruby 3, Hashes and Keyword Arguments" /><published>2023-11-09T00:00:00+11:00</published><updated>2023-11-09T00:00:00+11:00</updated><id>https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments</id><content type="html" xml:base="https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments"><![CDATA[<p>We debugged a fun one today.</p>
+<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.]]></summary></entry><entry><title type="html">Ruby 3, Hashes and Keyword Arguments</title><link href="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments" rel="alternate" type="text/html" title="Ruby 3, Hashes and Keyword Arguments" /><published>2023-11-09T00:00:00+11:00</published><updated>2023-11-09T00:00:00+11:00</updated><id>http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments</id><content type="html" xml:base="http://localhost:4000/2023/11/ruby-32-hashes-and-keyword-arguments"><![CDATA[<p>We debugged a fun one today.</p>
 
 <p>There’s a method provided by Rails called <code>tag</code>, and it provides a way to write HTML tags.</p>
 
@@ -448,83 +546,4 @@ end
 
   tag.div(**react_options) { "" }
 end
-</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[We debugged a fun one today.]]></summary></entry><entry><title type="html">Saving time with fzf</title><link href="https://ryanbigg.com/2023/08/saving-time-with-fzf" rel="alternate" type="text/html" title="Saving time with fzf" /><published>2023-08-27T00:00:00+10:00</published><updated>2023-08-27T00:00:00+10:00</updated><id>https://ryanbigg.com/2023/08/saving-time-with-fzf</id><content type="html" xml:base="https://ryanbigg.com/2023/08/saving-time-with-fzf"><![CDATA[<p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
-
-<h2 id="command-history">Command history</h2>
-
-<p>The thing I use fzf for the most is command history. To access the history, I use Ctrl+R and I get a list of my most recent commands:</p>
-
-<pre><code>10024 z ryanbigg
-10026 bundle exec jekyll serve
-</code></pre>
-
-<p>(The numbers represent the position of that command in my <code>.zsh_history</code> file.)</p>
-
-<p>If I then write the word “serve”, fzf will only show me commands with that word in it:</p>
-
-<pre><code>10026 serve
-</code></pre>
-
-<p>I usually use this for running some different Rails apps on certain ports. So I would hit Ctrl+R, and then type a particular port number such as 3004 to get:</p>
-
-<pre><code>10007 bundle exec rails s -p 3004
-</code></pre>
-
-<p>Instead of typing out the full command, I can type Ctrl+R and 4 keystrokes later arrive at the right command.</p>
-
-<h2 id="files-in-current-directory">Files in current directory</h2>
-
-<p>Another thing I use fzf for is its relative file searching. Most of the time, I’m using this to run RSpec tests. I type:</p>
-
-<pre><code>ber
-</code></pre>
-
-<p>(Which is my alias for “bundle exec rspec”), and then I hit Ctrl+T and I get a list of files in my terminal:</p>
-
-<pre><code>app
-app/models
-app/models/category.rb
-...
-</code></pre>
-
-<p>Then I can type a few words, or even parts of words, to get what I’m after. In this example, I’d like to find the file at <code>spec/requests/graphql/queries/repo_categories_spec.rb</code>. What a mouthful! With <code>fzf</code>, I can type <code>repocat</code> and arrive at that spec in only seven keystrokes:</p>
-
-<pre><code>spec/requests/graphql/queries/repo_categories_spec.rb
-&lt;other files here&gt;
-</code></pre>
-
-<p>When I hit enter here, my <code>ber</code> command becomes:</p>
-
-<pre><code>ber spec/requests/graphql/queries/repo_categories_spec.rb
-</code></pre>
-
-<p>Then I can run this test.</p>
-
-<p>(If I’ve run this command before, I might use <code>Ctrl+R</code> to find the “full version” of <code>ber</code> + the file path!)</p>
-
-<h2 id="filtering-output">Filtering output</h2>
-
-<p>Finally, the last way I use <code>fzf</code> is to filter output. You can pipe a list of inputs to <code>fzf</code> and it will provide its fuzzy finding features on that list.</p>
-
-<p>The way I use this the most is this very complicated looking function:</p>
-
-<pre><code>fbr () {
-	local branches branch
-	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
-  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
-}
-</code></pre>
-
-<p>I didn’t come up with this myself, but I borrowed it from elsewhere.</p>
-
-<p>This command finds the 30 most recent Git branches (surely more than adequate!) and provides a way of filtering through them. Here’s what I see when I run <code>fbr</code> in a gem I have checked out:</p>
-
-<pre><code>patch-1
-fix-locale-with-separator
-prep-1-1-4
-...
-</code></pre>
-
-<p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
-
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of my favourite terminal utilities is a little utility called fzf (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.]]></summary></entry></feed>
+</code></pre>]]></content><author><name></name></author><summary type="html"><![CDATA[We debugged a fun one today.]]></summary></entry></feed>
