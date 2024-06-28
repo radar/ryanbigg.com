@@ -4,13 +4,107 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2024-05-29T08:24:30+10:00</updated>
+ <updated>2024-06-29T07:28:22+10:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Make RSpec tests go faster</title>
+   <link href="https://ryanbigg.com/2024/06/make-rspec-tests-go-faster"/>
+   <updated>2024-06-20T00:00:00+10:00</updated>
+   <id>https://ryanbigg.com/2024/06/make-rspec-tests-go-faster</id>
+   <content type="html"><![CDATA[<p>This week and next it’s the “cooldown sprint” at work where we prioritise addressing tech debt over regular feature development. As a part of that work, I’m working on bringing down the test run time on one of our biggest and well-tested Rails apps from its current mean duration of 45 minutes.</p>
+
+<p>This 45 minute cost is paid thrice:</p>
+
+<ol>
+  <li>Once for your branch</li>
+  <li>Once it gets to <code>develop</code> (shipped to staging environments)</li>
+  <li>Once it gets to <code>master</code> (shipped to sandbox + production environments)</li>
+</ol>
+
+<p>So to get out a change of even just a single line to production takes 2.25 hours total, assuming you’re getting a median build time. 2.25 hours seems like an exorbitantly long time. And it is. Over the 8 hour work day, we would be able to ship 3.5 different changes to production.</p>
+
+<p>This app has quite a number of end-to-end feature requests which follow this pattern:</p>
+
+<ol>
+  <li>Create a user + merchant account</li>
+  <li>Create some relevant data</li>
+  <li>Login as that user + merchant combo</li>
+  <li>Navigate to page where the data is</li>
+  <li>Make some assertions about what the page looks like or how it performs</li>
+</ol>
+
+<p>And a lot of these tests test business-critical features of our application, like that we can submit payments through our Virtual Terminal or that a payment plan is setup to reoccur on the correct schedule.</p>
+
+<p>For these tests, we’ve relied a lot on Capybara running Selenium and a headless Chrome instance. This setup works exceptionally well for us, allowing us to write more Ruby code to test the Ruby code we’ve written in the app.</p>
+
+<h2 id="straightforward-ways-of-solving-things">Straightforward ways of solving things</h2>
+
+<p>There are some straightforward ways we could solve this slowness. We could upgrade the machines that run our tests. The current configuration is by no means at the top (or bottom) end for the configuration bracket for the type of machines. Faster machines surely mean faster tests, right? The caveat there is that faster machines also mean more dollars. Are there things we can do that don’t cost us money?</p>
+
+<p>The other straightforward thing is to parallelise these tests out so that they don’t run in sequence all on the same machine. We did that, parallelising to 4 nodes and then to 8, using the wonderful <a href="https://knapsackpro.com">Knapsack Pro</a> gem. Knapsack suggests parallelising up to 19 nodes, but again this means more machines and more dollars. This could potentially block other builds on other projects from running as well, as we have a low ceiling on how many concurrent build machines we are running across the whole org. The moment we run two distinct builds for this project that would mean up to 38 build machines tied up.</p>
+
+<p>If the tests for one build across 18 machines were to run for 5 minutes, the total cost would be $0.28USD. The old adage of developer time being expensive and computer time being cheap holds up.</p>
+
+<h2 id="and-then-it-gets-murky-from-there">And then it gets murky from there</h2>
+
+<p>Then there are the not so straightforward things. Are there particular reasons for the slowness of our tests? Are the factories that are being used to build up the data for these tests doing too much?  In our case, I’ve added <a href="https://github.com/test-prof/test-prof"><code>test-prof</code></a> to our app and run its factory profiler and detected no overly large factory there.</p>
+
+<p>Is there a particular page which is slow, that a large majority of these tests hit? I noticed that when I ran a <em>headful</em> browser of Chrome (so I could see what each test was doing) that each of the tests hit the dashboard page, which has a collection of charts. Every test waited for these charts to finish loading before proceeding. I commented out the line of code which was rendering all of these charts, and saw a 20% improvement in test run time. Obviously we can’t comment these out all the time, but at least that’s something we could probably toggle on/off depending on if the test needed it. I’ll have to dig into this one.</p>
+
+<h2 id="an-alternative-approach-for-feature-specs">An alternative approach for feature specs</h2>
+
+<p>Could we have written these tests in a different way? Do they need to be full-on integration tests that set up data in the database, just to validate information appears in certain positions on the page?</p>
+
+<p>I would say that for the less important pages, we don’t have to do such a setup. We have a frontend that’s built on React and TypeScript, with those TypeScript types being informed by our backend GraphQL API. And notably here we’re not just blindly grabbing things like <code>Purchase</code> off <code>@graphql/types</code>, we’re specifically defining types that match the relevant query, using code like:</p>
+
+<pre><code class="language-tsx">type Merchant = NonNullable&lt;GetPurchaseDetailQuery['merchant']&gt;;
+export type Purchase = NonNullable&lt;Merchant['purchase']&gt;;
+</code></pre>
+
+<p>The components expect the <em>exact</em> data from the query, and nothing different. We could write some frontend-focussed tests for these using React Testing Library, creating some tests that test:</p>
+
+<ol>
+  <li>When a particular component…</li>
+  <li>receives a particular structure…</li>
+  <li>it looks a certain way.</li>
+</ol>
+
+<p>There’s no need to interact with a database here, given that the automatically generated types are going to tell us if the data structure is right or wrong. We can write lighter-weight request specs that assert that, yes, when certain data exists in the database that our GraphQL API presents it in <em>this</em> particular format. The difficulty here is that the query structure used in these tests may vary over time from the structure defined in the components.</p>
+
+<p>In my experience, these React Testing Library tests have been just as easy to write as the Capybara specs, and I’ve been able to setup the fixture data again thanks to the TypeScript types. These tests then run in <em>milliseconds</em> as opposed to <em>seconds</em>. The original RSpec tests for a particular part of our test suite, the Transaction Detail page, ran in 24.75 seconds. These same tests in React Testing Library take 1.66 seconds, and that’s including test runner setup time. That’s almost 15x faster.</p>
+
+<p>I think there’s definitely some things we could work on pulling out of Capybara feature specs and into React Testing Library tests, to really bring down the slow tests. The biggest culprits for the slowness, looking purely at test duration have been the feature tests, by far.</p>
+
+<h2 id="docker-setup-is-also-a-factor">Docker setup is also a factor</h2>
+
+<p>The tests are run inside a Docker container which is built before most test runs rather than read from a cache, due to the ephemeral nature of the build machines. The base image for these containers has to come from <em>somewhere</em>, and that <em>somewhere</em> is a Docker registry. I’ve looked into ways of making the build machines use the cache with mixed success. It’s still an avenue I’d like to pursue, as it turns a 5-minute initial build step (that blocks every other step!) into one that runs for about half a minute. I’ve even seen some cases where that step can run in as quick as 14 seconds.</p>
+
+<p>One aspect that has helped here is splitting the Dockerfile into a multi-stage build that builds it in 4 separate stages:</p>
+
+<ol>
+  <li>OS-level setup</li>
+  <li>Ruby setup</li>
+  <li>Node setup</li>
+  <li>Final compilation for CSS + JS</li>
+</ol>
+
+<p>The Ruby + Node steps run concurrently, saving roughly 2-3 minutes compared to if they ran sequentially. We have investigated adding Docker-level caching for both the Ruby and Node steps, but haven’t gotten as far as having a system that reliably works for each build. It feels like a <code>cache-from</code> declared that matches the multi-stage target would work, but I can’t seem to make the build machines acknowledge that config and pull it in.</p>
+
+<p>Or perhaps there’s a way to cache the packages gathered for those steps, storing them off the machines in some long-term storage and pulling them down before each build? Then Ruby + Node would only install the differences (if any) that are on that branch.</p>
+
+<h2 id="slicing-up-the-app">Slicing up the app</h2>
+
+<p>Finally, my absolute <em>golden path</em> idea on this topic is that the tests that run when you push a branch, should only be the tests related to the code that you changed. If I’m making changes on Part A of the system, then it doesn’t make sense to run tests for Part B on all branches. Running the entire test suite before a production deploy makes sense, but not on the earlier branches.</p>
+
+<p>To that end, there’s probably investigative work to go on with this app where the app could be split into something like Hanami’s “slices”, so we have Slice A with its own tests, then if there’s file changes in Slice A then Slice A’s tests get run, but Slice B’s tests don’t. That seems like work that would be greater than many cooldown sprints in a row, and so I’m happy to leave that as just a thought bubble for the time-being.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Scheduling with Ice Cube</title>
@@ -1839,151 +1933,6 @@ foundation start funding these projects? Are we going to be waiting weeks, or mo
     "took": 12
 }
 </code></pre>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Why game programming and why Magic?</title>
-   <link href="https://ryanbigg.com/2023/02/why-game-programming-and-why-magic"/>
-   <updated>2023-02-07T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2023/02/why-game-programming-and-why-magic</id>
-   <content type="html"><![CDATA[<p>For about the past 5 months, I’ve been fiddling with a little Ruby project called <a href="https://github.com/radar/mtg">“Magic: The Gathering: The Ruby Project”</a>. It’s my attempt to make Magic: The Gathering, in Ruby.</p>
-
-<p>But why game programming when my forté is web programming, and why <em>this</em> game specifically? Why not Uno?</p>
-
-<p>Because I wanted a challenge!</p>
-
-<p>I had played Magic first <a href="https://apps.apple.com/us/app/magic-the-gathering-arena/id1496227521">through their Arena app on iOS</a>, which (mostly) works, save a few little issues here and there. Last year I started playing Magic weekly at a local game shop in town. I love the different mechanics of the different cards and figuring out how they all interact best. <em>Especially</em> when they syngerise together.</p>
-
-<p>What’s appealing about this game is that while there’s a rulebook (I’ll get to that in a minute), the <em>cards themselves</em> make up the rules. If the creators want to change the rules of the game, they can print more cards with different text on them.</p>
-
-<p>This is Rule 101.1 of Magic:</p>
-
-<blockquote>
-  <p>101.1. Whenever a card’s text directly contradicts these rules, the card takes precedence.</p>
-</blockquote>
-
-<p>Some of the cards are simple, like <a href="https://scryfall.com/card/a25/33/savannah-lions">Savannah Lions</a>. It costs one white mana to play, and it has 2 power and 1 toughness.</p>
-
-<p>Others, like <a href="https://scryfall.com/card/eld/171/questing-beast">Questing Beast</a> with all its words, and <a href="https://scryfall.com/card/isd/181/garruk-relentless-garruk-the-veil-cursed">Garruk Relentless</a> with all its words on one side, <em>and then even more words on the other side</em>, are not so simple.</p>
-
-<p>This Rule 101.1, the <em>first</em> of Magic’s several “Golden Rules”, is contained in <a href="https://media.wizards.com/2023/downloads/MagicCompRules%2020230203.pdf">this two-hundred-and-seventy-eight PDF page document</a>, where all of Magic’s non-card-defined rules are written down. Some of the rules even have examples with them.</p>
-
-<p>If you wanted to find out all of the creature types, you’d look at Rule 205.3m.</p>
-
-<p>Want to know how combat is designed to run? Start on page 74 with Rule 506, and finish on Page 84 with rule 511.</p>
-
-<hr />
-
-<p>Now this MTG-in-Ruby project is not a line-for-line reproduction of the rulebook or even a card-for-card replication attempt from A-Z. It started as an attempt to reproduce the features of a stack of random cards that were on my desk, and progressed from there to attempting to implement all of the <a href="https://scryfall.com/sets/m21?as=grid&amp;order=set">Core Set 2021</a> cards. I needed to set myself a goal, and even though that goal is <em>extremely ambitious</em>, it’s still a goal and something to aim for.</p>
-
-<p>I’ve gotten most of the white cards done, and that leaves only about 300 more cards of that set. And <a href="https://en.wikipedia.org/wiki/List_of_Magic:_The_Gathering_sets">there are quite a few sets</a> .</p>
-
-<p>What I’m particularly proud of here is that I have a clean DSL for being able to define cards and their abilities. For a simple card like <a href="https://scryfall.com/card/khm/34/story-seeker">Story Seeker</a>, I can define it like:</p>
-
-<pre><code class="language-ruby">module Magic
-  module Cards
-    StorySeeker = Creature("Story Seeker") do
-      cost generic: 1, white: 1
-      type "Creature -- Dwarf Cleric"
-      keywords :lifelink
-      power 2
-      toughness 2
-    end
-  end
-end
-</code></pre>
-
-<p>The one thing here I’d change is making those types into constants rather than being strings. I’ve been too lazy to address that yet, as it hasn’t been a problem. Here’s a quick riff on what that might look like:</p>
-
-<pre><code class="language-ruby">module Magic
-  module Cards
-    StorySeeker = Creature("Story Seeker") do
-      cost generic: 1, white: 1
-      type Types::Creature[:Dwarf, :Cleric]
-      keywords :lifelink
-      power 2
-      toughness 2
-    end
-  end
-end
-</code></pre>
-
-<p>While writing this post I built <a href="https://github.com/radar/mtg/commit/8cb9efe66248a1672d0e56a04bc8e92d19209385">this exact interface</a>. I’d love to go back to revisit it sometime to handle when an <em>invalid</em> type is passed, but it’ll work for the time-being.</p>
-
-<hr />
-
-<p>The cards themselves are <em>usually</em> straightforward to implement. It’s how they interact that’s the tricky part. For this, I try to come up with scenarios that might happen in real games, and then model those in the tests themselves.</p>
-
-<p>One of these that I’m particularly proud about is the mana-cost-reducing effect of <a href="https://scryfall.com/card/nec/152/foundry-inspector">Foundry Inspector</a>. I started working on this card by writing the test for it first and working up from there.</p>
-
-<pre><code class="language-ruby"> require 'spec_helper'
-
-RSpec.describe Magic::Game, "Mana spend -- Foundry Inspector + Free Sol Ring" do
-  include_context "two player game"
-
-  context "when at first main phase" do
-    before do
-      current_turn.untap!
-      current_turn.upkeep!
-      current_turn.draw!
-      current_turn.first_main!
-    end
-
-    context "foundry inspector reduces sol ring cost" do
-      let(:foundry_inspector) { Card("Foundry Inspector") }
-      let(:sol_ring) { Card("Sol Ring") }
-
-      before do
-        p1.hand.add(foundry_inspector)
-        p1.hand.add(sol_ring)
-      end
-
-      it "casts a foundry inspector and then a sol ring" do
-        p1.add_mana(red: 3)
-        action = Magic::Actions::Cast.new(player: p1, card: foundry_inspector)
-        expect(action.can_perform?).to eq(true)
-        action.pay_mana(generic: { red: 3 } )
-        game.take_action(action)
-        game.tick!
-
-        action = Magic::Actions::Cast.new(player: p1, card: sol_ring)
-        expect(action.can_perform?).to eq(true)
-        game.take_action(action)
-
-        game.tick!
-        expect(p1.permanents.by_name(sol_ring.name).count).to eq(1)
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The body of the test ensures that we can pay 3 red mana to cast the Foundry Inspector, and then by casting that we can then cast the <a href="https://scryfall.com/card/dmc/190/sol-ring">Sol Ring</a> by not paying any mana at all. It finishes by using some more DSL code to ensure that the Sol Ring has been registered as a permanent controlled by Player 1.</p>
-
-<hr />
-
-<p>If you’re looking for where the proverbial bodies are buried on this particular project, well, there are <em>plenty</em>. This project was coded up over nights, after work and sometimes even after a glass of Port or two. Caution was thrown to the wind, and past that.</p>
-
-<p>The worst of it would be demonstrated in <code>attacking_creature_creates_attacking_token_spec.rb</code>, where a card called <a href="https://scryfall.com/card/m21/18/falconer-adept">Falconer Adept</a> has a triggered ability of:</p>
-
-<blockquote>
-  <p>Whenever Falconer Adept attacks, create a 1/1 white Bird creature token with flying that’s tapped and attacking.</p>
-</blockquote>
-
-<p>What this means is that you can declare that Falconer Adept is attacking as a part of the <em>regular</em> “Declare Attackers” phase of combat, and then by doing that, a different game object (a Bird token) is created, where you will need to delcare what that Bird token is attacking. In effect, “Declare Attackers” happens <em>twice</em>.</p>
-
-<p>You can see how this code is handled in the <code>Turn</code> class’s state machine, particularly anywhere the <code>final_attackers_declared</code> method is used.</p>
-
-<p>This one took me a <em>long</em> time to implement.</p>
-
-<hr />
-
-<p>I like fiddling with this project. It’s outside my regular wheelhouse and is teaching me more about event-driven game programming.</p>
-
-<p>If I get stuck on a card, it’s not like I <em>have</em> to implement it. There’s thousands more out there to choose from.</p>
-
-<p>I’d suggest if your interested in practicing some Ruby code outside of the usual web sphere to find <a href="https://scryfall.com/random">a card at random</a> and attempting to impelment it here. Or if you’re looking for something more challenging, have a read through of this code and see if you can refactor it to handle certain events or effects in a more straightforward way.</p>
 ]]></content>
  </entry>
  
