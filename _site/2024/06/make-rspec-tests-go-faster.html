@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Make RSpec tests go faster - Ryan Bigg</title>
+  <title>Decreasing Ruby app build times - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
@@ -16,20 +16,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg - Make RSpec tests go faster" property="og:title">
+  <meta content="Ryan Bigg - Decreasing Ruby app build times" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
 
   
-    <meta name="publish_date" property="og:publish_date" content="2024-06-20">
+    <meta name="publish_date" property="og:publish_date" content="2024-06-28">
   
 
   
   <meta content="https://ryanbigg.com/2024/06/make-rspec-tests-go-faster" property="og:url">
   
   
-  <meta content="Make RSpec tests go faster" property="og:description">
+  <meta content="Decreasing Ruby app build times" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -38,7 +38,7 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta name="twitter:title" content="Make RSpec tests go faster">
+  <meta name="twitter:title" content="Decreasing Ruby app build times">
   
 </head>
 
@@ -52,11 +52,17 @@
             <h1>Ryan Bigg</h1>
             <a href="/blog">&#x27F5; Posts</a>
             <a href="/2024/06/make-rspec-tests-go-faster">
-              <h2 class="post-title">Make RSpec tests go faster</h2>
+              <h2 class="post-title">Decreasing Ruby app build times</h2>
             </a>
-            <small>20 Jun 2024</small>
+            <small>28 Jun 2024</small>
           </div>
-          <p>This week and next it’s the “cooldown sprint” at work where we prioritise addressing tech debt over regular feature development. As a part of that work, I’m working on bringing down the test run time on one of our biggest and well-tested Rails apps from its current mean duration of 45 minutes.</p>
+          <p><strong>EDIT:</strong> I wrote these as notes for myself a few weeks ago when my brain wouldn’t stop spinning on this problem. Writing things down gets it out of my brain and lets me do simple things, like “engage in conversations” or “sleep”.</p>
+
+<p>We’ve now undertaken <em>some</em> of this work mentioned in the post, and our builds have gone from 45 minutes down to as low as 14 minutes. The major thing that improved build time was making the build machines faster… but don’t discount the rest of the stuff in this post too. After all, tests are code, and all code should be maintained and made to perform when necessary.</p>
+
+<hr />
+
+<p>This week and next it’s the “cooldown sprint” at work where we prioritise addressing tech debt over regular feature development. As a part of that work, I’m working on bringing down the test run time on one of our biggest and well-tested Rails apps from its current mean duration of 45 minutes.</p>
 
 <p>This 45 minute cost is paid thrice:</p>
 
@@ -88,7 +94,7 @@
 
 <p>The other straightforward thing is to parallelise these tests out so that they don’t run in sequence all on the same machine. We did that, parallelising to 4 nodes and then to 8, using the wonderful <a href="https://knapsackpro.com">Knapsack Pro</a> gem. Knapsack suggests parallelising up to 19 nodes, but again this means more machines and more dollars. This could potentially block other builds on other projects from running as well, as we have a low ceiling on how many concurrent build machines we are running across the whole org. The moment we run two distinct builds for this project that would mean up to 38 build machines tied up.</p>
 
-<p>If the tests for one build across 18 machines were to run for 5 minutes, the total cost would be $0.28USD. The old adage of developer time being expensive and computer time being cheap holds up.</p>
+<p>If the tests for one build across 19 machines were to run for 5 minutes, the total cost would be $0.28USD. The old adage of developer time being expensive and computer time being cheap holds up.</p>
 
 <h2 id="and-then-it-gets-murky-from-there">And then it gets murky from there</h2>
 

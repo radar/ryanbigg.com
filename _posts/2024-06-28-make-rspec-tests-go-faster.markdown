@@ -1,7 +1,13 @@
 ---
 wordpress_id: RB-1718873926
 layout: post
-title: Make RSpec tests go faster
+title: Decreasing Ruby app build times
+---
+
+**EDIT:** I wrote these as notes for myself a few weeks ago when my brain wouldn't stop spinning on this problem. Writing things down gets it out of my brain and lets me do simple things, like "engage in conversations" or "sleep".
+
+We've now undertaken _some_ of this work mentioned in the post, and our builds have gone from 45 minutes down to as low as 14 minutes. The major thing that improved build time was making the build machines faster... but don't discount the rest of the stuff in this post too. After all, tests are code, and all code should be maintained and made to perform when necessary.
+
 ---
 
 This week and next it's the "cooldown sprint" at work where we prioritise addressing tech debt over regular feature development. As a part of that work, I'm working on bringing down the test run time on one of our biggest and well-tested Rails apps from its current mean duration of 45 minutes.
@@ -32,7 +38,7 @@ There are some straightforward ways we could solve this slowness. We could upgra
 
 The other straightforward thing is to parallelise these tests out so that they don't run in sequence all on the same machine. We did that, parallelising to 4 nodes and then to 8, using the wonderful [Knapsack Pro](https://knapsackpro.com) gem. Knapsack suggests parallelising up to 19 nodes, but again this means more machines and more dollars. This could potentially block other builds on other projects from running as well, as we have a low ceiling on how many concurrent build machines we are running across the whole org. The moment we run two distinct builds for this project that would mean up to 38 build machines tied up.
 
-If the tests for one build across 18 machines were to run for 5 minutes, the total cost would be $0.28USD. The old adage of developer time being expensive and computer time being cheap holds up.
+If the tests for one build across 19 machines were to run for 5 minutes, the total cost would be $0.28USD. The old adage of developer time being expensive and computer time being cheap holds up.
 
 ## And then it gets murky from there
 
