@@ -4,13 +4,99 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2024-07-01T10:04:30+10:00</updated>
+ <updated>2024-07-05T10:16:45+10:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Separation of data and view layers in React components</title>
+   <link href="https://ryanbigg.com/2024/07/separation-of-react-components-with-graphql"/>
+   <updated>2024-07-05T00:00:00+10:00</updated>
+   <id>https://ryanbigg.com/2024/07/separation-of-react-components-with-graphql</id>
+   <content type="html"><![CDATA[<p>In my <a href="https://leanpub.com/apollo-handbook">Apollo Handbook</a> I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the <em>data layer</em> from the <em>view layer</em> of a component.</p>
+
+<p>With Apollo and <a href="https://the-guild.dev/graphql/codegen">GraphQL code generator</a>, we get React hooks that we can use in our component. It can be tempting to combine both these layers together in a single component:</p>
+
+<pre><code class="language-tsx">const Product = (id: string) =&gt; {
+  const { data, loading, error } = usePurchaseQuery({ variables: { id } });
+
+  // handle loading + error states...
+
+  const { product } = data;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{product.name}&lt;/h1&gt;
+
+      {product.description}
+    &lt;/div&gt;
+  );
+};
+</code></pre>
+
+<p>But then this component is tied too closely to where it gets its data from, and if you want to test (such as in React Testing Library) how your components behave when they receive certain props, you must then stub the data layer.</p>
+
+<p>An alternative approach that I like is separating the data and view layers into two distinct functions. The first function is the data function:</p>
+
+<pre><code class="language-tsx">const WrappedProduct = (id: string) =&gt; {
+  const { data, loading, error } = usePurchaseQuery({ variables: { id } });
+
+  // handle loading + error states...
+
+  const { product } = data;
+
+  return (
+    &lt;Product {...product} /&gt;
+  );
+}
+</code></pre>
+
+<p>Its responsibility is to grab the data and pass it to the view component. The <code>loading</code> and <code>error</code> states can also be handled by this component, or something such as a higher-order <code>ErrorBoundary</code> component.</p>
+
+<p>When the <code>Product</code> component receives the props, we can use the type from the query itself to inform the view component of the correct types:</p>
+
+<pre><code class="language-tsx">
+import ProductQuery from "@graphql/types"
+
+type ProductType = ProductQuery["product"]
+const Product = ({ name, description }: ProductType) =&gt; {
+   return (
+    &lt;div&gt;
+      &lt;h1&gt;{product.name}&lt;/h1&gt;
+
+      {product.description}
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+
+<p>This is a small contrived example, but for a more complicated component this would make it easier to use this component in React Testing Library to run assertions on its behaviour, or to render it in Storybook to see how it looks.</p>
+
+<p>Rather than stubbing the GraphQL request / response cycle, we can instead pass typed props along to the component.</p>
+
+<p>Here’s what our test file might look like:</p>
+
+<pre><code class="language-tsx">type ProductType = ProductQuery["product"]
+
+const product: ProductType = {
+  name: "Rolo Tomassi - Where Myth Becomes Memory",
+  description: "2022 Album"
+}
+
+it("displays a product name", () =&gt; {
+  render(&lt;Product {...product}&gt;)
+
+  expect(screen).toHaveContent("Rolo Tomassi - Where Myth Becomes Memory")
+})
+</code></pre>
+
+<p>If we’re concerned with how the GraphQL layer is handling its response, then we still have the option to test that layer with something like <a href="https://mswjs.io/docs/api/graphql/">Mock Service Worker’s GraphQL API</a>.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Decreasing Ruby app build times</title>
@@ -1612,333 +1698,6 @@ foundation start funding these projects? Are we going to be waiting weeks, or mo
 <p>I don’t send this email with cap-in-hand expecting money — I’m already paid the Bigg Bucks through my work with Rails and my books.</p>
 
 <p>What I’d like to see is the Rails Foundation actually putting their money where their mouth is and helping grow this wonderful community of ours, and helping it thrive for another 15 years.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Please explain, Elastic Search</title>
-   <link href="https://ryanbigg.com/2023/03/please-explain-elasticsearch"/>
-   <updated>2023-03-02T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2023/03/please-explain-elasticsearch</id>
-   <content type="html"><![CDATA[<p>I’ve recently been using Elastic Search on a project. I came across an issue where Elastic Search wasn’t able to find a particular document for a particular query. My first thought that was the document wasn’t indexed within the index, but it was.</p>
-
-<p>I’ll walk through the process of debugging this search query in this post, demonstrating a couple of helpful Elastic Search endpoints.</p>
-
-<p>Let’s go through the whole process, from indexing to searching to explaining. I’ll be using <a href="https://httpie.io/">the wonderful httpie tool</a> to interact with Elastic Search in this post.</p>
-
-<h2 id="indexing-a-document">Indexing a document</h2>
-
-<p>To index a document in ElasticSearch, we need an index that this document can be inserted into. We can create this index with:</p>
-
-<pre><code class="language-text">http put http://localhost:9200/posts
-</code></pre>
-
-<p>Running this command will show us the index has been created:</p>
-
-<pre><code class="language-json">{
-  "acknowledged": true,
-  "index": "posts",
-  "shards_acknowledged": true
-}
-</code></pre>
-
-<p>Next, we can add a new document into this index. For this example, I’ll create a small JSON file containing the data that we want to index, calling the file <code>post.json</code>:</p>
-
-<pre><code class="language-json">{
-  "id": 1,
-  "title": "Please explain, Elastic Search",
-  "date": "2023-03-03",
-  "user_id": 101,
-}
-</code></pre>
-
-<p>We can then add this document to the index by running:</p>
-
-<pre><code class="language-text">http put http://localhost:9200/posts/_doc/1 &lt; post.json
-</code></pre>
-
-<p>When we run this command, we’ll see the document has been inserted successfully, as indicated by the “result” field:</p>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_primary_term": 1,
-    "_seq_no": 0,
-    "_shards": {
-        "failed": 0,
-        "successful": 1,
-        "total": 2
-    },
-    "_type": "_doc",
-    "_version": 1,
-    "result": "created"
-}
-</code></pre>
-
-<p>Let’s also add a document that <em>should not</em> be returned by our search query:</p>
-
-<pre><code class="language-json">{
-  "id": 2,
-  "title": "We should not see this post",
-  "date": "2023-02-02",
-  "user_id": 155,
-}
-</code></pre>
-
-<p>I’ll save this in a file called <code>post-2.json</code>, and insert it:</p>
-
-<pre><code class="language-text">http put http://localhost:9200/posts/_doc/2 &lt; post-2.json
-</code></pre>
-
-<h2 id="viewing-a-document">Viewing a document</h2>
-
-<p>We can then see the document in this index using either the search API, or using the document API. Let’s look first at the search API:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_search
-</code></pre>
-
-<p>This shows:</p>
-
-<pre><code class="language-json">{
-    "_shards": {
-        "failed": 0,
-        "skipped": 0,
-        "successful": 1,
-        "total": 1
-    },
-    "hits": {
-        "hits": [
-            {
-                "_id": "1",
-                "_index": "posts",
-                "_score": 1.0,
-                "_source": {
-                    "date": "2023-03-03",
-                    "id": 1,
-                    "title": "Please explain, Elastic Search",
-                    "user_id": 101
-                },
-                "_type": "_doc"
-            }
-        ],
-        "max_score": 1.0,
-        "total": {
-            "relation": "eq",
-            "value": 1
-        }
-    },
-    "timed_out": false,
-    "took": 3
-}
-</code></pre>
-
-<p>Alternatively, we can request this document using the same URL we used for the <code>PUT</code> operation to add the document into the index:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_doc/1
-</code></pre>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_primary_term": 1,
-    "_seq_no": 0,
-    "_source": {
-        "date": "2023-03-03",
-        "id": 1,
-        "title": "Please explain, Elastic Search",
-        "user_id": 101
-    },
-    "_type": "_doc",
-    "_version": 1,
-    "found": true
-}
-</code></pre>
-
-<h2 id="searching-for-a-document">Searching for a document</h2>
-
-<p>Elastic Search has a very flexible query API, but it can be a bit wordy sometimes. Let’s write some search JSON to find a post based on a particular date range, and a user ID. I’m going to put this one into a file called <code>query.json</code>, and we’re going to write this in such a way that it does <em>not</em> find our document by writing the wrong user ID, and the wrong date range.</p>
-
-<pre><code class="language-json">{
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "range": {
-            "date": { "gte": "2023-02-01", "lte": "2023-02-28" }
-          }
-        },
-        {
-          "term": { "user_id": 100 }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>We can then run this query by using the search API:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; query.json
-</code></pre>
-
-<p>This will return no results, as our query is wrong:</p>
-
-<pre><code class="language-json">{
-    "_shards": {
-        "failed": 0,
-        "skipped": 0,
-        "successful": 1,
-        "total": 1
-    },
-    "hits": {
-        "hits": [],
-        "max_score": null,
-        "total": {
-            "relation": "eq",
-            "value": 0
-        }
-    },
-    "timed_out": false,
-    "took": 2
-}
-</code></pre>
-
-<h2 id="explaining-a-query">Explaining a query</h2>
-
-<p>To get information from Elastic Search on why a particular document hasn’t matched a query, we can use the Explain API.</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_explain/1/ &lt; query.json
-</code></pre>
-
-<p>When we run this query, we see a <em>huge</em> amount of output:</p>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_type": "_doc",
-    "explanation": {
-        "description": "Failure to meet condition(s) of required/prohibited clause(s)",
-        "details": [
-            {
-                "description": "no match on required clause (date:[1675209600000 TO 1677628799999])",
-                "details": [
-                    {
-                        "description": "date:[1675209600000 TO 1677628799999] doesn't match id 0",
-                        "details": [],
-                        "value": 0.0
-                    }
-                ],
-                "value": 0.0
-            },
-            {
-                "description": "no match on required clause (user_id:[100 TO 100])",
-                "details": [
-                    {
-                        "description": "user_id:[100 TO 100] doesn't match id 0",
-                        "details": [],
-                        "value": 0.0
-                    }
-                ],
-                "value": 0.0
-            }
-        ],
-        "value": 0.0
-    },
-    "matched": false
-}
-</code></pre>
-
-<p>This shows us that the query did not match because both the <code>date</code> and <code>user_id</code> fields are wrong. Important to note here is that the <code>date</code> field range values are returned in milliseconds-from-epoch, rather than the <code>2023-03-03</code> format we might expect.</p>
-
-<p>Let’s fix up the query so that it now matches, putting the query into another file called <code>fixed-query.json</code>:</p>
-
-<pre><code class="language-json">{
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "range": {
-            "date": { "gte": "2023-03-01", "lte": "2023-03-31" }
-          }
-        },
-        {
-          "term": { "user_id": 101 }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>We can then run this corrected query through the explain endpoint:</p>
-
-<pre><code class="language-text">http post http://localhost:9200/posts/_explain/1 &lt; fixed-query.json
-</code></pre>
-
-<p>The output will show that our query now matches this document:</p>
-
-<pre><code class="language-json">{
-    "_id": "1",
-    "_index": "posts",
-    "_type": "_doc",
-    "explanation": {
-        "description": "sum of:",
-        "details": [
-            {
-                "description": "date:[1677628800000 TO 1680307199999]",
-                "details": [],
-                "value": 1.0
-            },
-            {
-                "description": "user_id:[101 TO 101]",
-                "details": [],
-                "value": 1.0
-            }
-        ],
-        "value": 2.0
-    },
-    "matched": true
-}
-</code></pre>
-
-<p>And if we attempt to search with this query, we’ll see it returned in the hits for this query too:</p>
-
-<pre><code class="language-text">http get http://localhost:9200/posts/_search &lt; fixed-query.json
-</code></pre>
-
-<pre><code class="language-json">
-{
-    "_shards": {
-        "failed": 0,
-        "skipped": 0,
-        "successful": 1,
-        "total": 1
-    },
-    "hits": {
-        "hits": [
-            {
-                "_id": "1",
-                "_index": "posts",
-                "_score": 2.0,
-                "_source": {
-                    "date": "2023-03-03",
-                    "id": 1,
-                    "title": "Please explain, Elastic Search",
-                    "user_id": 101
-                },
-                "_type": "_doc"
-            }
-        ],
-        "max_score": 2.0,
-        "total": {
-            "relation": "eq",
-            "value": 1
-        }
-    },
-    "timed_out": false,
-    "took": 12
-}
-</code></pre>
 ]]></content>
  </entry>
  
