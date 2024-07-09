@@ -1,4 +1,93 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-07-05T10:16:45+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Separation of data and view layers in React components</title><link href="http://localhost:4000/2024/07/separation-of-react-components-with-graphql" rel="alternate" type="text/html" title="Separation of data and view layers in React components" /><published>2024-07-05T00:00:00+10:00</published><updated>2024-07-05T00:00:00+10:00</updated><id>http://localhost:4000/2024/07/separation-of-react-components-with-graphql</id><content type="html" xml:base="http://localhost:4000/2024/07/separation-of-react-components-with-graphql"><![CDATA[<p>In my <a href="https://leanpub.com/apollo-handbook">Apollo Handbook</a> I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the <em>data layer</em> from the <em>view layer</em> of a component.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-07-09T15:25:25+10:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Debugging Checklist</title><link href="http://localhost:4000/2024/07/debugging-checklist" rel="alternate" type="text/html" title="Debugging Checklist" /><published>2024-07-09T00:00:00+10:00</published><updated>2024-07-09T00:00:00+10:00</updated><id>http://localhost:4000/2024/07/debugging-checklist</id><content type="html" xml:base="http://localhost:4000/2024/07/debugging-checklist"><![CDATA[<p>Above my screen, I have simple reminder: “IT IS ALWAYS TIMEZONES.” It used to be a simple black-and-white sign until my daughter decided it needed to be turned into a brilliant rainbow of a warning.</p>
+
+<p>The sign was put up after experiencing not one <em>but two</em> timezone-related bugs within a relatively close proximity. Periodically, I’ll see something similar crop up like a test failing before 10am, but not after, thanks to the differences between what day of the week it is in UTC vs my local computer (in +1000 or +1100, depending on the day).</p>
+
+<p>In a work discussion yesterday we talked about debugging checklists and I wrote up one with what I could think of. I’m sharing it here as it might be useful to others. Maybe there’ll be more signs that come out of it.</p>
+
+<p><strong>First: have you eaten or drunk anything recently? Do you need to take a break?</strong></p>
+
+<p><strong>Then:</strong></p>
+
+<ol>
+  <li>Are you in the right app?</li>
+  <li>Right file?</li>
+  <li>Right function?</li>
+  <li>Is the function spelled correctly?</li>
+  <li>If you’re running locally:
+    <ol>
+      <li>Is the server up?</li>
+      <li>Is the server running on the port you expect?</li>
+    </ol>
+  </li>
+  <li>Is there information in the logs?
+    <ol>
+      <li>Can you add more logs to provide more useful information? (Usually, yes.)</li>
+      <li>Can you reduce other logging to focus on just what you need?</li>
+    </ol>
+  </li>
+  <li>Are you sure you’re in the right environment (local / staging, etc) for this?</li>
+  <li>Can you inspect this function to determine if it is what you expect?
+    <ol>
+      <li>Is the input what you expect?</li>
+      <li>Is the output what you expect?</li>
+      <li>Are there intermediary steps where the input is transformed into a new form?</li>
+    </ol>
+  </li>
+  <li>Is it a string issue?
+    <ol>
+      <li>Does casing matter in this situation?</li>
+      <li>Are you comparing this string to another? Inspect both to see any differences.</li>
+      <li>Are there extra characters blank spaces?</li>
+      <li>Null-byte prefix? (check with #codepoints)</li>
+    </ol>
+  </li>
+  <li>If the behaviour is new:
+    <ol>
+      <li>Do you see this behaviour on the main branch, or just your own?</li>
+      <li>If you see it on the main branch, can you use <code>git bisect</code> to find out when this issue was introduced?</li>
+      <li>Were there packages updated recently that may have introduced this bug?</li>
+    </ol>
+  </li>
+  <li>Is an exception happening, and then being rescued too quickly by something like <code>rescue</code> or <code>rescue StandardError</code>?
+    <ol>
+      <li>Can you narrow down the exception class to something more specific?</li>
+    </ol>
+  </li>
+  <li>If it is a time bug:
+    <ol>
+      <li>Is it a different day in UTC compared to your local time?</li>
+      <li>Do you need to freeze time for this test?</li>
+      <li>Are you certain the time zone your code is running in is the right time zone?</li>
+    </ol>
+  </li>
+  <li>If it’s an integer / float bug:
+    <ol>
+      <li>Are there numbers being rounded?</li>
+      <li>Can you push the rounding “down” the stack, so it is one of the final operations to simplify?</li>
+    </ol>
+  </li>
+  <li>If it’s a browser issue:
+    <ol>
+      <li>Can you reproduce this issue in a different browser?</li>
+      <li>Are you trying to use a browser API that is not currently supported in this browser?</li>
+      <li>Are there any errors displayed in the console?</li>
+      <li>Were there any network requests that failed, or contain errors?</li>
+    </ol>
+  </li>
+  <li>If this code depends on environment variables:
+    <ol>
+      <li>Is the environment variable spelled correctly?</li>
+      <li>Is the value of that variable what you expect?</li>
+    </ol>
+  </li>
+  <li>If this code depends on a configuration file:
+    <ol>
+      <li>Is the configuration file in the right place?</li>
+      <li>Is the configuration key set up where you expect it?</li>
+      <li>Does that key have the right value?</li>
+    </ol>
+  </li>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[Above my screen, I have simple reminder: “IT IS ALWAYS TIMEZONES.” It used to be a simple black-and-white sign until my daughter decided it needed to be turned into a brilliant rainbow of a warning.]]></summary></entry><entry><title type="html">Separation of data and view layers in React components</title><link href="http://localhost:4000/2024/07/separation-of-react-components-with-graphql" rel="alternate" type="text/html" title="Separation of data and view layers in React components" /><published>2024-07-05T00:00:00+10:00</published><updated>2024-07-05T00:00:00+10:00</updated><id>http://localhost:4000/2024/07/separation-of-react-components-with-graphql</id><content type="html" xml:base="http://localhost:4000/2024/07/separation-of-react-components-with-graphql"><![CDATA[<p>In my <a href="https://leanpub.com/apollo-handbook">Apollo Handbook</a> I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the <em>data layer</em> from the <em>view layer</em> of a component.</p>
 
 <p>With Apollo and <a href="https://the-guild.dev/graphql/codegen">GraphQL code generator</a>, we get React hooks that we can use in our component. It can be tempting to combine both these layers together in a single component:</p>
 
@@ -555,87 +644,4 @@ end
 <pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
 </code></pre>
 
-<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry><entry><title type="html">Audit Logging Notes</title><link href="http://localhost:4000/2023/12/audit-logging-notes" rel="alternate" type="text/html" title="Audit Logging Notes" /><published>2023-12-20T00:00:00+11:00</published><updated>2023-12-20T00:00:00+11:00</updated><id>http://localhost:4000/2023/12/audit-logging-notes</id><content type="html" xml:base="http://localhost:4000/2023/12/audit-logging-notes"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
-
-<p>What I could find though was GitHub’s own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.</p>
-
-<p>This application in question that I’m working on is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
-
-<p>Audit logging means tracking all the “write” events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users’ activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.</p>
-
-<h2 id="audit-table-schema">Audit Table Schema</h2>
-
-<p>We have a table that tracks all the events a user takes, tracking:</p>
-
-<ul>
-  <li><code>timestamp</code>: <strong>When</strong> the event happened.</li>
-  <li><code>user_id</code>: <strong>Who</strong> took the action.</li>
-  <li><code>merchant_id</code>: The merchant account where the action was taken.</li>
-  <li><code>action</code>: <strong>What</strong> the action was (a string like <code>create_purchase</code>)</li>
-  <li><code>record_id</code> / <code>record_type</code>: If the action was taken on a record, what the record was. This can be nullable, as some actions do not involve a record that isn’t the user’s record, such as logging in, or resetting a password.</li>
-  <li><code>payload</code>: Any additional metadata we wanted to include</li>
-</ul>
-
-<p>A record in the audit log table might look like:</p>
-
-<ul>
-  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
-  <li><code>user_id</code>: 1</li>
-  <li><code>merchant_id</code>: 2</li>
-  <li><code>action</code>: <code>create_purchase</code></li>
-  <li><code>record_id</code> / <code>record_type</code>: 3 / Purchase</li>
-  <li><code>payload</code>: <code>{}</code></li>
-</ul>
-
-<p>Or:</p>
-
-<ul>
-  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
-  <li><code>user_id</code>: 1</li>
-  <li><code>merchant_id</code>: nil</li>
-  <li><code>action</code>: <code>login</code></li>
-  <li><code>record_id</code> / <code>record_type</code>: nil</li>
-  <li><code>payload</code>: <code>{}</code></li>
-</ul>
-
-<p>We separate the login event from any particular merchant in our application, as a user can login and then switch between the different merchants they have access to.</p>
-
-<h2 id="displaying-audit-logs">Displaying audit logs</h2>
-
-<p>Displaying this information is done in two distinct ways. We want to display audit log information on a per-user basis; what actions has <em>this particular user</em> taken? And: we want to display audit log information for a whole merchant account; what actions <em>have all users</em> taken on <em>this particular merchant account</em>?</p>
-
-<p>In both situations, all of these things are helpful:</p>
-
-<ul>
-  <li>Show events in reverse chronological order</li>
-  <li>Group events by date</li>
-  <li>Paginate events, rather than showing <em>all events ever</em>, show 25-50 events on a page.</li>
-  <li>Provide searching, allowing a user to search for <em>actions</em> or <em>record IDs / types</em>.</li>
-  <li>Allow users to filter by a specific date range. Default this date range to the last 30 days.</li>
-  <li>Indicate potentially dangerous events with a specific label, such as password reset for the user, failed login attempts or deletion of data.</li>
-</ul>
-
-<h2 id="handling-deleted-records">Handling deleted records</h2>
-
-<p>Also worth considering here is how you would display an audit log line for a deleted record. Say that these two events occurred:</p>
-
-<ol>
-  <li>A customer was created</li>
-  <li>The same customer record was deleted</li>
-</ol>
-
-<p>Is it still relevant that the customer was created in the first place? Perhaps. A customer could’ve had a payment processed for them in the interleaving time, which would be a very relevant log line to catch.</p>
-
-<p>For this reason, consider soft-deletion of important records using something such as <a href="https://github.com/jhawthorn/discard">the discard gem</a>. That way, you can still point the audit log to the record in question, even if it remains invisible from other parts of the system.</p>
-
-<h2 id="staff--system-level-events">Staff / system level events</h2>
-
-<p>Our system allows for internal staff to “impersonate” users and act on their behalf. This is often used to debug production issues. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
-
-<p>For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a “system” user.</p>
-
-<h2 id="audit-log-retention">Audit log retention</h2>
-
-<p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
-
-<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.]]></summary></entry></feed>
+<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Last night I saw this post from Will Cosgrove showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the View Component gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex and View Component are both great!]]></summary></entry></feed>
