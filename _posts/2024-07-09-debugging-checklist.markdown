@@ -32,8 +32,9 @@ In a work discussion yesterday we talked about debugging checklists and I wrote 
 9.  Is it a string issue?
     1.  Does casing matter in this situation?
     2.  Are you comparing this string to another? Inspect both to see any differences.
-    3.  Are there extra characters blank spaces?
-    4.  Null-byte prefix? (check with #codepoints)
+    3.  Does pluralization or non-pluralization of the string matter?
+    4.  Are there extra characters blank spaces?
+    5.  Null-byte prefix? (check with #codepoints)
 10. If the behaviour is new:
     1. Do you see this behaviour on the main branch, or just your own?
     2. If you see it on the main branch, can you use `git bisect` to find out when this issue was introduced?
