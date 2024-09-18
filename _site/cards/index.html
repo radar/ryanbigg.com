@@ -1,24 +1,23 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trove Tracker</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/cards/cards.css">
+    <link
+    href="https://fonts.googleapis.com/css?family=Lato:regular,bold,bolditalic"
+    rel="stylesheet"
+  />
+    <script src="/cards/cards.js"></script>
   </head>
-  <style type="text/css">
-    iframe {
-        max-width: 100% !important;
-        width: 100vw;
-        height: 100vh;
-    }
-    body {
-      height: 100%;
-    }
-  </style>
   <body>
-  <iframe src="https://trove-tracker.vercel.app/collections/1/cards">
+    <div class="bg-blue-100 px-4 py-2 header flex items-center"><h1 class="text-blue-900 mb-0">Trove Tracker</h1></div>
+    <div class="my-4 mx-auto px-4">
+      <h2>Find a card</h2>
+      <input type="text" id="search" class="text-field" placeholder="Card name">
 
-  </iframe>
+      <div id='results' class="mt-8 mx-8 grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10 gap-4 md:gap-2"></div>
+    </div>
 
-
-
-</body>
+  </body>
 </html>

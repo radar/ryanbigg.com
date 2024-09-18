@@ -1,0 +1,16 @@
+{
+  "name": "cards",
+  "type": "module",
+  "dependencies": {
+    "debounce": "^2.1.0",
+    "esbuild": "^0.23.1",
+    "fuse.js": "^7.0.0",
+    "http-server": "^14.1.1",
+    "tailwindcss": "^3.4.10"
+  },
+  "scripts": {
+    "tailwind": "tailwindcss -i ./src/cards.css -o ./cards.css --watch",
+    "build": "esbuild --bundle src/cards.js --outfile=cards.js --minify --watch",
+    "server": "http-server"
+  }
+}
