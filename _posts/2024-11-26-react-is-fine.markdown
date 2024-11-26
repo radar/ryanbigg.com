@@ -23,3 +23,5 @@ Two things that we don't have yet in how our applications operate are server-sid
 Server-side-rendering would mean that we could get away with displaying dynamic data, still using our existing React components, without displaying loading spinners all over the place. It's a trivial thing, but a loading spinner makes me think "this app could've taken an extra 100ms to fetch this data in the original request". We could probably get there with a little effort, though I do wonder how it'd work with the GraphQL things we have in place.
 
 On web components: I would like to move parts of our design system towards adopting those. I'm somewhat wary of the "newness" of interactivity between React + web components, and also about the "split brain" of switching between "this is a React component" and "this is a web component". But I think web components is ultimately where we're headed, as the browser always wins.
+
+(And on one more note: Don't get me started on Stimulus.)
