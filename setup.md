@@ -39,7 +39,7 @@ They're both mounted onto the desk via a dual arm monitor mount from the local o
 
 For _your_ viewing pleasure I have a [Logitech C920](https://www.logitech.com/en-us/products/webcams/c920-pro-hd-webcam.html) webcam. It sits on top of the monitor and shows you the perpetually somehow messy bed behind me that I sleep in the nights my daughter kicks me out of my own bed, the sunlight streaming in through the window slats, but also my face. For some reason our lizard brains feel better when we can see each others' faces. Huh.
 
-## Keyboard: [Kinesis Freestyle Edge RGB Split Mechanical](https://ergodox-ez.com/)
+## Keyboard: [Ergodox EZ](https://ergodox-ez.com/)
 
 After using [Apple Magic Keyboards](https://www.apple.com/au/shop/product/MLA22ZA/A/magic-keyboard-us-english) for an extended period of time, I started to feel like a tool made to look good in photos but not for actual use probably wasn't the best idea.
 
