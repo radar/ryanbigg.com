@@ -1,4 +1,186 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-10-22T19:20:34+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ruby Retreat 2024</title><link href="http://localhost:4000/2024/10/ruby-retreat-2024" rel="alternate" type="text/html" title="Ruby Retreat 2024" /><published>2024-10-22T00:00:00+11:00</published><updated>2024-10-22T00:00:00+11:00</updated><id>http://localhost:4000/2024/10/ruby-retreat-2024</id><content type="html" xml:base="http://localhost:4000/2024/10/ruby-retreat-2024"><![CDATA[<p>This weekend was Ruby Retreat (a re-branded <a href="https://rails.camp/">Rails Camp</a>) where we gathered 60 people from Australia and New Zealand at a camp ground in Warrnambool, the town where I live. Ruby Retreat is an un-conference event where Rubyists of all skill levels come together to hang out from a Friday night until a Monday morning. There may have even been some non-Rubyists there too. We provided catering and beds, they provided the activities.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-12-06T10:01:28+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Using Elastic Search’s Profile API</title><link href="http://localhost:4000/2024/12/using-elastic-searchs-profile-api" rel="alternate" type="text/html" title="Using Elastic Search’s Profile API" /><published>2024-12-06T00:00:00+11:00</published><updated>2024-12-06T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/using-elastic-searchs-profile-api</id><content type="html" xml:base="http://localhost:4000/2024/12/using-elastic-searchs-profile-api"><![CDATA[<p>Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.</p>
+
+<p>We use Elastic Search to power this search (even though Postgres’ own full-text search would’ve been suitable!) and the query we wrote for Elastic Search was this one written about 10 years ago:</p>
+
+<pre><code class="language-json">{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Ryan*"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "merchant_id": [2]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>This query will search for the query string “Ryan*” across all fields on all documents within the <code>customers</code> index. Given the application has grown substantially over the last 10 years, there’s now <em>a lot</em> of customer documents to search through. As the number of documents grow, the amount of time to search through those documents gets increasingly slower.</p>
+
+<p>In order to figure out <em>why</em> this query was slow rather than “big data” and vibes-driven-development, I turned to the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-profile.html">Profile API within Elastic Search</a>. We can use this by adding <code>profile: true</code> to the top of any query string:</p>
+
+<pre><code class="language-json">{
+  "profile": true,
+  "query": {
+    "bool": {
+  ...
+</code></pre>
+
+<p>This profile key gives us a <em>very</em> detailed breakdown of what a query is doing, including how long each of its distinct parts are taking. Fortunately for us, this query is relatively “simple” and only consists of one very large operation: search across all document fields for a wildcarded query string.</p>
+
+<p>The first thing I noticed when looking at this output is that the number of fields are quite long:</p>
+
+<pre><code>{
+  "profile": {
+    "shards": [
+      {
+        "id": "[JzYnfX2ORHiGumsVoL3jhg][customers][2]",
+        "searches": [
+          {
+            "query": [
+              {
+                "type": "BooleanQuery",
+                "description": "(last_name.keyword:Ryan* | &lt;a lot of fields&gt;"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+</code></pre>
+
+<p>The excessive amount of fields are a combination of regular customer information and address information. So my first thought was could we limit the amount of fields that we’re letting users search through. To do this, we can use <code>fields</code> on the query to say “only search these fields”:</p>
+
+<pre><code class="language-json">{
+  "profile": true,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Ryan*",
+            "fields": [
+              "first_name",
+              "last_name",
+              "email",
+              "reference",
+              "card_token",
+              "card_number",
+              "public_id"
+            ]
+          }
+        }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "merchant_id": [2]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>This time the profile output only contained the fields that I was interested in. These fields are all the fields we display in the UI for customers – notably <code>card_number</code> is a masked version of the number.</p>
+
+<p>After making this change, the query time went from multiple-digit seconds to single-digit seconds. This is because the query now looks in fewer locations across each document within its index. Importantly, the query also passed all our feature tests around searching within our application too.</p>
+
+<p>I still felt like there was space to improve the query. Did we really need it to use a wildcard search, given that Elastic Search is pretty decent at matching text? So I tried it again without the wildcard on the end of the query:</p>
+
+<pre><code class="language-json">{
+  "profile": true,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Ryan",
+            "fields": [
+              "first_name",
+              "last_name",
+              "email",
+              "reference",
+              "card_token",
+              "card_number",
+              "public_id"
+            ]
+          }
+        }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "merchant_id": [2]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>This query now operated in two-digit milliseconds. Without using a wildcard, the query is pre-analysed by Elastic Search and breaks it down into tokens that can then be matched to pre-analysed documents within the index.</p>
+
+<p>Comparing the two profile outputs, the one with the wildcard shows a series of <code>MultiTermQueryConstantScoreWrapper</code>, matching against all different fields. The one without the wildcard shows a range of different ones such as <code>TermQuery</code> for fields classified as <code>term</code>, which will match faster as we’re searching based on the pre-analysed data within the index.</p>
+
+<p>(And if we want to be completely un-scientific about it, the profile output for wildcard searching is 1,100 lines, while the profile output for non-wildcard searching is only 700 lines. Fewer lines of profiling output is a very good indicator that the searcher is doing less work!)</p>
+
+<p>This is more suitable for matching against customer records in most circumstances, as our users are searching either by a customer’s full name or their email addresses. In rarer cases, they’re using reference values, and when that happens it appears to be the full reference value. The <code>card_token</code> and <code>card_number</code> fields are used the least frequently.</p>
+
+<p>I’m going to be rolling out this change next week and I have strong faith in its ability to reduce search time for people. I now have an additional tool in my toolbelt for diagnosing slow Elastic Search queries, and a better understanding from the profile output as to what different queries are doing.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.]]></summary></entry><entry><title type="html">React is fine</title><link href="http://localhost:4000/2024/11/react-is-fine" rel="alternate" type="text/html" title="React is fine" /><published>2024-11-26T00:00:00+11:00</published><updated>2024-11-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/11/react-is-fine</id><content type="html" xml:base="http://localhost:4000/2024/11/react-is-fine"><![CDATA[<p><a href="https://joshcollinsworth.com/blog/antiquated-react">This post called “Things you forgot (or never knew) because of React</a> by Josh Collinsworth is a good read about the deficiencies of React, and includes a good comparison between React and the other frontend frameworks at the moment.</p>
+
+<p>And yet, I find myself and my team consistently being productive with React. The main application we develop uses a lot of it, a second application has had a re-write of a key component into React, and other apps have “React sprinkles” through them. It’s a versatile framework!</p>
+
+<p>In our main application, we have React componentry brought in from our design system, which is then bundled together into much larger components. Most of these are static components: take some data, render an element a certain way depending on that data. Where we use React’s “reactivity” is typically in a few small places:</p>
+
+<ol>
+  <li>Make this menu appear when its “open” button is clicked</li>
+  <li>Show a loading spinner while a request is processing</li>
+  <li>Display a validation error message if a field doesn’t pass validation (for example: a card expiry that is in the past, or an invalid card number – neither of which browsers support natively.)</li>
+</ol>
+
+<p>We also leverage a lot of what GraphQL provides by exporting types from the backend to then inform types on the frontend. Yes, we <em>could</em> do this <a href="https://the-guild.dev/graphql/codegen/docs/guides/svelte">with another framework</a> but even adding a single component that uses this framework doubles our team’s cognitive load for what seems like minimal benefit. These GraphQL types then go on to inform what the data used in those React components of the app should look like.</p>
+
+<p>In terms of styling: we use Tailwind, which I covered in <a href="https://ryanbigg.com/2024/03/tailwind-has-won">“Tailwind has won”</a>. We don’t need styles that are limited in scope to a particular component because of how Tailwind operates – it’s all utility classes and they don’t apply <em>until you apply them</em>. Yes, you can have really really long class lists, but you can compress these down into your own utility classes, as we’ve done with things such as <code>.zeal-button-primary</code>.</p>
+
+<p>Two things that we don’t have yet in how our applications operate are server-side rendering and web components.</p>
+
+<p>Server-side-rendering would mean that we could get away with displaying dynamic data, still using our existing React components, without displaying loading spinners all over the place. It’s a trivial thing, but a loading spinner makes me think “this app could’ve taken an extra 100ms to fetch this data in the original request”. We could probably get there with a little effort, though I do wonder how it’d work with the GraphQL things we have in place.</p>
+
+<p>On web components: I would like to move parts of our design system towards adopting those. I’m somewhat wary of the “newness” of interactivity between React + web components, and also about the “split brain” of switching between “this is a React component” and “this is a web component”. But I think web components is ultimately where we’re headed, as the browser always wins.</p>
+
+<p>(And on one more note: Don’t get me started on Stimulus.)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This post called “Things you forgot (or never knew) because of React by Josh Collinsworth is a good read about the deficiencies of React, and includes a good comparison between React and the other frontend frameworks at the moment.]]></summary></entry><entry><title type="html">Ruby Retreat 2024</title><link href="http://localhost:4000/2024/10/ruby-retreat-2024" rel="alternate" type="text/html" title="Ruby Retreat 2024" /><published>2024-10-22T00:00:00+11:00</published><updated>2024-10-22T00:00:00+11:00</updated><id>http://localhost:4000/2024/10/ruby-retreat-2024</id><content type="html" xml:base="http://localhost:4000/2024/10/ruby-retreat-2024"><![CDATA[<p>This weekend was Ruby Retreat (a re-branded <a href="https://rails.camp/">Rails Camp</a>) where we gathered 60 people from Australia and New Zealand at a camp ground in Warrnambool, the town where I live. Ruby Retreat is an un-conference event where Rubyists of all skill levels come together to hang out from a Friday night until a Monday morning. There may have even been some non-Rubyists there too. We provided catering and beds, they provided the activities.</p>
 
 <p>The idea for this event came out of a Ruby Australia conference earlier in the year when a group of Ruby friends pulled me aside and said “we should have a camp again!”. We’ve had about 27 of these in the past, with them dating back to 2007. Covid threw a spanner in the works and we ended up not running one for a while.</p>
 
@@ -6,7 +188,9 @@
 
 <h2 id="selling-tickets">Selling tickets</h2>
 
-<p>We sold tickets to the camp by advertising them at https://retreat.ruby.org.au, and selling them through <a href="https://ti.to">Tito</a>. We eye-balled a rough estimate on what the camp would cost us and used that to set the ticket prices ($350 full price, $300 concession). We weren’t too far off, with the debt (measured in &lt; $2,000 terms) being covered by Ruby Australia’s sponsors for the year.</p>
+<p>We sold tickets to the camp by advertising them at https://retreat.ruby.org.au by recycling a previous version of the website, and selling them through <a href="https://ti.to">Tito</a>. We eye-balled a rough estimate on what the camp would cost us and used that to set the ticket prices ($350 full price, $300 concession). We weren’t too far off, with the debt (measured in &lt; $2,000 terms) being covered by Ruby Australia’s sponsors for the year.</p>
+
+<p>I think we could’ve done a better job with marketing the camp, probably by having organisers (or proxies) visit each meetup around the country and spruik the benefit of it.</p>
 
 <p>We ended up selling 60 tickets to the event and also gave an option for people to put in for an Opportunity Ticket cost. This was enough to bring one extra person <em>for free</em> along to the camp. We didn’t make a big deal about it at the camp but I reckon it is a big deal! Generosity like this is awesome to see from this community.</p>
 
@@ -122,7 +306,7 @@ Sticky rice w cinnamon coconut sauce with banana and berries(VG DF GF)</p>
 
 <p>A group formed around a table-top game like DND but not DND (I didn’t catch the name!) on Sunday afternoon and played that long enough for the guy who was running it to turn a great shade of red from his sunburn.</p>
 
-<p>Other attendees ended up touring around Warrnambool doing things like riding the flying fox at Lake Pertobe, walking around the coastal walk at Thunder Point or visiting the nearby beaches. Others spent time further afield going out to Tower Hill and other locations.</p>
+<p>Other attendees ended up touring around Warrnambool doing things like riding the flying fox at Lake Pertobe, walking around the coastal walk at Thunder Point or visiting the nearby beaches. Some people were even able to make bookings at the Deep Blue Hot Springs. Others spent time further afield going out to Tower Hill and other locations.</p>
 
 <h2 id="would-i-do-it-again">Would I do it again?</h2>
 
@@ -671,55 +855,4 @@ end
 }
 </code></pre>
 
-<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, I can type part of the branch name if I remember it, and <code>fzf</code> will filter the list of branches to just the ones that match that. When I find the branch I want, I hit enter and this will swap over to the branch.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.]]></summary></entry><entry><title type="html">code is like garden</title><link href="http://localhost:4000/2024/05/code-is-like-garden" rel="alternate" type="text/html" title="code is like garden" /><published>2024-05-04T00:00:00+10:00</published><updated>2024-05-04T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/code-is-like-garden</id><content type="html" xml:base="http://localhost:4000/2024/05/code-is-like-garden"><![CDATA[<p>Code is like garden.</p>
-
-<p>Sometimes, you come into garden and find out past gardener put sun-loving plant in the cupboard at the back of the shed. You discover more sheds and cupboards later on.</p>
-
-<p>The materials used in shed construction make you think past gardener may have been ticking off a list of known elements, rather than trying to build sturdy shed.</p>
-
-<p>Past gardener put picket fence going vertically up the side of one shed. You ask other gardeners why the fence is there and they say “it’s always been that way”. No other shed has a fence.</p>
-
-<p>Some gardeners like a particular brand of hand trowel and get into religious arguments over which hand trowel is better.</p>
-
-<p>Sometimes, GM (Garden Manager) ask how long it takes to grow a tree. GM gets grumpy when asked what kind of tree they are talking about.</p>
-
-<p>GM gets jealous of fig tree in big city Botanic Gardens (lots of pro gardeners there). Wants you to grow one exactly like it in 3 months, same size and fruit quantity. The fig tree in the gardens is over four stories tall and has existed for decades. You will be the only gardener tasked with growing this tree.</p>
-
-<p>Weeding will be prioritised next weekend. This weekend is for planting new things that the GM purchased and spraying the bugs, but only ones VIP buyer has pointed out. It rains the next 3 weekends, and the weeds run wild. More things come in to plant in the mean time. You weed in between planting, without telling GM.</p>
-
-<p>Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.</p>
-
-<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Code is like garden.]]></summary></entry><entry><title type="html">One year with the Ergodox EZ</title><link href="http://localhost:4000/2024/04/one-year-with-the-ergodox-ez" rel="alternate" type="text/html" title="One year with the Ergodox EZ" /><published>2024-04-29T00:00:00+10:00</published><updated>2024-04-29T00:00:00+10:00</updated><id>http://localhost:4000/2024/04/one-year-with-the-ergodox-ez</id><content type="html" xml:base="http://localhost:4000/2024/04/one-year-with-the-ergodox-ez"><![CDATA[<p>A year ago I upgraded from a <a href="https://kinesis-ergo.com/keyboards/freestyle-edge-rgb/">Kinesis Freestyle Edge</a> to an <a href="https://ergodox-ez.com">Ergodox EZ</a>. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)</p>
-
-<p>I used <a href="https://monkeytype.com">Monkeytype</a> to practice typing on the keyboard, and the stats there show that it took me about a month to go from the initial speed of 40wpm (quite painful) back up to 90wpm. That’s when I started feeling properly comfortable with it. I can now do about 130wpm on this keyboard, which is the same speed I could do on the Freestyle and my laptop keyboard.</p>
-
-<p>I originally bought the Kinesis keyboard because of persistent shoulder pain from using a single keyboard. Having two keyboards that I can keep a little over shoulder width apart has helped to keep my physiotherapy bills down. Since using split keyboards, I haven’t had to go to a physio to get my shoulders “unlocked”. So the keyboards have paid for themselves that way.</p>
-
-<p>Since buying the Ergodox, I’ve also started to make good use of the layering system. You can see the full set of layouts here:</p>
-
-<div style="padding-top: 60%; position: relative;">
-	<iframe src="https://configure.zsa.io/embed/ergodox-ez/layouts/5wDLX/latest/0" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%"></iframe>
-</div>
-
-<p>A few things to note about Layer 0:</p>
-
-<ol>
-  <li>Backspace is where caps lock usually is. I feel strongly about this – it should be standard on all keyboards.</li>
-  <li>Held keys: Z becomes Left control, Forward slash becomes right control, semi-colon switches to the 2nd layer.</li>
-  <li>Backtick and tilde are on the bottom left of the left keyboard. This button, when held, switches to the 1st layer.</li>
-  <li>Command, option and escape are on the thumb keys. No “Emacs claw” for complicated shortcuts.</li>
-  <li>Top left is equals. It gets special preference as I type it a lot when coding.</li>
-  <li>The “Hyper” key is one of the keys required for my <a href="https://www.hammerspoon.org/">Hammerspoon</a> shortcuts. I use these to move quickly between apps.</li>
-  <li>There are shortcuts on the thumb keys for cut (the knife), paste and copy.</li>
-  <li>I could probably remap that spare “Tab” on the right thumb to something else – I use the top-left tab out of habit. I don’t have an immediate idea of what it could map to.</li>
-</ol>
-
-<p>A keen observer would note that there’s no curly brackets on here, and yet I still somehow manage to write Ruby hashes and JavaScript objects. I keep those on Layer 1, where the “E” and “R” keys are my brackets. If I hold backtick (bottom left of the left keyboard), this triggers the layer switcher to switch to Layer 1. My keyboard indicates this by lighting up a red LED. When I then press “E”, I get a square bracket. If I do the same holding of backtick but press “E” twice, I get a curly bracket. I think this is one of the cooler features of this keyboard. You can configure actions when a key is tapped, double tapped, held, or tapped then held. I use the first 3 of these, but haven’t found a use for tapped then held yet.</p>
-
-<p>On Layer 1’s right-hand panel is the arrow keys. I still can’t map it in my brain that left and right arrows are on the left keyboard, and up and down are on the right. So I’ve got the traditional arrow layout on that layer, on the right of the keyboard roughly where my hand expects it to be.</p>
-
-<p>Next, we have Layer 2 which is the media controls. On my laptop keyboard, these are on the function keys, which always felt like a bit of a hard reach. To get to this layer I hold the semi-colon key, and the keyboard indicates it’s switched with a green LED. I can then do all the regular music things like play, pause, mute, etc.</p>
-
-<p>For reasons that are completely opaque to me, there can be up to 32 different layers on the keyboard. I cannot imagine ever needing more than the few that I have right now. Even thinking about the keyboard contortion that would be required to switch to a 32nd layer and not the 28th layer is giving me a headache.</p>
-
-<p>Finally: a word on the switches inside the keyboard itself. The keyboard came with Cherry Brown switches which are what I would consider to be the greatest argument ever against working from the office. They were ridiculously loud. And stiff enough that even someone who types as hard as I do noticed how hard I had to press. I’ve since replaced the switches with Cherry Reds which are quieter and not as stiff. I think this has made maybe a 5-10% improvement on my accuracy and speed for this keyboard.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A year ago I upgraded from a Kinesis Freestyle Edge to an Ergodox EZ. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)]]></summary></entry></feed>
+<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, I can type part of the branch name if I remember it, and <code>fzf</code> will filter the list of branches to just the ones that match that. When I find the branch I want, I hit enter and this will swap over to the branch.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.]]></summary></entry></feed>

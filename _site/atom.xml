@@ -4,13 +4,213 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2024-10-22T19:20:34+11:00</updated>
+ <updated>2024-12-06T10:01:28+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Using Elastic Search&apos;s Profile API</title>
+   <link href="https://ryanbigg.com/2024/12/using-elastic-searchs-profile-api"/>
+   <updated>2024-12-06T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2024/12/using-elastic-searchs-profile-api</id>
+   <content type="html"><![CDATA[<p>Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.</p>
+
+<p>We use Elastic Search to power this search (even though Postgres’ own full-text search would’ve been suitable!) and the query we wrote for Elastic Search was this one written about 10 years ago:</p>
+
+<pre><code class="language-json">{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Ryan*"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "merchant_id": [2]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>This query will search for the query string “Ryan*” across all fields on all documents within the <code>customers</code> index. Given the application has grown substantially over the last 10 years, there’s now <em>a lot</em> of customer documents to search through. As the number of documents grow, the amount of time to search through those documents gets increasingly slower.</p>
+
+<p>In order to figure out <em>why</em> this query was slow rather than “big data” and vibes-driven-development, I turned to the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-profile.html">Profile API within Elastic Search</a>. We can use this by adding <code>profile: true</code> to the top of any query string:</p>
+
+<pre><code class="language-json">{
+  "profile": true,
+  "query": {
+    "bool": {
+  ...
+</code></pre>
+
+<p>This profile key gives us a <em>very</em> detailed breakdown of what a query is doing, including how long each of its distinct parts are taking. Fortunately for us, this query is relatively “simple” and only consists of one very large operation: search across all document fields for a wildcarded query string.</p>
+
+<p>The first thing I noticed when looking at this output is that the number of fields are quite long:</p>
+
+<pre><code>{
+  "profile": {
+    "shards": [
+      {
+        "id": "[JzYnfX2ORHiGumsVoL3jhg][customers][2]",
+        "searches": [
+          {
+            "query": [
+              {
+                "type": "BooleanQuery",
+                "description": "(last_name.keyword:Ryan* | &lt;a lot of fields&gt;"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+</code></pre>
+
+<p>The excessive amount of fields are a combination of regular customer information and address information. So my first thought was could we limit the amount of fields that we’re letting users search through. To do this, we can use <code>fields</code> on the query to say “only search these fields”:</p>
+
+<pre><code class="language-json">{
+  "profile": true,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Ryan*",
+            "fields": [
+              "first_name",
+              "last_name",
+              "email",
+              "reference",
+              "card_token",
+              "card_number",
+              "public_id"
+            ]
+          }
+        }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "merchant_id": [2]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>This time the profile output only contained the fields that I was interested in. These fields are all the fields we display in the UI for customers – notably <code>card_number</code> is a masked version of the number.</p>
+
+<p>After making this change, the query time went from multiple-digit seconds to single-digit seconds. This is because the query now looks in fewer locations across each document within its index. Importantly, the query also passed all our feature tests around searching within our application too.</p>
+
+<p>I still felt like there was space to improve the query. Did we really need it to use a wildcard search, given that Elastic Search is pretty decent at matching text? So I tried it again without the wildcard on the end of the query:</p>
+
+<pre><code class="language-json">{
+  "profile": true,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Ryan",
+            "fields": [
+              "first_name",
+              "last_name",
+              "email",
+              "reference",
+              "card_token",
+              "card_number",
+              "public_id"
+            ]
+          }
+        }
+      ],
+      "filter": [
+        {
+          "bool": {
+            "must": [
+              {
+                "terms": {
+                  "merchant_id": [2]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
+</code></pre>
+
+<p>This query now operated in two-digit milliseconds. Without using a wildcard, the query is pre-analysed by Elastic Search and breaks it down into tokens that can then be matched to pre-analysed documents within the index.</p>
+
+<p>Comparing the two profile outputs, the one with the wildcard shows a series of <code>MultiTermQueryConstantScoreWrapper</code>, matching against all different fields. The one without the wildcard shows a range of different ones such as <code>TermQuery</code> for fields classified as <code>term</code>, which will match faster as we’re searching based on the pre-analysed data within the index.</p>
+
+<p>(And if we want to be completely un-scientific about it, the profile output for wildcard searching is 1,100 lines, while the profile output for non-wildcard searching is only 700 lines. Fewer lines of profiling output is a very good indicator that the searcher is doing less work!)</p>
+
+<p>This is more suitable for matching against customer records in most circumstances, as our users are searching either by a customer’s full name or their email addresses. In rarer cases, they’re using reference values, and when that happens it appears to be the full reference value. The <code>card_token</code> and <code>card_number</code> fields are used the least frequently.</p>
+
+<p>I’m going to be rolling out this change next week and I have strong faith in its ability to reduce search time for people. I now have an additional tool in my toolbelt for diagnosing slow Elastic Search queries, and a better understanding from the profile output as to what different queries are doing.</p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>React is fine</title>
+   <link href="https://ryanbigg.com/2024/11/react-is-fine"/>
+   <updated>2024-11-26T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2024/11/react-is-fine</id>
+   <content type="html"><![CDATA[<p><a href="https://joshcollinsworth.com/blog/antiquated-react">This post called “Things you forgot (or never knew) because of React</a> by Josh Collinsworth is a good read about the deficiencies of React, and includes a good comparison between React and the other frontend frameworks at the moment.</p>
+
+<p>And yet, I find myself and my team consistently being productive with React. The main application we develop uses a lot of it, a second application has had a re-write of a key component into React, and other apps have “React sprinkles” through them. It’s a versatile framework!</p>
+
+<p>In our main application, we have React componentry brought in from our design system, which is then bundled together into much larger components. Most of these are static components: take some data, render an element a certain way depending on that data. Where we use React’s “reactivity” is typically in a few small places:</p>
+
+<ol>
+  <li>Make this menu appear when its “open” button is clicked</li>
+  <li>Show a loading spinner while a request is processing</li>
+  <li>Display a validation error message if a field doesn’t pass validation (for example: a card expiry that is in the past, or an invalid card number – neither of which browsers support natively.)</li>
+</ol>
+
+<p>We also leverage a lot of what GraphQL provides by exporting types from the backend to then inform types on the frontend. Yes, we <em>could</em> do this <a href="https://the-guild.dev/graphql/codegen/docs/guides/svelte">with another framework</a> but even adding a single component that uses this framework doubles our team’s cognitive load for what seems like minimal benefit. These GraphQL types then go on to inform what the data used in those React components of the app should look like.</p>
+
+<p>In terms of styling: we use Tailwind, which I covered in <a href="https://ryanbigg.com/2024/03/tailwind-has-won">“Tailwind has won”</a>. We don’t need styles that are limited in scope to a particular component because of how Tailwind operates – it’s all utility classes and they don’t apply <em>until you apply them</em>. Yes, you can have really really long class lists, but you can compress these down into your own utility classes, as we’ve done with things such as <code>.zeal-button-primary</code>.</p>
+
+<p>Two things that we don’t have yet in how our applications operate are server-side rendering and web components.</p>
+
+<p>Server-side-rendering would mean that we could get away with displaying dynamic data, still using our existing React components, without displaying loading spinners all over the place. It’s a trivial thing, but a loading spinner makes me think “this app could’ve taken an extra 100ms to fetch this data in the original request”. We could probably get there with a little effort, though I do wonder how it’d work with the GraphQL things we have in place.</p>
+
+<p>On web components: I would like to move parts of our design system towards adopting those. I’m somewhat wary of the “newness” of interactivity between React + web components, and also about the “split brain” of switching between “this is a React component” and “this is a web component”. But I think web components is ultimately where we’re headed, as the browser always wins.</p>
+
+<p>(And on one more note: Don’t get me started on Stimulus.)</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Ruby Retreat 2024</title>
@@ -25,7 +225,9 @@
 
 <h2 id="selling-tickets">Selling tickets</h2>
 
-<p>We sold tickets to the camp by advertising them at https://retreat.ruby.org.au, and selling them through <a href="https://ti.to">Tito</a>. We eye-balled a rough estimate on what the camp would cost us and used that to set the ticket prices ($350 full price, $300 concession). We weren’t too far off, with the debt (measured in &lt; $2,000 terms) being covered by Ruby Australia’s sponsors for the year.</p>
+<p>We sold tickets to the camp by advertising them at https://retreat.ruby.org.au by recycling a previous version of the website, and selling them through <a href="https://ti.to">Tito</a>. We eye-balled a rough estimate on what the camp would cost us and used that to set the ticket prices ($350 full price, $300 concession). We weren’t too far off, with the debt (measured in &lt; $2,000 terms) being covered by Ruby Australia’s sponsors for the year.</p>
+
+<p>I think we could’ve done a better job with marketing the camp, probably by having organisers (or proxies) visit each meetup around the country and spruik the benefit of it.</p>
 
 <p>We ended up selling 60 tickets to the event and also gave an option for people to put in for an Opportunity Ticket cost. This was enough to bring one extra person <em>for free</em> along to the camp. We didn’t make a big deal about it at the camp but I reckon it is a big deal! Generosity like this is awesome to see from this community.</p>
 
@@ -141,7 +343,7 @@ Sticky rice w cinnamon coconut sauce with banana and berries(VG DF GF)</p>
 
 <p>A group formed around a table-top game like DND but not DND (I didn’t catch the name!) on Sunday afternoon and played that long enough for the guy who was running it to turn a great shade of red from his sunburn.</p>
 
-<p>Other attendees ended up touring around Warrnambool doing things like riding the flying fox at Lake Pertobe, walking around the coastal walk at Thunder Point or visiting the nearby beaches. Others spent time further afield going out to Tower Hill and other locations.</p>
+<p>Other attendees ended up touring around Warrnambool doing things like riding the flying fox at Lake Pertobe, walking around the coastal walk at Thunder Point or visiting the nearby beaches. Some people were even able to make bookings at the Deep Blue Hot Springs. Others spent time further afield going out to Tower Hill and other locations.</p>
 
 <h2 id="would-i-do-it-again">Would I do it again?</h2>
 
@@ -1561,61 +1763,6 @@ DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capa
 
 <pre><code>apk add gcompat glib nss libxcb libgcc chromium
 </code></pre>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Zoom&apos;s return to the office</title>
-   <link href="https://ryanbigg.com/2023/08/zooms-return-to-the-office"/>
-   <updated>2023-08-07T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2023/08/zooms-return-to-the-office</id>
-   <content type="html"><![CDATA[<p>This news <a href="https://nypost.com/2023/08/05/zoom-tells-employees-to-return-to-office-for-work/">about Zoom forcing their employees back into the office for 2 days a week</a> is just bonkers.</p>
-
-<p>For an Australian perspective:</p>
-
-<p>In Melbourne, 50 miles would mean people on Phillip Island and Geelong would need to commute into the city, a 2 hour commute one way. Geelong people could take the V/Line, thankfully. Phillip Islanders are shit out of luck and would have to drive in.</p>
-
-<p>In Sydney, 50 miles would mean people in Wentworth Falls, San Remo and Wollongong would also be forced to commute 2 hours into the office as well. Katoomba residents thank your lucky stars, you’re just outside of the magic number.</p>
-
-<p>Two hour commutes! “Give up 8 hours of your week <em>in traffic</em> in the name of <em>synergy</em>.” What baloney.</p>
-
-<hr />
-
-<p>I really enjoy the flexibility of working from home. I can put on a load of washinxtg over my lunch break or potter around in the garden when the sun’s out. I can take the dog for a walk or a run to the park. I can take some time out at around 3 and collect my daughter from school without having to commute first back to home and then out again to the school.</p>
-
-<p>Environmentally: I can control the temperature in my office. There’s nobody walking around behind my monitor or talking loudly on their phone nearby. I have control over my desk and I can set it up however I like without some HR person mandating that I’m sharing it with someone due to space reasons.</p>
-
-<p>And for all of these reasons, I’m a happy employee. I get my work done, and <em>more of it</em>, because I can choose the conditions in how that work is done. And if I need to <em>synergise</em> with another employee, why there’s Zoom for that.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>How to fix: Chromedriver 115, cannot find chrome binary</title>
-   <link href="https://ryanbigg.com/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary"/>
-   <updated>2023-07-28T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2023/07/how-to-fix-chromedriver-115-cannot-find-chrome-binary</id>
-   <content type="html"><![CDATA[<p>Chromedriver v115 was released recently and causes this issue to appear on Macs that use Chromedriver for automated testing.</p>
-
-<pre><code>unknown error: cannot find Chrome binary
-
-Traceback (most recent call last):
-       16: from 15  chromedriver                        0x0000000100df056c chromedriver + 4179308
-       15: from 14  chromedriver                        0x0000000100df0414 chromedriver + 4178964
-       14: from 13  chromedriver                        0x0000000100dacd1c chromedriver + 3902748
-</code></pre>
-
-<p>This is due to Chromedriver looking for a new binary called “Chrome for Testing”, which was <a href="https://developer.chrome.com/blog/chrome-for-testing/">recently released from the Chrome team</a>.</p>
-
-<p>To fix this bug, you need to <a href="https://googlechromelabs.github.io/chrome-for-testing/#stable">download Chrome for Testing</a>, unzip it and move it into your <code>/Applications</code> directory.</p>
-
-<p>Mac’s Gatekeeper program will not let you open this executable by default, as it came from a <code>.zip</code> file. To work around that problem, run:</p>
-
-<pre><code>sudo xattr -cr '/Applications/Google Chrome for Testing.app'
-</code></pre>
-
-<p>This will remove the security restriction that is blocking this application from opening.</p>
-
-<p>Run your test suite again, and it will now work.</p>
 ]]></content>
  </entry>
  

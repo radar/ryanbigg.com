@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>React is fine - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - React is fine" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2024-11-26">
+  
+
+  
+  <meta content="https://ryanbigg.com/2024/11/react-is-fine" property="og:url">
+  
+  
+  <meta content="React is fine" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="React is fine">
+  
+</head>
+
+
+<body>
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <div class='text-center mb-8'>
+            <h1>Ryan Bigg</h1>
+            <a href="/blog">&#x27F5; Posts</a>
+            <a href="/2024/11/react-is-fine">
+              <h2 class="post-title">React is fine</h2>
+            </a>
+            <small>26 Nov 2024</small>
+          </div>
+          <p><a href="https://joshcollinsworth.com/blog/antiquated-react">This post called “Things you forgot (or never knew) because of React</a> by Josh Collinsworth is a good read about the deficiencies of React, and includes a good comparison between React and the other frontend frameworks at the moment.</p>
+
+<p>And yet, I find myself and my team consistently being productive with React. The main application we develop uses a lot of it, a second application has had a re-write of a key component into React, and other apps have “React sprinkles” through them. It’s a versatile framework!</p>
+
+<p>In our main application, we have React componentry brought in from our design system, which is then bundled together into much larger components. Most of these are static components: take some data, render an element a certain way depending on that data. Where we use React’s “reactivity” is typically in a few small places:</p>
+
+<ol>
+  <li>Make this menu appear when its “open” button is clicked</li>
+  <li>Show a loading spinner while a request is processing</li>
+  <li>Display a validation error message if a field doesn’t pass validation (for example: a card expiry that is in the past, or an invalid card number – neither of which browsers support natively.)</li>
+</ol>
+
+<p>We also leverage a lot of what GraphQL provides by exporting types from the backend to then inform types on the frontend. Yes, we <em>could</em> do this <a href="https://the-guild.dev/graphql/codegen/docs/guides/svelte">with another framework</a> but even adding a single component that uses this framework doubles our team’s cognitive load for what seems like minimal benefit. These GraphQL types then go on to inform what the data used in those React components of the app should look like.</p>
+
+<p>In terms of styling: we use Tailwind, which I covered in <a href="https://ryanbigg.com/2024/03/tailwind-has-won">“Tailwind has won”</a>. We don’t need styles that are limited in scope to a particular component because of how Tailwind operates – it’s all utility classes and they don’t apply <em>until you apply them</em>. Yes, you can have really really long class lists, but you can compress these down into your own utility classes, as we’ve done with things such as <code>.zeal-button-primary</code>.</p>
+
+<p>Two things that we don’t have yet in how our applications operate are server-side rendering and web components.</p>
+
+<p>Server-side-rendering would mean that we could get away with displaying dynamic data, still using our existing React components, without displaying loading spinners all over the place. It’s a trivial thing, but a loading spinner makes me think “this app could’ve taken an extra 100ms to fetch this data in the original request”. We could probably get there with a little effort, though I do wonder how it’d work with the GraphQL things we have in place.</p>
+
+<p>On web components: I would like to move parts of our design system towards adopting those. I’m somewhat wary of the “newness” of interactivity between React + web components, and also about the “split brain” of switching between “this is a React component” and “this is a web component”. But I think web components is ultimately where we’re headed, as the browser always wins.</p>
+
+<p>(And on one more note: Don’t get me started on Stimulus.)</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>
