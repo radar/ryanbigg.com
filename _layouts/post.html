@@ -3,18 +3,24 @@
 {% include head.html %}
 
 <body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="{{ page.url }}">
+        <h2 class="my-0 mt-4">{{ page.title }}</h2>
+      </a>
+      <small>{{ page.date | date_to_string }}</small>
+    </div>
+  </div>
+
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8 mb-16">
-          <div class='text-center mb-8'>
-            <h1>Ryan Bigg</h1>
-            <a href="/blog">&#x27F5; Posts</a>
-            <a href="{{ page.url }}">
-              <h2 class="post-title">{{ page.title }}</h2>
-            </a>
-            <small>{{ page.date | date_to_string }}</small>
-          </div>
           {{content}}
         </article>
       </div>

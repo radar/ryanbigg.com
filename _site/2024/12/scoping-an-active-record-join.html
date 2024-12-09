@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Blog - Ryan Bigg</title>
+  <title>Scoping an Active Record join - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
@@ -16,20 +16,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg - Blog" property="og:title">
+  <meta content="Ryan Bigg - Scoping an Active Record join" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
 
   
-    <meta name="publish_date" property="og:publish_date" content="2024-12-10">
+    <meta name="publish_date" property="og:publish_date" content="2024-12-09">
   
 
   
-  <meta content="https://ryanbigg.com/blog" property="og:url">
+  <meta content="https://ryanbigg.com/2024/12/scoping-an-active-record-join" property="og:url">
   
   
-  <meta content="Blog" property="og:description">
+  <meta content="Scoping an Active Record join" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -38,35 +38,31 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta name="twitter:title" content="Blog">
+  <meta name="twitter:title" content="Scoping an Active Record join">
   
 </head>
 
 
 <body>
-  <!-- <header class="topbar">
-  <h1><a href="/">RB</a></h1>
-</header>
- -->
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2024/12/scoping-an-active-record-join">
+        <h2 class="my-0 mt-4">Scoping an Active Record join</h2>
+      </a>
+      <small>09 Dec 2024</small>
+    </div>
+  </div>
+
   <div class="main">
-    
-
-<div class="flex">
-  <div class='text-center mr-8'>
-    <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
-    <a href="/blog">&#x27F5; Posts</a>
-  </div>
-
-  <div class="post-title ml-auto">
-    <a href="/2024/12/scoping-an-active-record-join">
-      <h2 class="mt-4">Scoping an Active Record join</h2>
-    </a>
-    <small>09 Dec 2024</small>
-  </div>
-</div>
-
-<article>
-  <p>Active Record is well known for its footguns, like N+1 queries and letting you dump <em>all the business logic</em> for your applications in models. (For an alternative, read <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>.)</p>
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>Active Record is well known for its footguns, like N+1 queries and letting you dump <em>all the business logic</em> for your applications in models. (For an alternative, read <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>.)</p>
 
 <p>A lesser-known footgun is this seemingly innocuous use of <code>joins</code> in a tenanted Rails application. By “tenanted” I mean that most records have something like a <code>tenant_id</code> on them that declares ownership. In our case, it’s <code>merchant_id</code>. Here’s the query:</p>
 
@@ -118,46 +114,9 @@ AND "purchases"."merchant_id" = 2736
 
 <p>This results in a super fast query compared to what we started with, as we’ve now drastically reduced the scope of purchases that can match our query.</p>
 
-</article>
-
-<div class="text-center mb-8">
-  <h2>In case you missed it...</h2>
-  <ul>
-    
-    <li class="mb-4"><a href="/2024/12/using-elastic-searchs-profile-api">Using Elastic Search's Profile API</a> <span class="text-gray-400 text-xs">&mdash; 05 Dec 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/11/react-is-fine">React is fine</a> <span class="text-gray-400 text-xs">&mdash; 26 Nov 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/10/ruby-retreat-2024">Ruby Retreat 2024</a> <span class="text-gray-400 text-xs">&mdash; 22 Oct 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/09/use-classes-to-represent-data">Use classes to represent data</a> <span class="text-gray-400 text-xs">&mdash; 18 Sep 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/07/debugging-checklist">Debugging Checklist</a> <span class="text-gray-400 text-xs">&mdash; 09 Jul 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/07/separation-of-react-components-with-graphql">Separation of data and view layers in React components</a> <span class="text-gray-400 text-xs">&mdash; 05 Jul 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/06/make-rspec-tests-go-faster">Decreasing Ruby app build times</a> <span class="text-gray-400 text-xs">&mdash; 28 Jun 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/05/scheduling-with-ice-cube">Scheduling with Ice Cube</a> <span class="text-gray-400 text-xs">&mdash; 22 May 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/05/without-react-or-graphql">Thought Experiment: Without React or GraphQL</a> <span class="text-gray-400 text-xs">&mdash; 20 May 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/05/what-was-that-branch">What was that branch?</a> <span class="text-gray-400 text-xs">&mdash; 14 May 2024</span>
-    </li>
-    
-  </ul>
-  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
-</div>
-
+        </article>
+      </div>
+    </div>
   </div>
   <footer>
 </footer>

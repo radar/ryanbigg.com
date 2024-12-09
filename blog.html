@@ -4,15 +4,21 @@ title: Blog
 ---
 {% assign first_post = site.posts.first %}
 
-<article>
-  <h1 class="text-center">Ryan Bigg</h1>
-  <div class='text-center mb-8'>
-    <a href="/">&#x27F5; Home</a>
+<div class="flex">
+  <div class='text-center mr-8'>
+    <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+    <a href="/blog">&#x27F5; Posts</a>
+  </div>
+
+  <div class="post-title ml-auto">
     <a href="{{ first_post.url }}">
-      <h2 class="mt-4 post-title">{{ first_post.title }}</h2>
+      <h2 class="mt-4">{{ first_post.title }}</h2>
     </a>
     <small>{{ first_post.date | date_to_string }}</small>
   </div>
+</div>
+
+<article>
   {{first_post.content}}
 </article>
 

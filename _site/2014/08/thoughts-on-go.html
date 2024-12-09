@@ -44,18 +44,24 @@
 
 
 <body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2014/08/thoughts-on-go">
+        <h2 class="my-0 mt-4">Thoughts on Go</h2>
+      </a>
+      <small>08 Aug 2014</small>
+    </div>
+  </div>
+
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8 mb-16">
-          <div class='text-center mb-8'>
-            <h1>Ryan Bigg</h1>
-            <a href="/blog">&#x27F5; Posts</a>
-            <a href="/2014/08/thoughts-on-go">
-              <h2 class="post-title">Thoughts on Go</h2>
-            </a>
-            <small>08 Aug 2014</small>
-          </div>
           <p>I’ve had an interest in Go now for about a year. I’ve not done much with it before this week besides go through the <a href="https://github.com/cdarwin/go-koans">go-koans</a> (recommended!) and build a couple of very light projects with it, like an IRC bot that didn’t do much. I’ve also made a couple of commits to <a href="https://github.com/bjeanes/go-lifx">Bo Jeanes’ go-lifx</a> project, which is Go bindings for LIFX lights. It’s still very much a work-in-progress, but it was fun to dip my toes into the Go waters again.</p>
 
 <p>This was the first week that not only that I wrote Go code <em>for my job</em>, but I actually got to deploy it in a live production context. And it was the first week at my new job at LIFX, too. All this little program does now is read some stats from a JSON file and report them back to our analytics service. The earlier version was written in Ruby, which meant that Ruby needed to be compiled on this box just for one little script. Having the little script in Go means that we no longer need to compile Ruby on that box; a small victory but a victory nonetheless.</p>

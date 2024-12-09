@@ -44,18 +44,24 @@
 
 
 <body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2024/05/scheduling-with-ice-cube">
+        <h2 class="my-0 mt-4">Scheduling with Ice Cube</h2>
+      </a>
+      <small>22 May 2024</small>
+    </div>
+  </div>
+
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8 mb-16">
-          <div class='text-center mb-8'>
-            <h1>Ryan Bigg</h1>
-            <a href="/blog">&#x27F5; Posts</a>
-            <a href="/2024/05/scheduling-with-ice-cube">
-              <h2 class="post-title">Scheduling with Ice Cube</h2>
-            </a>
-            <small>22 May 2024</small>
-          </div>
           <p>I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the <em>end of the month</em> for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the <em>month</em> but also the <em>year</em>, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.</p>
 
 <p>The frequency of these payments that we allow for in our system are weekly, fortnightly, every-4-weeks, monthly, quarterly, half-yearly, and yearly. When a schedule is created, we use the start date for the schedule as the basis for the ongoing payments. Schedules can optionally have an end date too, where those payments will stop happening.</p>

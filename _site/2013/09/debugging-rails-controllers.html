@@ -44,18 +44,24 @@
 
 
 <body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2013/09/debugging-rails-controllers">
+        <h2 class="my-0 mt-4">Debugging Rails Controllers</h2>
+      </a>
+      <small>05 Sep 2013</small>
+    </div>
+  </div>
+
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8 mb-16">
-          <div class='text-center mb-8'>
-            <h1>Ryan Bigg</h1>
-            <a href="/blog">&#x27F5; Posts</a>
-            <a href="/2013/09/debugging-rails-controllers">
-              <h2 class="post-title">Debugging Rails Controllers</h2>
-            </a>
-            <small>05 Sep 2013</small>
-          </div>
           <p>Here’s my flow for debugging a misbehaving controller. Imagine that there’s a form at <code>app/views/messages/new.html.erb</code> that is posting to <code>MessagesController#create</code>. The parameters aren’t being passed through from the form to the controller, and the model is raising a validation error saying that a field is blank – even though it’s <em>clearly</em> not.</p>
 
 <h3 id="step-0-does-restarting-the-server-fix-the-problem">Step 0: Does restarting the server fix the problem?</h3>

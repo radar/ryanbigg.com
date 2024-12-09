@@ -1,4 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-12-06T10:01:28+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Using Elastic Search’s Profile API</title><link href="http://localhost:4000/2024/12/using-elastic-searchs-profile-api" rel="alternate" type="text/html" title="Using Elastic Search’s Profile API" /><published>2024-12-06T00:00:00+11:00</published><updated>2024-12-06T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/using-elastic-searchs-profile-api</id><content type="html" xml:base="http://localhost:4000/2024/12/using-elastic-searchs-profile-api"><![CDATA[<p>Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-12-10T09:19:39+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Scoping an Active Record join</title><link href="http://localhost:4000/2024/12/scoping-an-active-record-join" rel="alternate" type="text/html" title="Scoping an Active Record join" /><published>2024-12-09T00:00:00+11:00</published><updated>2024-12-09T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/scoping-an-active-record-join</id><content type="html" xml:base="http://localhost:4000/2024/12/scoping-an-active-record-join"><![CDATA[<p>Active Record is well known for its footguns, like N+1 queries and letting you dump <em>all the business logic</em> for your applications in models. (For an alternative, read <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>.)</p>
+
+<p>A lesser-known footgun is this seemingly innocuous use of <code>joins</code> in a tenanted Rails application. By “tenanted” I mean that most records have something like a <code>tenant_id</code> on them that declares ownership. In our case, it’s <code>merchant_id</code>. Here’s the query:</p>
+
+<pre><code class="language-ruby">FraudCheck.where(merchant: merchant).joins(:purchase)
+</code></pre>
+
+<p>Fraud checks belong to a merchant, and they also belong to a purchase. Purchases have just the one fraud check. Merchants have many fraud checks and purchases.</p>
+
+<p>The query this executes is:</p>
+
+<pre><code class="language-sql">SELECT "fraud_checks".* FROM "fraud_checks"
+INNER JOIN "purchases" ON "purchases"."id" = "fraud_checks"."purchase_id"
+WHERE "fraud_checks"."merchant_id" = 1
+</code></pre>
+
+<p>This seems like a relatively good query and it’ll run “fast enough” on small data sets. However, as your dataset grows and becomes measured in multiple terabytes, such a query will get slower and slower.</p>
+
+<p>This query runs slow because it’s querying two tables, one very quickly because it has a small dataset to query through, and one very slowly because it has a much larger dataset to trawl through. The first table it queries is <code>fraud_checks</code>, and it finds all of those where the <code>merchant_id=1</code>, which is a smaller dataset than “all fraud checks ever”. The second table it queries is “purchases”, which it attempts to find all purchases from all time matching the <code>purchase_id</code> values returned by the fraud checks query.</p>
+
+<p>We can shorten this query’s execution time by scoping the purchases to just those from the merchant by using <code>merge</code>:</p>
+
+<pre><code class="language-ruby">FraudCheck
+  .where(merchant: merchant)
+  .joins(:purchase)
+  .merge(
+    Purchase.where(merchant: merchant)
+  )
+</code></pre>
+
+<p>This now executes this query:</p>
+
+<pre><code class="language-sql">SELECT "fraud_checks".* FROM "fraud_checks"
+INNER JOIN "purchases" ON "purchases"."id" = "fraud_checks"."transaction_id"
+WHERE "fraud_checks"."merchant_id" = 2736
+AND "purchases"."merchant_id" = 2736
+</code></pre>
+
+<p>The query is now limited to just fraud checks <em>and</em> purchases that match that <code>merchant_id</code>, resulting in a smaller table scan for purchases that match the selected fraud checks.</p>
+
+<p>We further limit this query by applying a date range scope on the purchases too:</p>
+
+<pre><code class="language-ruby">FraudCheck
+  .where(merchant: merchant)
+  .joins(:purchase)
+  .merge(
+    Purchase.where(merchant: merchant, created_at: start_date..end_date)
+  )
+</code></pre>
+
+<p>This results in a super fast query compared to what we started with, as we’ve now drastically reduced the scope of purchases that can match our query.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Active Record is well known for its footguns, like N+1 queries and letting you dump all the business logic for your applications in models. (For an alternative, read Maintainable Rails.)]]></summary></entry><entry><title type="html">Using Elastic Search’s Profile API</title><link href="http://localhost:4000/2024/12/using-elastic-searchs-profile-api" rel="alternate" type="text/html" title="Using Elastic Search’s Profile API" /><published>2024-12-05T00:00:00+11:00</published><updated>2024-12-05T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/using-elastic-searchs-profile-api</id><content type="html" xml:base="http://localhost:4000/2024/12/using-elastic-searchs-profile-api"><![CDATA[<p>Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.</p>
 
 <p>We use Elastic Search to power this search (even though Postgres’ own full-text search would’ve been suitable!) and the query we wrote for Elastic Search was this one written about 10 years ago:</p>
 
@@ -844,15 +894,4 @@ end
 
 <p>This whole approach trades off React’s “reactivity” as well, so there’s no state management going on here or DOM updating when the state changes. There are probably ways around this (like Hotwire, etc.) but I haven’t gone down those paths yet.</p>
 
-<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my GraphQL for Rails Developers and its frontend companion Apollo in the Apollo Handbook. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.]]></summary></entry><entry><title type="html">What was that branch?</title><link href="http://localhost:4000/2024/05/what-was-that-branch" rel="alternate" type="text/html" title="What was that branch?" /><published>2024-05-14T00:00:00+10:00</published><updated>2024-05-14T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/what-was-that-branch</id><content type="html" xml:base="http://localhost:4000/2024/05/what-was-that-branch"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
-
-<p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
-
-<pre><code>fbr () {
-	local branches branch
-	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
-  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
-}
-</code></pre>
-
-<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, I can type part of the branch name if I remember it, and <code>fzf</code> will filter the list of branches to just the ones that match that. When I find the branch I want, I hit enter and this will swap over to the branch.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.]]></summary></entry></feed>
+<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my GraphQL for Rails Developers and its frontend companion Apollo in the Apollo Handbook. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.]]></summary></entry></feed>

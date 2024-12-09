@@ -44,18 +44,24 @@
 
 
 <body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">
+        <h2 class="my-0 mt-4">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</h2>
+      </a>
+      <small>22 Aug 2023</small>
+    </div>
+  </div>
+
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8 mb-16">
-          <div class='text-center mb-8'>
-            <h1>Ryan Bigg</h1>
-            <a href="/blog">&#x27F5; Posts</a>
-            <a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">
-              <h2 class="post-title">Alpine Linux, Selenium Manager, Chrome and ChromeDriver</h2>
-            </a>
-            <small>22 Aug 2023</small>
-          </div>
           <p>Selenium, and by extension the selenium-webdriver gem, after version 4.11 come with <a href="https://www.selenium.dev/blog/2022/introducing-selenium-manager/">a new feature called Selenium Manager</a>. This CLI tool will automatically install whatever browser and driver you need to run your Selenium tests. (These are installed under <code>~/.cache/selenium...</code>)</p>
 
 <p>Today, I tried setting this up in an Alpine linux based Docker image and ran into trouble where it claimed it could not find the executable.</p>
