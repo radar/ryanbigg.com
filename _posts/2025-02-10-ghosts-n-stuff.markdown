@@ -27,7 +27,7 @@ Then the serious discussions about how to approach these upgrades happen. Lots o
 (Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
 wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)
 
-That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2013-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.
+That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2014-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.
 
 The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person's lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.
 
