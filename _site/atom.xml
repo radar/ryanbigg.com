@@ -4,13 +4,132 @@
  <title>Ryan Bigg's Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2025-01-31T13:17:48+11:00</updated>
+ <updated>2025-02-11T07:04:59+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Ghosts &apos;n&apos; Stuff</title>
+   <link href="https://ryanbigg.com/2025/02/ghosts"/>
+   <updated>2025-02-11T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/02/ghosts</id>
+   <content type="html"><![CDATA[<p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
+
+<p>But today I want to talk about ghosts.</p>
+
+<p>The apps I’m working on have the lucky advantage of being around a decade and a half old. They also have the unlucky disadvantage of being a decade and a half old. Ruby and to a larger extent JavaScript tastes have rapidly evolved in this time. Both have since slowed to a much more agreeable-to-this-dad pace, and I am thankful for that.</p>
+
+<p>Not only do the languages change over time, but the applications do as well. Features get added, seldom removed. Bugs get removed and (hopefully) seldom added. Developers move on — Peopleware claims the average staying power of a dev was in the range of 15-36 months (I would be interested to hear how this has changed after the pandemic) — and new developers come in and claim their way is superior and this situation repeats three to five fold before the current day. The old developers then become “ghosts” of our history.</p>
+
+<p>The application gets into this liminal state of being “complete” (actually a well-known and appreciated fallacy in dev circles, but bear with me), owned by nobody (as those people have left and newer priorities meant the new people haven’t seen this app yet) and yet somehow business critical. I’m talking “people don’t get paid if this doesn’t run”, business critical. The app logs nothing to nowhere, and yet people rely on it intensely and would tell you quite quickly in all-caps if it wasn’t working.</p>
+
+<p>Perhaps this application is deployed to some sort of cloud compute environment and runs as its own function or suite of functions. Can’t have it running in a monolith as a worker because that’s boring and doesn’t add any keywords to your resume for potential recruiters to find – aka Resume Driven Development. How those functions tie together is a corkboard-and-red-string job for the lucky person who finds this app later.</p>
+
+<p>Time comes along and does its thing and the people who run the cloud compute environment say “we’re not going to support that version of that language any more because it’s <em>old</em>”. This announcement is made so far ahead of that deadline that nobody within the business seems to mind.</p>
+
+<p>The future arrives the next day, or it feels that way.</p>
+
+<p>By then, the security auditors come along and say “we require you to keep your systems up to date as possible, and yes, we mean even down to your packages.” And they make the very strong implication that if this isn’t done, that you may as well all go on a big company-wide holiday until it is. On a budget, of course, because if the company isn’t running then nobody’s getting paid a whole lot of anything.</p>
+
+<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
+
+<p>(Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
+wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)</p>
+
+<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2013-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
+
+<p>The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person’s lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.</p>
+
+<hr />
+
+<p>The upgrade begins. The mind initially turns to questions like “How bad could it possibly be?”, then “What were these developers on?” and finally arriving at “Why, oh God why?” – a milder version of the Five Stages of Grief – as app after app reveals gradually the eldritch horrors of past coding styles, methodologies and arcane deployment strategies filled with reams of equally dubious and artisanal YAML. (Were these developers being paid by the line?)</p>
+
+<p>(Of course, the way we code <em>today</em> would <strong>never</strong> be viewed with that particular lens. Us being absolute beacons of
+perfection having learned so much over our long and storied careers, unpressured by deadlines and unbiased by our current obsessions.)</p>
+
+<p>The archaeological layers of these applications are sometimes stone, and at other times more… biological. You start to learn the quirks and styles of developers and can sight-identify code-strata where <em>this</em> block of code was written by Dev A, but <em>that</em> block of code was Dev B.  And this block of code was disputed territory. Both devs haven’t worked at the company in nearly half a decade. Their names aren’t recognised by most people who are current employees. A search online for them turns up only the fact that they probably existed.</p>
+
+<p>Both devs write good code in parts. You’d tick it in a PR review, or perhaps leave a pedantic comment about nested ternaries being unsightly. You imagine in-person meetings, perhaps at a meetup or a conference, between yourself and these devs, and deciding if during those meetings you want to shake their hand to say “well done” or your head in dismay to say the opposite, depending on what’s in view at the minute.</p>
+
+<p>Dev C, the most recent author in the <code>git log</code> history with a commit measuring in the tens of lines, who happens to still work at the company denies all knowledge of having ever worked on or near this system. Yet the proof is right there in black and white, or other colours depending on your terminal theme du jour.</p>
+
+<p>Any attempt to run these apps is met with things like arcane compilation issues because that one particular gem doesn’t work with the CPU architecture of the machine you’re now using. The newer version of the gem will install just fine… just right after you switch to the minimum language version that it now supports. Occasionally, the gem hasn’t received an update since many years ago.</p>
+
+<p>I initially bristled at this thing in particular: (Sass should be a gem, god damn it! It’s always been a gem!) but in the 3-point-something years of my FE-lead tenure I’ve come around to being a zealot of “CSS and JS are tools for the frontend, and the frontend stack is compiled with <em>these</em> tools” where the tools are usually written in one of the holy trinity of Go, Rust or (to a lesser extent) JavaScript. Or I guess in the case of Sass, Dart. The <code>dartsass-rails</code> gem looks promising, however.</p>
+
+<p>The gems gets upgraded, and you take extra special glee in removing <code>sassc</code> which has a compilation time measured in eons. Rubocop gets told to shove it a few new extra times and some quirks of the code’s setup (such as deprecation warnings) are addressed. Perfection is never achieved not only because it’s extremely subjective but also because time is relentless.</p>
+
+<hr />
+
+<p>These ghosts of the past were doing what they thought was the right thing that was acceptable under the circumstances and conditions that they were working in. Looking at the code now, is it still the right thing? That depends on who you’re asking. Code is subjective. There are arguably the “best” way to do certain things (hello, sorting algorithms) and then there are multitudinous ways of saying “put this JavaScript code on a server somewhere and make it wait for things to happen, so it can tell other things to happen”. That is where things get murky: the points of differences between how they, the ghosts, would do it and how I, the lead developer living in this current time and being tasked with working with this app in the <em>here and now</em>, would do it.</p>
+
+<p>Tastes change. The right way to write and deploy an application is akin to shifting sands. Even this week, the release of Docker’s “bake” command will change how I personally build apps. What was in style five years ago can be, considered a taboo in modern times. The blessed becomes the unspeakable. Developers are a finnicky bunch.</p>
+
+<p>I’ve left unintentional sins in systems I’ve worked on in the past, I’m sure of it. There’s stuff I’ve written that I’m certain of being a net-negative outcome of the apps I work in right now. Unintentional booby traps waiting to catch the next developer who happens across them. There’s other stuff I’m more on the fence about (such as when I introduced and encouraged the use of GraphQL and integrating it with TypeScript — let’s call it 65%/35% love/hate today). And then there’s stuff I’d use as exemplary things during an interview (while sweeping things in Category 1 waaaayyy under the rug).</p>
+
+<p>I think we need to be kind to the ghosts that have left their fingerprints on the systems we work in and on. They, overall, were doing their best. And I also think that we, being the ghosts of the future, need to strive to do our best to leave the <em>best</em> kind of fingerprints we can now. And to be kind to <em>ourselves</em> when the circumstances and conditions mean that we have to be flexible on what “right” means today.</p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>Rails tagged logging</title>
+   <link href="https://ryanbigg.com/2025/02/rails-tagged-logging"/>
+   <updated>2025-02-02T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/02/rails-tagged-logging</id>
+   <content type="html"><![CDATA[<p>A feature within Rails is that it allows us to add data to our application’s log lines for tagging those lines. We can then use these tags for aggregating them together into a bunch. I’ll show you how to do this here. I used this in a Rails app that acts purely as an API, so there is only ever one request at a time I care about, in this case.</p>
+
+<p>We can configure this in <code>config/environments/development.rb</code>:</p>
+
+<pre><code>config.log_tags = [lambda {|r| Time.now.iso8601(4) }, :request_id]
+</code></pre>
+
+<p>This sets up two tags, one of a timestamp with millisecond precision, and another with the request ID. The symbol <code>:request_id</code> maps to a method on <code>ActionDispatch::Request</code>, and we can use any methods from that class in these tags if we wish.</p>
+
+<p>This log line configuration as it stands now will output this prefix to all log lines:</p>
+
+<pre><code>[2025-02-02T16:32:35.6772+11:00] [56937855b121fede4013141a6cf4ca46] A log message goes here.
+</code></pre>
+
+<p>We can eyeball our log file then to see the logs grouped together. Or, we could build a set of little shell commands to do that for us:</p>
+
+<pre><code>
+reqs() {
+  req_id=$(tail -n 1000 log/development.log |
+    awk -F'[][]' '{print $2, "|", $4}' | sort -u -r | fzf | awk '{print $NF}')
+
+  reqlogs "$req_id"
+}
+
+reqlogs() {
+  awk -v req_id="$1" '
+  $0 ~ "\\[" req_id "\\]" {
+    sub(/\[[0-9a-f]+\]/, "", $0)
+    print
+  }
+  ' log/development.log
+}
+</code></pre>
+
+<p>The <code>reqs</code> command here uses <code>awk</code> and <a href="https://github.com/junegunn/fzf">fzf</a> to find the last 1,000 log lines, and outputs the timestamps and request IDs for them, with the most recent request selected by default:</p>
+
+<pre><code>2025-02-02T16:32:35.6772+11:00 | 56937855b121fede4013141a6cf4ca46
+&gt; 2025-02-02T16:34:36.1173+11:00 | 3a87e274ee9f81c898d9d85abb0a8dd2
+</code></pre>
+
+<p>Once one is selected, it then uses the <code>reqlogs</code> function to display just the log messages that match that ID. Given we already know what the ID is, there’s no need to display it so <code>reqlogs</code> snips that bit out as that’ll save 32 characters each time.</p>
+
+<p>What we’ll end up with here is a set of log lines that match only <em>one</em> request at a time:</p>
+
+<pre><code>[2025-02-02T16:32:35.6772+11:00] A log message goes here.
+</code></pre>
+
+<p>This is much nicer than trawling through a giant log file or scrolling back through my console to find the particular lines I’m after!</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Scoping an Active Record join</title>
@@ -1472,209 +1591,6 @@ end
 
   tag.div(**react_options) { "" }
 end
-</code></pre>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Saving time with fzf</title>
-   <link href="https://ryanbigg.com/2023/08/saving-time-with-fzf"/>
-   <updated>2023-08-27T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2023/08/saving-time-with-fzf</id>
-   <content type="html"><![CDATA[<p>One of my favourite terminal utilities is <a href="https://github.com/junegunn/fzf">a little utility called fzf</a> (fuzzy finder). It’s how I save a bunch of time by not writing out commands, or even remembering them.</p>
-
-<h2 id="command-history">Command history</h2>
-
-<p>The thing I use fzf for the most is command history. To access the history, I use Ctrl+R and I get a list of my most recent commands:</p>
-
-<pre><code>10024 z ryanbigg
-10026 bundle exec jekyll serve
-</code></pre>
-
-<p>(The numbers represent the position of that command in my <code>.zsh_history</code> file.)</p>
-
-<p>If I then write the word “serve”, fzf will only show me commands with that word in it:</p>
-
-<pre><code>10026 serve
-</code></pre>
-
-<p>I usually use this for running some different Rails apps on certain ports. So I would hit Ctrl+R, and then type a particular port number such as 3004 to get:</p>
-
-<pre><code>10007 bundle exec rails s -p 3004
-</code></pre>
-
-<p>Instead of typing out the full command, I can type Ctrl+R and 4 keystrokes later arrive at the right command.</p>
-
-<h2 id="files-in-current-directory">Files in current directory</h2>
-
-<p>Another thing I use fzf for is its relative file searching. Most of the time, I’m using this to run RSpec tests. I type:</p>
-
-<pre><code>ber
-</code></pre>
-
-<p>(Which is my alias for “bundle exec rspec”), and then I hit Ctrl+T and I get a list of files in my terminal:</p>
-
-<pre><code>app
-app/models
-app/models/category.rb
-...
-</code></pre>
-
-<p>Then I can type a few words, or even parts of words, to get what I’m after. In this example, I’d like to find the file at <code>spec/requests/graphql/queries/repo_categories_spec.rb</code>. What a mouthful! With <code>fzf</code>, I can type <code>repocat</code> and arrive at that spec in only seven keystrokes:</p>
-
-<pre><code>spec/requests/graphql/queries/repo_categories_spec.rb
-&lt;other files here&gt;
-</code></pre>
-
-<p>When I hit enter here, my <code>ber</code> command becomes:</p>
-
-<pre><code>ber spec/requests/graphql/queries/repo_categories_spec.rb
-</code></pre>
-
-<p>Then I can run this test.</p>
-
-<p>(If I’ve run this command before, I might use <code>Ctrl+R</code> to find the “full version” of <code>ber</code> + the file path!)</p>
-
-<h2 id="filtering-output">Filtering output</h2>
-
-<p>Finally, the last way I use <code>fzf</code> is to filter output. You can pipe a list of inputs to <code>fzf</code> and it will provide its fuzzy finding features on that list.</p>
-
-<p>The way I use this the most is this very complicated looking function:</p>
-
-<pre><code>fbr () {
-	local branches branch
-	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
-  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
-}
-</code></pre>
-
-<p>I didn’t come up with this myself, but I borrowed it from elsewhere.</p>
-
-<p>This command finds the 30 most recent Git branches (surely more than adequate!) and provides a way of filtering through them. Here’s what I see when I run <code>fbr</code> in a gem I have checked out:</p>
-
-<pre><code>patch-1
-fix-locale-with-separator
-prep-1-1-4
-...
-</code></pre>
-
-<p>If I type the word <code>locale</code> and hit enter, the <code>git checkout</code> command will switch me into that branch.</p>
-
-<p>I find this one really useful when I can only half-remember a branch name, or if I’ve got a branch with an issue number in it, then I can jump straight to that branch if I know the number.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Ubuntu, Ruby, Selenium Manager, Chrome and ChromeDriver</title>
-   <link href="https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver"/>
-   <updated>2023-08-22T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2023/08/ubuntu-ruby-selenium-manager-chrome-and-chromedriver</id>
-   <content type="html"><![CDATA[<p><a href="/2023/08/alpine-linux-selenium-manager-chrome-and-chromedriver">This is a rehash of my Alpine Linux version of this post</a>. I’ll skip the fluff here and jump straight to the good stuff.</p>
-
-<p>The packages needed for Chromedriver are:</p>
-
-<pre><code>libnss3 libnspr4
-</code></pre>
-
-<p>The packages needed for Chrome are:</p>
-
-<pre><code>libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-</code></pre>
-
-<p>(There’s also a package called <code>chromium-shell</code> that installs all of these necessary dependencies, and at least half a kitchen sink too. The install time for this package is very long.)</p>
-
-<p>The <code>Dockerfile</code> is therefore:</p>
-
-<pre><code>FROM ruby:3.2.2
-
-RUN apt-get update &amp;&amp; apt-get install libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2
-
-# OR this, but the install time is much longer:
-# RUN apt-get update &amp;&amp; apt-get install chromium-shell
-
-RUN adduser --disabled-password --gecos "" app
-COPY --chown app:app . /app
-WORKDIR /app
-USER app
-
-RUN bundle config set --local path vendor/bundle
-RUN bundle install
-CMD bundle exec irb
-</code></pre>
-
-<p>And we can then build and run this image:</p>
-
-<pre><code>docker build . -t ubuntu-selenium
-docker run -it ubuntu-selenium
-</code></pre>
-
-<p>And confirm it works by running:</p>
-
-<pre><code class="language-ruby">Bundler.require
-
-Selenium::WebDriver.logger.level = Logger::DEBUG
-
-options = ::Selenium::WebDriver::Chrome::Options.new
-
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-gpu")
-
-Selenium::WebDriver.for :chrome, capabilities: options
-</code></pre>
-
-<p>This output should include things like a check for both Chrome + ChromeDriver, which will fail:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Checking chromedriver in PATH
-DEBUG Selenium [:selenium_manager] Running command: chromedriver --version
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chromedriver not found in PATH
-DEBUG Selenium [:selenium_manager] Checking chrome in PATH
-DEBUG Selenium [:selenium_manager] Running command: which chrome
-DEBUG Selenium [:selenium_manager] Output: ""
-DEBUG Selenium [:selenium_manager] chrome not found in PATH
-DEBUG Selenium [:selenium_manager] chrome has not been discovered in the system
-</code></pre>
-
-<p>(The chrome one fails here, as <code>chromium</code> has installed Chrome at <code>/usr/bin/chromium</code>.)</p>
-
-<p>After that, we’ll see log lines for downloads of Chrome + ChromeDriver:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required browser: chrome 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Downloading chrome 116.0.5845.96 from https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chrome-linux64.zip
-DEBUG Selenium [:selenium_manager] chrome 116.0.5845.96 has been downloaded at /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:selenium_manager] Reading metadata from https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
-DEBUG Selenium [:selenium_manager] Required driver: chromedriver 116.0.5845.96
-DEBUG Selenium [:selenium_manager] Driver URL: https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/116.0.5845.96/linux64/chromedriver-linux64.zip
-DEBUG Selenium [:selenium_manager] Driver path: /home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver
-DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-</code></pre>
-
-<p>Importantly, this shows version 116.0.5845.96 for both Chrome + ChromeDriver. We want these to match for compatibility reasons. As Chrome releases newer versions, the version that’s downloaded here will differ.</p>
-
-<p>Then we’ll see ChromeDriver starting up:</p>
-
-<pre><code>DEBUG Selenium [:selenium_manager] Browser path: /home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome
-DEBUG Selenium [:driver_service] port prober could not bind to ::1:9515 (Address not available - bind(2) for "::1" port 9515)
-DEBUG Selenium [:driver_service] Executing Process ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"]
-DEBUG Selenium [:process] Starting process: ["/home/app/.cache/selenium/chromedriver/linux64/116.0.5845.96/chromedriver", "--port=9515"] with {[:out, :err]=&gt;#&lt;IO:&lt;STDOUT&gt;&gt;, :pgroup=&gt;true}
-DEBUG Selenium [:process]   -&gt; pid: 28
-2023-08-22 05:46:27 DEBUG Selenium [:driver_service] polling for socket on ["127.0.0.1", 9515]
-Starting ChromeDriver 116.0.5845.96 (1a391816688002153ef791ffe60d9e899a71a037-refs/branch-heads/5845@{#1382}) on port 9515
-Only local connections are allowed.
-Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
-[1692683187.222][SEVERE]: bind() failed: Address not available (99)
-ChromeDriver was started successfully.
-</code></pre>
-
-<p>The “address not available (99)” error here is because ChromeDriver is trying to bind to <code>::1:9515</code>, but this Docker image is not setup with IPv6 support, so that will fail.</p>
-
-<p>Finally, we’ll see some JSON requests to <code>POST session</code> going back and forth from <code>9515</code>, indicating ChromeDriver’s opening a Chrome window and that’s succeeding.</p>
-
-<pre><code>DEBUG Selenium [:command] -&gt; POST session
-DEBUG Selenium [:command]    &gt;&gt;&gt; http://127.0.0.1:9515/session | {"capabilities":{"alwaysMatch":{"browserName":"chrome","goog:chromeOptions":{"args":["--headless","--no-sandbox","--disable-dev-shm-usage","--disable-gpu"],"binary":"/home/app/.cache/selenium/chrome/linux64/116.0.5845.96/chrome"}}}}
 </code></pre>
 ]]></content>
  </entry>

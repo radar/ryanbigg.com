@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rails tagged logging - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Rails tagged logging" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-02-02">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/02/rails-tagged-logging" property="og:url">
+  
+  
+  <meta content="Rails tagged logging" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Rails tagged logging">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/02/rails-tagged-logging">
+        <h2 class="my-0 mt-4">Rails tagged logging</h2>
+      </a>
+      <small>02 Feb 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16 flex">
+          <p>A feature within Rails is that it allows us to add data to our application’s log lines for tagging those lines. We can then use these tags for aggregating them together into a bunch. I’ll show you how to do this here. I used this in a Rails app that acts purely as an API, so there is only ever one request at a time I care about, in this case.</p>
+
+<p>We can configure this in <code>config/environments/development.rb</code>:</p>
+
+<pre><code>config.log_tags = [lambda {|r| Time.now.iso8601(4) }, :request_id]
+</code></pre>
+
+<p>This sets up two tags, one of a timestamp with millisecond precision, and another with the request ID. The symbol <code>:request_id</code> maps to a method on <code>ActionDispatch::Request</code>, and we can use any methods from that class in these tags if we wish.</p>
+
+<p>This log line configuration as it stands now will output this prefix to all log lines:</p>
+
+<pre><code>[2025-02-02T16:32:35.6772+11:00] [56937855b121fede4013141a6cf4ca46] A log message goes here.
+</code></pre>
+
+<p>We can eyeball our log file then to see the logs grouped together. Or, we could build a set of little shell commands to do that for us:</p>
+
+<pre><code>
+reqs() {
+  req_id=$(tail -n 1000 log/development.log |
+    awk -F'[][]' '{print $2, "|", $4}' | sort -u -r | fzf | awk '{print $NF}')
+
+  reqlogs "$req_id"
+}
+
+reqlogs() {
+  awk -v req_id="$1" '
+  $0 ~ "\\[" req_id "\\]" {
+    sub(/\[[0-9a-f]+\]/, "", $0)
+    print
+  }
+  ' log/development.log
+}
+</code></pre>
+
+<p>The <code>reqs</code> command here uses <code>awk</code> and <a href="https://github.com/junegunn/fzf">fzf</a> to find the last 1,000 log lines, and outputs the timestamps and request IDs for them, with the most recent request selected by default:</p>
+
+<pre><code>2025-02-02T16:32:35.6772+11:00 | 56937855b121fede4013141a6cf4ca46
+&gt; 2025-02-02T16:34:36.1173+11:00 | 3a87e274ee9f81c898d9d85abb0a8dd2
+</code></pre>
+
+<p>Once one is selected, it then uses the <code>reqlogs</code> function to display just the log messages that match that ID. Given we already know what the ID is, there’s no need to display it so <code>reqlogs</code> snips that bit out as that’ll save 32 characters each time.</p>
+
+<p>What we’ll end up with here is a set of log lines that match only <em>one</em> request at a time:</p>
+
+<pre><code>[2025-02-02T16:32:35.6772+11:00] A log message goes here.
+</code></pre>
+
+<p>This is much nicer than trawling through a giant log file or scrolling back through my console to find the particular lines I’m after!</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

@@ -1,4 +1,105 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-01-31T13:17:48+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Scoping an Active Record join</title><link href="http://localhost:4000/2024/12/scoping-an-active-record-join" rel="alternate" type="text/html" title="Scoping an Active Record join" /><published>2024-12-09T00:00:00+11:00</published><updated>2024-12-09T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/scoping-an-active-record-join</id><content type="html" xml:base="http://localhost:4000/2024/12/scoping-an-active-record-join"><![CDATA[<p>Active Record is well known for its footguns, like N+1 queries and letting you dump <em>all the business logic</em> for your applications in models. (For an alternative, read <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>.)</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-02-11T07:04:59+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ghosts ‘n’ Stuff</title><link href="http://localhost:4000/2025/02/ghosts" rel="alternate" type="text/html" title="Ghosts ‘n’ Stuff" /><published>2025-02-11T00:00:00+11:00</published><updated>2025-02-11T00:00:00+11:00</updated><id>http://localhost:4000/2025/02/ghosts</id><content type="html" xml:base="http://localhost:4000/2025/02/ghosts"><![CDATA[<p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
+
+<p>But today I want to talk about ghosts.</p>
+
+<p>The apps I’m working on have the lucky advantage of being around a decade and a half old. They also have the unlucky disadvantage of being a decade and a half old. Ruby and to a larger extent JavaScript tastes have rapidly evolved in this time. Both have since slowed to a much more agreeable-to-this-dad pace, and I am thankful for that.</p>
+
+<p>Not only do the languages change over time, but the applications do as well. Features get added, seldom removed. Bugs get removed and (hopefully) seldom added. Developers move on — Peopleware claims the average staying power of a dev was in the range of 15-36 months (I would be interested to hear how this has changed after the pandemic) — and new developers come in and claim their way is superior and this situation repeats three to five fold before the current day. The old developers then become “ghosts” of our history.</p>
+
+<p>The application gets into this liminal state of being “complete” (actually a well-known and appreciated fallacy in dev circles, but bear with me), owned by nobody (as those people have left and newer priorities meant the new people haven’t seen this app yet) and yet somehow business critical. I’m talking “people don’t get paid if this doesn’t run”, business critical. The app logs nothing to nowhere, and yet people rely on it intensely and would tell you quite quickly in all-caps if it wasn’t working.</p>
+
+<p>Perhaps this application is deployed to some sort of cloud compute environment and runs as its own function or suite of functions. Can’t have it running in a monolith as a worker because that’s boring and doesn’t add any keywords to your resume for potential recruiters to find – aka Resume Driven Development. How those functions tie together is a corkboard-and-red-string job for the lucky person who finds this app later.</p>
+
+<p>Time comes along and does its thing and the people who run the cloud compute environment say “we’re not going to support that version of that language any more because it’s <em>old</em>”. This announcement is made so far ahead of that deadline that nobody within the business seems to mind.</p>
+
+<p>The future arrives the next day, or it feels that way.</p>
+
+<p>By then, the security auditors come along and say “we require you to keep your systems up to date as possible, and yes, we mean even down to your packages.” And they make the very strong implication that if this isn’t done, that you may as well all go on a big company-wide holiday until it is. On a budget, of course, because if the company isn’t running then nobody’s getting paid a whole lot of anything.</p>
+
+<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
+
+<p>(Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
+wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)</p>
+
+<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2013-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
+
+<p>The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person’s lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.</p>
+
+<hr />
+
+<p>The upgrade begins. The mind initially turns to questions like “How bad could it possibly be?”, then “What were these developers on?” and finally arriving at “Why, oh God why?” – a milder version of the Five Stages of Grief – as app after app reveals gradually the eldritch horrors of past coding styles, methodologies and arcane deployment strategies filled with reams of equally dubious and artisanal YAML. (Were these developers being paid by the line?)</p>
+
+<p>(Of course, the way we code <em>today</em> would <strong>never</strong> be viewed with that particular lens. Us being absolute beacons of
+perfection having learned so much over our long and storied careers, unpressured by deadlines and unbiased by our current obsessions.)</p>
+
+<p>The archaeological layers of these applications are sometimes stone, and at other times more… biological. You start to learn the quirks and styles of developers and can sight-identify code-strata where <em>this</em> block of code was written by Dev A, but <em>that</em> block of code was Dev B.  And this block of code was disputed territory. Both devs haven’t worked at the company in nearly half a decade. Their names aren’t recognised by most people who are current employees. A search online for them turns up only the fact that they probably existed.</p>
+
+<p>Both devs write good code in parts. You’d tick it in a PR review, or perhaps leave a pedantic comment about nested ternaries being unsightly. You imagine in-person meetings, perhaps at a meetup or a conference, between yourself and these devs, and deciding if during those meetings you want to shake their hand to say “well done” or your head in dismay to say the opposite, depending on what’s in view at the minute.</p>
+
+<p>Dev C, the most recent author in the <code>git log</code> history with a commit measuring in the tens of lines, who happens to still work at the company denies all knowledge of having ever worked on or near this system. Yet the proof is right there in black and white, or other colours depending on your terminal theme du jour.</p>
+
+<p>Any attempt to run these apps is met with things like arcane compilation issues because that one particular gem doesn’t work with the CPU architecture of the machine you’re now using. The newer version of the gem will install just fine… just right after you switch to the minimum language version that it now supports. Occasionally, the gem hasn’t received an update since many years ago.</p>
+
+<p>I initially bristled at this thing in particular: (Sass should be a gem, god damn it! It’s always been a gem!) but in the 3-point-something years of my FE-lead tenure I’ve come around to being a zealot of “CSS and JS are tools for the frontend, and the frontend stack is compiled with <em>these</em> tools” where the tools are usually written in one of the holy trinity of Go, Rust or (to a lesser extent) JavaScript. Or I guess in the case of Sass, Dart. The <code>dartsass-rails</code> gem looks promising, however.</p>
+
+<p>The gems gets upgraded, and you take extra special glee in removing <code>sassc</code> which has a compilation time measured in eons. Rubocop gets told to shove it a few new extra times and some quirks of the code’s setup (such as deprecation warnings) are addressed. Perfection is never achieved not only because it’s extremely subjective but also because time is relentless.</p>
+
+<hr />
+
+<p>These ghosts of the past were doing what they thought was the right thing that was acceptable under the circumstances and conditions that they were working in. Looking at the code now, is it still the right thing? That depends on who you’re asking. Code is subjective. There are arguably the “best” way to do certain things (hello, sorting algorithms) and then there are multitudinous ways of saying “put this JavaScript code on a server somewhere and make it wait for things to happen, so it can tell other things to happen”. That is where things get murky: the points of differences between how they, the ghosts, would do it and how I, the lead developer living in this current time and being tasked with working with this app in the <em>here and now</em>, would do it.</p>
+
+<p>Tastes change. The right way to write and deploy an application is akin to shifting sands. Even this week, the release of Docker’s “bake” command will change how I personally build apps. What was in style five years ago can be, considered a taboo in modern times. The blessed becomes the unspeakable. Developers are a finnicky bunch.</p>
+
+<p>I’ve left unintentional sins in systems I’ve worked on in the past, I’m sure of it. There’s stuff I’ve written that I’m certain of being a net-negative outcome of the apps I work in right now. Unintentional booby traps waiting to catch the next developer who happens across them. There’s other stuff I’m more on the fence about (such as when I introduced and encouraged the use of GraphQL and integrating it with TypeScript — let’s call it 65%/35% love/hate today). And then there’s stuff I’d use as exemplary things during an interview (while sweeping things in Category 1 waaaayyy under the rug).</p>
+
+<p>I think we need to be kind to the ghosts that have left their fingerprints on the systems we work in and on. They, overall, were doing their best. And I also think that we, being the ghosts of the future, need to strive to do our best to leave the <em>best</em> kind of fingerprints we can now. And to be kind to <em>ourselves</em> when the circumstances and conditions mean that we have to be flexible on what “right” means today.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was allowed to write them. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s interesting but also highly confidential. I’d love to share those stories one day, perhaps a long way down the track.]]></summary></entry><entry><title type="html">Rails tagged logging</title><link href="http://localhost:4000/2025/02/rails-tagged-logging" rel="alternate" type="text/html" title="Rails tagged logging" /><published>2025-02-02T00:00:00+11:00</published><updated>2025-02-02T00:00:00+11:00</updated><id>http://localhost:4000/2025/02/rails-tagged-logging</id><content type="html" xml:base="http://localhost:4000/2025/02/rails-tagged-logging"><![CDATA[<p>A feature within Rails is that it allows us to add data to our application’s log lines for tagging those lines. We can then use these tags for aggregating them together into a bunch. I’ll show you how to do this here. I used this in a Rails app that acts purely as an API, so there is only ever one request at a time I care about, in this case.</p>
+
+<p>We can configure this in <code>config/environments/development.rb</code>:</p>
+
+<pre><code>config.log_tags = [lambda {|r| Time.now.iso8601(4) }, :request_id]
+</code></pre>
+
+<p>This sets up two tags, one of a timestamp with millisecond precision, and another with the request ID. The symbol <code>:request_id</code> maps to a method on <code>ActionDispatch::Request</code>, and we can use any methods from that class in these tags if we wish.</p>
+
+<p>This log line configuration as it stands now will output this prefix to all log lines:</p>
+
+<pre><code>[2025-02-02T16:32:35.6772+11:00] [56937855b121fede4013141a6cf4ca46] A log message goes here.
+</code></pre>
+
+<p>We can eyeball our log file then to see the logs grouped together. Or, we could build a set of little shell commands to do that for us:</p>
+
+<pre><code>
+reqs() {
+  req_id=$(tail -n 1000 log/development.log |
+    awk -F'[][]' '{print $2, "|", $4}' | sort -u -r | fzf | awk '{print $NF}')
+
+  reqlogs "$req_id"
+}
+
+reqlogs() {
+  awk -v req_id="$1" '
+  $0 ~ "\\[" req_id "\\]" {
+    sub(/\[[0-9a-f]+\]/, "", $0)
+    print
+  }
+  ' log/development.log
+}
+</code></pre>
+
+<p>The <code>reqs</code> command here uses <code>awk</code> and <a href="https://github.com/junegunn/fzf">fzf</a> to find the last 1,000 log lines, and outputs the timestamps and request IDs for them, with the most recent request selected by default:</p>
+
+<pre><code>2025-02-02T16:32:35.6772+11:00 | 56937855b121fede4013141a6cf4ca46
+&gt; 2025-02-02T16:34:36.1173+11:00 | 3a87e274ee9f81c898d9d85abb0a8dd2
+</code></pre>
+
+<p>Once one is selected, it then uses the <code>reqlogs</code> function to display just the log messages that match that ID. Given we already know what the ID is, there’s no need to display it so <code>reqlogs</code> snips that bit out as that’ll save 32 characters each time.</p>
+
+<p>What we’ll end up with here is a set of log lines that match only <em>one</em> request at a time:</p>
+
+<pre><code>[2025-02-02T16:32:35.6772+11:00] A log message goes here.
+</code></pre>
+
+<p>This is much nicer than trawling through a giant log file or scrolling back through my console to find the particular lines I’m after!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A feature within Rails is that it allows us to add data to our application’s log lines for tagging those lines. We can then use these tags for aggregating them together into a bunch. I’ll show you how to do this here. I used this in a Rails app that acts purely as an API, so there is only ever one request at a time I care about, in this case.]]></summary></entry><entry><title type="html">Scoping an Active Record join</title><link href="http://localhost:4000/2024/12/scoping-an-active-record-join" rel="alternate" type="text/html" title="Scoping an Active Record join" /><published>2024-12-09T00:00:00+11:00</published><updated>2024-12-09T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/scoping-an-active-record-join</id><content type="html" xml:base="http://localhost:4000/2024/12/scoping-an-active-record-join"><![CDATA[<p>Active Record is well known for its footguns, like N+1 queries and letting you dump <em>all the business logic</em> for your applications in models. (For an alternative, read <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>.)</p>
 
 <p>A lesser-known footgun is this seemingly innocuous use of <code>joins</code> in a tenanted Rails application. By “tenanted” I mean that most records have something like a <code>tenant_id</code> on them that declares ownership. In our case, it’s <code>merchant_id</code>. Here’s the query:</p>
 
@@ -751,147 +852,4 @@ export type Purchase = NonNullable&lt;Merchant['purchase']&gt;;
 
 <p>Finally, my absolute <em>golden path</em> idea on this topic is that the tests that run when you push a branch, should only be the tests related to the code that you changed. If I’m making changes on Part A of the system, then it doesn’t make sense to run tests for Part B on all branches. Running the entire test suite before a production deploy makes sense, but not on the earlier branches.</p>
 
-<p>To that end, there’s probably investigative work to go on with this app where the app could be split into something like Hanami’s “slices”, so we have Slice A with its own tests, then if there’s file changes in Slice A then Slice A’s tests get run, but Slice B’s tests don’t. That seems like work that would be greater than many cooldown sprints in a row, and so I’m happy to leave that as just a thought bubble for the time-being.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[EDIT: I wrote these as notes for myself a few weeks ago when my brain wouldn’t stop spinning on this problem. Writing things down gets it out of my brain and lets me do simple things, like “engage in conversations” or “sleep”.]]></summary></entry><entry><title type="html">Scheduling with Ice Cube</title><link href="http://localhost:4000/2024/05/scheduling-with-ice-cube" rel="alternate" type="text/html" title="Scheduling with Ice Cube" /><published>2024-05-22T00:00:00+10:00</published><updated>2024-05-22T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/scheduling-with-ice-cube</id><content type="html" xml:base="http://localhost:4000/2024/05/scheduling-with-ice-cube"><![CDATA[<p>I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the <em>end of the month</em> for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the <em>month</em> but also the <em>year</em>, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.</p>
-
-<p>The frequency of these payments that we allow for in our system are weekly, fortnightly, every-4-weeks, monthly, quarterly, half-yearly, and yearly. When a schedule is created, we use the start date for the schedule as the basis for the ongoing payments. Schedules can optionally have an end date too, where those payments will stop happening.</p>
-
-<p>On top of that, weekly and fortnightly payments can optionally have a day of the week chosen for payments, which means that they sometimes don’t line up with the declared start date.</p>
-
-<p>Monthly payments can also have the same option, but instead of day of the week it’s day of the month. If someone selects the 31st as their billing day, we need to consider what we’d do in months like February, April, June, September and November, which don’t have those days.</p>
-
-<p>All of this sounds like quite the headache, given it involves the two most difficult things: <em>time</em> and <em>money</em>. Putting the money thing to one side for the moment, we’ll stay focussed on just the <em>time</em> thing.</p>
-
-<p>To help with the scheduling calculation, we use the <a href="https://rubygems.org/gems/ice_cube">ice_cube</a> gem.</p>
-
-<p>Let’s say that we have a schedule that:</p>
-
-<ul>
-  <li>Starts today: <code>2024-05-22</code>.</li>
-  <li>Has no end date</li>
-  <li>Reoccurs monthly</li>
-  <li>Day of the month: 31st</li>
-</ul>
-
-<p>With <code>ice_cube</code>, we can write code to generate schedules:</p>
-
-<pre><code class="language-ruby">start_date = Date.parse('2024-05-22')
-
-schedule_rule = IceCube::Rule.monthly.day_of_month(31)
-
-schedule = IceCube::Schedule.new(start_date) do |s|
-  s.add_recurrence_rule(schedule_rule)
-end
-
-puts schedule.first(10)
-</code></pre>
-
-<p>This seems innocent enough. But if we run it, we’ll see that it’s not quite right:</p>
-
-<pre><code class="language-text">2024-05-31 00:00:00 +1000
-2024-07-31 00:00:00 +1000
-2024-08-31 00:00:00 +1000
-2024-10-31 00:00:00 +1100
-2024-12-31 00:00:00 +1100
-2025-01-31 00:00:00 +1100
-2025-03-31 00:00:00 +1100
-2025-05-31 00:00:00 +1000
-2025-07-31 00:00:00 +1000
-2025-08-31 00:00:00 +1000
-</code></pre>
-
-<p>We asked for a monthly recurring schedule, but we also said that this has to be on the 31st day of the month. The <code>ice_cube</code> gem dutifully follows our instructions, and sets a reoccurring schedule for all months with 31 days and the first 5 months there are May, July, August, October, and December.</p>
-
-<p>We would also see this bug if we specified the 30th or 29th for the day of the month.</p>
-
-<p>To fix this, we can instead specify a negative day:</p>
-
-<pre><code class="language-ruby">start_date = Date.parse('2024-05-22')
-
-schedule_rule = IceCube::Rule.monthly.day_of_month(-1)
-
-schedule = IceCube::Schedule.new(start_date) do |s|
-  s.add_recurrence_rule(schedule_rule)
-end
-
-puts schedule.next_occurrences(10)
-</code></pre>
-
-<p>This will produce the following schedule:</p>
-
-<pre><code class="language-text">2024-05-31 00:00:00 +1000
-2024-06-30 00:00:00 +1000
-2024-07-31 00:00:00 +1000
-2024-08-31 00:00:00 +1000
-2024-09-30 00:00:00 +1000
-2024-10-31 00:00:00 +1100
-2024-11-30 00:00:00 +1100
-2024-12-31 00:00:00 +1100
-2025-01-31 00:00:00 +1100
-2025-02-28 00:00:00 +1100
-</code></pre>
-
-<p>We can do similar scheduling rules for the things I mentioned earlier too, such as scheduling things on Mondays:</p>
-
-<pre><code class="language-ruby">schedule_rule = IceCube::Rule.weekly.day(:monday)
-</code></pre>
-
-<pre><code class="language-text">2024-05-27 00:00:00 +1000
-2024-06-03 00:00:00 +1000
-2024-06-10 00:00:00 +1000
-2024-06-17 00:00:00 +1000
-2024-06-24 00:00:00 +1000
-2024-07-01 00:00:00 +1000
-2024-07-08 00:00:00 +1000
-2024-07-15 00:00:00 +1000
-2024-07-22 00:00:00 +1000
-2024-07-29 00:00:00 +1000
-</code></pre>
-
-<p>The <a href="https://github.com/ice-cube-ruby/ice_cube">README for the gem</a> contains plenty of other examples.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the end of the month for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the month but also the year, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.]]></summary></entry><entry><title type="html">Thought Experiment: Without React or GraphQL</title><link href="http://localhost:4000/2024/05/without-react-or-graphql" rel="alternate" type="text/html" title="Thought Experiment: Without React or GraphQL" /><published>2024-05-20T00:00:00+10:00</published><updated>2024-05-20T00:00:00+10:00</updated><id>http://localhost:4000/2024/05/without-react-or-graphql</id><content type="html" xml:base="http://localhost:4000/2024/05/without-react-or-graphql"><![CDATA[<p>I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">GraphQL for Rails Developers</a> and its frontend companion Apollo in the <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">Apollo Handbook</a>. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.</p>
-
-<p>But in saying that, I acknowledge there is no silver bullet for software development. So what would I do if I <em>couldn’t</em> use React or GraphQL?</p>
-
-<p>To replace React on the frontend, I would use <a href="https://viewcomponent.org/">View Component</a> as I have written about <a href="https://ryanbigg.com/2024/01/view-components-table-edition">here</a> and <a href="https://ryanbigg.com/2023/06/rails-7-react-typescript-setup">here</a>. I could also be convinced to use <a href="https://www.phlex.fun/">Phlex</a>.</p>
-
-<p>I think having a typed layer between your database and view is just something that <em>makes sense</em>, and so to that end I would define a <em>separate</em> class for the data types for these components, using <code>dry-types</code> and then pass objects of those classes to the view, in a way that if you squint hard enough you could see it as the Presenter Pattern. I proposed something similar to this <a href="https://ryanbigg.com/2022/03/typed-view-components">two years ago in my “Typed View Components” post</a></p>
-
-<p>Riffing on the example from that post, I would have this as:</p>
-
-<pre><code class="language-ruby">class RefundComponent &lt; ViewComponent::Base
-  extend Dry::Initializer
-  Types = Dry.Types()
-
-  class Refund &lt; Dry::Struct
-    schema schema.strict
-
-    attribute :standalone, Types::Bool
-    attribute :amount, Types::Float
-    attribute :currency, Types::String
-  end
-
-  option :refund, Refund
-end
-</code></pre>
-
-<p>This allows you to keep together the logic of the component (both its Ruby code and its associated views) and the presenter in one directory.</p>
-
-<p>In the controller, the code would look like this:</p>
-
-<pre><code class="language-ruby">refund = RefundComponent::Refund.new(
-  standalone: @refund.standalone?
-  amount: @refund.amount,
-  currency: @refund.currency,
-)
-
-@refund_component = RefundComponent.new(refund: refund)
-</code></pre>
-
-<p>This would still give us an interface <em>similar</em> to GraphQL, where the connecting layer between the database and the frontend is still typed. I think it’s teetering on the edge of being too verbose, but in all things trade-offs.</p>
-
-<p>You then don’t end up exposing any way of doing database queries to the view, which would help prevent N+1 queries. And you can test your views in isolation from the database too. The <code>refund</code> passed to the component doesn’t have to come from the database; it could be a stubbed object, as long as it responds to the right methods.</p>
-
-<p>In the view file itself you might or might not get smart tab-completion like you do within TypeScript-powered GraphQL code, but I think that’s a fair trade-off.</p>
-
-<p>This whole approach trades off React’s “reactivity” as well, so there’s no state management going on here or DOM updating when the state changes. There are probably ways around this (like Hotwire, etc.) but I haven’t gone down those paths yet.</p>
-
-<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my GraphQL for Rails Developers and its frontend companion Apollo in the Apollo Handbook. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.]]></summary></entry></feed>
+<p>To that end, there’s probably investigative work to go on with this app where the app could be split into something like Hanami’s “slices”, so we have Slice A with its own tests, then if there’s file changes in Slice A then Slice A’s tests get run, but Slice B’s tests don’t. That seems like work that would be greater than many cooldown sprints in a row, and so I’m happy to leave that as just a thought bubble for the time-being.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[EDIT: I wrote these as notes for myself a few weeks ago when my brain wouldn’t stop spinning on this problem. Writing things down gets it out of my brain and lets me do simple things, like “engage in conversations” or “sleep”.]]></summary></entry></feed>

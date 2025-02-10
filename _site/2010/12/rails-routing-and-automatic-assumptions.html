@@ -61,7 +61,7 @@
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
-        <article class="mt-8 mb-16">
+        <article class="mt-8 mb-16 flex">
           <p>Last night while working on chapter 12 for <a href="http://manning.com/katz">Rails 3 in Action</a> I stumbled across an interesting problem detailed in <a href="https://gist.github.com/746414">this gist</a>. The problem I was seeing is that the <code>edit_admin_user_path</code> route <em>was not</em> failing, while the <code>admin_user_permissions_path</code> path <em>was</em> failing.</p>
 
 <p>I had my suspicions to why the first link worked and spent the remainder of last night digging through my favourite bit of Rails and Rails related source(ry): Action Dispatch and rack-mount. I didn’t figure it all completely out until after a good night’s sleep. It wasn’t until I saw pixeltrix’s comment on the Gist this morning that it all clicked.</p>

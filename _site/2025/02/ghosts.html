@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ghosts 'n' Stuff - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Ghosts 'n' Stuff" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-02-11">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/02/ghosts" property="og:url">
+  
+  
+  <meta content="Ghosts 'n' Stuff" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Ghosts 'n' Stuff">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/02/ghosts">
+        <h2 class="my-0 mt-4">Ghosts 'n' Stuff</h2>
+      </a>
+      <small>11 Feb 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16 flex">
+          <p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
+
+<p>But today I want to talk about ghosts.</p>
+
+<p>The apps I’m working on have the lucky advantage of being around a decade and a half old. They also have the unlucky disadvantage of being a decade and a half old. Ruby and to a larger extent JavaScript tastes have rapidly evolved in this time. Both have since slowed to a much more agreeable-to-this-dad pace, and I am thankful for that.</p>
+
+<p>Not only do the languages change over time, but the applications do as well. Features get added, seldom removed. Bugs get removed and (hopefully) seldom added. Developers move on — Peopleware claims the average staying power of a dev was in the range of 15-36 months (I would be interested to hear how this has changed after the pandemic) — and new developers come in and claim their way is superior and this situation repeats three to five fold before the current day. The old developers then become “ghosts” of our history.</p>
+
+<p>The application gets into this liminal state of being “complete” (actually a well-known and appreciated fallacy in dev circles, but bear with me), owned by nobody (as those people have left and newer priorities meant the new people haven’t seen this app yet) and yet somehow business critical. I’m talking “people don’t get paid if this doesn’t run”, business critical. The app logs nothing to nowhere, and yet people rely on it intensely and would tell you quite quickly in all-caps if it wasn’t working.</p>
+
+<p>Perhaps this application is deployed to some sort of cloud compute environment and runs as its own function or suite of functions. Can’t have it running in a monolith as a worker because that’s boring and doesn’t add any keywords to your resume for potential recruiters to find – aka Resume Driven Development. How those functions tie together is a corkboard-and-red-string job for the lucky person who finds this app later.</p>
+
+<p>Time comes along and does its thing and the people who run the cloud compute environment say “we’re not going to support that version of that language any more because it’s <em>old</em>”. This announcement is made so far ahead of that deadline that nobody within the business seems to mind.</p>
+
+<p>The future arrives the next day, or it feels that way.</p>
+
+<p>By then, the security auditors come along and say “we require you to keep your systems up to date as possible, and yes, we mean even down to your packages.” And they make the very strong implication that if this isn’t done, that you may as well all go on a big company-wide holiday until it is. On a budget, of course, because if the company isn’t running then nobody’s getting paid a whole lot of anything.</p>
+
+<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
+
+<p>(Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
+wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)</p>
+
+<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2013-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
+
+<p>The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person’s lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.</p>
+
+<hr />
+
+<p>The upgrade begins. The mind initially turns to questions like “How bad could it possibly be?”, then “What were these developers on?” and finally arriving at “Why, oh God why?” – a milder version of the Five Stages of Grief – as app after app reveals gradually the eldritch horrors of past coding styles, methodologies and arcane deployment strategies filled with reams of equally dubious and artisanal YAML. (Were these developers being paid by the line?)</p>
+
+<p>(Of course, the way we code <em>today</em> would <strong>never</strong> be viewed with that particular lens. Us being absolute beacons of
+perfection having learned so much over our long and storied careers, unpressured by deadlines and unbiased by our current obsessions.)</p>
+
+<p>The archaeological layers of these applications are sometimes stone, and at other times more… biological. You start to learn the quirks and styles of developers and can sight-identify code-strata where <em>this</em> block of code was written by Dev A, but <em>that</em> block of code was Dev B.  And this block of code was disputed territory. Both devs haven’t worked at the company in nearly half a decade. Their names aren’t recognised by most people who are current employees. A search online for them turns up only the fact that they probably existed.</p>
+
+<p>Both devs write good code in parts. You’d tick it in a PR review, or perhaps leave a pedantic comment about nested ternaries being unsightly. You imagine in-person meetings, perhaps at a meetup or a conference, between yourself and these devs, and deciding if during those meetings you want to shake their hand to say “well done” or your head in dismay to say the opposite, depending on what’s in view at the minute.</p>
+
+<p>Dev C, the most recent author in the <code>git log</code> history with a commit measuring in the tens of lines, who happens to still work at the company denies all knowledge of having ever worked on or near this system. Yet the proof is right there in black and white, or other colours depending on your terminal theme du jour.</p>
+
+<p>Any attempt to run these apps is met with things like arcane compilation issues because that one particular gem doesn’t work with the CPU architecture of the machine you’re now using. The newer version of the gem will install just fine… just right after you switch to the minimum language version that it now supports. Occasionally, the gem hasn’t received an update since many years ago.</p>
+
+<p>I initially bristled at this thing in particular: (Sass should be a gem, god damn it! It’s always been a gem!) but in the 3-point-something years of my FE-lead tenure I’ve come around to being a zealot of “CSS and JS are tools for the frontend, and the frontend stack is compiled with <em>these</em> tools” where the tools are usually written in one of the holy trinity of Go, Rust or (to a lesser extent) JavaScript. Or I guess in the case of Sass, Dart. The <code>dartsass-rails</code> gem looks promising, however.</p>
+
+<p>The gems gets upgraded, and you take extra special glee in removing <code>sassc</code> which has a compilation time measured in eons. Rubocop gets told to shove it a few new extra times and some quirks of the code’s setup (such as deprecation warnings) are addressed. Perfection is never achieved not only because it’s extremely subjective but also because time is relentless.</p>
+
+<hr />
+
+<p>These ghosts of the past were doing what they thought was the right thing that was acceptable under the circumstances and conditions that they were working in. Looking at the code now, is it still the right thing? That depends on who you’re asking. Code is subjective. There are arguably the “best” way to do certain things (hello, sorting algorithms) and then there are multitudinous ways of saying “put this JavaScript code on a server somewhere and make it wait for things to happen, so it can tell other things to happen”. That is where things get murky: the points of differences between how they, the ghosts, would do it and how I, the lead developer living in this current time and being tasked with working with this app in the <em>here and now</em>, would do it.</p>
+
+<p>Tastes change. The right way to write and deploy an application is akin to shifting sands. Even this week, the release of Docker’s “bake” command will change how I personally build apps. What was in style five years ago can be, considered a taboo in modern times. The blessed becomes the unspeakable. Developers are a finnicky bunch.</p>
+
+<p>I’ve left unintentional sins in systems I’ve worked on in the past, I’m sure of it. There’s stuff I’ve written that I’m certain of being a net-negative outcome of the apps I work in right now. Unintentional booby traps waiting to catch the next developer who happens across them. There’s other stuff I’m more on the fence about (such as when I introduced and encouraged the use of GraphQL and integrating it with TypeScript — let’s call it 65%/35% love/hate today). And then there’s stuff I’d use as exemplary things during an interview (while sweeping things in Category 1 waaaayyy under the rug).</p>
+
+<p>I think we need to be kind to the ghosts that have left their fingerprints on the systems we work in and on. They, overall, were doing their best. And I also think that we, being the ghosts of the future, need to strive to do our best to leave the <em>best</em> kind of fingerprints we can now. And to be kind to <em>ourselves</em> when the circumstances and conditions mean that we have to be flexible on what “right” means today.</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>
