@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Decorating arrays with SimpleDelegator - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Decorating arrays with SimpleDelegator" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-03-03">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/03/decorating-arrays-with-simpledelegator" property="og:url">
+  
+  
+  <meta content="Decorating arrays with SimpleDelegator" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Decorating arrays with SimpleDelegator">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/03/decorating-arrays-with-simpledelegator">
+        <h2 class="my-0 mt-4">Decorating arrays with SimpleDelegator</h2>
+      </a>
+      <small>03 Mar 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:</p>
+
+<pre><code class="language-ruby">require 'csv'
+
+Transaction  = Data.define(:date, :amount, :status)
+
+transactions = 100.times.map do
+  Transaction.new(
+    date: Date.today - rand(30),
+    amount: rand(1.0..250.0).round(2),
+    status: rand &lt; 0.9 ? "Approved" : "Declined"
+  )
+end
+</code></pre>
+
+<p>These transactions are a list occurring anywhere in the last 30 days, with amounts between $1 and $250, with a status that has a 90% chance of being “Approved” and 10% chance of being “Declined”.</p>
+
+<p>To filter on these I can use common methods like <code>select</code>:</p>
+
+<pre><code class="language-ruby">transactions
+  .select { it.amount &lt;= 25 }
+  .select { it.date == Date.parse("2025-02-26") }
+</code></pre>
+
+<p>That would find me any transaction with an amount less than $25, occurring on the 26th of February. Easy enough!</p>
+
+<p>But we can bring this code closer to English by using <code>SimpleDelegator</code> to decorate our array, creating a neat DSL:</p>
+
+<pre><code class="language-ruby">class Transactions &lt; SimpleDelegator
+  def amount_lte(amount)
+    select { it.amount &lt;= amount }
+  end
+
+  def for_date(date)
+    select { it.date == Date.parse(date) }
+  end
+
+  def select(&amp;block)
+    self.class.new(super(&amp;block))
+  end
+end
+</code></pre>
+
+<p>This class inherits from SimpleDelegator and defines methods to provide that simple DSL. Our code from before:</p>
+
+<pre><code class="language-ruby">transactions
+  .select { it.amount &lt;= 25 }
+  .select { it.date == Date.parse("2025-02-26") }
+</code></pre>
+
+<p>Can now instead be written as:</p>
+
+<pre><code class="language-ruby">transactions
+  .amount_lte(25)
+  .for_date("2025-02-06")
+</code></pre>
+
+<p>This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put <code>Date.parse</code> inside <code>for_date</code>. This could be customized further to <em>only</em> do that <code>Date.parse</code> if the object passed in is a string and not a <code>Date</code> already.</p>
+
+<p>As a bit of “homework” here, can you update this class so that it supports this syntax?</p>
+
+<pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
+</code></pre>
+
+<p>And now can you write that code any shorter?</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
- <title>Ryan Bigg's Blog</title>
+ <title>Ryan Bigg Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2025-02-11T07:04:59+11:00</updated>
+ <updated>2025-03-03T21:04:41+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,10 +13,83 @@
 
  
  <entry>
+   <title>Decorating arrays with SimpleDelegator</title>
+   <link href="https://ryanbigg.com/2025/03/decorating-arrays-with-simpledelegator"/>
+   <updated>2025-03-03T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/03/decorating-arrays-with-simpledelegator</id>
+   <content type="html"><![CDATA[<p>Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:</p>
+
+<pre><code class="language-ruby">require 'csv'
+
+Transaction  = Data.define(:date, :amount, :status)
+
+transactions = 100.times.map do
+  Transaction.new(
+    date: Date.today - rand(30),
+    amount: rand(1.0..250.0).round(2),
+    status: rand &lt; 0.9 ? "Approved" : "Declined"
+  )
+end
+</code></pre>
+
+<p>These transactions are a list occurring anywhere in the last 30 days, with amounts between $1 and $250, with a status that has a 90% chance of being “Approved” and 10% chance of being “Declined”.</p>
+
+<p>To filter on these I can use common methods like <code>select</code>:</p>
+
+<pre><code class="language-ruby">transactions
+  .select { it.amount &lt;= 25 }
+  .select { it.date == Date.parse("2025-02-26") }
+</code></pre>
+
+<p>That would find me any transaction with an amount less than $25, occurring on the 26th of February. Easy enough!</p>
+
+<p>But we can bring this code closer to English by using <code>SimpleDelegator</code> to decorate our array, creating a neat DSL:</p>
+
+<pre><code class="language-ruby">class Transactions &lt; SimpleDelegator
+  def amount_lte(amount)
+    select { it.amount &lt;= amount }
+  end
+
+  def for_date(date)
+    select { it.date == Date.parse(date) }
+  end
+
+  def select(&amp;block)
+    self.class.new(super(&amp;block))
+  end
+end
+</code></pre>
+
+<p>This class inherits from SimpleDelegator and defines methods to provide that simple DSL. Our code from before:</p>
+
+<pre><code class="language-ruby">transactions
+  .select { it.amount &lt;= 25 }
+  .select { it.date == Date.parse("2025-02-26") }
+</code></pre>
+
+<p>Can now instead be written as:</p>
+
+<pre><code class="language-ruby">transactions
+  .amount_lte(25)
+  .for_date("2025-02-06")
+</code></pre>
+
+<p>This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put <code>Date.parse</code> inside <code>for_date</code>. This could be customized further to <em>only</em> do that <code>Date.parse</code> if the object passed in is a string and not a <code>Date</code> already.</p>
+
+<p>As a bit of “homework” here, can you update this class so that it supports this syntax?</p>
+
+<pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
+</code></pre>
+
+<p>And now can you write that code any shorter?</p>
+]]></content>
+ </entry>
+ 
+ <entry>
    <title>Ghosts &apos;n&apos; Stuff</title>
-   <link href="https://ryanbigg.com/2025/02/ghosts"/>
-   <updated>2025-02-11T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2025/02/ghosts</id>
+   <link href="https://ryanbigg.com/2025/02/ghosts-n-stuff"/>
+   <updated>2025-02-10T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/02/ghosts-n-stuff</id>
    <content type="html"><![CDATA[<p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
 
 <p>But today I want to talk about ghosts.</p>
@@ -35,12 +108,12 @@
 
 <p>By then, the security auditors come along and say “we require you to keep your systems up to date as possible, and yes, we mean even down to your packages.” And they make the very strong implication that if this isn’t done, that you may as well all go on a big company-wide holiday until it is. On a budget, of course, because if the company isn’t running then nobody’s getting paid a whole lot of anything.</p>
 
-<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
+<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value”, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
 
 <p>(Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
 wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)</p>
 
-<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2013-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
+<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2014-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
 
 <p>The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person’s lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.</p>
 
@@ -1543,55 +1616,6 @@ end
 
 <p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>
 
-]]></content>
- </entry>
- 
- <entry>
-   <title>Ruby 3, Hashes and Keyword Arguments</title>
-   <link href="https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments"/>
-   <updated>2023-11-09T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2023/11/ruby-32-hashes-and-keyword-arguments</id>
-   <content type="html"><![CDATA[<p>We debugged a fun one today.</p>
-
-<p>There’s a method provided by Rails called <code>tag</code>, and it provides a way to write HTML tags.</p>
-
-<p>We were using it like this:</p>
-
-<pre><code class="language-ruby">def react_component(component_name, props, options = {})
-  tag.div({
-    data: {
-      react_component: component_name,
-      props: props.to_json,
-    }
-  }.merge(options)) { "" }
-end
-</code></pre>
-
-<p>Did you spot the bug? We didn’t for a while. The symptom was that we were seeing completely blank <code>&lt;div&gt;&lt;/div&gt;</code> tag, when we were expecting them to have at least the <code>data</code> attributes populated.</p>
-
-<p>The issue here has to do with how Ruby 3 has changed how it processes keyword arguments. In Ruby 2.7, the argument passed to <code>react_component</code> was interpreted as keyword arguments. In Ruby 3, it’s interpreted as a regular argument, where the value of that argument is a Hash object.</p>
-
-<p>This means that when <a href="https://github.com/rails/rails/blob/60d05cda7f0000692391cb761caa496e8fa9014c/actionview/lib/action_view/helpers/tag_helper.rb#L320-L326">the <code>TagHelper#method_missing</code> method</a> is called in Action View, the parameters of this are:</p>
-
-<ul>
-  <li><code>called</code>: “div”</li>
-  <li><code>*args</code>: <code>[{data: { react_component: component_name, props: props.to_json }}]</code>`</li>
-  <li><code>**options</code>: {}</li>
-</ul>
-
-<p>The fix for this is to tell Ruby that we mean to use keyword arguments here, rather than a Hash argument:</p>
-
-<pre><code class="language-ruby">def react_component(component_name, props, options = {})
-  react_options = {
-    data: {
-      react_component: component_name,
-      props: props.to_json,
-    }
-  }.merge(options)
-
-  tag.div(**react_options) { "" }
-end
-</code></pre>
 ]]></content>
  </entry>
  

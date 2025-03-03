@@ -61,7 +61,7 @@
   <div class="main">
     <div class='content'>
       <div class='content-inner'>
-        <article class="mt-8 mb-16 flex">
+        <article class="mt-8 mb-16">
           <p>“Yeah, it’s a tomorrow problem.” I said yesterday in regards to installing Ubuntu on the development server at work. Little did I know that it would cause so many hassles.</p>
 
 <p>First of all the mirror at http://au.archive.ubuntu.org didn’t have some packages, so I changed that to mirror.internode.on.net and that seemed to fix everything except for the nginx package. So I changed “dapper” to “feisty” in /etc/apt/sources.list and it found it and installed it. Then it decided to remove/alter some key features. That wasn’t good. I tried compiling imagemagick, and that failed with a “cannot compile executable” error (which there are only ~700,000 results for on Google!). Then I tried doing apt-get install build-essential. That needed libc-dev which needed lib6c-dev, which needed gcc, which needed libc-dev. See my conundrum?</p>

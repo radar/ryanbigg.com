@@ -1,4 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-02-11T07:04:59+11:00</updated><id>http://localhost:4000/feed.xml</id><entry><title type="html">Ghosts ‘n’ Stuff</title><link href="http://localhost:4000/2025/02/ghosts" rel="alternate" type="text/html" title="Ghosts ‘n’ Stuff" /><published>2025-02-11T00:00:00+11:00</published><updated>2025-02-11T00:00:00+11:00</updated><id>http://localhost:4000/2025/02/ghosts</id><content type="html" xml:base="http://localhost:4000/2025/02/ghosts"><![CDATA[<p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-03-03T21:04:41+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ryan Bigg’s Blog</title><entry><title type="html">Decorating arrays with SimpleDelegator</title><link href="http://localhost:4000/2025/03/decorating-arrays-with-simpledelegator" rel="alternate" type="text/html" title="Decorating arrays with SimpleDelegator" /><published>2025-03-03T00:00:00+11:00</published><updated>2025-03-03T00:00:00+11:00</updated><id>http://localhost:4000/2025/03/decorating-arrays-with-simpledelegator</id><content type="html" xml:base="http://localhost:4000/2025/03/decorating-arrays-with-simpledelegator"><![CDATA[<p>Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:</p>
+
+<pre><code class="language-ruby">require 'csv'
+
+Transaction  = Data.define(:date, :amount, :status)
+
+transactions = 100.times.map do
+  Transaction.new(
+    date: Date.today - rand(30),
+    amount: rand(1.0..250.0).round(2),
+    status: rand &lt; 0.9 ? "Approved" : "Declined"
+  )
+end
+</code></pre>
+
+<p>These transactions are a list occurring anywhere in the last 30 days, with amounts between $1 and $250, with a status that has a 90% chance of being “Approved” and 10% chance of being “Declined”.</p>
+
+<p>To filter on these I can use common methods like <code>select</code>:</p>
+
+<pre><code class="language-ruby">transactions
+  .select { it.amount &lt;= 25 }
+  .select { it.date == Date.parse("2025-02-26") }
+</code></pre>
+
+<p>That would find me any transaction with an amount less than $25, occurring on the 26th of February. Easy enough!</p>
+
+<p>But we can bring this code closer to English by using <code>SimpleDelegator</code> to decorate our array, creating a neat DSL:</p>
+
+<pre><code class="language-ruby">class Transactions &lt; SimpleDelegator
+  def amount_lte(amount)
+    select { it.amount &lt;= amount }
+  end
+
+  def for_date(date)
+    select { it.date == Date.parse(date) }
+  end
+
+  def select(&amp;block)
+    self.class.new(super(&amp;block))
+  end
+end
+</code></pre>
+
+<p>This class inherits from SimpleDelegator and defines methods to provide that simple DSL. Our code from before:</p>
+
+<pre><code class="language-ruby">transactions
+  .select { it.amount &lt;= 25 }
+  .select { it.date == Date.parse("2025-02-26") }
+</code></pre>
+
+<p>Can now instead be written as:</p>
+
+<pre><code class="language-ruby">transactions
+  .amount_lte(25)
+  .for_date("2025-02-06")
+</code></pre>
+
+<p>This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put <code>Date.parse</code> inside <code>for_date</code>. This could be customized further to <em>only</em> do that <code>Date.parse</code> if the object passed in is a string and not a <code>Date</code> already.</p>
+
+<p>As a bit of “homework” here, can you update this class so that it supports this syntax?</p>
+
+<pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
+</code></pre>
+
+<p>And now can you write that code any shorter?</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:]]></summary></entry><entry><title type="html">Ghosts ‘n’ Stuff</title><link href="http://localhost:4000/2025/02/ghosts-n-stuff" rel="alternate" type="text/html" title="Ghosts ‘n’ Stuff" /><published>2025-02-10T00:00:00+11:00</published><updated>2025-02-10T00:00:00+11:00</updated><id>http://localhost:4000/2025/02/ghosts-n-stuff</id><content type="html" xml:base="http://localhost:4000/2025/02/ghosts-n-stuff"><![CDATA[<p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
 
 <p>But today I want to talk about ghosts.</p>
 
@@ -16,12 +80,12 @@
 
 <p>By then, the security auditors come along and say “we require you to keep your systems up to date as possible, and yes, we mean even down to your packages.” And they make the very strong implication that if this isn’t done, that you may as well all go on a big company-wide holiday until it is. On a budget, of course, because if the company isn’t running then nobody’s getting paid a whole lot of anything.</p>
 
-<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
+<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value”, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
 
 <p>(Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
 wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)</p>
 
-<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2013-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
+<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2014-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
 
 <p>The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person’s lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.</p>
 
@@ -761,95 +825,4 @@ it("displays a product name", () =&gt; {
 })
 </code></pre>
 
-<p>If we’re concerned with how the GraphQL layer is handling its response, then we still have the option to test that layer with something like <a href="https://mswjs.io/docs/api/graphql/">Mock Service Worker’s GraphQL API</a>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[In my Apollo Handbook I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the data layer from the view layer of a component.]]></summary></entry><entry><title type="html">Decreasing Ruby app build times</title><link href="http://localhost:4000/2024/06/make-rspec-tests-go-faster" rel="alternate" type="text/html" title="Decreasing Ruby app build times" /><published>2024-06-28T00:00:00+10:00</published><updated>2024-06-28T00:00:00+10:00</updated><id>http://localhost:4000/2024/06/make-rspec-tests-go-faster</id><content type="html" xml:base="http://localhost:4000/2024/06/make-rspec-tests-go-faster"><![CDATA[<p><strong>EDIT:</strong> I wrote these as notes for myself a few weeks ago when my brain wouldn’t stop spinning on this problem. Writing things down gets it out of my brain and lets me do simple things, like “engage in conversations” or “sleep”.</p>
-
-<p>We’ve now undertaken <em>some</em> of this work mentioned in the post, and our builds have gone from 45 minutes down to as low as 14 minutes. The major thing that improved build time was making the build machines faster… but don’t discount the rest of the stuff in this post too. After all, tests are code, and all code should be maintained and made to perform when necessary.</p>
-
-<hr />
-
-<p>This week and next it’s the “cooldown sprint” at work where we prioritise addressing tech debt over regular feature development. As a part of that work, I’m working on bringing down the test run time on one of our biggest and well-tested Rails apps from its current mean duration of 45 minutes.</p>
-
-<p>This 45 minute cost is paid thrice:</p>
-
-<ol>
-  <li>Once for your branch</li>
-  <li>Once it gets to <code>develop</code> (shipped to staging environments)</li>
-  <li>Once it gets to <code>master</code> (shipped to sandbox + production environments)</li>
-</ol>
-
-<p>So to get out a change of even just a single line to production takes 2.25 hours total, assuming you’re getting a median build time. 2.25 hours seems like an exorbitantly long time. And it is. Over the 8 hour work day, we would be able to ship 3.5 different changes to production.</p>
-
-<p>This app has quite a number of end-to-end feature requests which follow this pattern:</p>
-
-<ol>
-  <li>Create a user + merchant account</li>
-  <li>Create some relevant data</li>
-  <li>Login as that user + merchant combo</li>
-  <li>Navigate to page where the data is</li>
-  <li>Make some assertions about what the page looks like or how it performs</li>
-</ol>
-
-<p>And a lot of these tests test business-critical features of our application, like that we can submit payments through our Virtual Terminal or that a payment plan is setup to reoccur on the correct schedule.</p>
-
-<p>For these tests, we’ve relied a lot on Capybara running Selenium and a headless Chrome instance. This setup works exceptionally well for us, allowing us to write more Ruby code to test the Ruby code we’ve written in the app.</p>
-
-<h2 id="straightforward-ways-of-solving-things">Straightforward ways of solving things</h2>
-
-<p>There are some straightforward ways we could solve this slowness. We could upgrade the machines that run our tests. The current configuration is by no means at the top (or bottom) end for the configuration bracket for the type of machines. Faster machines surely mean faster tests, right? The caveat there is that faster machines also mean more dollars. Are there things we can do that don’t cost us money?</p>
-
-<p>The other straightforward thing is to parallelise these tests out so that they don’t run in sequence all on the same machine. We did that, parallelising to 4 nodes and then to 8, using the wonderful <a href="https://knapsackpro.com">Knapsack Pro</a> gem. Knapsack suggests parallelising up to 19 nodes, but again this means more machines and more dollars. This could potentially block other builds on other projects from running as well, as we have a low ceiling on how many concurrent build machines we are running across the whole org. The moment we run two distinct builds for this project that would mean up to 38 build machines tied up.</p>
-
-<p>If the tests for one build across 19 machines were to run for 5 minutes, the total cost would be $0.28USD. The old adage of developer time being expensive and computer time being cheap holds up.</p>
-
-<h2 id="and-then-it-gets-murky-from-there">And then it gets murky from there</h2>
-
-<p>Then there are the not so straightforward things. Are there particular reasons for the slowness of our tests? Are the factories that are being used to build up the data for these tests doing too much?  In our case, I’ve added <a href="https://github.com/test-prof/test-prof"><code>test-prof</code></a> to our app and run its factory profiler and detected no overly large factory there.</p>
-
-<p>Is there a particular page which is slow, that a large majority of these tests hit? I noticed that when I ran a <em>headful</em> browser of Chrome (so I could see what each test was doing) that each of the tests hit the dashboard page, which has a collection of charts. Every test waited for these charts to finish loading before proceeding. I commented out the line of code which was rendering all of these charts, and saw a 20% improvement in test run time. Obviously we can’t comment these out all the time, but at least that’s something we could probably toggle on/off depending on if the test needed it. I’ll have to dig into this one.</p>
-
-<h2 id="an-alternative-approach-for-feature-specs">An alternative approach for feature specs</h2>
-
-<p>Could we have written these tests in a different way? Do they need to be full-on integration tests that set up data in the database, just to validate information appears in certain positions on the page?</p>
-
-<p>I would say that for the less important pages, we don’t have to do such a setup. We have a frontend that’s built on React and TypeScript, with those TypeScript types being informed by our backend GraphQL API. And notably here we’re not just blindly grabbing things like <code>Purchase</code> off <code>@graphql/types</code>, we’re specifically defining types that match the relevant query, using code like:</p>
-
-<pre><code class="language-tsx">type Merchant = NonNullable&lt;GetPurchaseDetailQuery['merchant']&gt;;
-export type Purchase = NonNullable&lt;Merchant['purchase']&gt;;
-</code></pre>
-
-<p>The components expect the <em>exact</em> data from the query, and nothing different. We could write some frontend-focussed tests for these using React Testing Library, creating some tests that test:</p>
-
-<ol>
-  <li>When a particular component…</li>
-  <li>receives a particular structure…</li>
-  <li>it looks a certain way.</li>
-</ol>
-
-<p>There’s no need to interact with a database here, given that the automatically generated types are going to tell us if the data structure is right or wrong. We can write lighter-weight request specs that assert that, yes, when certain data exists in the database that our GraphQL API presents it in <em>this</em> particular format. The difficulty here is that the query structure used in these tests may vary over time from the structure defined in the components.</p>
-
-<p>In my experience, these React Testing Library tests have been just as easy to write as the Capybara specs, and I’ve been able to setup the fixture data again thanks to the TypeScript types. These tests then run in <em>milliseconds</em> as opposed to <em>seconds</em>. The original RSpec tests for a particular part of our test suite, the Transaction Detail page, ran in 24.75 seconds. These same tests in React Testing Library take 1.66 seconds, and that’s including test runner setup time. That’s almost 15x faster.</p>
-
-<p>I think there’s definitely some things we could work on pulling out of Capybara feature specs and into React Testing Library tests, to really bring down the slow tests. The biggest culprits for the slowness, looking purely at test duration have been the feature tests, by far.</p>
-
-<h2 id="docker-setup-is-also-a-factor">Docker setup is also a factor</h2>
-
-<p>The tests are run inside a Docker container which is built before most test runs rather than read from a cache, due to the ephemeral nature of the build machines. The base image for these containers has to come from <em>somewhere</em>, and that <em>somewhere</em> is a Docker registry. I’ve looked into ways of making the build machines use the cache with mixed success. It’s still an avenue I’d like to pursue, as it turns a 5-minute initial build step (that blocks every other step!) into one that runs for about half a minute. I’ve even seen some cases where that step can run in as quick as 14 seconds.</p>
-
-<p>One aspect that has helped here is splitting the Dockerfile into a multi-stage build that builds it in 4 separate stages:</p>
-
-<ol>
-  <li>OS-level setup</li>
-  <li>Ruby setup</li>
-  <li>Node setup</li>
-  <li>Final compilation for CSS + JS</li>
-</ol>
-
-<p>The Ruby + Node steps run concurrently, saving roughly 2-3 minutes compared to if they ran sequentially. We have investigated adding Docker-level caching for both the Ruby and Node steps, but haven’t gotten as far as having a system that reliably works for each build. It feels like a <code>cache-from</code> declared that matches the multi-stage target would work, but I can’t seem to make the build machines acknowledge that config and pull it in.</p>
-
-<p>Or perhaps there’s a way to cache the packages gathered for those steps, storing them off the machines in some long-term storage and pulling them down before each build? Then Ruby + Node would only install the differences (if any) that are on that branch.</p>
-
-<h2 id="slicing-up-the-app">Slicing up the app</h2>
-
-<p>Finally, my absolute <em>golden path</em> idea on this topic is that the tests that run when you push a branch, should only be the tests related to the code that you changed. If I’m making changes on Part A of the system, then it doesn’t make sense to run tests for Part B on all branches. Running the entire test suite before a production deploy makes sense, but not on the earlier branches.</p>
-
-<p>To that end, there’s probably investigative work to go on with this app where the app could be split into something like Hanami’s “slices”, so we have Slice A with its own tests, then if there’s file changes in Slice A then Slice A’s tests get run, but Slice B’s tests don’t. That seems like work that would be greater than many cooldown sprints in a row, and so I’m happy to leave that as just a thought bubble for the time-being.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[EDIT: I wrote these as notes for myself a few weeks ago when my brain wouldn’t stop spinning on this problem. Writing things down gets it out of my brain and lets me do simple things, like “engage in conversations” or “sleep”.]]></summary></entry></feed>
+<p>If we’re concerned with how the GraphQL layer is handling its response, then we still have the option to test that layer with something like <a href="https://mswjs.io/docs/api/graphql/">Mock Service Worker’s GraphQL API</a>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[In my Apollo Handbook I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the data layer from the view layer of a component.]]></summary></entry></feed>

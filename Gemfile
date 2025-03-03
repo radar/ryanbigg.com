@@ -7,3 +7,5 @@ gem "babosa"
 
 gem "webrick", "~> 1.7"
 gem "pry"
+
+gem "csv", "~> 3.3"
