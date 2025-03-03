@@ -59,6 +59,7 @@ transactions
 Can now instead be written as:
 
 ```ruby
+transactions = Transactions.new(transactions)
 transactions
   .amount_lte(25)
   .for_date("2025-02-06")
