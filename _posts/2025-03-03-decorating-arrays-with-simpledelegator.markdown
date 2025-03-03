@@ -7,8 +7,6 @@ title: Decorating arrays with SimpleDelegator
 Let's say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:
 
 ```ruby
-require 'csv'
-
 Transaction  = Data.define(:date, :amount, :status)
 
 transactions = 100.times.map do
