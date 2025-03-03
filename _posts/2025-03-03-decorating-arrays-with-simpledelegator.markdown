@@ -68,10 +68,12 @@ transactions
 
 This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put `Date.parse` inside `for_date`. This could be customized further to _only_ do that `Date.parse` if the object passed in is a string and not a `Date` already.
 
-As a bit of "homework" here, can you update this class so that it supports this syntax?
+As a bit of "homework" here, can you update this class to add methods for finding only approved or declined transactions? Is there a chance you could make outside this `Transactions` class to make the syntax cleaner?
+
+Could you also support this syntax?
 
 ```ruby
 transactions.for_date(date_1).or(transactions.for_date(date_2))
 ```
 
-And now can you write that code any shorter?
+And now can you write that code any shorter as well?
