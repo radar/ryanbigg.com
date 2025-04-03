@@ -64,9 +64,7 @@
         <article class="mt-8 mb-16">
           <p>Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:</p>
 
-<pre><code class="language-ruby">require 'csv'
-
-Transaction  = Data.define(:date, :amount, :status)
+<pre><code class="language-ruby">Transaction  = Data.define(:date, :amount, :status)
 
 transactions = 100.times.map do
   Transaction.new(
@@ -114,19 +112,22 @@ end
 
 <p>Can now instead be written as:</p>
 
-<pre><code class="language-ruby">transactions
+<pre><code class="language-ruby">transactions = Transactions.new(transactions)
+transactions
   .amount_lte(25)
   .for_date("2025-02-06")
 </code></pre>
 
 <p>This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put <code>Date.parse</code> inside <code>for_date</code>. This could be customized further to <em>only</em> do that <code>Date.parse</code> if the object passed in is a string and not a <code>Date</code> already.</p>
 
-<p>As a bit of “homework” here, can you update this class so that it supports this syntax?</p>
+<p>As a bit of “homework” here, can you update this class to add methods for finding only approved or declined transactions? Is there a chance you could make outside this <code>Transactions</code> class to make the syntax cleaner?</p>
+
+<p>Could you also support this syntax?</p>
 
 <pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
 </code></pre>
 
-<p>And now can you write that code any shorter?</p>
+<p>And now can you write that code any shorter as well?</p>
 
         </article>
       </div>

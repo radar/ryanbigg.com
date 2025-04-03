@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Blog - Ryan Bigg</title>
+  <title>Cursor-based querying with Rails - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
@@ -16,20 +16,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg - Blog" property="og:title">
+  <meta content="Ryan Bigg - Cursor-based querying with Rails" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
 
   
-    <meta name="publish_date" property="og:publish_date" content="2025-04-04">
+    <meta name="publish_date" property="og:publish_date" content="2025-04-03">
   
 
   
-  <meta content="https://ryanbigg.com/blog" property="og:url">
+  <meta content="https://ryanbigg.com/2025/04/cursor-based-querying" property="og:url">
   
   
-  <meta content="Blog" property="og:description">
+  <meta content="Cursor-based querying with Rails" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -38,38 +38,31 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta name="twitter:title" content="Blog">
+  <meta name="twitter:title" content="Cursor-based querying with Rails">
   
 </head>
 
 
 <body>
-  <!-- <header class="topbar">
-  <h1><a href="/">RB</a></h1>
-</header>
- -->
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/04/cursor-based-querying">
+        <h2 class="my-0 mt-4">Cursor-based querying with Rails</h2>
+      </a>
+      <small>03 Apr 2025</small>
+    </div>
+  </div>
+
   <div class="main">
-    
-
-<div class="flex mb-4">
-  <div class='text-center mr-8'>
-    <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
-  </div>
-
-  <div class="post-title ml-auto">
-    <a href="/2025/04/cursor-based-querying">
-      <h2 class="my-0 mt-4">Cursor-based querying with Rails</h2>
-    </a>
-    <small>03 Apr 2025</small>
-  </div>
-</div>
-
-
-<div class="main">
-  <div class='content'>
-    <div class='content-inner'>
-      <article class="mt-8 mb-16">
-        <p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
 
 <p>This sort of addition of a <code>LIMIT</code> + <code>OFFSET</code> to a slow query is commonly also used as a stop-gap for expensive queries. Perhaps before adding this, you have a query that’s building up a long list of transactions for another business to consume, and then one of your customers has a particularly impressive day and then your database has a particularly not-so-impressive time with that query. No problem, you think, you’ll find the data in batches of 1000 by using a <code>LIMIT</code> and <code>OFFSET</code> (such as how <code>find_in_batches</code> in Rails operates). This query will operate <em>better</em> than one without, but as soon as that <code>OFFSET</code> value hits a high number, you’ll run into performance problems again.</p>
 
@@ -101,49 +94,9 @@ end
 
 <p>This massively eases the memory pressure on the database as it doesn’t need to load more than 1,000 records at a single time, and keeps its performance linear even if we’re iterating through a whole bunch of different records. All without needing a <code>LIMIT</code> or <code>OFFSET</code>!</p>
 
-      </article>
+        </article>
+      </div>
     </div>
-  </div>
-</div>
-
-<div class="text-center mb-8">
-  <h2>In case you missed it...</h2>
-  <ul>
-    
-    <li class="mb-4"><a href="/2025/03/note-taking">Note taking</a> <span class="text-gray-400 text-xs">&mdash; 18 Mar 2025</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2025/03/decorating-arrays-with-simpledelegator">Decorating arrays with SimpleDelegator</a> <span class="text-gray-400 text-xs">&mdash; 03 Mar 2025</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2025/02/ghosts-n-stuff">Ghosts 'n' Stuff</a> <span class="text-gray-400 text-xs">&mdash; 10 Feb 2025</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2025/02/rails-tagged-logging">Rails tagged logging</a> <span class="text-gray-400 text-xs">&mdash; 02 Feb 2025</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/12/scoping-an-active-record-join">Scoping an Active Record join</a> <span class="text-gray-400 text-xs">&mdash; 09 Dec 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/12/using-elastic-searchs-profile-api">Using Elastic Search's Profile API</a> <span class="text-gray-400 text-xs">&mdash; 05 Dec 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/11/react-is-fine">React is fine</a> <span class="text-gray-400 text-xs">&mdash; 26 Nov 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/10/ruby-retreat-2024">Ruby Retreat 2024</a> <span class="text-gray-400 text-xs">&mdash; 22 Oct 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/09/use-classes-to-represent-data">Use classes to represent data</a> <span class="text-gray-400 text-xs">&mdash; 18 Sep 2024</span>
-    </li>
-    
-    <li class="mb-4"><a href="/2024/07/debugging-checklist">Debugging Checklist</a> <span class="text-gray-400 text-xs">&mdash; 09 Jul 2024</span>
-    </li>
-    
-  </ul>
-  <center><a href='/blogography.html'>The Last 100 Posts</a></center>
-</div>
-
   </div>
   <footer>
 </footer>
