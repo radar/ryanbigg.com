@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Use feature flags liberally - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Use feature flags liberally" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-05-04">
+  
+
+  
+  <meta content="https://ryanbigg.com/ruby/feature-flags" property="og:url">
+  
+  
+  <meta content="Use feature flags liberally" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Use feature flags liberally">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/ruby">&#x27F5; Ruby Advice</a>
+    </div>
+  </div>
+
+  <div class="ruby">
+    <div class="toc">
+  <h3>Table of contents</h3>
+  <ol>
+    <li>
+      <a href="/ruby">Intro</a>
+    </li>
+    <li>
+      <a href="/ruby/feature-flags">Feature Flags</a>
+    </li>
+  </ol>
+</div>
+
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8">
+          <a href="/ruby/feature-flags">
+            <h2 class="my-4 mt-4">Use feature flags liberally</h2>
+          </a>
+          <p>Feature flags are code that turns on or off other code when certain conditions are met. These can be as simple as a boolean choice where the flag is either on or off. Or they can be more complex, where they’re on for a certain percentage of users of your system <a href="https://xkcd.com/221/">chosen by fair dice roll</a>.</p>
+
+<p>For this, I like to use the <a href="https://github.com/flippercloud/flipper">Flipper gem</a>:</p>
+
+<pre><code class="language-ruby">if Flipper.enabled?(:search, current_user)
+  puts 'Search away!'
+else
+  puts 'No search for you!'
+end
+</code></pre>
+
+<p>This flag then determines which path the code will take. If the flag is enabled for that user, then it will output “Search away!”. If not, it will output “No search for you.” We can use flags like this within our applications to enable entire features or code paths – or occasionally, opt-out of those paths too. A good rule of thumb is to use feature flags in a “positive” way. That is to say, if a flag is enabled, it <em>enables</em> something rather than disabling something. There are exceptions to this rule, of course.</p>
+
+<p>Feature flags are typically managed through a REPL or a special developers-only page within the browser. Here’s what Flipper’s UI looks like:</p>
+
+<p><img src="/images/ruby/flipper-flags.png" alt="Flipper flags" /></p>
+
+<p>It may be helpful to introduce an “anti” flag, such as when you want to enable a feature for all users of the system except a select few.</p>
+
+<p>Feature flags help mitigate risk during a deployment as well. When a feature is deployed, you can have an entire code path disabled via a feature flag, and then slowly turn that flag on for increasing percent amount of users. First sign of a problem? Turn off the flag. Then, deploy a fix and attempt again.</p>
+
+<p>Eventually, you’ll end up with a whole suite of feature flags that are completely enabled for all users of your app. Sweep these out of your code at liberal intervals, about every 6 weeks. Delete any dead code for paths no longer taken.</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

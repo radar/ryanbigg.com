@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cursor-based querying with Rails - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Cursor-based querying with Rails" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-04-03">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/04/cursor-based-querying" property="og:url">
+  
+  
+  <meta content="Cursor-based querying with Rails" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Cursor-based querying with Rails">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/04/cursor-based-querying">
+        <h2 class="my-0 mt-4">Cursor-based querying with Rails</h2>
+      </a>
+      <small>03 Apr 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
+
+<p>This sort of addition of a <code>LIMIT</code> + <code>OFFSET</code> to a slow query is commonly also used as a stop-gap for expensive queries. Perhaps before adding this, you have a query that’s building up a long list of transactions for another business to consume, and then one of your customers has a particularly impressive day and then your database has a particularly not-so-impressive time with that query. No problem, you think, you’ll find the data in batches of 1000 by using a <code>LIMIT</code> and <code>OFFSET</code> (such as how <code>find_in_batches</code> in Rails operates). This query will operate <em>better</em> than one without, but as soon as that <code>OFFSET</code> value hits a high number, you’ll run into performance problems again.</p>
+
+<p>When I’ve run into these problems, I’ve turned to the <a href="https://github.com/afair/postgresql_cursor">postgresql_cursor</a> gem. This gem uses <a href="https://www.postgresql.org/docs/current/plpgsql-cursors.html">PostgreSQL cursors</a> to iterate through all the rows of a query without loading the entire query at once.</p>
+
+<p>We can use this in application by calling its methods on a model:</p>
+
+<pre><code class="language-ruby">Purchase.each_instance do |purchase|
+  # do something with the data here
+end
+</code></pre>
+
+<p>This will instantiate each of the rows into instances of the model, but sometimes you just want the raw data instead. For that, the gem provides a different method:</p>
+
+<pre><code class="language-ruby">Purchase.each_row do |row|
+  # do something with the raw data
+end
+</code></pre>
+
+<p>This breaks the queries down by defining a cursor and then iterating through the rows in batches of 1,000 by default. Here’s an example of what the queries for this look like in an application I’m running locally:</p>
+
+<pre><code>   (2.0ms)  declare cursor_58f312c30e9a4719826fbdef24ed2017 no scroll cursor for SELECT "purchases".* FROM "purchases"
+   (16.5ms)  fetch 1000 from cursor_58f312c30e9a4719826fbdef24ed2017
+   (0.2ms)  fetch 1000 from cursor_58f312c30e9a4719826fbdef24ed2017
+   (0.1ms)  close cursor_58f312c30e9a4719826fbdef24ed2017
+</code></pre>
+
+<p>Once I’m done working on the first set of thousand, then the gem will fetch the next thousand by calling <code>fetch 1000 from &lt;cursor_id&gt;</code>, with a final call to close off the cursor once there’s no more data returned.</p>
+
+<p>This massively eases the memory pressure on the database as it doesn’t need to load more than 1,000 records at a single time, and keeps its performance linear even if we’re iterating through a whole bunch of different records. All without needing a <code>LIMIT</code> or <code>OFFSET</code>!</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

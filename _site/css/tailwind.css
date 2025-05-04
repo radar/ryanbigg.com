@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "recruiters";
 
 body {
   font-family: "Lora";
@@ -49,7 +48,7 @@ a {
   @apply mb-4;
 }
 
-article {
+.main article {
   @apply w-full md:w-2/3 mx-auto px-8 md:px-0;
 }
 
@@ -62,7 +61,7 @@ article code {
 }
 
 article blockquote {
-  @apply border-l-4 border-green-500 pl-4 ml-4;
+  @apply border-l-4 border-green-500 pl-4 ml-4 mb-4;
 }
 
 article aside {
@@ -152,4 +151,26 @@ hr {
 
 .hljs {
   @apply rounded-md pl-4;
+}
+
+.ruby  {
+  @apply flex mx-4 flex-wrap;
+}
+
+.ruby .toc {
+  @apply w-full md:w-[250px];
+}
+
+.ruby .toc ol {
+  @apply list-inside list-decimal;
+}
+
+.ruby .content {
+  @apply w-full md:w-[calc(100%-250px)] px-0 md:pr-16;
+}
+
+.ruby .content img {
+  width: auto;
+  max-height: 50vh;
+  @apply m-auto;
 }

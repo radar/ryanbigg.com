@@ -4,7 +4,7 @@
  <title>Ryan Bigg Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2025-03-03T21:04:41+11:00</updated>
+ <updated>2025-05-04T20:27:04+10:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
@@ -13,15 +13,112 @@
 
  
  <entry>
+   <title>Show, Don&apos;t Tell</title>
+   <link href="https://ryanbigg.com/2025/05/show-dont-tell"/>
+   <updated>2025-05-03T00:00:00+10:00</updated>
+   <id>https://ryanbigg.com/2025/05/show-dont-tell</id>
+   <content type="html"><![CDATA[<p>On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been <a href="https://ryanbigg.com/2018/03/hiring-juniors">a proponent for junior developers for a very long time</a>, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.</p>
+
+<p>My advice to the juniors of 2025 is plain and simple: <strong>Show, Don’t Tell.</strong> The first time I hear from a lot of juniors is probably when they apply for a job, or reach out about one. It used to be meetups but the tyranny of distance got in the way.</p>
+
+<p>When they reach out, that’s when I’ll find out the regular things of what tools they’ve used. HTML, CSS, JavaScript, some framework or another. Catch me on a good day (most of them) and I’ll even take a look at their GitHub profiles and portfolios. I’m a curious sort of guy.</p>
+
+<p>The ones that stand out the most do a really great job of <em>showing</em> me that they know the tools, and that they’ve gone past a first tutorial stage.</p>
+
+<ul>
+  <li>A React app that ranks your favourite books, then orders them by read date, then reorders them by cover colour.</li>
+  <li>A game you made because you had an idea you couldn’t leave behind. Yes, even if the game is naff.</li>
+  <li>Show me a thing I didn’t think CSS could do, ever.</li>
+</ul>
+
+<p>All of this goes a long way to showing me an aptitude that already puts you ahead of 90% of the competition. These are the outliers I will notice and think more about.</p>
+
+<p>So: <em>Show me</em> what you can do, rather than giving me a list of tools. A Luthier and I both know how to use a saw, but only one of us knows how to make a guitar. The proof is in the doing, not the telling.</p>
+
+<p><small>(And for god sake: use a colour other than black and white on your resumé!)</small></p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>Cursor-based querying with Rails</title>
+   <link href="https://ryanbigg.com/2025/04/cursor-based-querying"/>
+   <updated>2025-04-03T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/04/cursor-based-querying</id>
+   <content type="html"><![CDATA[<p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
+
+<p>This sort of addition of a <code>LIMIT</code> + <code>OFFSET</code> to a slow query is commonly also used as a stop-gap for expensive queries. Perhaps before adding this, you have a query that’s building up a long list of transactions for another business to consume, and then one of your customers has a particularly impressive day and then your database has a particularly not-so-impressive time with that query. No problem, you think, you’ll find the data in batches of 1000 by using a <code>LIMIT</code> and <code>OFFSET</code> (such as how <code>find_in_batches</code> in Rails operates). This query will operate <em>better</em> than one without, but as soon as that <code>OFFSET</code> value hits a high number, you’ll run into performance problems again.</p>
+
+<p>When I’ve run into these problems, I’ve turned to the <a href="https://github.com/afair/postgresql_cursor">postgresql_cursor</a> gem. This gem uses <a href="https://www.postgresql.org/docs/current/plpgsql-cursors.html">PostgreSQL cursors</a> to iterate through all the rows of a query without loading the entire query at once.</p>
+
+<p>We can use this in application by calling its methods on a model:</p>
+
+<pre><code class="language-ruby">Purchase.each_instance do |purchase|
+  # do something with the data here
+end
+</code></pre>
+
+<p>This will instantiate each of the rows into instances of the model, but sometimes you just want the raw data instead. For that, the gem provides a different method:</p>
+
+<pre><code class="language-ruby">Purchase.each_row do |row|
+  # do something with the raw data
+end
+</code></pre>
+
+<p>This breaks the queries down by defining a cursor and then iterating through the rows in batches of 1,000 by default. Here’s an example of what the queries for this look like in an application I’m running locally:</p>
+
+<pre><code>   (2.0ms)  declare cursor_58f312c30e9a4719826fbdef24ed2017 no scroll cursor for SELECT "purchases".* FROM "purchases"
+   (16.5ms)  fetch 1000 from cursor_58f312c30e9a4719826fbdef24ed2017
+   (0.2ms)  fetch 1000 from cursor_58f312c30e9a4719826fbdef24ed2017
+   (0.1ms)  close cursor_58f312c30e9a4719826fbdef24ed2017
+</code></pre>
+
+<p>Once I’m done working on the first set of thousand, then the gem will fetch the next thousand by calling <code>fetch 1000 from &lt;cursor_id&gt;</code>, with a final call to close off the cursor once there’s no more data returned.</p>
+
+<p>This massively eases the memory pressure on the database as it doesn’t need to load more than 1,000 records at a single time, and keeps its performance linear even if we’re iterating through a whole bunch of different records. All without needing a <code>LIMIT</code> or <code>OFFSET</code>!</p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>Note taking</title>
+   <link href="https://ryanbigg.com/2025/03/note-taking"/>
+   <updated>2025-03-18T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/03/note-taking</id>
+   <content type="html"><![CDATA[<p>There was a question on the Ruby Oceania Slack recently:</p>
+
+<blockquote>
+  <p>What tools/apps are folks using in 2025 to manage their own tasks/life?</p>
+</blockquote>
+
+<p>I gave an answer, which I’ve modified slightly for blogability, and kept focussed to just note taking:</p>
+
+<p>Physical A5 note book with 0.8mm Uni-Ball Fineliner in either blue or black depending on the mood. Coincidentally, <a href="https://www.theverge.com/2024/11/25/24305832/sam-altman-pen-notebook-muji-uniball">Sam Altmann has similar tastes.</a></p>
+
+<p>Each page is a day. Write down intentions at start of day and then add to list as day continues. Review calendar, note down meetings and their times. Finish day by reviewing the list from the day and figuring out what to do next, then writing notes into next day’s page if necessary. Good for brain dumping end of day to then clear brain for home.</p>
+
+<p>Bigger projects, longer term storage: <a href="https://bear.app/">Bear app</a>, which is similar in featureset to <a href="https://obsidian.md/">Obsidian</a>. Typically one note per project, person, team or theme. Most of the time these are date-headed as well, so for example project standup today was headed with March 17th, and can tag that with <code>#Journal/2025/03/17</code> so I could look at <code>#Journal/2025/03</code> and find all the things that I thought were notable for the month.</p>
+
+<p>One on one notes with reports or managers go into this app directly as it’s helpful to track certain initiatives or discussions over time. Each time we talk, there’s as sub-heading in the person’s note with the date. All Bear notes being date-headed means I can say with assurance that “you said X on Y date” with some degree of confidence.</p>
+
+<p>Other notes of note:</p>
+
+<ul>
+  <li>(passworded) Tax Return check list (find these invoices for all your sass apps, other subscriptions, here’s what you had last year and their costs…)</li>
+  <li>Blog post drafts a plenty (including this one)</li>
+  <li>A very rough outline of a DND one shot I’m planning</li>
+  <li>A list of magic cards I’m seeking</li>
+  <li>Local burger shop order</li>
+</ul>
+]]></content>
+ </entry>
+ 
+ <entry>
    <title>Decorating arrays with SimpleDelegator</title>
    <link href="https://ryanbigg.com/2025/03/decorating-arrays-with-simpledelegator"/>
    <updated>2025-03-03T00:00:00+11:00</updated>
    <id>https://ryanbigg.com/2025/03/decorating-arrays-with-simpledelegator</id>
    <content type="html"><![CDATA[<p>Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:</p>
 
-<pre><code class="language-ruby">require 'csv'
-
-Transaction  = Data.define(:date, :amount, :status)
+<pre><code class="language-ruby">Transaction  = Data.define(:date, :amount, :status)
 
 transactions = 100.times.map do
   Transaction.new(
@@ -69,19 +166,22 @@ end
 
 <p>Can now instead be written as:</p>
 
-<pre><code class="language-ruby">transactions
+<pre><code class="language-ruby">transactions = Transactions.new(transactions)
+transactions
   .amount_lte(25)
   .for_date("2025-02-06")
 </code></pre>
 
 <p>This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put <code>Date.parse</code> inside <code>for_date</code>. This could be customized further to <em>only</em> do that <code>Date.parse</code> if the object passed in is a string and not a <code>Date</code> already.</p>
 
-<p>As a bit of “homework” here, can you update this class so that it supports this syntax?</p>
+<p>As a bit of “homework” here, can you update this class to add methods for finding only approved or declined transactions? Is there a chance you could make outside this <code>Transactions</code> class to make the syntax cleaner?</p>
+
+<p>Could you also support this syntax?</p>
 
 <pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
 </code></pre>
 
-<p>And now can you write that code any shorter?</p>
+<p>And now can you write that code any shorter as well?</p>
 ]]></content>
  </entry>
  
@@ -1317,305 +1417,6 @@ end
 <p>This setup works incredibly well for our little team, and I suspect it would scale as well for an even bigger team. Changes get applied to the design system, which then are updated in Figma, and those updates flow through to our React components or our CSS files, depending on which component it is.</p>
 
 <p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>View Components, Table Edition</title>
-   <link href="https://ryanbigg.com/2024/01/view-components-table-edition"/>
-   <updated>2024-01-26T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2024/01/view-components-table-edition</id>
-   <content type="html"><![CDATA[<p>Last night I saw <a href="https://blog.willcosgrove.com/a-tale-of-two-phlexes">this post from Will Cosgrove</a> showing how he would build a table interface in Phlex. I really like the terseness of the syntax he came up with, and I decided to see how I would approach this too, but using the <a href="https://viewcomponent.org">View Component</a> gem. This isn’t to say one approach is better than the other – more to show an alternative. Phlex <em>and</em> View Component are <em>both</em> great!</p>
-
-<p>Ultimately, the View Component code is much the same, but we define a Ruby class to wrap our table:</p>
-
-<pre><code class="language-ruby">class UsersTableComponent &lt; ViewComponent::Base
-  def initialize(users:)
-    @users = users
-  end
-
-  def call
-    component = Zeal::TableComponent.new(rows: @users) do |table|
-      table.column("First Name", &amp;:first_name)
-      table.column("Last Name", &amp;:last_name)
-      table.column("Email", &amp;:email)
-    end
-
-    render component
-  end
-end
-</code></pre>
-
-<p>This can then be called in view by doing:</p>
-
-<pre><code>&lt;%= render UsersTableComponent.new(users: @users) %&gt;
-</code></pre>
-
-<p>The <code>Zeal::TableComponent</code> is defined as this:</p>
-
-<pre><code class="language-ruby">module Zeal
-  module Tables
-    class TableComponent &lt; ViewComponent::Base
-      attr_reader :columns, :rows
-
-      def initialize(rows: [], &amp;block)
-        @columns = []
-        @rows = rows
-        yield self
-      end
-
-      def column(label, &amp;block)
-        @columns &lt;&lt; {
-          label: label,
-          block: block
-        }
-      end
-
-      def render_headers
-        render Zeal::Tables::HeaderCellComponent.with_collection(columns)
-      end
-
-      def render_cells(row)
-        render Zeal::Tables::BodyCellComponent.with_collection(columns, row: row)
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>The code that’s mostly HTML doesn’t get written by some fancy pants Ruby, instead I used a html+ERB file:</p>
-
-<pre><code class="language-erb">&lt;table class='min-w-full' role='table'&gt;
-  &lt;thead class="bg-gray-100 border-b border-gray-200"&gt;
-    &lt;tr role="row"&gt;
-      &lt;%= render_headers %&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-
-  &lt;tbody role='rowgroup'&gt;
-    &lt;% rows.each do |row| %&gt;
-      &lt;tr class='bg-white border-b border-gray-200 align-center'&gt;
-        &lt;%= render_cells(row) %&gt;
-      &lt;/tr&gt;
-    &lt;% end %&gt;
-  &lt;/thead&gt;
-&lt;/table&gt;
-</code></pre>
-
-<p>The header cell component then defines all the CSS for the header cells:</p>
-
-<pre><code class="language-erb">&lt;th class="sticky top-0 z-30 opacity-95 bg-gray-100 p-4 text-xs tracking-wide text-left text-gray-600 font-bold uppercase align-top"&gt;
-  &lt;%= header_cell[:label] %&gt;
-&lt;/th&gt;
-</code></pre>
-
-<p>With its corresponding Ruby code being:</p>
-
-<pre><code class="language-ruby">module Zeal
-  module Tables
-    class HeaderCellComponent &lt; ViewComponent::Base
-      attr_reader :header_cell
-      def initialize(header_cell:)
-        @header_cell = header_cell
-      end
-
-    end
-  end
-end
-</code></pre>
-
-<p>And the body cell component does the same, but for the body cells:</p>
-
-<pre><code class="language-erb">&lt;td class="p-3 text-sm text-gray-900 whitespace-nowrap" role='cell'&gt;
-  &lt;%= column[:block].call(row) %&gt;
-&lt;/td&gt;
-</code></pre>
-
-<p>With its corresponding code being:</p>
-
-<pre><code class="language-ruby">module Zeal
-  module Tables
-    class BodyCellComponent &lt; ViewComponent::Base
-      attr_reader :column, :row
-      with_collection_parameter :column
-
-      def initialize(column:, row:)
-        @column = column
-        @row = row
-      end
-    end
-  end
-end
-
-</code></pre>
-
-<p>Each of the body cells knows which column it’s going to be rendering, and the block for that column knows which user row it’s rendering. This means we can specify both the header for the column and each row inside the same method call:</p>
-
-<pre><code>table.column("First Name", &amp;:first_name)
-</code></pre>
-
-<p>If the way to render the value is more complicated, we can pass a block:</p>
-
-<pre><code class="language-ruby">table.column("First Name") do |user|
-  tag.div(class: "text-center") { user.first_name }
-end
-</code></pre>
-
-<p>If we need any specific helper for this component, we can define it in the <code>UserTableComponent</code> (rather than dumping it into a random file in <code>app/helpers</code>!):</p>
-
-<pre><code class="language-ruby">def status_label(user)
-  if user.active?
-    Zeal::Tags::SuccessComponent.new(text: "Active")
-  else
-    Zeal::Tags::DangerComponent.new(text: "Inactive")
-  end
-end
-</code></pre>
-
-<p>Then to use this component, we can pass the method for the column:</p>
-
-<pre><code class="language-ruby">table.column("Status", &amp;method(:status_label))
-</code></pre>
-
-<p>All of this syntax could probably be expanded to support arbitrary classes on each column header and table cell, but for now I think it’s a good start.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Audit Logging Notes</title>
-   <link href="https://ryanbigg.com/2023/12/audit-logging-notes"/>
-   <updated>2023-12-20T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2023/12/audit-logging-notes</id>
-   <content type="html"><![CDATA[<p>I’ve recently been working on adding audit logging to an application at work, and I wanted to share some notes on the process here, as I couldn’t find much written about it online.</p>
-
-<p>What I could find though was GitHub’s own audit logging that they have for organizations. A lot of these notes was inspired by how they have approached this.</p>
-
-<p>This application in question that I’m working on is called the Merchant Dashboard, and is typically used by merchants to view and process transactions. Common actions that can be taken include things such as creating purchases, issuing refunds, or setting up payment plans for their customers.</p>
-
-<p>Audit logging means tracking all the “write” events that a user can take within our application. We want to provide a history of these actions so that merchants can look through their users’ activities. While we, as application owners, can look through the logs to determine who took what action when, our merchants have not been able to access this data themselves. This audit logging feature aims to address that.</p>
-
-<h2 id="audit-table-schema">Audit Table Schema</h2>
-
-<p>We have a table that tracks all the events a user takes, tracking:</p>
-
-<ul>
-  <li><code>timestamp</code>: <strong>When</strong> the event happened.</li>
-  <li><code>user_id</code>: <strong>Who</strong> took the action.</li>
-  <li><code>merchant_id</code>: The merchant account where the action was taken.</li>
-  <li><code>action</code>: <strong>What</strong> the action was (a string like <code>create_purchase</code>)</li>
-  <li><code>record_id</code> / <code>record_type</code>: If the action was taken on a record, what the record was. This can be nullable, as some actions do not involve a record that isn’t the user’s record, such as logging in, or resetting a password.</li>
-  <li><code>payload</code>: Any additional metadata we wanted to include</li>
-</ul>
-
-<p>A record in the audit log table might look like:</p>
-
-<ul>
-  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
-  <li><code>user_id</code>: 1</li>
-  <li><code>merchant_id</code>: 2</li>
-  <li><code>action</code>: <code>create_purchase</code></li>
-  <li><code>record_id</code> / <code>record_type</code>: 3 / Purchase</li>
-  <li><code>payload</code>: <code>{}</code></li>
-</ul>
-
-<p>Or:</p>
-
-<ul>
-  <li><code>timestamp</code>: 2023-12-23 09:42:00</li>
-  <li><code>user_id</code>: 1</li>
-  <li><code>merchant_id</code>: nil</li>
-  <li><code>action</code>: <code>login</code></li>
-  <li><code>record_id</code> / <code>record_type</code>: nil</li>
-  <li><code>payload</code>: <code>{}</code></li>
-</ul>
-
-<p>We separate the login event from any particular merchant in our application, as a user can login and then switch between the different merchants they have access to.</p>
-
-<h2 id="displaying-audit-logs">Displaying audit logs</h2>
-
-<p>Displaying this information is done in two distinct ways. We want to display audit log information on a per-user basis; what actions has <em>this particular user</em> taken? And: we want to display audit log information for a whole merchant account; what actions <em>have all users</em> taken on <em>this particular merchant account</em>?</p>
-
-<p>In both situations, all of these things are helpful:</p>
-
-<ul>
-  <li>Show events in reverse chronological order</li>
-  <li>Group events by date</li>
-  <li>Paginate events, rather than showing <em>all events ever</em>, show 25-50 events on a page.</li>
-  <li>Provide searching, allowing a user to search for <em>actions</em> or <em>record IDs / types</em>.</li>
-  <li>Allow users to filter by a specific date range. Default this date range to the last 30 days.</li>
-  <li>Indicate potentially dangerous events with a specific label, such as password reset for the user, failed login attempts or deletion of data.</li>
-</ul>
-
-<h2 id="handling-deleted-records">Handling deleted records</h2>
-
-<p>Also worth considering here is how you would display an audit log line for a deleted record. Say that these two events occurred:</p>
-
-<ol>
-  <li>A customer was created</li>
-  <li>The same customer record was deleted</li>
-</ol>
-
-<p>Is it still relevant that the customer was created in the first place? Perhaps. A customer could’ve had a payment processed for them in the interleaving time, which would be a very relevant log line to catch.</p>
-
-<p>For this reason, consider soft-deletion of important records using something such as <a href="https://github.com/jhawthorn/discard">the discard gem</a>. That way, you can still point the audit log to the record in question, even if it remains invisible from other parts of the system.</p>
-
-<h2 id="staff--system-level-events">Staff / system level events</h2>
-
-<p>Our system allows for internal staff to “impersonate” users and act on their behalf. This is often used to debug production issues. For events such as this, the impersonation attempt should be logged. If there are any other write actions taken while impersonation is happening, the event is logged against the user being impersonated, and tagged (using the payload) as an impersonation event.</p>
-
-<p>For automatic system-level events, such as scheduled payments, we will log these as well on a merchant account level so that they appear tied to a “system” user.</p>
-
-<h2 id="audit-log-retention">Audit log retention</h2>
-
-<p>While it would be great to keep data for all time, disk space is finite, and when it’s not it’s <em>expensive</em>.</p>
-
-<p>Consider automatically culling audit logs after a pre-defined period, perhaps a year or two.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>NaNoWriMo Retro</title>
-   <link href="https://ryanbigg.com/2023/12/nanowrimo-retro"/>
-   <updated>2023-12-03T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2023/12/nanowrimo-retro</id>
-   <content type="html"><![CDATA[<p>I spent the month of November writing 50,000 words for National Novel Writing Month. This makes me a NaNoWriMo “winner” and I get bragging rights for a whole year that I wrote a novel.</p>
-
-<p>I’ve <a href="https://ryanbigg.com/books">written quite a few books</a> already, but all of them have been tech books. You could argue that at least one of them, Maintainable Rails, is a work of fiction based on its title alone… but that’s a long bow to draw and very subjective.</p>
-
-<p>National Novel Writing Month (NaNoWriMo for short) encourages budding novel authors to write a piece of fiction that’s 50,000 words long over an entire month. Traditionally the month to achieve this in is November. This works out to be 1,667 words a day or 3 full A4 pages of text, every single day, for 30 days straight.</p>
-
-<p>I tried doing this last year and got up to 20,000 words and then bailed at the end of the 2nd week when I couldn’t work out where to take my characters next. I spent the whole year since then stewing on my “failure”.</p>
-
-<p>This year, I intentionally kept my scope narrow. A small cast of characters and a tight location.</p>
-
-<p>The premise: The protagonist is forced to return to the office of a large tech company, and discovers that the company has undergone a hostile takeover. The company starts encouraging a religious devotion and cult-like fervour for work. Colleagues who express the most devoutness for the company start getting promoted, and end up disappearing, with their disappearance explained away by upper management. The protagonist investigates their disappearance and discovers that things aren’t what they appear to be. They discover that the takeover was done by hostile entities from another reality who use the lives of the employees to fuel their conquest of this reality.</p>
-
-<p>I chose this setting as a return to the office is a “nightmare situation” for me. (I exaggerate quite a lot here.) I live 250km+ from the nearest capital city, and commuting into an office would mean a 4 hour commute away, and that’s just one way. I’m sure if there was a “return to the office” mandate from where I work now, they would understand that the logistics of doing so are quite difficult!</p>
-
-<p>For the book, I drew this “nightmare situation” far past its reasonable conclusion, and attempted to write something that skewered the almost cult-like devotion that large tech companies implicitly require from their employees.</p>
-
-<p>Turns out, this was fertile ground as I was able to pull 50,028 words out based on the premise.</p>
-
-<p>I spent October writing notes and ideas for the book into a single note file on my phone. Whenever I came up with an idea, no matter how silly, I wrote it down. This ended up being about 400 words itself.</p>
-
-<p>Then when November 1 came around, I opened up Pages and the notes side by side and started writing based off the ideas. I started writing in a linear fashion, but after a few days I moved on from that and started writing whatever came to mind. I would think of a different scene, or even a different interpretation of an existing scene, and write the scene again, taking it in another direction.</p>
-
-<p>This may seem counter-intuitive to writing a novel. But the choice I made was that this novel probably won’t ever see the light of day, at least in this incarnation, and so it didn’t matter if things weren’t a perfect line from start to end. So I sat down and wrote whatever I felt like, with an absolute insistence to myself and my family that I would hit the word target of 1,667 words each and every day for November.</p>
-
-<p>And I managed to do that every day, bar one absolutely bonkers incredibly busy Tuesday in Week 3. The next day was brutal, and I ended up writing 3,500 with two writing sessions, one in the morning and one at night. After the night session, I went immediately to bed and slept the sleep of the dead. Thursday AM I wrote the daily quota in the morning, and Thursday PM went to bed at 8. Pushed super duper hard that week and certainly felt it!</p>
-
-<p>In terms of things that helped: <a href="https://www.amazon.com.au/Plot-Problem-Revised-Expanded-High-velocity-ebook/dp/B00JVZ42HM/ref=mp_s_a_1_3?crid=3GJ9YFYNTA9A1&amp;keywords=no+plot+no+problem&amp;qid=1701559440&amp;sprefix=no+plot+no+problem%2Caps%2C390&amp;sr=8-3">No Plot? No Problem!</a> written by the guy who started NaNoWriMo, Chris Baty, helped set expectations for what to expect each week. The hyped exuberance of Week One, followed by the Pit of Despair and wanting to destroy everything of Week Two. Fucking hell, that was a rough week.</p>
-
-<p>The other big thing: The overwhelming urge to let your Inner Editor rampage through your work all the time. I tried to keep him in his kennel, but he did escape from time to time.</p>
-
-<p>The book was packed full of helpful advice from Chris and other NaNoWriMo winners with a touch of whimsy thrown in, I would recommend this guide for anyone else attempting this project too.</p>
-
-<p>I wrote most mornings from 6amish to 7amish, while my daughter played on her iPad next to me on the desk. I occasionally wrote in the afternoons during a lunch break too. If I hadn’t finished writing by the night, I’d finish writing after my daughter went to bed. I managed to fit the writing in around my work and life schedule, without it interfering too much… although there were some times the dishes weren’t done or a gym session got missed.</p>
-
-<p>Sometimes I wrote on my phone at the park while Ella played on the swings, or at swimming lessons while she was there too. Writing on the phone is quite slow compared to the bigger keyboard (about 30wpm vs 120wpm), but it meant that I could spend more time thinking about plot directions and what characters’ motivations were.</p>
-
-<p>Now that the writing project is over, I’m going to let it sit for a while. I might revisit it, or I might not. I’m still feeling quite satisfied that this year I was able to write a “full novel”. Perhaps next year I could set the goal of publishing one? Either way, you can be sure I’ll be bragging about this all year.</p>
-
 ]]></content>
  </entry>
  
