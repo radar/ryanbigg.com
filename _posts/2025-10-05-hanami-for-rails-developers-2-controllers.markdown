@@ -204,3 +204,90 @@ In the matching template for this view, `app/templates/books/by_year.html.erb`, 
 This view will now display a list of books from 2025 when we go to http://localhost:2300/books/year/2025.
 
 ![Books by year](/images/hanami/books_by_year.jpg)
+
+We've now added two ways to use the same action, with two different views. In a RESTful application, we would typically have more actions than this. You'd be familiar with the set of them from a Rails application:
+
+* index
+* show
+* new
+* create
+* edit
+* update
+* destroy
+
+In the remainder of this part, we'll cover off the show action. We'll leave the forms to the next part of this guide.
+
+### Adding a show route
+
+We're now going to add a `show` action to our application, allowing us to display information about a single book. When we add this route, we will also add a link from our books "index" actions to the show action. Rather than starting with the route, we'll start with generating an action:
+
+```ruby
+hanami g action books.show
+```
+
+Hanami is smart enough to generate us an action _and_ a route with this command. Here's what it has added to `config/routes.rb`:
+
+```ruby
+get "/books/:id", to: "books.show"
+```
+
+This route is exactly the kind of route you'd get with a Rails application. With one key difference: we don't yet have a named way to refer to this route. In Hanami, we can give routes names using `as:`. Let's make that change in our routes now:
+
+```ruby
+get "/books/:id", to: "books.show", as: :book
+```
+
+To send our users to this page, we need to create a link from there to the show page. Let's open up `app/templates/books/index.html.erb` and change this line:
+
+```erb
+<h2><%= book.title %></h2>
+```
+
+To this:
+
+```erb
+<h2><%= link_to book.title, routes.path(:book, id: book.id) %></h2>
+```
+
+Let's also make this same change in `app/templates/books/by_year.html.erb` too.
+
+Routing methods in Hanami aren't dynamically generated like in Rails, and so we need to write these out in a slightly longer format.
+
+### Parts - Hanami's decorators
+
+Writing these routes out in longer form is going to get tiring after a while. Fortunately for us, Hanami provides a location where we can add methods that decorate the objects that we use in a view.
+
+When we `expose` data from an action, Hanami wraps this data in another class, which it calls a Part. In the case of the `expose :books` that we have, it will wrap these in two distinct parts:
+
+* `Views::Parts::Books` - for the whole array of books
+* `Views::Parts::Book` - one wrapping for each of the books
+
+We didn't create these classes. Hanami did that for us. Hanami uses the class of the struct to determine which part to use.
+
+We can define these classes ourselves if we want to add decorations to the objects exposed here. A good example of this would be to add a `show_path` method to books, so that we don't have to write out the route long-form all the time.
+
+We can create a new class at `app/views/parts/book.rb` and define this method inside:
+
+```ruby
+module Bookshelf
+  module Views
+    module Parts
+      class Book < Bookshelf::Views::Part
+        def show_path
+          context.routes.path(:book, id: id)
+        end
+      end
+    end
+  end
+end
+```
+
+Methods of this class act as though they're defined as instance methods on `Book`. This works because in the view we're actually working with `Views::Parts::Book`, rather than a straight `Bookshelf::Structs::Book` instance. The `context` used here is the Hanami view rendering context, which we use to get to the `routes` method.
+
+By defining this `show_path` this way, we can now change our links in `app/templates/books/index.html.erb` and `app/templates/books/by_year.html.erb` to simply this:
+
+```ruby
+<h2><%= link_to book.title, book.show_path %></h2>
+```
+
+The great thing about this is that if we ever want to know where `show_path` is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails' dynamic routing methods, and you'll see that this a vast improvement.
