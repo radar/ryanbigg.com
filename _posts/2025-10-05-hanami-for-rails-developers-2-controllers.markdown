@@ -253,6 +253,52 @@ Let's also make this same change in `app/templates/books/by_year.html.erb` too.
 
 Routing methods in Hanami aren't dynamically generated like in Rails, and so we need to write these out in a slightly longer format.
 
+Now that we have a route, we need to display some information on the page where this route goes to. We'll need to pull that information out of the database before we can display it. Let's go over to our `Books::Show` action in `app/actions/books/show.rb`, and pass down the `id` parameter to the view:
+
+```ruby
+module Bookshelf
+  module Actions
+    module Books
+      class Show < Bookshelf::Action
+        def handle(request, response)
+          response.render(view, id: request.params[:id])
+        end
+      end
+    end
+  end
+end
+```
+
+Rather than views instantly getting access to all parameters, we must expose these from the action first. We can pass these in with `response.render(view, ...)`, as this will render the default view for this action.
+
+To then make the view fetch this book from the database, we'll make these changes in `app/views/books/show.rb`:
+
+```ruby
+module Bookshelf
+  module Views
+    module Books
+      class Show < Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find(id)
+        end
+      end
+    end
+  end
+end
+```
+
+This view is now using the book repository to find the book with that ID. When it finds that book, it'll expose the book to the template. Let's use that to display information about the book now in `app/templates/books/show.html.erb`:
+
+```erb
+<h1><%= book.title %></h1>
+
+<p>Author: <%= book.author %></p>
+<p>Year: <%= book.year %></p>
+```
+
+
 ### Parts - Hanami's decorators
 
 Writing these routes out in longer form is going to get tiring after a while. Fortunately for us, Hanami provides a location where we can add methods that decorate the objects that we use in a view.
