@@ -8,6 +8,8 @@ This blog post is part of a series called "Hanami for Rails Developers".
 
 * Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models) (you are here)
 * Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
+* Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
+* Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations)
 
 There's plenty of writing out there for _why_ you should use Hanami, and so this post won't cover that. If you want those thoughts, see my [Hanami 2.0 thoughts](https://ryanbigg.com/2022/11/hanami-20-thoughts) and my earlier [thoughts on Hanami](https://ryanbigg.com/2018/03/my-thoughts-on-hanami) posts.
 
@@ -65,7 +67,7 @@ ROM::SQL.migration do
 end
 ```
 
-The syntax used here is not too dissimilar to what you'd see in a Rails migration. Notably, we have to include the `primary_key` here, whereas in Rails it comes automatically pre-defined.
+The syntax used here is not too dissimilar to what you'd see in a Rails migration. Notably, we have to include the `primary_key` here, whereas in Rails it comes automatically pre-defined. The migration feature comes from a gem called `rom-sql`, which itself uses another gem called `sequel`. The migration syntax itself comes from `sequel`. You can [read more about Sequel migrations here](https://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html)
 
 We can run this migration with:
 

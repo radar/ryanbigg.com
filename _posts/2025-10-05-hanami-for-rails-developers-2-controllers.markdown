@@ -8,6 +8,8 @@ This blog post is part of a series called "Hanami for Rails Developers".
 
 * Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
 * Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers) (you are here)
+* Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
+* Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations)
 
 In the first part we saw how to interact with a database by using Hanami's repositories and relations. In this part, we continue that by serving that data out through routes of our Hanami application.
 
