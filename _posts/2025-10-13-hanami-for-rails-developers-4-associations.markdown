@@ -406,6 +406,7 @@ end
 
 def popular_and_disliked
   with_reviews.popular.disliked
+end
 ```
 
 Our repository is now going to provide a cleaner facade back to our application, so that we can make calls such as `book_repo.popular` to get back a list of popular books, and the repo will take care of the `with_reviews` joining.
