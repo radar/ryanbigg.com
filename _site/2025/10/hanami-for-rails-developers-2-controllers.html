@@ -1,0 +1,406 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hanami for Rails Developers: Part 2: Controllers - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Hanami for Rails Developers: Part 2: Controllers" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-10-05">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/10/hanami-for-rails-developers-2-controllers" property="og:url">
+  
+  
+  <meta content="Hanami for Rails Developers: Part 2: Controllers" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Hanami for Rails Developers: Part 2: Controllers">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/10/hanami-for-rails-developers-2-controllers">
+        <h2 class="my-0 mt-4">Hanami for Rails Developers: Part 2: Controllers</h2>
+      </a>
+      <small>05 Oct 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+
+<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a> (you are here)</li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
+</ul>
+
+<p>In the first part we saw how to interact with a database by using Hanami’s repositories and relations. In this part, we continue that by serving that data out through routes of our Hanami application.</p>
+
+<p>To get started here, we can run the Hanami server (and its asset compilation step) by running:</p>
+
+<pre><code>hanami dev
+</code></pre>
+
+<p>This will run a server on localhost:2300 and once you come back to the browser to figure out why your muscle-memory’d localhost:3000 didn’t work, change that 3000 to a 2300.</p>
+
+<h3 id="routing">Routing</h3>
+
+<p>In a Hanami application, you can find the routes in the familiar location of <code>config/routes.rb</code>. We can add a route to this application by changing this file to this code:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  class Routes &lt; Hanami::Routes
+    root to: "books.index"
+  end
+end
+</code></pre>
+
+<p>Note that the code here uses a dot to separate the controller and the action, rather than a hash/pound-sign (#).</p>
+
+<p>A route by itself, like in a Rails app, doesn’t do very much. We need a matching action for this.</p>
+
+<h3 id="actions">Actions</h3>
+
+<p>We generate an action in Hanami by running:</p>
+
+<pre><code>hanami g action books.index
+</code></pre>
+
+<p>This time, I will list the files this generates, as this a key part where Hanami differentiates itself from Rails:</p>
+
+<pre><code>Updated config/routes.rb
+Created app/actions/books/
+Created app/actions/books/index.rb
+Created app/views/books/
+Created app/views/books/index.rb
+Created app/templates/books/
+Created app/templates/books/index.html.erb
+Created spec/actions/books/index_spec.rb
+</code></pre>
+
+<p>This has updated our <code>config/routes.rb</code> file to include a new <code>/books</code> route:</p>
+
+<pre><code class="language-ruby">get "/books", to: "books.index"
+</code></pre>
+
+<p>Classes in Hanami applications are namespaced automatically under the application’s name. You can see this by looking at the two classes generated for us here which are both created under the <code>Bookshelf</code> namespace: <code>Actions::Books::Index</code>, and <code>Views::Books::Index</code>.</p>
+
+<p>Hanami has no controllers, and instead splits this logic between two classes: <strong>actions</strong> and <strong>views</strong>.</p>
+
+<p>The purpose of actions is to handle all the parameter parsing and response handling of a request. This is where you might also put behavior like authenticating or authorizing a user before they can perform this particular action. An action can decide based on these parameters to render either the default view, or a different one. An action in Hanami can also validate the input parameters before deciding to proceed with the action.</p>
+
+<p>The purpose of views is to gather up and present the data once an action has decided which version of a view to render. In a Rails app, you may see similar handling by way of <code>respond_to</code>.</p>
+
+<h3 id="views">Views</h3>
+
+<p>Views typically have a template to render as well, and in this application we now have <code>app/templates/books/index.html.erb</code>. This is the same kind of file you’d get with Rails, only in Rails it would be under <code>app/views</code>. Views in Hanami have a different meaning, and that can take some time to get your head around.</p>
+
+<p>At the moment, requests to http://localhost:2300/books shows very little, just a big H1 showing: <code>Bookshelf::Views::Books::Index</code>. This isn’t going to drive engagement for our book application. We’ll add some books to this page instead, by fetching them from the database and displaying them here.</p>
+
+<p>To fetch these books from the database, we will open <code>app/views/books/index.rb</code> and fetch all the books with this code:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class Index &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :books do
+          book_repo.all
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>When coming from a Rails application where it is almost forbidden (but possible!) to put a database query in a view, it might feel weird to put a database call into a class with “Views” in the name.</p>
+
+<p>In Hanami, we put the database loading in the view because the action might have had a reason to not need to load all the books, such as if there was an authorization rule on the action that was blocking the request.</p>
+
+<p>At the top of this view, we include the book repository as a dependency by using <code>include</code>. This makes it explicit what external dependencies this view has, right at the top of the file.</p>
+
+<p>In a Hanami view, we expose the data to the view explicitly with the use of <code>expose</code>, rather than defining an instance variable and it magically appearing in the template. The <code>book_repo</code> method here comes from the earlier <code>include</code>, and it will be an instantiated version of the <code>Repos::BookRepo</code> class.</p>
+
+<p>Speaking of templates, we can display these books from our database by writing some ERB code. This will land us in well familiar territory. The template for this action lives at <code>app/templates/books/index.html.erb</code>. We’ll remove all the content in this file, and replace it with our own:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;Books&lt;/h1&gt;
+
+&lt;% books.each do |book| %&gt;
+  &lt;div&gt;
+    &lt;h2&gt;&lt;%= book.title %&gt;&lt;/h2&gt;
+    &lt;p&gt;Author: &lt;%= book.author %&gt;&lt;/p&gt;
+    &lt;p&gt;Year: &lt;%= book.year %&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>When we refresh this page, we’ll now see our book coming back:</p>
+
+<p><img src="/images/hanami/books_index.jpg" alt="Books" /></p>
+
+<p>We’re now able to display a list of books, but let’s look at how we can display books from a given year.</p>
+
+<h3 id="working-with-parameters">Working with parameters</h3>
+
+<p>In this Hanami application, we would like a route at <code>/books/year/2025</code> to return only the books from that specified year. Let’s add that route to the <code>config/routes.rb</code> file in our application now:</p>
+
+<pre><code class="language-ruby">get "/books/year/:year", to: "books.index"
+</code></pre>
+
+<p>This action will route to the <code>index</code> action, the same as our previous route. To make this action behave differently based on if we’re asking for <em>all books</em> or <em>all books for a particular year</em>, we’re going to update the action’s code in <code>app/actions/books/index.rb</code> to this:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Index &lt; Bookshelf::Action
+        include Deps[
+          books_index: "views.books.index",
+          books_by_year: "views.books.by_year"
+        ]
+
+        def handle(request, response)
+          if request.params[:year]
+            response.render(books_by_year, year: request.params[:year])
+          else
+            response.render(books_index)
+          end
+        end
+      end
+    end
+  end
+end
+
+</code></pre>
+
+<p>We’re again importing dependencies into this action, this time some instances of our relative views. If the <code>year</code> parameter is specified, we’re going to render the <code>books_by_year</code> view, passing it the <code>year</code> parameter.</p>
+
+<p>If the parameter isn’t set, we’ll render <code>books_index</code>, which will show us the list of all books.</p>
+
+<p>The <code>books.by_year</code> view doesn’t exist yet, so let’s create it:</p>
+
+<pre><code>hanami g view books.by_year
+</code></pre>
+
+<p>In this view, we’ll want to fetch all the books for a particular year. We can do this with this code:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class ByYear &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :books do |year:|
+          book_repo.by_year(year).to_a
+        end
+
+        expose :year
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>The block used in <code>expose</code> take in the parameter passed in from the controller and display us a list of books from that year. As we’ll want to expose the year itself to our view, we need to explicitly call that out in the view too.</p>
+
+<p>In the matching template for this view, <code>app/templates/books/by_year.html.erb</code>, we’ll add this code:</p>
+
+<pre><code class="language-ruby">&lt;h1&gt;Books from &lt;%= year %&gt;&lt;/h1&gt;
+
+&lt;% books.each do |book| %&gt;
+  &lt;div&gt;
+    &lt;h2&gt;&lt;%= book.title %&gt;&lt;/h2&gt;
+    &lt;p&gt;Author: &lt;%= book.author %&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>This view will now display a list of books from 2025 when we go to http://localhost:2300/books/year/2025.</p>
+
+<p><img src="/images/hanami/books_by_year.jpg" alt="Books by year" /></p>
+
+<p>We’ve now added two ways to use the same action, with two different views. In a RESTful application, we would typically have more actions than this. You’d be familiar with the set of them from a Rails application:</p>
+
+<ul>
+  <li>index</li>
+  <li>show</li>
+  <li>new</li>
+  <li>create</li>
+  <li>edit</li>
+  <li>update</li>
+  <li>destroy</li>
+</ul>
+
+<p>In the remainder of this part, we’ll cover off the show action. We’ll leave the forms to the next part of this guide.</p>
+
+<h3 id="adding-a-show-route">Adding a show route</h3>
+
+<p>We’re now going to add a <code>show</code> action to our application, allowing us to display information about a single book. When we add this route, we will also add a link from our books “index” actions to the show action. Rather than starting with the route, we’ll start with generating an action:</p>
+
+<pre><code class="language-ruby">hanami g action books.show
+</code></pre>
+
+<p>Hanami is smart enough to generate us an action <em>and</em> a route with this command. Here’s what it has added to <code>config/routes.rb</code>:</p>
+
+<pre><code class="language-ruby">get "/books/:id", to: "books.show"
+</code></pre>
+
+<p>This route is exactly the kind of route you’d get with a Rails application. With one key difference: we don’t yet have a named way to refer to this route. In Hanami, we can give routes names using <code>as:</code>. Let’s make that change in our routes now:</p>
+
+<pre><code class="language-ruby">get "/books/:id", to: "books.show", as: :book
+</code></pre>
+
+<p>To send our users to this page, we need to create a link from there to the show page. Let’s open up <code>app/templates/books/index.html.erb</code> and change this line:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;&lt;%= book.title %&gt;&lt;/h2&gt;
+</code></pre>
+
+<p>To this:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;&lt;%= link_to book.title, routes.path(:book, id: book.id) %&gt;&lt;/h2&gt;
+</code></pre>
+
+<p>Let’s also make this same change in <code>app/templates/books/by_year.html.erb</code> too.</p>
+
+<p>Routing methods in Hanami aren’t dynamically generated like in Rails, and so we need to write these out in a slightly longer format.</p>
+
+<p>Now that we have a route, we need to display some information on the page where this route goes to. We’ll need to pull that information out of the database before we can display it. Let’s go over to our <code>Books::Show</code> action in <code>app/actions/books/show.rb</code>, and pass down the <code>id</code> parameter to the view:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Show &lt; Bookshelf::Action
+        def handle(request, response)
+          response.render(view, id: request.params[:id])
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>Rather than views instantly getting access to all parameters, we must expose these from the action first. We can pass these in with <code>response.render(view, ...)</code>, as this will render the default view for this action.</p>
+
+<p>To then make the view fetch this book from the database, we’ll make these changes in <code>app/views/books/show.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class Show &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This view is now using the book repository to find the book with that ID. When it finds that book, it’ll expose the book to the template. Let’s use that to display information about the book now in <code>app/templates/books/show.html.erb</code>:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;&lt;%= book.title %&gt;&lt;/h1&gt;
+
+&lt;p&gt;Author: &lt;%= book.author %&gt;&lt;/p&gt;
+&lt;p&gt;Year: &lt;%= book.year %&gt;&lt;/p&gt;
+</code></pre>
+
+<h3 id="parts---hanamis-decorators">Parts - Hanami’s decorators</h3>
+
+<p>Writing these routes out in longer form is going to get tiring after a while. Fortunately for us, Hanami provides a location where we can add methods that decorate the objects that we use in a view.</p>
+
+<p>When we <code>expose</code> data from an action, Hanami wraps this data in another class, which it calls a Part. In the case of the <code>expose :books</code> that we have, it will wrap these in two distinct parts:</p>
+
+<ul>
+  <li><code>Views::Parts::Books</code> - for the whole array of books</li>
+  <li><code>Views::Parts::Book</code> - one wrapping for each of the books</li>
+</ul>
+
+<p>We didn’t create these classes. Hanami did that for us. Hanami uses the class of the struct to determine which part to use.</p>
+
+<p>We can define these classes ourselves if we want to add decorations to the objects exposed here. A good example of this would be to add a <code>show_path</code> method to books, so that we don’t have to write out the route long-form all the time.</p>
+
+<p>We can create a new class at <code>app/views/parts/book.rb</code> and define this method inside:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Parts
+      class Book &lt; Bookshelf::Views::Part
+        def show_path
+          context.routes.path(:book, id: id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>Methods of this class act as though they’re defined as instance methods on <code>Book</code>. This works because in the view we’re actually working with <code>Views::Parts::Book</code>, rather than a straight <code>Bookshelf::Structs::Book</code> instance. The <code>context</code> used here is the Hanami view rendering context, which we use to get to the <code>routes</code> method.</p>
+
+<p>By defining this <code>show_path</code> this way, we can now change our links in <code>app/templates/books/index.html.erb</code> and <code>app/templates/books/by_year.html.erb</code> to simply this:</p>
+
+<pre><code class="language-ruby">&lt;h2&gt;&lt;%= link_to book.title, book.show_path %&gt;&lt;/h2&gt;
+</code></pre>
+
+<p>The great thing about this is that if we ever want to know where <code>show_path</code> is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails’ dynamic routing methods, and you’ll see that this a vast improvement.</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

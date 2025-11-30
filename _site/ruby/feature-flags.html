@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Use feature flags liberally - Ryan Bigg</title>
+  <title>Feature flags - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
@@ -16,20 +16,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg - Use feature flags liberally" property="og:title">
+  <meta content="Ryan Bigg - Feature flags" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
 
   
-    <meta name="publish_date" property="og:publish_date" content="2025-05-04">
+    <meta name="publish_date" property="og:publish_date" content="2025-12-01">
   
 
   
   <meta content="https://ryanbigg.com/ruby/feature-flags" property="og:url">
   
   
-  <meta content="Use feature flags liberally" property="og:description">
+  <meta content="Feature flags" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -38,7 +38,7 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta name="twitter:title" content="Use feature flags liberally">
+  <meta name="twitter:title" content="Feature flags">
   
 </head>
 
@@ -61,6 +61,9 @@
     <li>
       <a href="/ruby/feature-flags">Feature Flags</a>
     </li>
+    <li>
+      <a href="/ruby/logging">Logging</a>
+    </li>
   </ol>
 </div>
 
@@ -68,9 +71,11 @@
       <div class='content-inner'>
         <article class="mt-8">
           <a href="/ruby/feature-flags">
-            <h2 class="my-4 mt-4">Use feature flags liberally</h2>
+            <h2 class="my-4 mt-4">Feature flags</h2>
           </a>
-          <p>Feature flags are code that turns on or off other code when certain conditions are met. These can be as simple as a boolean choice where the flag is either on or off. Or they can be more complex, where they’re on for a certain percentage of users of your system <a href="https://xkcd.com/221/">chosen by fair dice roll</a>.</p>
+          <p><strong>Use feature flags liberally to turn on (and off!) parts of your code with a click of a button.</strong></p>
+
+<p>Feature flags are code that turns on or off other code when certain conditions are met. These can be as simple as a boolean choice where the flag is either on or off. Or they can be more complex, where they’re on for a certain percentage of users of your system, where the percentage is <a href="https://xkcd.com/221/">chosen by fair dice roll</a>.</p>
 
 <p>For this, I like to use the <a href="https://github.com/flippercloud/flipper">Flipper gem</a>:</p>
 
@@ -83,7 +88,7 @@ end
 
 <p>This flag then determines which path the code will take. If the flag is enabled for that user, then it will output “Search away!”. If not, it will output “No search for you.” We can use flags like this within our applications to enable entire features or code paths – or occasionally, opt-out of those paths too. A good rule of thumb is to use feature flags in a “positive” way. That is to say, if a flag is enabled, it <em>enables</em> something rather than disabling something. There are exceptions to this rule, of course.</p>
 
-<p>Feature flags are typically managed through a REPL or a special developers-only page within the browser. Here’s what Flipper’s UI looks like:</p>
+<p>Feature flags are typically managed through something like a <code>rails console</code> session or a special developers-only page within the browser. Here’s what Flipper’s UI looks like:</p>
 
 <p><img src="/images/ruby/flipper-flags.png" alt="Flipper flags" /></p>
 

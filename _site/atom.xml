@@ -4,13 +4,520 @@
  <title>Ryan Bigg Blog</title>
  <link href="https://ryanbigg.com/atom.xml" rel="self"/>
  <link href="https://ryanbigg.com"/>
- <updated>2025-10-09T07:21:47+11:00</updated>
+ <updated>2025-12-01T09:00:57+11:00</updated>
  <id>https://ryanbigg.com/</id>
  <author>
    <name>Ryan Bigg</name>
    <email>me@ryanbigg.com</email>
  </author>
 
+ 
+ <entry>
+   <title>Triaging bugs</title>
+   <link href="https://ryanbigg.com/2025/11/triaging-bugs"/>
+   <updated>2025-11-30T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/11/triaging-bugs</id>
+   <content type="html"><![CDATA[<p>At Fat Zebra, one of my duties as a team lead is managing the workloads of those I work with and falling into that ambit is bug triaging. We have a dedicated support channel where people can tag all leads and then the responsible leads can triage those issues. All leads get tagged as it’s sometimes unclear who is responsible for an issue, and it helps with the “pinball effect” that can go on for tickets in their early stages.</p>
+
+<p>Another rule of thumb is that when I can see a ticket is about my team’s work is that I’ll assign it to the on-call person for the team to investigate. This helps spread the load away from myself, and trains up the rest of the team on how to investigate all sorts of issues. Other people may be roped into help investigate if the issues lies in their area of expertise.</p>
+
+<p>My team came up with this list of triage questions to ask and posted about it in our internal wiki. We train people who interact with our team on this triaging method.</p>
+
+<ol>
+  <li><strong>Which merchant is having this issue?</strong> Who is the issue affecting? Are they are one of our larger merchants or a smaller merchant? Or is it more than one merchant reporting this issue?</li>
+  <li><strong>What is the scope of the issue?</strong> At a rough guess, what % of this merchant’s functionality is degraded? For example if it’s a transactional issue, is it an issue with one type of transaction (such as Apple Pay) or is it across the board?</li>
+  <li><strong>Where can we see the issue happening?</strong> A URL to the site of the issue is incredibly useful here.</li>
+  <li><strong>Can you demonstrate the issue?</strong> Can you send us a video of the issue and walk us through your thinking on this. Use Loom. Post the video in the team channel.</li>
+  <li><strong>If you can’t send a link or demonstrate, can you describe the issue in a few sentences?</strong> Using your words to explain an issue over saying something like “purchases aren’t working” really helps us get to the root cause of an issue sooner. The more words the better.</li>
+  <li><strong>From your perspective, how urgent is this issue?</strong> Do we need to be waking people up about this if it’s occurring at night, or can it wait until the morning? Could it even wait until the next Sprint?</li>
+</ol>
+
+<p>We then provide a template for them to use when creating a ticket for our board:</p>
+
+<blockquote>
+  <pre><code>**Merchant Affected:** [Merchant name]
+**Scope:** [% of functionality impacted, or specific features impacted]
+**Steps to Reproduce:** [Link to URL of the affected page or video walkthrough]
+**Urgency:** [Low, Medium, High - based on business impact]
+</code></pre>
+</blockquote>
+
+<p>We then go on to say:</p>
+
+<blockquote>
+  <p>Tickets without enough information will be re-assigned back to the reporter.</p>
+
+  <p>When you’ve created the ticket with this information, post it in the #cxteam channel on Slack.</p>
+
+  <p>Do not @here in #cxteam, as there are usually upwards of 20 people who will receive your message.</p>
+
+  <p>In an urgent situation, escalate through Slack with to the person currently on call with:</p>
+
+  <p>[on call alerting instructions go here]</p>
+</blockquote>
+
+<p>This has really helped reduce the noise that goes on when a ticket rolls in. It can be a bit frantic to start out with; a very “my hair is on fire” moment. This happens because the downstream merchant has been upset about an issue, and then that escalates up through the chain until it reaches the triage point. At that point, we determine the answers to the questions above and act accordingly. We haven’t yet gone onto classify these based on something like a <a href="https://www.productplan.com/glossary/rice-scoring-model/">RICE</a> score, but I think it would be helpful, at least the Reach + Impact parts of that.</p>
+
+<p>The response between each ticket varies tremendously. Sometimes they don’t get past the first couple of people, and sometimes they involve multiple teams worth of effort over a couple of days. It’s important to figure out the scope of these issues at the very start, so that we can be sure that we’re addressing the important or urgent issues first and we don’t get overwhelmed by the noise.</p>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>Ruby Community Reflections</title>
+   <link href="https://ryanbigg.com/2025/10/ruby-community-reflections"/>
+   <updated>2025-10-29T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/10/ruby-community-reflections</id>
+   <content type="html"><![CDATA[<p><strong>Content warning: suicide</strong></p>
+
+<p>This year, we ran another <a href="https://ryanbigg.com/2024/10/ruby-retreat-2024">Ruby Retreat</a> with 50 people in attendance. This event shows off how good the Ruby community in Australia is by gathering people together from the Friday afternoon until the Monday morning. I’d say that this event was a success again.</p>
+
+<p>At the start of the event, I got up and had this to say:</p>
+
+<blockquote>
+  <p>DHH wrote a long blog post about how, essentially, there aren’t enough white people in London anymore and how white folk have to rise up. I won’t mince words here: He went full mask-off racist. Those views are abhorrent and have no place in a modern society. They lead down a dangerous path. We cannot be tolerant of the intolerant.  The philosopher Karl Popper called this the paradox of tolerance — that a tolerant society cannot survive if it tolerates intolerance. If we allow bigotry and exclusion to stand unchallenged, they will eventually silence the very openness that makes our community strong.</p>
+
+  <p>I encourage you to find your voices and stand up against this intolerance whenever you see it in our community. Intolerance and division have no place in our community.</p>
+
+  <p>I wanted to run this Ruby Retreat because these events have exemplified the kind of community and community event I want to see more of in the developer space. These events, and those attending, have been an exact antithesis to what DHH is preaching. We are stronger together, than we would ever be split apart into different tribes.</p>
+
+  <p>I want these events to exist so that we can show off the great parts of the Ruby community. These events are what makes me love Ruby so much.</p>
+
+  <p>As our Code of Conduct says:</p>
+
+  <blockquote>
+    <p>Whenever we come together as a community, our shared spaces are opportunities to showcase the best of what we can be. We are there to support our peers - to build each other up, to accept each other for who they are, and to encourage each other to become the people they want to be.</p>
+  </blockquote>
+
+  <p>So as we gather here this weekend, let’s remember that the Ruby community is only as good as we make it — together. Inclusivity isn’t a one-and-done checkbox; it’s a practice. It’s in how we welcome new voices, how we disagree respectfully, and how we draw clear lines around what we will not accept. Societies have been doing this for centuries — it’s why we have laws.</p>
+
+  <p>Events like this show us the best version of what Ruby can be: creative, kind to all, and committed to lifting everyone up. Let’s take that attitude into this weekend, and beyond.</p>
+</blockquote>
+
+<p>We saw strong evidence of this during the camp with communal lunch and dinner times, and people splitting into different groups to work on different projects, or play games like Codewords or Go. And yes, this time there was even more Blood on the Clocktower too.</p>
+
+<p>One of the people present at the Retreat was a woman called Caroline Bambrick.</p>
+
+<p>I knew Caroline, or Caz, through working with her during the Junior Engineering Program #2 at Culture Amp. She wowed the interviewers with her skills and got to be chosen as one of the nine people we ended up picking. While she had that common anxiety of a new starter (“omg they’re going to fire me the moment I mess up”), she ended up being a critical part of that group.</p>
+
+<p>Of course, lives take different directions. I was made redundant and then Covid hit, and so we all drifted apart. I’m also remarkably bad at keeping in touch with people I would call friends.</p>
+
+<p>Caroline attended both last year’s Ruby Retreat and this year’s. My only photo of her from this year’s event is of her being her extremely-picky-but-charming self, trying to best optimise the best way to stack her lunch plate to get a bit of everything and not to miss out on anything. I reckon she took about two minutes at the front of the line.</p>
+
+<p>She played Codewords and laughed along with people when the game went sideways as clues were misinterpreted.</p>
+
+<p>She was there for Blood on the Clocktower, where she played the role of the Scarlet Woman so <em>utterly flawlessly</em> it fooled us all.</p>
+
+<p>She was, as best anyone could tell, another face in a crowd of 50 people.</p>
+
+<p>By the following Wednesday, two days after the event, she had chosen to end her life.</p>
+
+<p>The news was shared on the Ruby AU Slack this Monday morning, with over 100 broken heart reactions on that thread. The thread is full-up of stories of how Caz has impacted people’s lives for the better, and photos of her time in the Ruby community.</p>
+
+<p>Her funeral was today, and a group of Australian Rubyists organised to turn up together. Quotes of her from the Ruby AU community were shared by community members Lauren, Pat and Brendan. Hugs and condolences were shared all around. I cried.</p>
+
+<p>I got to talk to Caz’s mum about how she made me a better manager and a better <em>person</em>.</p>
+
+<p>All of this is the kind of support I meant in my Ruby Retreat message. I just wish we could’ve all given this support sooner and <em>somehow</em> prevented this tragedy.</p>
+
+<p>My head kept trying to problem-solve its way out of this horrible situation last night as a way of coping with this trauma, periodically waking me up to signal that it hadn’t yet solved the problem, but by golly it was gonna work its hardest on it. The problem isn’t solvable; the conclusion is, sadly, final.</p>
+
+<p>Tonight, we had the Melbourne Ruby meetup as well. There were talks on database sharding and PostgreSQL tablespaces. Many of the attendees of the funeral were there too, but there were also some new faces who had only been attending the meetup this year. The Ruby community is still thriving in Melbourne.</p>
+
+<p>After the meetup, we went out for ice cream at Pidapipo, just a short walk over into Degraves Street. There were more hugs. We took a group photo, that had a lot of the people from the meetup in it. But there will forever be a hole in our community. We have lost a strong advocate for not only the Ruby community, but humanity in general.</p>
+
+<hr />
+
+<p>As was stated on that Ruby AU thread: Suicide is a very hard topic for a lot of people, please don’t suffer in silence. If you, or someone you know needs support or help, please contact:</p>
+
+<ul>
+  <li><a href="https://www.lifeline.org.au/">Lifeline</a> provides 24-hour crisis counselling, support groups and suicide prevention services. Call 13 11 14, text 0477 13 11 14 or chat online.</li>
+  <li><a href="https://www.suicidecallbackservice.org.au/">Suicide Call Back Service</a> provides 24/7 support if you or someone you know is feeling suicidal. Call 1300 659 467.</li>
+  <li><a href="https://www.beyondblue.org.au/">Beyond Blue</a> aims to increase awareness of depression and anxiety and reduce stigma. If you or a loved one need help, you can call 1300 22 4636, 24 hours/7 days a week or chat online.</li>
+  <li><a href="https://www.bigfeels.club/">Big Feels Club</a> provides shared stories and experiences for people who have done ‘all the right things’ but still feel stuck.</li>
+</ul>
+]]></content>
+ </entry>
+ 
+ <entry>
+   <title>Hanami for Rails Developers: Part 4: Associations</title>
+   <link href="https://ryanbigg.com/2025/10/hanami-for-rails-developers-4-associations"/>
+   <updated>2025-10-13T00:00:00+11:00</updated>
+   <id>https://ryanbigg.com/2025/10/hanami-for-rails-developers-4-associations</id>
+   <content type="html"><![CDATA[<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a> (you are here)</li>
+</ul>
+
+<p>In the first three parts of this guide, we set about building up a way that works with a table called <code>books</code> to display these records through some controller actions, and to allow us to create more and edit them in forms.</p>
+
+<p>In this part, we’re going to cover how we can set up an association to books called <code>reviews</code>. We’ll create a new table for this, and work out how to display reviews next to books on the <code>books.show</code> page. In this part, we’ll be spending a lot of time working back on our repositories and relations.</p>
+
+<h3 id="creating-the-table">Creating the table</h3>
+
+<p>To get started, we first need to create a table called <code>reviews</code>. We can do this by generating a migration:</p>
+
+<pre><code>hanami g migration create_reviews
+</code></pre>
+
+<p>In that new migration under <code>config/db/migrate</code>, we’ll change the code in that new file to create this new table:</p>
+
+<pre><code class="language-rb">ROM::SQL.migration do
+  change do
+    create_table :reviews do
+      primary_key :id
+      foreign_key :book_id, :books, null: false, on_delete: :cascade
+      String :content, null: false
+      Integer :rating, null: false
+      DateTime :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
+    end
+  end
+end
+</code></pre>
+
+<p>This table will have all the columns you’d expect to have for a review, minus a user association. We don’t want to get too carried away at the moment!</p>
+
+<p>We can run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<h3 id="review-relation">Review relation</h3>
+
+<p>Next, we need to create the classes within our application that we’ll use to manage these records in the table. The first of these that we’ll need is a relation so that we can query that table. We’ll generate one with this command:</p>
+
+<pre><code>hanami g relation reviews
+</code></pre>
+
+<p>Let’s see how we can create a new review with this relation by booting into the console:</p>
+
+<pre><code>hanami console
+</code></pre>
+
+<p>Once we’re in this console, we will load the relation with:</p>
+
+<pre><code class="language-ruby">reviews = app["relations.reviews"]
+</code></pre>
+
+<p>To insert a new review, we’ll run this code:</p>
+
+<pre><code class="language-ruby">reviews.insert(
+  book_id: 1,
+  content: "I now finally understand Hanami!",
+  rating: 5
+)
+</code></pre>
+
+<p>This’ll return simply <code>1</code>, indicating the ID of the record that we saved.</p>
+
+<p>Now how would we return the reviews for a book? Well, we can simply ask for them:</p>
+
+<pre><code class="language-ruby">reviews.where(book_id: 1).to_a
+</code></pre>
+
+<p>However, we’re going to want to display these reviews on a book’s page eventually. In a Rails app it would be a simple matter of <code>book.reviews</code>. However in a Hanami application, the <code>book</code> object in question would be a simple struct with no association methods defined on it. This is by design, to remove a very large footgun in the shape of N+1 queries that are a bugbear of any Rails developer. In a Hanami application, it is impossible to do an N+1 query.</p>
+
+<h3 id="loading-a-book-and-its-reviews">Loading a book and its reviews</h3>
+
+<p>Hanami has a way of loading both the book <em>and</em> its reviews together. We’re now going to set this up, by first defining an association between books and reviews over in <code>app/relations/books.rb</code>. We define associations in Hanami by changing the <code>schema</code> call at the top of this file to this block form:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Relations
+    class Books &lt; Bookshelf::DB::Relation
+      schema :books, infer: true do
+        associations do
+          has_many :reviews
+        end
+      end
+      # ...
+</code></pre>
+
+<p>This defines the association, but doesn’t tell us much about how to use it. Fortunately, there’s this guide for that.</p>
+
+<p>If we exit out of our Hanami console and reload back into it, we can now use this association. First we’ll load the <code>books</code> relation:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+</code></pre>
+
+<p>Then we can load the first book <em>and</em> all its reviews by using a method called <code>combine</code>:</p>
+
+<pre><code class="language-ruby">books.by_pk(1).combine(:reviews).first
+</code></pre>
+
+<p>This will now return a hash of all the data for both the book and its reviews:</p>
+
+<pre><code class="language-ruby">{:id=&gt;1,
+ :title=&gt;"Hanami for Rails Developers",
+ :author=&gt;"Ryan Bigg",
+ :year=&gt;2027,
+ :reviews=&gt;[
+  {
+    :id=&gt;1,
+    :book_id=&gt;1,
+    :content=&gt;"I now finally understand Hanami!",
+    :rating=&gt;5,
+    :created_at=&gt;2025-10-13 07:19:48 +1100
+  }
+  ]
+}
+</code></pre>
+
+<p>ROM will do this by running first a query to load the book:</p>
+
+<pre><code>SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books` WHERE (`books`.`id` = 1) ORDER BY `books`.`id`
+</code></pre>
+
+<p>Then another query to load the reviews:</p>
+
+<pre><code>SELECT `reviews`.`id`, `reviews`.`book_id`, `reviews`.`content`, `reviews`.`rating`, `reviews`.`created_at`
+FROM `reviews`
+INNER JOIN `books` ON (`books`.`id` = `reviews`.`book_id`)
+WHERE (`reviews`.`book_id` IN (1))
+ORDER BY `reviews`.`id`
+</code></pre>
+
+<p>In a Hanami application, we load all the data we need up front, rather than letting method calls way down in the view template dictate what queries are run. This way, there’s no surprises like N+1 queries.</p>
+
+<p>This combination can be setup to happen the other way as well. When we define an association from review to book, over in <code>app/relations/reviews.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Relations
+    class Reviews &lt; Bookshelf::DB::Relation
+      schema :reviews, infer: true do
+        associations do
+          belongs_to :book
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>With this association defined, we’ll be able to load a review and its associated book:</p>
+
+<pre><code class="language-ruby">reviews = app["relations.reviews"]
+reviews.by_pk(1).combine(:book).first
+</code></pre>
+
+<p>This code will return all the information about a review and its book:</p>
+
+<pre><code class="language-ruby">{:id=&gt;1,
+ :book_id=&gt;1,
+ :content=&gt;"I now finally understand Hanami!",
+ :rating=&gt;5,
+ :created_at=&gt;2025-10-13 07:19:48 +1100,
+ :updated_at=&gt;2025-10-13 07:19:48 +1100,
+ :book=&gt;{
+   :id=&gt;1,
+   :title=&gt;"Hanami for Rails Developers",
+   :author=&gt;"Ryan Bigg",
+   :year=&gt;2027}
+ }
+</code></pre>
+
+<p>If we go back to the “book and its reviews” method, we can expose this method to our application through our <code>BookRepo</code> by defining this method in <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">def find_with_reviews(id)
+  books.by_pk(id).combine(:reviews).one!
+end
+</code></pre>
+
+<p>When we go to load a book in our application, we could now use <code>find_with_reviews</code> to load that book and its reviews. We can do this in our <code>show</code> view by changing the code in <code>app/views/books/show.rb</code> to this:</p>
+
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+module Bookshelf
+  module Views
+    module Books
+      class Show &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find_with_reviews(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>In the matching template, it then becomes a cinch to iterate through the reviews. We can do this by updating <code>app/templates/books/show.html.erb</code> to contain this new code:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;Reviews&lt;/h2&gt;
+
+&lt;% reviews.each do |review| %&gt;
+  &lt;%= review.class %&gt;
+  &lt;p&gt;
+    &lt;strong&gt;&lt;%= review.rating %&gt; / 5 &lt;/strong&gt;
+    &lt;%= review.content %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<h3 id="a-more-complicated-query">A more complicated query</h3>
+
+<p>Defining a <code>has_many</code> or <code>belongs_to</code> association feels like table stakes for a web app these days. Let’s look at something more complicated than this to round out the end of this guide. Let’s say that we want to add a few methods to find:</p>
+
+<ol>
+  <li>Books that are well-reviewed (&gt;= 10 reviews)</li>
+  <li>Books that have an average review rating above 3</li>
+  <li>Books that have an average review rating below 2</li>
+</ol>
+
+<p>In a Rails application for the 1st of these queries we would write something like this:</p>
+
+<pre><code class="language-ruby">Book
+  .joins(:reviews)
+  .group(:id)
+  .having('COUNT(reviews.id) &gt;= 10')
+</code></pre>
+
+<p>This will generate a query with an <code>INNER JOIN</code> between the <code>books</code> and <code>reviews</code> table, with a <code>GROUP</code> statement on <code>books.id</code>, and a <code>HAVING</code> statement that uses the raw SQL we’ve passed in.</p>
+
+<p>In a Rails app, we would add this code to our model. But in a Hanami application we’ll have to do this on our relation. Let’s define a method in <code>app/relations/books.rb</code> for this now:</p>
+
+<pre><code class="language-ruby">def popular
+  join(:reviews)
+    .group(:id)
+    .having { count(reviews[:id]) &gt;= 10 }
+end
+</code></pre>
+
+<p>The syntax provided by Sequel isn’t too much different, until we get to the final line. There we evaluate a block passed into <code>having</code>, and we’re able to use the <code>reviews</code> relation from within our books relation. Instead of writing raw SQL, the underlying Sequel gem provides us a clean Ruby syntax to use instead.</p>
+
+<p>We <em>could</em> still write the <code>having</code> statement with raw SQL, but we’d have to call that out explicitly with <code>Sequel.lit</code>:</p>
+
+<pre><code class="language-ruby">join(:reviews)
+  .group(:id)
+  .having(Sequel.lit("count(reviews.id) &gt; 10"))
+</code></pre>
+
+<p>This syntax is slightly longer than the Ruby version, and a bit more punctuation-heavy too. It’s for this reason that I try to opt for the Ruby syntax when I can find a Sequel version of that.</p>
+
+<p>If we run <code>hanami console</code>, we can then use this new method:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+books.popular
+</code></pre>
+
+<p>This will show the query it could run:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+GROUP BY `books`.`id`
+HAVING (count(`reviews`.`id`) &gt;= 10)
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>This looks great! We don’t have enough reviews for this method at the moment. We can create a few:</p>
+
+<pre><code>10.times { reviews.insert(rating: 5, content: "Great!", book_id: 1) }
+</code></pre>
+
+<p>And now if we ask for the popular book, we’ll see it’s returned:</p>
+
+<pre><code class="language-ruby">books.popular.first
+</code></pre>
+
+<p>This gives us:</p>
+
+<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg", :year=&gt;2027}
+</code></pre>
+
+<p>We’ve got the first method added, now let’s look at finding books where the review average rating is above a 3:</p>
+
+<pre><code class="language-ruby">def liked
+  join(:reviews)
+  .group(:id)
+  .having { avg(reviews.rating) &gt; 3 }
+end
+</code></pre>
+
+<p>This time we use an <code>avg</code> method to generate an <code>AVG</code> aggregation query for our reviews. Let’s exit the <code>hanami console</code> and restart it again to pick up this new method. Now we’ll try to use it:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+books.liked
+</code></pre>
+
+<p>This will show us this query:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+GROUP BY `books`.`id`
+HAVING (avg(`reviews`.`rating`) &gt;= 3)
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>That looks great! How about we get both <code>popular</code> and <code>liked</code> books?</p>
+
+<pre><code>books.popular.liked
+</code></pre>
+
+<p>This time the query is:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+HAVING ((count(`reviews`.`id`) &gt;= 10) AND (avg(`reviews`.`rating`) &gt;= 3))
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>No, you’re not having vision issues, there are indeed <em>two</em> joins to reviews! This is because both of our methods tell the relation to join the reviews table. If we attempt to run this query, SQL will be unable to disambiguate between which <code>reviews</code> table we mean.</p>
+
+<p>What do we do in these situations, then? Well, we add a <em>third</em> method that does the join first:</p>
+
+<pre><code class="language-ruby">def with_reviews
+  join(:reviews)
+    .group(:id)
+end
+
+def popular
+  join(:reviews).having { count(reviews[:id]) &gt;= 10 }
+end
+
+def liked
+  join(:reviews).having { avg(reviews[:rating]) &gt;= 3 }
+end
+</code></pre>
+
+<p>Now this will mean we’ll be able to call <code>books.with_reviews.popular</code> to get the popular books, and <code>books.with_reviews.liked</code> to get the liked books, and then <code>books.with_reviews.popular.liked</code> to get the popular liked books!</p>
+
+<p>Before we move on from here, we can add our other method to find the books with low-scoring reviews:</p>
+
+<pre><code class="language-ruby">def disliked
+  join(:reviews).having { avg(reviews[:rating]) &gt;= 2 }
+end
+</code></pre>
+
+<p>This syntax with <code>with_reviews</code> is going to be a mouthful. Fortunately, we can provide a clean interface by exposing these methods through our <code>BookRepo</code> class back to our application. Let’s add in a few methods in <code>app/repos/book_repo.rb</code></p>
+
+<pre><code class="language-ruby">def with_reviews
+  books.with_reviews
+end
+
+def popular
+  with_reviews.popular
+end
+
+def popular_and_liked
+  with_reviews.popular.liked
+end
+
+def popular_and_disliked
+  with_reviews.popular.disliked
+end
+</code></pre>
+
+<p>Our repository is now going to provide a cleaner facade back to our application, so that we can make calls such as <code>book_repo.popular</code> to get back a list of popular books, and the repo will take care of the <code>with_reviews</code> joining.</p>
+
+<p>We can see here with the code in the relation and repository that the relation is taking care of the messy SQL-adjacent code, while the repository is using the methods of the relation to then provide a cleaner interface back up to the application.</p>
+]]></content>
+ </entry>
  
  <entry>
    <title>Hanami for Rails Developers: Part 3: Forms</title>
@@ -511,6 +1018,8 @@ end
 <ul>
   <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
   <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a> (you are here)</li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
 </ul>
 
 <p>In the first part we saw how to interact with a database by using Hanami’s repositories and relations. In this part, we continue that by serving that data out through routes of our Hanami application.</p>
@@ -835,6 +1344,8 @@ end
 <ul>
   <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a> (you are here)</li>
   <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
 </ul>
 
 <p>There’s plenty of writing out there for <em>why</em> you should use Hanami, and so this post won’t cover that. If you want those thoughts, see my <a href="https://ryanbigg.com/2022/11/hanami-20-thoughts">Hanami 2.0 thoughts</a> and my earlier <a href="https://ryanbigg.com/2018/03/my-thoughts-on-hanami">thoughts on Hanami</a> posts.</p>
@@ -892,7 +1403,7 @@ end
 end
 </code></pre>
 
-<p>The syntax used here is not too dissimilar to what you’d see in a Rails migration. Notably, we have to include the <code>primary_key</code> here, whereas in Rails it comes automatically pre-defined.</p>
+<p>The syntax used here is not too dissimilar to what you’d see in a Rails migration. Notably, we have to include the <code>primary_key</code> here, whereas in Rails it comes automatically pre-defined. The migration feature comes from a gem called <code>rom-sql</code>, which itself uses another gem called <code>sequel</code>. The migration syntax itself comes from <code>sequel</code>. You can <a href="https://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html">read more about Sequel migrations here</a></p>
 
 <p>We can run this migration with:</p>
 
@@ -2236,297 +2747,6 @@ export type Purchase = NonNullable&lt;Merchant['purchase']&gt;;
 <p>Finally, my absolute <em>golden path</em> idea on this topic is that the tests that run when you push a branch, should only be the tests related to the code that you changed. If I’m making changes on Part A of the system, then it doesn’t make sense to run tests for Part B on all branches. Running the entire test suite before a production deploy makes sense, but not on the earlier branches.</p>
 
 <p>To that end, there’s probably investigative work to go on with this app where the app could be split into something like Hanami’s “slices”, so we have Slice A with its own tests, then if there’s file changes in Slice A then Slice A’s tests get run, but Slice B’s tests don’t. That seems like work that would be greater than many cooldown sprints in a row, and so I’m happy to leave that as just a thought bubble for the time-being.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Scheduling with Ice Cube</title>
-   <link href="https://ryanbigg.com/2024/05/scheduling-with-ice-cube"/>
-   <updated>2024-05-22T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2024/05/scheduling-with-ice-cube</id>
-   <content type="html"><![CDATA[<p>I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the <em>end of the month</em> for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the <em>month</em> but also the <em>year</em>, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.</p>
-
-<p>The frequency of these payments that we allow for in our system are weekly, fortnightly, every-4-weeks, monthly, quarterly, half-yearly, and yearly. When a schedule is created, we use the start date for the schedule as the basis for the ongoing payments. Schedules can optionally have an end date too, where those payments will stop happening.</p>
-
-<p>On top of that, weekly and fortnightly payments can optionally have a day of the week chosen for payments, which means that they sometimes don’t line up with the declared start date.</p>
-
-<p>Monthly payments can also have the same option, but instead of day of the week it’s day of the month. If someone selects the 31st as their billing day, we need to consider what we’d do in months like February, April, June, September and November, which don’t have those days.</p>
-
-<p>All of this sounds like quite the headache, given it involves the two most difficult things: <em>time</em> and <em>money</em>. Putting the money thing to one side for the moment, we’ll stay focussed on just the <em>time</em> thing.</p>
-
-<p>To help with the scheduling calculation, we use the <a href="https://rubygems.org/gems/ice_cube">ice_cube</a> gem.</p>
-
-<p>Let’s say that we have a schedule that:</p>
-
-<ul>
-  <li>Starts today: <code>2024-05-22</code>.</li>
-  <li>Has no end date</li>
-  <li>Reoccurs monthly</li>
-  <li>Day of the month: 31st</li>
-</ul>
-
-<p>With <code>ice_cube</code>, we can write code to generate schedules:</p>
-
-<pre><code class="language-ruby">start_date = Date.parse('2024-05-22')
-
-schedule_rule = IceCube::Rule.monthly.day_of_month(31)
-
-schedule = IceCube::Schedule.new(start_date) do |s|
-  s.add_recurrence_rule(schedule_rule)
-end
-
-puts schedule.first(10)
-</code></pre>
-
-<p>This seems innocent enough. But if we run it, we’ll see that it’s not quite right:</p>
-
-<pre><code class="language-text">2024-05-31 00:00:00 +1000
-2024-07-31 00:00:00 +1000
-2024-08-31 00:00:00 +1000
-2024-10-31 00:00:00 +1100
-2024-12-31 00:00:00 +1100
-2025-01-31 00:00:00 +1100
-2025-03-31 00:00:00 +1100
-2025-05-31 00:00:00 +1000
-2025-07-31 00:00:00 +1000
-2025-08-31 00:00:00 +1000
-</code></pre>
-
-<p>We asked for a monthly recurring schedule, but we also said that this has to be on the 31st day of the month. The <code>ice_cube</code> gem dutifully follows our instructions, and sets a reoccurring schedule for all months with 31 days and the first 5 months there are May, July, August, October, and December.</p>
-
-<p>We would also see this bug if we specified the 30th or 29th for the day of the month.</p>
-
-<p>To fix this, we can instead specify a negative day:</p>
-
-<pre><code class="language-ruby">start_date = Date.parse('2024-05-22')
-
-schedule_rule = IceCube::Rule.monthly.day_of_month(-1)
-
-schedule = IceCube::Schedule.new(start_date) do |s|
-  s.add_recurrence_rule(schedule_rule)
-end
-
-puts schedule.next_occurrences(10)
-</code></pre>
-
-<p>This will produce the following schedule:</p>
-
-<pre><code class="language-text">2024-05-31 00:00:00 +1000
-2024-06-30 00:00:00 +1000
-2024-07-31 00:00:00 +1000
-2024-08-31 00:00:00 +1000
-2024-09-30 00:00:00 +1000
-2024-10-31 00:00:00 +1100
-2024-11-30 00:00:00 +1100
-2024-12-31 00:00:00 +1100
-2025-01-31 00:00:00 +1100
-2025-02-28 00:00:00 +1100
-</code></pre>
-
-<p>We can do similar scheduling rules for the things I mentioned earlier too, such as scheduling things on Mondays:</p>
-
-<pre><code class="language-ruby">schedule_rule = IceCube::Rule.weekly.day(:monday)
-</code></pre>
-
-<pre><code class="language-text">2024-05-27 00:00:00 +1000
-2024-06-03 00:00:00 +1000
-2024-06-10 00:00:00 +1000
-2024-06-17 00:00:00 +1000
-2024-06-24 00:00:00 +1000
-2024-07-01 00:00:00 +1000
-2024-07-08 00:00:00 +1000
-2024-07-15 00:00:00 +1000
-2024-07-22 00:00:00 +1000
-2024-07-29 00:00:00 +1000
-</code></pre>
-
-<p>The <a href="https://github.com/ice-cube-ruby/ice_cube">README for the gem</a> contains plenty of other examples.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Thought Experiment: Without React or GraphQL</title>
-   <link href="https://ryanbigg.com/2024/05/without-react-or-graphql"/>
-   <updated>2024-05-20T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2024/05/without-react-or-graphql</id>
-   <content type="html"><![CDATA[<p>I’ve spent a great deal of my writing time in the past few years arguing for GraphQL in my <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">GraphQL for Rails Developers</a> and its frontend companion Apollo in the <a href="https://pragprog.com/titles/d-rbgql/graphql-for-rails-developers/">Apollo Handbook</a>. I think these are very good tools for providing a clear separation between an API layer and a frontend layer.</p>
-
-<p>But in saying that, I acknowledge there is no silver bullet for software development. So what would I do if I <em>couldn’t</em> use React or GraphQL?</p>
-
-<p>To replace React on the frontend, I would use <a href="https://viewcomponent.org/">View Component</a> as I have written about <a href="https://ryanbigg.com/2024/01/view-components-table-edition">here</a> and <a href="https://ryanbigg.com/2023/06/rails-7-react-typescript-setup">here</a>. I could also be convinced to use <a href="https://www.phlex.fun/">Phlex</a>.</p>
-
-<p>I think having a typed layer between your database and view is just something that <em>makes sense</em>, and so to that end I would define a <em>separate</em> class for the data types for these components, using <code>dry-types</code> and then pass objects of those classes to the view, in a way that if you squint hard enough you could see it as the Presenter Pattern. I proposed something similar to this <a href="https://ryanbigg.com/2022/03/typed-view-components">two years ago in my “Typed View Components” post</a></p>
-
-<p>Riffing on the example from that post, I would have this as:</p>
-
-<pre><code class="language-ruby">class RefundComponent &lt; ViewComponent::Base
-  extend Dry::Initializer
-  Types = Dry.Types()
-
-  class Refund &lt; Dry::Struct
-    schema schema.strict
-
-    attribute :standalone, Types::Bool
-    attribute :amount, Types::Float
-    attribute :currency, Types::String
-  end
-
-  option :refund, Refund
-end
-</code></pre>
-
-<p>This allows you to keep together the logic of the component (both its Ruby code and its associated views) and the presenter in one directory.</p>
-
-<p>In the controller, the code would look like this:</p>
-
-<pre><code class="language-ruby">refund = RefundComponent::Refund.new(
-  standalone: @refund.standalone?
-  amount: @refund.amount,
-  currency: @refund.currency,
-)
-
-@refund_component = RefundComponent.new(refund: refund)
-</code></pre>
-
-<p>This would still give us an interface <em>similar</em> to GraphQL, where the connecting layer between the database and the frontend is still typed. I think it’s teetering on the edge of being too verbose, but in all things trade-offs.</p>
-
-<p>You then don’t end up exposing any way of doing database queries to the view, which would help prevent N+1 queries. And you can test your views in isolation from the database too. The <code>refund</code> passed to the component doesn’t have to come from the database; it could be a stubbed object, as long as it responds to the right methods.</p>
-
-<p>In the view file itself you might or might not get smart tab-completion like you do within TypeScript-powered GraphQL code, but I think that’s a fair trade-off.</p>
-
-<p>This whole approach trades off React’s “reactivity” as well, so there’s no state management going on here or DOM updating when the state changes. There are probably ways around this (like Hotwire, etc.) but I haven’t gone down those paths yet.</p>
-
-<p>Another benefit here is that all the code is in one language, rather than three (Ruby, GraphQL and TypeScript), and that might make it easier for frontend-adverse people to pick it up as well.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>What was that branch?</title>
-   <link href="https://ryanbigg.com/2024/05/what-was-that-branch"/>
-   <updated>2024-05-14T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2024/05/what-was-that-branch</id>
-   <content type="html"><![CDATA[<p>When I’m working in an app I tend to have multiple branches on the go at any one time while waiting for feedback on those branches, be that feedback from CI systems or people. Occasionally, it’s a few days / weeks between visits to a branch because the flow of work meant it that way. And sometimes, I forget what the branch name was.</p>
-
-<p>To help with this, I’ve got this function in my <code>~/.zshrc</code>:</p>
-
-<pre><code>fbr () {
-	local branches branch
-	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)")  &amp;&amp; branch=$(echo "$branches" |
-  fzf-tmux -d $(( 2 + $(wc -l &lt;&lt;&lt; "$branches") )) +m)  &amp;&amp; git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
-}
-</code></pre>
-
-<p>This complicated looking function finds the 30 most recent local branches and presents them in a date-ordered list using <code>fzf-tmux</code>. To pick a branch, I can type part of the branch name if I remember it, and <code>fzf</code> will filter the list of branches to just the ones that match that. When I find the branch I want, I hit enter and this will swap over to the branch.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>code is like garden</title>
-   <link href="https://ryanbigg.com/2024/05/code-is-like-garden"/>
-   <updated>2024-05-04T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2024/05/code-is-like-garden</id>
-   <content type="html"><![CDATA[<p>Code is like garden.</p>
-
-<p>Sometimes, you come into garden and find out past gardener put sun-loving plant in the cupboard at the back of the shed. You discover more sheds and cupboards later on.</p>
-
-<p>The materials used in shed construction make you think past gardener may have been ticking off a list of known elements, rather than trying to build sturdy shed.</p>
-
-<p>Past gardener put picket fence going vertically up the side of one shed. You ask other gardeners why the fence is there and they say “it’s always been that way”. No other shed has a fence.</p>
-
-<p>Some gardeners like a particular brand of hand trowel and get into religious arguments over which hand trowel is better.</p>
-
-<p>Sometimes, GM (Garden Manager) ask how long it takes to grow a tree. GM gets grumpy when asked what kind of tree they are talking about.</p>
-
-<p>GM gets jealous of fig tree in big city Botanic Gardens (lots of pro gardeners there). Wants you to grow one exactly like it in 3 months, same size and fruit quantity. The fig tree in the gardens is over four stories tall and has existed for decades. You will be the only gardener tasked with growing this tree.</p>
-
-<p>Weeding will be prioritised next weekend. This weekend is for planting new things that the GM purchased and spraying the bugs, but only ones VIP buyer has pointed out. It rains the next 3 weekends, and the weeds run wild. More things come in to plant in the mean time. You weed in between planting, without telling GM.</p>
-
-<p>Other gardeners can only grow one type of plant and refuse to grow others. Others still seem to know every plant, the perfect conditions under which they grow, their quirks, their Latin names, taxonomy and sub-varietals.</p>
-
-<p>There appears to be a new plant variety released at least weekly. You haven’t yet learned the last five you’ve picked up.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>One year with the Ergodox EZ</title>
-   <link href="https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez"/>
-   <updated>2024-04-29T00:00:00+10:00</updated>
-   <id>https://ryanbigg.com/2024/04/one-year-with-the-ergodox-ez</id>
-   <content type="html"><![CDATA[<p>A year ago I upgraded from a <a href="https://kinesis-ergo.com/keyboards/freestyle-edge-rgb/">Kinesis Freestyle Edge</a> to an <a href="https://ergodox-ez.com">Ergodox EZ</a>. What initially enticed me was the thumb keys, as well as the ability to program different macros into the “spare” keys littered around the board. (I still have the Kinesis Freestyle sitting in storage, buyers enquire within…)</p>
-
-<p>I used <a href="https://monkeytype.com">Monkeytype</a> to practice typing on the keyboard, and the stats there show that it took me about a month to go from the initial speed of 40wpm (quite painful) back up to 90wpm. That’s when I started feeling properly comfortable with it. I can now do about 130wpm on this keyboard, which is the same speed I could do on the Freestyle and my laptop keyboard.</p>
-
-<p>I originally bought the Kinesis keyboard because of persistent shoulder pain from using a single keyboard. Having two keyboards that I can keep a little over shoulder width apart has helped to keep my physiotherapy bills down. Since using split keyboards, I haven’t had to go to a physio to get my shoulders “unlocked”. So the keyboards have paid for themselves that way.</p>
-
-<p>Since buying the Ergodox, I’ve also started to make good use of the layering system. You can see the full set of layouts here:</p>
-
-<div style="padding-top: 60%; position: relative;">
-	<iframe src="https://configure.zsa.io/embed/ergodox-ez/layouts/5wDLX/latest/0" style="border: 0; height: 100%; left: 0; position: absolute; top: 0; width: 100%"></iframe>
-</div>
-
-<p>A few things to note about Layer 0:</p>
-
-<ol>
-  <li>Backspace is where caps lock usually is. I feel strongly about this – it should be standard on all keyboards.</li>
-  <li>Held keys: Z becomes Left control, Forward slash becomes right control, semi-colon switches to the 2nd layer.</li>
-  <li>Backtick and tilde are on the bottom left of the left keyboard. This button, when held, switches to the 1st layer.</li>
-  <li>Command, option and escape are on the thumb keys. No “Emacs claw” for complicated shortcuts.</li>
-  <li>Top left is equals. It gets special preference as I type it a lot when coding.</li>
-  <li>The “Hyper” key is one of the keys required for my <a href="https://www.hammerspoon.org/">Hammerspoon</a> shortcuts. I use these to move quickly between apps.</li>
-  <li>There are shortcuts on the thumb keys for cut (the knife), paste and copy.</li>
-  <li>I could probably remap that spare “Tab” on the right thumb to something else – I use the top-left tab out of habit. I don’t have an immediate idea of what it could map to.</li>
-</ol>
-
-<p>A keen observer would note that there’s no curly brackets on here, and yet I still somehow manage to write Ruby hashes and JavaScript objects. I keep those on Layer 1, where the “E” and “R” keys are my brackets. If I hold backtick (bottom left of the left keyboard), this triggers the layer switcher to switch to Layer 1. My keyboard indicates this by lighting up a red LED. When I then press “E”, I get a square bracket. If I do the same holding of backtick but press “E” twice, I get a curly bracket. I think this is one of the cooler features of this keyboard. You can configure actions when a key is tapped, double tapped, held, or tapped then held. I use the first 3 of these, but haven’t found a use for tapped then held yet.</p>
-
-<p>On Layer 1’s right-hand panel is the arrow keys. I still can’t map it in my brain that left and right arrows are on the left keyboard, and up and down are on the right. So I’ve got the traditional arrow layout on that layer, on the right of the keyboard roughly where my hand expects it to be.</p>
-
-<p>Next, we have Layer 2 which is the media controls. On my laptop keyboard, these are on the function keys, which always felt like a bit of a hard reach. To get to this layer I hold the semi-colon key, and the keyboard indicates it’s switched with a green LED. I can then do all the regular music things like play, pause, mute, etc.</p>
-
-<p>For reasons that are completely opaque to me, there can be up to 32 different layers on the keyboard. I cannot imagine ever needing more than the few that I have right now. Even thinking about the keyboard contortion that would be required to switch to a 32nd layer and not the 28th layer is giving me a headache.</p>
-
-<p>Finally: a word on the switches inside the keyboard itself. The keyboard came with Cherry Brown switches which are what I would consider to be the greatest argument ever against working from the office. They were ridiculously loud. And stiff enough that even someone who types as hard as I do noticed how hard I had to press. I’ve since replaced the switches with Cherry Reds which are quieter and not as stiff. I think this has made maybe a 5-10% improvement on my accuracy and speed for this keyboard.</p>
-]]></content>
- </entry>
- 
- <entry>
-   <title>Tailwind has won</title>
-   <link href="https://ryanbigg.com/2024/03/tailwind-has-won"/>
-   <updated>2024-03-26T00:00:00+11:00</updated>
-   <id>https://ryanbigg.com/2024/03/tailwind-has-won</id>
-   <content type="html"><![CDATA[<p>Over the last couple of months, I’ve been working across multiple applications that use various CSS frameworks. Specifically: <a href="https://bulma.io/">Bulma</a>, <a href="https://getbootstrap.com/">Bootstrap</a> and <a href="https://tailwindcss.com/">Tailwind</a>. There are (at least) three distinct CSS frameworks within these applications because each of these apps have been developed over almost a decade and a half, and the flavour-of-the-month has changed a lot over that time. As people have worked on the systems, they have left the “fingerprints” of personal choices.</p>
-
-<p>Three years ago, I became the Platform Tech Lead at Fat Zebra, which meant I was in charge of the technical side of things when it comes to our frontend. Part of this job meant standardising our frontend tech stack. At this time, Bootstrap (around v4.5) and Bulma (0.9.4) were the only two CSS frameworks used at Fat Zebra. After talking about it with the team, we decided to not use <em>either</em> of these frameworks, and instead opted to go with Tailwind.</p>
-
-<p>The reason for this is that we found Bulma lacking quite a lot of the common things from CSS frameworks we wanted – it was too light. And, similarly, we found Bootstrap <em>too heavy</em> – it did too much.</p>
-
-<p>Tailwind on the other hand, we found <em>just right</em>. It has an absolute wealth of styles, its documentation is absolutely stellar, and the preprocessor that shrinks the base CSS file to <em>just the styles you are using</em>.</p>
-
-<p>On top of this, we’ve found the <a href="https://flowbite.com/">Flowbite</a> component library to be incredibly helpful to declare base styles for our components. Our designer has integrated these styles into our Design System, called Zeal, and he provides designs in Figma based off these modified Flowbite components. These changes are then brought into our code through the <a href="https://tailwindcss.com/docs/configuration">Tailwind config file</a>, that’s shared across our projects.</p>
-
-<p>So now instead of having <em>three</em> distinct CSS frameworks, we’re undertaking work to use just the one: Tailwind, in combination with the customizations from our design system.</p>
-
-<p>To share these Tailwind styles across components, we’ve got two methods that we rely on.</p>
-
-<p>For React apps, we use React components with these class names specified in the <code>className</code> prop. Or if we’re using these in non-React-apps, we’ll move these styles into a shared CSS file, using Tailwind’s <a href="https://tailwindcss.com/docs/reusing-styles#extracting-classes-with-apply"><code>@apply</code> directive</a>:</p>
-
-<pre><code class="language-css">.zeal-button {
-  @apply py-2 px-4 h-10 inline-flex items-center rounded-lg text-sm whitespace-nowrap disabled:cursor-not-allowed;
-}
-
-.zeal-button-primary {
-  @apply zeal-button bg-primary-500 text-white disabled:bg-primary-300 active:bg-primary-700 hover:bg-primary-600 focus:outline-none focus:ring focus:ring-primary-300;
-}
-</code></pre>
-
-<p>Then we can use these as substitutions in our HTML, instead of spamming it with all the classes:</p>
-
-<pre><code class="language-html">&lt;button class='zeal-button-primary'&gt;
-</code></pre>
-
-<p>This setup works incredibly well for our little team, and I suspect it would scale as well for an even bigger team. Changes get applied to the design system, which then are updated in Figma, and those updates flow through to our React components or our CSS files, depending on which component it is.</p>
-
-<p>So for all of these reasons above, <strong>Tailwind has won the CSS framework wars.</strong> It provides a set of very sensible defaults out of the box, with just enough extensibility for us to build a design system on. It works well with React components, or regular HTML views. And it has a ton of useful documentation and example components out there that you can use to get started.</p>
 ]]></content>
  </entry>
  

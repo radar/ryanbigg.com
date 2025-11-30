@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hanami for Rails Developers: Part 1: Models - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Hanami for Rails Developers: Part 1: Models" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-10-05">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/10/hanami-for-rails-developers-1-models" property="og:url">
+  
+  
+  <meta content="Hanami for Rails Developers: Part 1: Models" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Hanami for Rails Developers: Part 1: Models">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/10/hanami-for-rails-developers-1-models">
+        <h2 class="my-0 mt-4">Hanami for Rails Developers: Part 1: Models</h2>
+      </a>
+      <small>05 Oct 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+
+<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a> (you are here)</li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
+</ul>
+
+<p>There’s plenty of writing out there for <em>why</em> you should use Hanami, and so this post won’t cover that. If you want those thoughts, see my <a href="https://ryanbigg.com/2022/11/hanami-20-thoughts">Hanami 2.0 thoughts</a> and my earlier <a href="https://ryanbigg.com/2018/03/my-thoughts-on-hanami">thoughts on Hanami</a> posts.</p>
+
+<p>This post covers off how to get started with Hanami, with a focus on those who are familiar with Rails and the MVC structure it provides. I’m unashamedly going to crib parts of this from the <a href="https://guides.hanamirb.org/v2.3/introduction/getting-started/">Hanami Getting Started Guide</a>, but explain them in a different way.</p>
+
+<p>With a Rails app, you’ll be familiar with the Model-View-Controller pattern. Hanami has adopted this pattern too, but has a take on it where the concerns are split across more distinct types of classes. This leads to a better separation of concerns and an easier-to-maintain application.</p>
+
+<p>Hanami’s layers of separation are designed with the intent of making long-term maintenance of your application easier. The layers that Hanami introduce don’t come from nowhere. They come out of decades of professionally building Rails applications and realizing what would make maintenance of those applications easier.</p>
+
+<p>In Part 1 of this series, I’m going to cover off how Hanami applications interact with databases.</p>
+
+<h2 id="the-model-layer">The Model Layer</h2>
+
+<p>Whenever you’re building a Rails application you typically want to pull data from a data source. When you’re building a Hanami application, you’ll want to do the same thing. Rather than having one model class to use as a dumping ground, Hanami separates these into a few distinct classes called repositories, relations and structs.</p>
+
+<ol>
+  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
+  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
+  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
+</ol>
+
+<p>Let’s take a look at each of these in turn by creating a table called <code>books</code>, and then inserting data into that table, and then requesting that data back out in various ways.</p>
+
+<h3 id="migrations">Migrations</h3>
+
+<p>Hanami, like Rails, supports database migrations. To create a migration, we use this command:</p>
+
+<pre><code>hanami g migration create_books
+</code></pre>
+
+<p>This migration syntax uses ROM – Hanami’s choice for a database library – and is currently empty. The migrations in Hanami live in <code>config/db/migrate</code>, rather than the <code>db/migrate</code> of Rails. The reason for this is that migrations are <em>configuration for your database</em>.</p>
+
+<p>Let’s see that migration file now in <code>config/db/migrate</code>:</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  # Add your migration here.
+  #
+  # See https://guides.hanamirb.org/v2.2/database/migrations/ for details.
+  change do
+  end
+end
+</code></pre>
+
+<p>We can fill out this migration to create the <code>books</code> table this way.</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  change do
+    create_table :books do
+      primary_key :id
+      column :title, :text, null: false
+      column :author, :text, null: false
+    end
+  end
+end
+</code></pre>
+
+<p>The syntax used here is not too dissimilar to what you’d see in a Rails migration. Notably, we have to include the <code>primary_key</code> here, whereas in Rails it comes automatically pre-defined. The migration feature comes from a gem called <code>rom-sql</code>, which itself uses another gem called <code>sequel</code>. The migration syntax itself comes from <code>sequel</code>. You can <a href="https://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html">read more about Sequel migrations here</a></p>
+
+<p>We can run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<p>With our table now existing in our database, we need something to insert and read data from that table. That “something” is called a relation.</p>
+
+<h3 id="relations">Relations</h3>
+
+<p>We can generate a relation using this command:</p>
+
+<pre><code>hanami g relation books
+</code></pre>
+
+<p>Relations in Hanami are pluralised, and match the name of the table. We can use this relation to insert some data by booting up the console:</p>
+
+<pre><code>hanami console
+</code></pre>
+
+<p>Hanami provides a <em>registry</em> for our applications classes, and we can use this registry to get the relation:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+</code></pre>
+
+<p>We’ll see this relation is already configured with our database, thanks to some setup taken care of by Hanami. Rails would do the same thing, but calls it <code>connection</code> on Active Record models.</p>
+
+<pre><code class="language-ruby">#&lt;Bookshelf::Relations::Books name=ROM::Relation::Name(books) dataset=#&lt;Sequel::SQLite::Dataset...
+</code></pre>
+
+<p>We can insert a book into our table by running:</p>
+
+<pre><code class="language-ruby">books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
+</code></pre>
+
+<p>This will simply return <code>1</code> as its the ID of the record that was inserted into the database. This may be surprising to Rails developers, who are used to getting instances back straight away from an <code>insert</code> request. To get back to the data that’s in the database, we can run:</p>
+
+<pre><code>book = books.first
+</code></pre>
+
+<p>We will now see the data as a Hash:</p>
+
+<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg"}
+</code></pre>
+
+<p>The relation for Hanami works with data in its barest form. We passed a Hash to <code>insert</code>, and got one back for <code>first</code>. To get back proper Ruby objects, we need a repository.</p>
+
+<h3 id="repository">Repository</h3>
+
+<p>Let’s generate a repository for our <code>books</code> table now, by exiting our <code>hanami console</code> session (with <code>exit</code>) then running this:</p>
+
+<pre><code>hanami g repo book
+</code></pre>
+
+<p>Repositories in Hanami are singularized, but relations are pluralized. This is because relations are working on your table, which is a collection of data. Repositories on the other hand represent a single type of that data, in this case <code>Book</code>. So the repository representing that type is called <code>BookRepo</code>.</p>
+
+<p>We can use this repository in the console by jumping back in with <code>hanami console</code> and then running:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+</code></pre>
+
+<p>To fetch the book we inserted, we can run:</p>
+
+<pre><code class="language-ruby">book_repo.books.first
+</code></pre>
+
+<p>This method calls <code>books</code>, which access the matching relation from the repository. Then it calls <code>first</code> on that relation.</p>
+
+<p>An interesting thing happens here: this will return a structured version of our data.</p>
+
+<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
+</code></pre>
+
+<p>We get this ability by using the relation through the repository.</p>
+
+<p>The returned object here has very few methods on it. Just enough methods to represent the data from the row, and that’s it.</p>
+
+<p>Calling <code>book_repo.books.&lt;whatever method&gt;</code> is going to get old very quickly, and that leads us to the point of repositories. We can provide shorter methods by adding them to our repository. Let’s add a <code>find</code> and an <code>all</code> method to our repository, over in <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Repos
+    class BookRepo &lt; Bookshelf::DB::Repo
+      def find(id)
+        books.by_pk(id).one
+      end
+
+      def all
+        books.to_a
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This method can then be used to find our book based on the table’s primary key. Let’s exit the console, start it again and try that now:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book = book_repo.find(1)
+</code></pre>
+
+<p>We’ll get back our book, all without having to type <code>where</code> + <code>first</code>.</p>
+
+<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
+</code></pre>
+
+<p>We can also retrieve all of our books by using <code>all</code>:</p>
+
+<pre><code>books = book_repo.all
+=&gt; [#&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;]
+</code></pre>
+
+<h3 id="scoping-queries">Scoping queries</h3>
+
+<p>To further demonstrate what a repository and relation do within a Hanami application, we’re now going to perform an action that would be common to a lot of Rails applications: adding a <code>by_year</code> scope to our queries. In Rails, we would add this to a model with this code:</p>
+
+<pre><code class="language-ruby">scope :by_year, -&gt;(year) { where(year: year) }
+</code></pre>
+
+<p>This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository. Before we can perform queries against a year column, let’s add it with one more migration. We’ll create this migration with:</p>
+
+<pre><code>hanami g migration add_year_to_books
+</code></pre>
+
+<p>We’ll open up that new migration file in <code>config/db/migrate</code> and fill it out this way:</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  change do
+    add_column :books, :year, :integer
+  end
+end
+</code></pre>
+
+<p>Let’s run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<p>Now that we have a <code>year</code> column, let’s open up <code>app/repos/book_repo.rb</code> and define a method to find books matching a particular year:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  books.where(year: year)
+end
+</code></pre>
+
+<p>This code can allow us to call <code>book_repo.by_year(2025)</code> to get all the books from the year 2025.</p>
+
+<p>As you can see by these <code>find</code> and <code>by_year</code> methods, we define the methods to interact with our database as we need them within a Hanami application.</p>
+
+<p>Let’s add one more of these to find by the author as well:</p>
+
+<pre><code class="language-ruby">def by_author(author)
+  books.where(author: author)
+end
+</code></pre>
+
+<p>If we do <code>book_repo.by_author("Ryan Bigg")</code> in our console, we’ll get back the book we added earlier on.</p>
+
+<p>Now what about if we wanted to chain these <code>by_author</code> and <code>by_year</code> methods together by calling:</p>
+
+<pre><code class="language-ruby">book_repo.by_year(2025).by_author("Ryan Bigg")
+</code></pre>
+
+<p>Well, if we try that out now, we’ll get an error:</p>
+
+<pre><code class="language-ruby">(irb):2:in `&lt;main&gt;': undefined method `by_author' for #&lt;Bookshelf::Relations::Books
+</code></pre>
+
+<p>This is because the object returned by <code>by_year</code> is an instance of the relation itself. If we want to chain these methods, we need to add them to the relation, and not to the repository. Let’s create similar methods over in <code>app/relations/books.rb</code> now:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  where(year: year)
+end
+
+def by_author(author)
+  where(author: author)
+end
+</code></pre>
+
+<p>We can now use these methods, rather than defining the same logic again, back in the repository. Let’s change the code there in <code>app/repos/book_repo.rb</code> to this:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  books.by_year(year)
+end
+
+def by_author(author)
+  books.by_author(author)
+end
+</code></pre>
+
+<p>By moving these methods over to the relation, we should now be able to chain them together. Let’s reload the console and try again:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg")
+</code></pre>
+
+<p>What we get back here is a new instance of <code>Bookshelf::Relations::Books</code>, because we haven’t asked this relation to do any more than to generate us a query based on books for a particular year and author. At this point, we <em>could</em> throw some more <code>where</code> clauses onto the end if we wanted to further scope the data.</p>
+
+<p>We can trigger a query to run by asking this for the <em>first</em> book.</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg").first
+</code></pre>
+
+<p>This returns nothing! This is because there is no book with that year in our dataset, we only created a book with a title and an author, not a year. We can update our record to have a year by running:</p>
+
+<pre><code class="language-ruby">book_repo.books.where(id: 1).update(year: 2025)
+</code></pre>
+
+<p>Instead of doing a <code>find</code> then an <code>update</code> like you might in a Rails app, we’re doing only an update. That’s all we need to do here. Let’s try running that query again to get the first book:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg").first
+=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg" year=2025&gt;
+</code></pre>
+
+<p>Great!</p>
+
+<p>As we can see from this “Model Layer” section of this guide, Hanami provides three distinct layers of separation here:</p>
+
+<ol>
+  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
+  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
+  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
+</ol>
+
+<p>Rails would have you throw all of this into the one class (a model), leading to quite a lot of mess and making things harder to read. Hanami’s separation is initially disorienting (which file was that code in?) but after a few days that disorientation will wear off!</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

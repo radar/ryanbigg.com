@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title> - Ryan Bigg</title>
+  <title>Log what your application does - Ryan Bigg</title>
   <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
   <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
@@ -16,7 +16,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <meta content="Ryan Bigg's Blog" property="og:title">
+  <meta content="Ryan Bigg - Log what your application does" property="og:title">
   
   <meta property="og:site_name" content="Ryan Bigg">
 
@@ -26,10 +26,10 @@
   
 
   
-  <meta content="https://ryanbigg.com/ruby/" property="og:url">
+  <meta content="https://ryanbigg.com/ruby/logging" property="og:url">
   
   
-  <meta content="" property="og:description">
+  <meta content="Log what your application does" property="og:description">
   
   <meta property="og:type" content="article">
   <meta property="og:image" content="https://ryanbigg.com/images/og.png">
@@ -38,7 +38,7 @@
   <meta name="twitter:site" content="@ryanbigg">
   <meta name="twitter:creator" content="@ryanbigg">
   
-  <meta content="" name="twitter:title">
+  <meta name="twitter:title" content="Log what your application does">
   
 </head>
 
@@ -70,23 +70,42 @@
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8">
-          <a href="/ruby/">
-            <h2 class="my-4 mt-4"></h2>
+          <a href="/ruby/logging">
+            <h2 class="my-4 mt-4">Log what your application does</h2>
           </a>
-          <h1 id="a-collection-of-ruby-advice">A collection of Ruby advice</h1>
+          <p><strong>Use liberal amounts of logging in your application. Provide the ability to search through these logs.</strong></p>
 
-<blockquote>
-  Programs must be written for people to read, and only incidentally for machines to execute.
-  <p class="ml-4">- <cite>Harold Abelson, Structure and Interpretation of Computer Programs</cite></p>
-</blockquote>
+<p>Logging is how you watch what your application is doing in any environment higher than local development. Log what your application is doing, so you know what paths the code is taking.</p>
 
-<p>This is a collection of Ruby advice. This collection falls squarely into the same category as <em>A Philosophy on Software Design</em> by John Ousterhout, or <em>Tidy First</em> by Kent Beck. Some of the advice could even be from the <em>Principles of Object Oriented Design in Ruby</em> by Sandi Metz, or <em>Eloquent Ruby</em> by Russ Olsen. In fact, a lot of the ideas here have been inspired from all of those books.</p>
+<p>Correlate these logs with Trace IDs and Span IDs. Trace IDs are a unique bunch of characters for everything involving one request and response cycle. Span IDs are a similarly unique bunch of characters, but for one particular part of that cycle. An example of such an ID would be:</p>
 
-<p>I have two decades of experience using Ruby and Rails. The languages I’ve used during that time have been HTML, CSS, JavaScript, TypeScript, Ruby, Go and Elixir. I’ve branded myself as a Ruby on Rails developer for most of that time, but the truth is that I am a bit of a chameleon and can go through the gamut from backend to frontend.</p>
+<pre><code>6e927d3cf75b5e1167970f22bb2d7cb6
+</code></pre>
 
-<p>My opinions are coloured by my experience with the style of web application development and the idioms from these languages.</p>
+<p>The gems provided by AppSignal and New Relic all have this feature built-in, and all of those applications will allow you to filter log lines by those Trace and Span IDs.</p>
 
-<p>For example, I got my first taste of proper functional programming and immutability from Elixir, not Ruby. The code I tend to write has, as a result, tended to be more bundles of functions and immutable data structures as a result. You’ll find other opinions like that contained within here.</p>
+<p>Log lines should be formatted as structured data, typically JSON. Log lines should answer as much as possible these questions: who, when, what and where?</p>
+
+<ul>
+  <li>what was the action?</li>
+  <li>who took this action?</li>
+  <li>When was the action taken?</li>
+  <li>What was the path to executing this action?</li>
+</ul>
+
+<pre><code>{
+  message: "Something happened",
+  user_id: "90123",
+  timestamp: "2025-06-23 09:01:02",
+  data: { product_id: 1234 }
+}
+</code></pre>
+
+<p>By structuring the logs in this way, they then become filter able by the data within them. We can then use this information to filter log lines to a particular time, as well as ones containing specific data.</p>
+
+<p>Logging can be an expensive exercise if you’re logging a lot. Providers such as those listed above charge for logging on the per-gigabyte basis, which can add up a lot overtime. Periodically inspect your logging output for excessive logging. Clean up the output of your program as required, and save some money.</p>
+
+<p>Add further logging where necessary, especially after difficult debugging sessions.</p>
 
         </article>
       </div>

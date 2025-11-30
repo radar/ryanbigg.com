@@ -1,0 +1,461 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hanami for Rails Developers: Part 4: Associations - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Hanami for Rails Developers: Part 4: Associations" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2025-10-13">
+  
+
+  
+  <meta content="https://ryanbigg.com/2025/10/hanami-for-rails-developers-4-associations" property="og:url">
+  
+  
+  <meta content="Hanami for Rails Developers: Part 4: Associations" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Hanami for Rails Developers: Part 4: Associations">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2025/10/hanami-for-rails-developers-4-associations">
+        <h2 class="my-0 mt-4">Hanami for Rails Developers: Part 4: Associations</h2>
+      </a>
+      <small>13 Oct 2025</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a> (you are here)</li>
+</ul>
+
+<p>In the first three parts of this guide, we set about building up a way that works with a table called <code>books</code> to display these records through some controller actions, and to allow us to create more and edit them in forms.</p>
+
+<p>In this part, we’re going to cover how we can set up an association to books called <code>reviews</code>. We’ll create a new table for this, and work out how to display reviews next to books on the <code>books.show</code> page. In this part, we’ll be spending a lot of time working back on our repositories and relations.</p>
+
+<h3 id="creating-the-table">Creating the table</h3>
+
+<p>To get started, we first need to create a table called <code>reviews</code>. We can do this by generating a migration:</p>
+
+<pre><code>hanami g migration create_reviews
+</code></pre>
+
+<p>In that new migration under <code>config/db/migrate</code>, we’ll change the code in that new file to create this new table:</p>
+
+<pre><code class="language-rb">ROM::SQL.migration do
+  change do
+    create_table :reviews do
+      primary_key :id
+      foreign_key :book_id, :books, null: false, on_delete: :cascade
+      String :content, null: false
+      Integer :rating, null: false
+      DateTime :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
+    end
+  end
+end
+</code></pre>
+
+<p>This table will have all the columns you’d expect to have for a review, minus a user association. We don’t want to get too carried away at the moment!</p>
+
+<p>We can run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<h3 id="review-relation">Review relation</h3>
+
+<p>Next, we need to create the classes within our application that we’ll use to manage these records in the table. The first of these that we’ll need is a relation so that we can query that table. We’ll generate one with this command:</p>
+
+<pre><code>hanami g relation reviews
+</code></pre>
+
+<p>Let’s see how we can create a new review with this relation by booting into the console:</p>
+
+<pre><code>hanami console
+</code></pre>
+
+<p>Once we’re in this console, we will load the relation with:</p>
+
+<pre><code class="language-ruby">reviews = app["relations.reviews"]
+</code></pre>
+
+<p>To insert a new review, we’ll run this code:</p>
+
+<pre><code class="language-ruby">reviews.insert(
+  book_id: 1,
+  content: "I now finally understand Hanami!",
+  rating: 5
+)
+</code></pre>
+
+<p>This’ll return simply <code>1</code>, indicating the ID of the record that we saved.</p>
+
+<p>Now how would we return the reviews for a book? Well, we can simply ask for them:</p>
+
+<pre><code class="language-ruby">reviews.where(book_id: 1).to_a
+</code></pre>
+
+<p>However, we’re going to want to display these reviews on a book’s page eventually. In a Rails app it would be a simple matter of <code>book.reviews</code>. However in a Hanami application, the <code>book</code> object in question would be a simple struct with no association methods defined on it. This is by design, to remove a very large footgun in the shape of N+1 queries that are a bugbear of any Rails developer. In a Hanami application, it is impossible to do an N+1 query.</p>
+
+<h3 id="loading-a-book-and-its-reviews">Loading a book and its reviews</h3>
+
+<p>Hanami has a way of loading both the book <em>and</em> its reviews together. We’re now going to set this up, by first defining an association between books and reviews over in <code>app/relations/books.rb</code>. We define associations in Hanami by changing the <code>schema</code> call at the top of this file to this block form:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Relations
+    class Books &lt; Bookshelf::DB::Relation
+      schema :books, infer: true do
+        associations do
+          has_many :reviews
+        end
+      end
+      # ...
+</code></pre>
+
+<p>This defines the association, but doesn’t tell us much about how to use it. Fortunately, there’s this guide for that.</p>
+
+<p>If we exit out of our Hanami console and reload back into it, we can now use this association. First we’ll load the <code>books</code> relation:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+</code></pre>
+
+<p>Then we can load the first book <em>and</em> all its reviews by using a method called <code>combine</code>:</p>
+
+<pre><code class="language-ruby">books.by_pk(1).combine(:reviews).first
+</code></pre>
+
+<p>This will now return a hash of all the data for both the book and its reviews:</p>
+
+<pre><code class="language-ruby">{:id=&gt;1,
+ :title=&gt;"Hanami for Rails Developers",
+ :author=&gt;"Ryan Bigg",
+ :year=&gt;2027,
+ :reviews=&gt;[
+  {
+    :id=&gt;1,
+    :book_id=&gt;1,
+    :content=&gt;"I now finally understand Hanami!",
+    :rating=&gt;5,
+    :created_at=&gt;2025-10-13 07:19:48 +1100
+  }
+  ]
+}
+</code></pre>
+
+<p>ROM will do this by running first a query to load the book:</p>
+
+<pre><code>SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books` WHERE (`books`.`id` = 1) ORDER BY `books`.`id`
+</code></pre>
+
+<p>Then another query to load the reviews:</p>
+
+<pre><code>SELECT `reviews`.`id`, `reviews`.`book_id`, `reviews`.`content`, `reviews`.`rating`, `reviews`.`created_at`
+FROM `reviews`
+INNER JOIN `books` ON (`books`.`id` = `reviews`.`book_id`)
+WHERE (`reviews`.`book_id` IN (1))
+ORDER BY `reviews`.`id`
+</code></pre>
+
+<p>In a Hanami application, we load all the data we need up front, rather than letting method calls way down in the view template dictate what queries are run. This way, there’s no surprises like N+1 queries.</p>
+
+<p>This combination can be setup to happen the other way as well. When we define an association from review to book, over in <code>app/relations/reviews.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Relations
+    class Reviews &lt; Bookshelf::DB::Relation
+      schema :reviews, infer: true do
+        associations do
+          belongs_to :book
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>With this association defined, we’ll be able to load a review and its associated book:</p>
+
+<pre><code class="language-ruby">reviews = app["relations.reviews"]
+reviews.by_pk(1).combine(:book).first
+</code></pre>
+
+<p>This code will return all the information about a review and its book:</p>
+
+<pre><code class="language-ruby">{:id=&gt;1,
+ :book_id=&gt;1,
+ :content=&gt;"I now finally understand Hanami!",
+ :rating=&gt;5,
+ :created_at=&gt;2025-10-13 07:19:48 +1100,
+ :updated_at=&gt;2025-10-13 07:19:48 +1100,
+ :book=&gt;{
+   :id=&gt;1,
+   :title=&gt;"Hanami for Rails Developers",
+   :author=&gt;"Ryan Bigg",
+   :year=&gt;2027}
+ }
+</code></pre>
+
+<p>If we go back to the “book and its reviews” method, we can expose this method to our application through our <code>BookRepo</code> by defining this method in <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">def find_with_reviews(id)
+  books.by_pk(id).combine(:reviews).one!
+end
+</code></pre>
+
+<p>When we go to load a book in our application, we could now use <code>find_with_reviews</code> to load that book and its reviews. We can do this in our <code>show</code> view by changing the code in <code>app/views/books/show.rb</code> to this:</p>
+
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+module Bookshelf
+  module Views
+    module Books
+      class Show &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find_with_reviews(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>In the matching template, it then becomes a cinch to iterate through the reviews. We can do this by updating <code>app/templates/books/show.html.erb</code> to contain this new code:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;Reviews&lt;/h2&gt;
+
+&lt;% reviews.each do |review| %&gt;
+  &lt;%= review.class %&gt;
+  &lt;p&gt;
+    &lt;strong&gt;&lt;%= review.rating %&gt; / 5 &lt;/strong&gt;
+    &lt;%= review.content %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<h3 id="a-more-complicated-query">A more complicated query</h3>
+
+<p>Defining a <code>has_many</code> or <code>belongs_to</code> association feels like table stakes for a web app these days. Let’s look at something more complicated than this to round out the end of this guide. Let’s say that we want to add a few methods to find:</p>
+
+<ol>
+  <li>Books that are well-reviewed (&gt;= 10 reviews)</li>
+  <li>Books that have an average review rating above 3</li>
+  <li>Books that have an average review rating below 2</li>
+</ol>
+
+<p>In a Rails application for the 1st of these queries we would write something like this:</p>
+
+<pre><code class="language-ruby">Book
+  .joins(:reviews)
+  .group(:id)
+  .having('COUNT(reviews.id) &gt;= 10')
+</code></pre>
+
+<p>This will generate a query with an <code>INNER JOIN</code> between the <code>books</code> and <code>reviews</code> table, with a <code>GROUP</code> statement on <code>books.id</code>, and a <code>HAVING</code> statement that uses the raw SQL we’ve passed in.</p>
+
+<p>In a Rails app, we would add this code to our model. But in a Hanami application we’ll have to do this on our relation. Let’s define a method in <code>app/relations/books.rb</code> for this now:</p>
+
+<pre><code class="language-ruby">def popular
+  join(:reviews)
+    .group(:id)
+    .having { count(reviews[:id]) &gt;= 10 }
+end
+</code></pre>
+
+<p>The syntax provided by Sequel isn’t too much different, until we get to the final line. There we evaluate a block passed into <code>having</code>, and we’re able to use the <code>reviews</code> relation from within our books relation. Instead of writing raw SQL, the underlying Sequel gem provides us a clean Ruby syntax to use instead.</p>
+
+<p>We <em>could</em> still write the <code>having</code> statement with raw SQL, but we’d have to call that out explicitly with <code>Sequel.lit</code>:</p>
+
+<pre><code class="language-ruby">join(:reviews)
+  .group(:id)
+  .having(Sequel.lit("count(reviews.id) &gt; 10"))
+</code></pre>
+
+<p>This syntax is slightly longer than the Ruby version, and a bit more punctuation-heavy too. It’s for this reason that I try to opt for the Ruby syntax when I can find a Sequel version of that.</p>
+
+<p>If we run <code>hanami console</code>, we can then use this new method:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+books.popular
+</code></pre>
+
+<p>This will show the query it could run:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+GROUP BY `books`.`id`
+HAVING (count(`reviews`.`id`) &gt;= 10)
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>This looks great! We don’t have enough reviews for this method at the moment. We can create a few:</p>
+
+<pre><code>10.times { reviews.insert(rating: 5, content: "Great!", book_id: 1) }
+</code></pre>
+
+<p>And now if we ask for the popular book, we’ll see it’s returned:</p>
+
+<pre><code class="language-ruby">books.popular.first
+</code></pre>
+
+<p>This gives us:</p>
+
+<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg", :year=&gt;2027}
+</code></pre>
+
+<p>We’ve got the first method added, now let’s look at finding books where the review average rating is above a 3:</p>
+
+<pre><code class="language-ruby">def liked
+  join(:reviews)
+  .group(:id)
+  .having { avg(reviews.rating) &gt; 3 }
+end
+</code></pre>
+
+<p>This time we use an <code>avg</code> method to generate an <code>AVG</code> aggregation query for our reviews. Let’s exit the <code>hanami console</code> and restart it again to pick up this new method. Now we’ll try to use it:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+books.liked
+</code></pre>
+
+<p>This will show us this query:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+GROUP BY `books`.`id`
+HAVING (avg(`reviews`.`rating`) &gt;= 3)
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>That looks great! How about we get both <code>popular</code> and <code>liked</code> books?</p>
+
+<pre><code>books.popular.liked
+</code></pre>
+
+<p>This time the query is:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+HAVING ((count(`reviews`.`id`) &gt;= 10) AND (avg(`reviews`.`rating`) &gt;= 3))
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>No, you’re not having vision issues, there are indeed <em>two</em> joins to reviews! This is because both of our methods tell the relation to join the reviews table. If we attempt to run this query, SQL will be unable to disambiguate between which <code>reviews</code> table we mean.</p>
+
+<p>What do we do in these situations, then? Well, we add a <em>third</em> method that does the join first:</p>
+
+<pre><code class="language-ruby">def with_reviews
+  join(:reviews)
+    .group(:id)
+end
+
+def popular
+  join(:reviews).having { count(reviews[:id]) &gt;= 10 }
+end
+
+def liked
+  join(:reviews).having { avg(reviews[:rating]) &gt;= 3 }
+end
+</code></pre>
+
+<p>Now this will mean we’ll be able to call <code>books.with_reviews.popular</code> to get the popular books, and <code>books.with_reviews.liked</code> to get the liked books, and then <code>books.with_reviews.popular.liked</code> to get the popular liked books!</p>
+
+<p>Before we move on from here, we can add our other method to find the books with low-scoring reviews:</p>
+
+<pre><code class="language-ruby">def disliked
+  join(:reviews).having { avg(reviews[:rating]) &gt;= 2 }
+end
+</code></pre>
+
+<p>This syntax with <code>with_reviews</code> is going to be a mouthful. Fortunately, we can provide a clean interface by exposing these methods through our <code>BookRepo</code> class back to our application. Let’s add in a few methods in <code>app/repos/book_repo.rb</code></p>
+
+<pre><code class="language-ruby">def with_reviews
+  books.with_reviews
+end
+
+def popular
+  with_reviews.popular
+end
+
+def popular_and_liked
+  with_reviews.popular.liked
+end
+
+def popular_and_disliked
+  with_reviews.popular.disliked
+end
+</code></pre>
+
+<p>Our repository is now going to provide a cleaner facade back to our application, so that we can make calls such as <code>book_repo.popular</code> to get back a list of popular books, and the repo will take care of the <code>with_reviews</code> joining.</p>
+
+<p>We can see here with the code in the relation and repository that the relation is taking care of the messy SQL-adjacent code, while the repository is using the methods of the relation to then provide a cleaner interface back up to the application.</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

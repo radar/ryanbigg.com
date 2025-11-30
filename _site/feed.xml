@@ -1,4 +1,1571 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-05-04T20:27:04+10:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ryan Bigg’s Blog</title><entry><title type="html">Show, Don’t Tell</title><link href="http://localhost:4000/2025/05/show-dont-tell" rel="alternate" type="text/html" title="Show, Don’t Tell" /><published>2025-05-03T00:00:00+10:00</published><updated>2025-05-03T00:00:00+10:00</updated><id>http://localhost:4000/2025/05/show-dont-tell</id><content type="html" xml:base="http://localhost:4000/2025/05/show-dont-tell"><![CDATA[<p>On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been <a href="https://ryanbigg.com/2018/03/hiring-juniors">a proponent for junior developers for a very long time</a>, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-12-01T09:00:57+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ryan Bigg’s Blog</title><entry><title type="html">Triaging bugs</title><link href="http://localhost:4000/2025/11/triaging-bugs" rel="alternate" type="text/html" title="Triaging bugs" /><published>2025-11-30T00:00:00+11:00</published><updated>2025-11-30T00:00:00+11:00</updated><id>http://localhost:4000/2025/11/triaging-bugs</id><content type="html" xml:base="http://localhost:4000/2025/11/triaging-bugs"><![CDATA[<p>At Fat Zebra, one of my duties as a team lead is managing the workloads of those I work with and falling into that ambit is bug triaging. We have a dedicated support channel where people can tag all leads and then the responsible leads can triage those issues. All leads get tagged as it’s sometimes unclear who is responsible for an issue, and it helps with the “pinball effect” that can go on for tickets in their early stages.</p>
+
+<p>Another rule of thumb is that when I can see a ticket is about my team’s work is that I’ll assign it to the on-call person for the team to investigate. This helps spread the load away from myself, and trains up the rest of the team on how to investigate all sorts of issues. Other people may be roped into help investigate if the issues lies in their area of expertise.</p>
+
+<p>My team came up with this list of triage questions to ask and posted about it in our internal wiki. We train people who interact with our team on this triaging method.</p>
+
+<ol>
+  <li><strong>Which merchant is having this issue?</strong> Who is the issue affecting? Are they are one of our larger merchants or a smaller merchant? Or is it more than one merchant reporting this issue?</li>
+  <li><strong>What is the scope of the issue?</strong> At a rough guess, what % of this merchant’s functionality is degraded? For example if it’s a transactional issue, is it an issue with one type of transaction (such as Apple Pay) or is it across the board?</li>
+  <li><strong>Where can we see the issue happening?</strong> A URL to the site of the issue is incredibly useful here.</li>
+  <li><strong>Can you demonstrate the issue?</strong> Can you send us a video of the issue and walk us through your thinking on this. Use Loom. Post the video in the team channel.</li>
+  <li><strong>If you can’t send a link or demonstrate, can you describe the issue in a few sentences?</strong> Using your words to explain an issue over saying something like “purchases aren’t working” really helps us get to the root cause of an issue sooner. The more words the better.</li>
+  <li><strong>From your perspective, how urgent is this issue?</strong> Do we need to be waking people up about this if it’s occurring at night, or can it wait until the morning? Could it even wait until the next Sprint?</li>
+</ol>
+
+<p>We then provide a template for them to use when creating a ticket for our board:</p>
+
+<blockquote>
+  <pre><code>**Merchant Affected:** [Merchant name]
+**Scope:** [% of functionality impacted, or specific features impacted]
+**Steps to Reproduce:** [Link to URL of the affected page or video walkthrough]
+**Urgency:** [Low, Medium, High - based on business impact]
+</code></pre>
+</blockquote>
+
+<p>We then go on to say:</p>
+
+<blockquote>
+  <p>Tickets without enough information will be re-assigned back to the reporter.</p>
+
+  <p>When you’ve created the ticket with this information, post it in the #cxteam channel on Slack.</p>
+
+  <p>Do not @here in #cxteam, as there are usually upwards of 20 people who will receive your message.</p>
+
+  <p>In an urgent situation, escalate through Slack with to the person currently on call with:</p>
+
+  <p>[on call alerting instructions go here]</p>
+</blockquote>
+
+<p>This has really helped reduce the noise that goes on when a ticket rolls in. It can be a bit frantic to start out with; a very “my hair is on fire” moment. This happens because the downstream merchant has been upset about an issue, and then that escalates up through the chain until it reaches the triage point. At that point, we determine the answers to the questions above and act accordingly. We haven’t yet gone onto classify these based on something like a <a href="https://www.productplan.com/glossary/rice-scoring-model/">RICE</a> score, but I think it would be helpful, at least the Reach + Impact parts of that.</p>
+
+<p>The response between each ticket varies tremendously. Sometimes they don’t get past the first couple of people, and sometimes they involve multiple teams worth of effort over a couple of days. It’s important to figure out the scope of these issues at the very start, so that we can be sure that we’re addressing the important or urgent issues first and we don’t get overwhelmed by the noise.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[At Fat Zebra, one of my duties as a team lead is managing the workloads of those I work with and falling into that ambit is bug triaging. We have a dedicated support channel where people can tag all leads and then the responsible leads can triage those issues. All leads get tagged as it’s sometimes unclear who is responsible for an issue, and it helps with the “pinball effect” that can go on for tickets in their early stages.]]></summary></entry><entry><title type="html">Ruby Community Reflections</title><link href="http://localhost:4000/2025/10/ruby-community-reflections" rel="alternate" type="text/html" title="Ruby Community Reflections" /><published>2025-10-29T00:00:00+11:00</published><updated>2025-10-29T00:00:00+11:00</updated><id>http://localhost:4000/2025/10/ruby-community-reflections</id><content type="html" xml:base="http://localhost:4000/2025/10/ruby-community-reflections"><![CDATA[<p><strong>Content warning: suicide</strong></p>
+
+<p>This year, we ran another <a href="https://ryanbigg.com/2024/10/ruby-retreat-2024">Ruby Retreat</a> with 50 people in attendance. This event shows off how good the Ruby community in Australia is by gathering people together from the Friday afternoon until the Monday morning. I’d say that this event was a success again.</p>
+
+<p>At the start of the event, I got up and had this to say:</p>
+
+<blockquote>
+  <p>DHH wrote a long blog post about how, essentially, there aren’t enough white people in London anymore and how white folk have to rise up. I won’t mince words here: He went full mask-off racist. Those views are abhorrent and have no place in a modern society. They lead down a dangerous path. We cannot be tolerant of the intolerant.  The philosopher Karl Popper called this the paradox of tolerance — that a tolerant society cannot survive if it tolerates intolerance. If we allow bigotry and exclusion to stand unchallenged, they will eventually silence the very openness that makes our community strong.</p>
+
+  <p>I encourage you to find your voices and stand up against this intolerance whenever you see it in our community. Intolerance and division have no place in our community.</p>
+
+  <p>I wanted to run this Ruby Retreat because these events have exemplified the kind of community and community event I want to see more of in the developer space. These events, and those attending, have been an exact antithesis to what DHH is preaching. We are stronger together, than we would ever be split apart into different tribes.</p>
+
+  <p>I want these events to exist so that we can show off the great parts of the Ruby community. These events are what makes me love Ruby so much.</p>
+
+  <p>As our Code of Conduct says:</p>
+
+  <blockquote>
+    <p>Whenever we come together as a community, our shared spaces are opportunities to showcase the best of what we can be. We are there to support our peers - to build each other up, to accept each other for who they are, and to encourage each other to become the people they want to be.</p>
+  </blockquote>
+
+  <p>So as we gather here this weekend, let’s remember that the Ruby community is only as good as we make it — together. Inclusivity isn’t a one-and-done checkbox; it’s a practice. It’s in how we welcome new voices, how we disagree respectfully, and how we draw clear lines around what we will not accept. Societies have been doing this for centuries — it’s why we have laws.</p>
+
+  <p>Events like this show us the best version of what Ruby can be: creative, kind to all, and committed to lifting everyone up. Let’s take that attitude into this weekend, and beyond.</p>
+</blockquote>
+
+<p>We saw strong evidence of this during the camp with communal lunch and dinner times, and people splitting into different groups to work on different projects, or play games like Codewords or Go. And yes, this time there was even more Blood on the Clocktower too.</p>
+
+<p>One of the people present at the Retreat was a woman called Caroline Bambrick.</p>
+
+<p>I knew Caroline, or Caz, through working with her during the Junior Engineering Program #2 at Culture Amp. She wowed the interviewers with her skills and got to be chosen as one of the nine people we ended up picking. While she had that common anxiety of a new starter (“omg they’re going to fire me the moment I mess up”), she ended up being a critical part of that group.</p>
+
+<p>Of course, lives take different directions. I was made redundant and then Covid hit, and so we all drifted apart. I’m also remarkably bad at keeping in touch with people I would call friends.</p>
+
+<p>Caroline attended both last year’s Ruby Retreat and this year’s. My only photo of her from this year’s event is of her being her extremely-picky-but-charming self, trying to best optimise the best way to stack her lunch plate to get a bit of everything and not to miss out on anything. I reckon she took about two minutes at the front of the line.</p>
+
+<p>She played Codewords and laughed along with people when the game went sideways as clues were misinterpreted.</p>
+
+<p>She was there for Blood on the Clocktower, where she played the role of the Scarlet Woman so <em>utterly flawlessly</em> it fooled us all.</p>
+
+<p>She was, as best anyone could tell, another face in a crowd of 50 people.</p>
+
+<p>By the following Wednesday, two days after the event, she had chosen to end her life.</p>
+
+<p>The news was shared on the Ruby AU Slack this Monday morning, with over 100 broken heart reactions on that thread. The thread is full-up of stories of how Caz has impacted people’s lives for the better, and photos of her time in the Ruby community.</p>
+
+<p>Her funeral was today, and a group of Australian Rubyists organised to turn up together. Quotes of her from the Ruby AU community were shared by community members Lauren, Pat and Brendan. Hugs and condolences were shared all around. I cried.</p>
+
+<p>I got to talk to Caz’s mum about how she made me a better manager and a better <em>person</em>.</p>
+
+<p>All of this is the kind of support I meant in my Ruby Retreat message. I just wish we could’ve all given this support sooner and <em>somehow</em> prevented this tragedy.</p>
+
+<p>My head kept trying to problem-solve its way out of this horrible situation last night as a way of coping with this trauma, periodically waking me up to signal that it hadn’t yet solved the problem, but by golly it was gonna work its hardest on it. The problem isn’t solvable; the conclusion is, sadly, final.</p>
+
+<p>Tonight, we had the Melbourne Ruby meetup as well. There were talks on database sharding and PostgreSQL tablespaces. Many of the attendees of the funeral were there too, but there were also some new faces who had only been attending the meetup this year. The Ruby community is still thriving in Melbourne.</p>
+
+<p>After the meetup, we went out for ice cream at Pidapipo, just a short walk over into Degraves Street. There were more hugs. We took a group photo, that had a lot of the people from the meetup in it. But there will forever be a hole in our community. We have lost a strong advocate for not only the Ruby community, but humanity in general.</p>
+
+<hr />
+
+<p>As was stated on that Ruby AU thread: Suicide is a very hard topic for a lot of people, please don’t suffer in silence. If you, or someone you know needs support or help, please contact:</p>
+
+<ul>
+  <li><a href="https://www.lifeline.org.au/">Lifeline</a> provides 24-hour crisis counselling, support groups and suicide prevention services. Call 13 11 14, text 0477 13 11 14 or chat online.</li>
+  <li><a href="https://www.suicidecallbackservice.org.au/">Suicide Call Back Service</a> provides 24/7 support if you or someone you know is feeling suicidal. Call 1300 659 467.</li>
+  <li><a href="https://www.beyondblue.org.au/">Beyond Blue</a> aims to increase awareness of depression and anxiety and reduce stigma. If you or a loved one need help, you can call 1300 22 4636, 24 hours/7 days a week or chat online.</li>
+  <li><a href="https://www.bigfeels.club/">Big Feels Club</a> provides shared stories and experiences for people who have done ‘all the right things’ but still feel stuck.</li>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[Content warning: suicide]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 4: Associations</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-4-associations" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 4: Associations" /><published>2025-10-13T00:00:00+11:00</published><updated>2025-10-13T00:00:00+11:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-4-associations</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-4-associations"><![CDATA[<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a> (you are here)</li>
+</ul>
+
+<p>In the first three parts of this guide, we set about building up a way that works with a table called <code>books</code> to display these records through some controller actions, and to allow us to create more and edit them in forms.</p>
+
+<p>In this part, we’re going to cover how we can set up an association to books called <code>reviews</code>. We’ll create a new table for this, and work out how to display reviews next to books on the <code>books.show</code> page. In this part, we’ll be spending a lot of time working back on our repositories and relations.</p>
+
+<h3 id="creating-the-table">Creating the table</h3>
+
+<p>To get started, we first need to create a table called <code>reviews</code>. We can do this by generating a migration:</p>
+
+<pre><code>hanami g migration create_reviews
+</code></pre>
+
+<p>In that new migration under <code>config/db/migrate</code>, we’ll change the code in that new file to create this new table:</p>
+
+<pre><code class="language-rb">ROM::SQL.migration do
+  change do
+    create_table :reviews do
+      primary_key :id
+      foreign_key :book_id, :books, null: false, on_delete: :cascade
+      String :content, null: false
+      Integer :rating, null: false
+      DateTime :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
+    end
+  end
+end
+</code></pre>
+
+<p>This table will have all the columns you’d expect to have for a review, minus a user association. We don’t want to get too carried away at the moment!</p>
+
+<p>We can run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<h3 id="review-relation">Review relation</h3>
+
+<p>Next, we need to create the classes within our application that we’ll use to manage these records in the table. The first of these that we’ll need is a relation so that we can query that table. We’ll generate one with this command:</p>
+
+<pre><code>hanami g relation reviews
+</code></pre>
+
+<p>Let’s see how we can create a new review with this relation by booting into the console:</p>
+
+<pre><code>hanami console
+</code></pre>
+
+<p>Once we’re in this console, we will load the relation with:</p>
+
+<pre><code class="language-ruby">reviews = app["relations.reviews"]
+</code></pre>
+
+<p>To insert a new review, we’ll run this code:</p>
+
+<pre><code class="language-ruby">reviews.insert(
+  book_id: 1,
+  content: "I now finally understand Hanami!",
+  rating: 5
+)
+</code></pre>
+
+<p>This’ll return simply <code>1</code>, indicating the ID of the record that we saved.</p>
+
+<p>Now how would we return the reviews for a book? Well, we can simply ask for them:</p>
+
+<pre><code class="language-ruby">reviews.where(book_id: 1).to_a
+</code></pre>
+
+<p>However, we’re going to want to display these reviews on a book’s page eventually. In a Rails app it would be a simple matter of <code>book.reviews</code>. However in a Hanami application, the <code>book</code> object in question would be a simple struct with no association methods defined on it. This is by design, to remove a very large footgun in the shape of N+1 queries that are a bugbear of any Rails developer. In a Hanami application, it is impossible to do an N+1 query.</p>
+
+<h3 id="loading-a-book-and-its-reviews">Loading a book and its reviews</h3>
+
+<p>Hanami has a way of loading both the book <em>and</em> its reviews together. We’re now going to set this up, by first defining an association between books and reviews over in <code>app/relations/books.rb</code>. We define associations in Hanami by changing the <code>schema</code> call at the top of this file to this block form:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Relations
+    class Books &lt; Bookshelf::DB::Relation
+      schema :books, infer: true do
+        associations do
+          has_many :reviews
+        end
+      end
+      # ...
+</code></pre>
+
+<p>This defines the association, but doesn’t tell us much about how to use it. Fortunately, there’s this guide for that.</p>
+
+<p>If we exit out of our Hanami console and reload back into it, we can now use this association. First we’ll load the <code>books</code> relation:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+</code></pre>
+
+<p>Then we can load the first book <em>and</em> all its reviews by using a method called <code>combine</code>:</p>
+
+<pre><code class="language-ruby">books.by_pk(1).combine(:reviews).first
+</code></pre>
+
+<p>This will now return a hash of all the data for both the book and its reviews:</p>
+
+<pre><code class="language-ruby">{:id=&gt;1,
+ :title=&gt;"Hanami for Rails Developers",
+ :author=&gt;"Ryan Bigg",
+ :year=&gt;2027,
+ :reviews=&gt;[
+  {
+    :id=&gt;1,
+    :book_id=&gt;1,
+    :content=&gt;"I now finally understand Hanami!",
+    :rating=&gt;5,
+    :created_at=&gt;2025-10-13 07:19:48 +1100
+  }
+  ]
+}
+</code></pre>
+
+<p>ROM will do this by running first a query to load the book:</p>
+
+<pre><code>SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books` WHERE (`books`.`id` = 1) ORDER BY `books`.`id`
+</code></pre>
+
+<p>Then another query to load the reviews:</p>
+
+<pre><code>SELECT `reviews`.`id`, `reviews`.`book_id`, `reviews`.`content`, `reviews`.`rating`, `reviews`.`created_at`
+FROM `reviews`
+INNER JOIN `books` ON (`books`.`id` = `reviews`.`book_id`)
+WHERE (`reviews`.`book_id` IN (1))
+ORDER BY `reviews`.`id`
+</code></pre>
+
+<p>In a Hanami application, we load all the data we need up front, rather than letting method calls way down in the view template dictate what queries are run. This way, there’s no surprises like N+1 queries.</p>
+
+<p>This combination can be setup to happen the other way as well. When we define an association from review to book, over in <code>app/relations/reviews.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Relations
+    class Reviews &lt; Bookshelf::DB::Relation
+      schema :reviews, infer: true do
+        associations do
+          belongs_to :book
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>With this association defined, we’ll be able to load a review and its associated book:</p>
+
+<pre><code class="language-ruby">reviews = app["relations.reviews"]
+reviews.by_pk(1).combine(:book).first
+</code></pre>
+
+<p>This code will return all the information about a review and its book:</p>
+
+<pre><code class="language-ruby">{:id=&gt;1,
+ :book_id=&gt;1,
+ :content=&gt;"I now finally understand Hanami!",
+ :rating=&gt;5,
+ :created_at=&gt;2025-10-13 07:19:48 +1100,
+ :updated_at=&gt;2025-10-13 07:19:48 +1100,
+ :book=&gt;{
+   :id=&gt;1,
+   :title=&gt;"Hanami for Rails Developers",
+   :author=&gt;"Ryan Bigg",
+   :year=&gt;2027}
+ }
+</code></pre>
+
+<p>If we go back to the “book and its reviews” method, we can expose this method to our application through our <code>BookRepo</code> by defining this method in <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">def find_with_reviews(id)
+  books.by_pk(id).combine(:reviews).one!
+end
+</code></pre>
+
+<p>When we go to load a book in our application, we could now use <code>find_with_reviews</code> to load that book and its reviews. We can do this in our <code>show</code> view by changing the code in <code>app/views/books/show.rb</code> to this:</p>
+
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+module Bookshelf
+  module Views
+    module Books
+      class Show &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find_with_reviews(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>In the matching template, it then becomes a cinch to iterate through the reviews. We can do this by updating <code>app/templates/books/show.html.erb</code> to contain this new code:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;Reviews&lt;/h2&gt;
+
+&lt;% reviews.each do |review| %&gt;
+  &lt;%= review.class %&gt;
+  &lt;p&gt;
+    &lt;strong&gt;&lt;%= review.rating %&gt; / 5 &lt;/strong&gt;
+    &lt;%= review.content %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<h3 id="a-more-complicated-query">A more complicated query</h3>
+
+<p>Defining a <code>has_many</code> or <code>belongs_to</code> association feels like table stakes for a web app these days. Let’s look at something more complicated than this to round out the end of this guide. Let’s say that we want to add a few methods to find:</p>
+
+<ol>
+  <li>Books that are well-reviewed (&gt;= 10 reviews)</li>
+  <li>Books that have an average review rating above 3</li>
+  <li>Books that have an average review rating below 2</li>
+</ol>
+
+<p>In a Rails application for the 1st of these queries we would write something like this:</p>
+
+<pre><code class="language-ruby">Book
+  .joins(:reviews)
+  .group(:id)
+  .having('COUNT(reviews.id) &gt;= 10')
+</code></pre>
+
+<p>This will generate a query with an <code>INNER JOIN</code> between the <code>books</code> and <code>reviews</code> table, with a <code>GROUP</code> statement on <code>books.id</code>, and a <code>HAVING</code> statement that uses the raw SQL we’ve passed in.</p>
+
+<p>In a Rails app, we would add this code to our model. But in a Hanami application we’ll have to do this on our relation. Let’s define a method in <code>app/relations/books.rb</code> for this now:</p>
+
+<pre><code class="language-ruby">def popular
+  join(:reviews)
+    .group(:id)
+    .having { count(reviews[:id]) &gt;= 10 }
+end
+</code></pre>
+
+<p>The syntax provided by Sequel isn’t too much different, until we get to the final line. There we evaluate a block passed into <code>having</code>, and we’re able to use the <code>reviews</code> relation from within our books relation. Instead of writing raw SQL, the underlying Sequel gem provides us a clean Ruby syntax to use instead.</p>
+
+<p>We <em>could</em> still write the <code>having</code> statement with raw SQL, but we’d have to call that out explicitly with <code>Sequel.lit</code>:</p>
+
+<pre><code class="language-ruby">join(:reviews)
+  .group(:id)
+  .having(Sequel.lit("count(reviews.id) &gt; 10"))
+</code></pre>
+
+<p>This syntax is slightly longer than the Ruby version, and a bit more punctuation-heavy too. It’s for this reason that I try to opt for the Ruby syntax when I can find a Sequel version of that.</p>
+
+<p>If we run <code>hanami console</code>, we can then use this new method:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+books.popular
+</code></pre>
+
+<p>This will show the query it could run:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+GROUP BY `books`.`id`
+HAVING (count(`reviews`.`id`) &gt;= 10)
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>This looks great! We don’t have enough reviews for this method at the moment. We can create a few:</p>
+
+<pre><code>10.times { reviews.insert(rating: 5, content: "Great!", book_id: 1) }
+</code></pre>
+
+<p>And now if we ask for the popular book, we’ll see it’s returned:</p>
+
+<pre><code class="language-ruby">books.popular.first
+</code></pre>
+
+<p>This gives us:</p>
+
+<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg", :year=&gt;2027}
+</code></pre>
+
+<p>We’ve got the first method added, now let’s look at finding books where the review average rating is above a 3:</p>
+
+<pre><code class="language-ruby">def liked
+  join(:reviews)
+  .group(:id)
+  .having { avg(reviews.rating) &gt; 3 }
+end
+</code></pre>
+
+<p>This time we use an <code>avg</code> method to generate an <code>AVG</code> aggregation query for our reviews. Let’s exit the <code>hanami console</code> and restart it again to pick up this new method. Now we’ll try to use it:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+books.liked
+</code></pre>
+
+<p>This will show us this query:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+GROUP BY `books`.`id`
+HAVING (avg(`reviews`.`rating`) &gt;= 3)
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>That looks great! How about we get both <code>popular</code> and <code>liked</code> books?</p>
+
+<pre><code>books.popular.liked
+</code></pre>
+
+<p>This time the query is:</p>
+
+<pre><code class="language-sql">SELECT `books`.`id`, `books`.`title`, `books`.`author`, `books`.`year`
+FROM `books`
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+INNER JOIN `reviews` ON (`books`.`id` = `reviews`.`book_id`)
+HAVING ((count(`reviews`.`id`) &gt;= 10) AND (avg(`reviews`.`rating`) &gt;= 3))
+ORDER BY `books`.`id`
+</code></pre>
+
+<p>No, you’re not having vision issues, there are indeed <em>two</em> joins to reviews! This is because both of our methods tell the relation to join the reviews table. If we attempt to run this query, SQL will be unable to disambiguate between which <code>reviews</code> table we mean.</p>
+
+<p>What do we do in these situations, then? Well, we add a <em>third</em> method that does the join first:</p>
+
+<pre><code class="language-ruby">def with_reviews
+  join(:reviews)
+    .group(:id)
+end
+
+def popular
+  join(:reviews).having { count(reviews[:id]) &gt;= 10 }
+end
+
+def liked
+  join(:reviews).having { avg(reviews[:rating]) &gt;= 3 }
+end
+</code></pre>
+
+<p>Now this will mean we’ll be able to call <code>books.with_reviews.popular</code> to get the popular books, and <code>books.with_reviews.liked</code> to get the liked books, and then <code>books.with_reviews.popular.liked</code> to get the popular liked books!</p>
+
+<p>Before we move on from here, we can add our other method to find the books with low-scoring reviews:</p>
+
+<pre><code class="language-ruby">def disliked
+  join(:reviews).having { avg(reviews[:rating]) &gt;= 2 }
+end
+</code></pre>
+
+<p>This syntax with <code>with_reviews</code> is going to be a mouthful. Fortunately, we can provide a clean interface by exposing these methods through our <code>BookRepo</code> class back to our application. Let’s add in a few methods in <code>app/repos/book_repo.rb</code></p>
+
+<pre><code class="language-ruby">def with_reviews
+  books.with_reviews
+end
+
+def popular
+  with_reviews.popular
+end
+
+def popular_and_liked
+  with_reviews.popular.liked
+end
+
+def popular_and_disliked
+  with_reviews.popular.disliked
+end
+</code></pre>
+
+<p>Our repository is now going to provide a cleaner facade back to our application, so that we can make calls such as <code>book_repo.popular</code> to get back a list of popular books, and the repo will take care of the <code>with_reviews</code> joining.</p>
+
+<p>We can see here with the code in the relation and repository that the relation is taking care of the messy SQL-adjacent code, while the repository is using the methods of the relation to then provide a cleaner interface back up to the application.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Part 1: Models Part 2: Controllers Part 3: Forms Part 4: Associations (you are here)]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 3: Forms</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-3-forms" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 3: Forms" /><published>2025-10-06T00:00:00+11:00</published><updated>2025-10-06T00:00:00+11:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-3-forms</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-3-forms"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+
+<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a> (you are here)</li>
+</ul>
+
+<p>In the first two parts of this guide, we covered off the familiar concepts of models and controllers, and saw how Hanami approached these designs. We saw that Hanami split the responsibilities of models between <strong>repositories</strong>, <strong>relations</strong> and <strong>structs</strong>, and we saw that the responsibilities of a controller and its views were split between <strong>actions</strong>, <strong>views</strong> and <strong>templates</strong>.</p>
+
+<p>In this part, we’re going to continue building on our application’s foundation by introducing a form that lets us add further books to our application. In a Rails app, we would handle this by adding a <code>new</code> and <code>create</code> action to our controller. You’ll see that Hanami isn’t much different here when it comes to that.</p>
+
+<p>We’ll be building out the <code>new</code> and <code>create</code> actions for books in this section, seeing how we can create books by using our existing <code>BookRepo</code> class. We’ll also see how to add validations to our data in this chapter, not on the repository itself, but in the action.</p>
+
+<p>Let’s get stuck in.</p>
+
+<h3 id="the-new-book-form">The New Book Form</h3>
+
+<p>The first thing that we’ll create for this new book form is an action, which we can do with:</p>
+
+<pre><code>hanami g action books.new
+</code></pre>
+
+<p>We’ll change the route generated from this action to have a name that we can use later on. Let’s change <code>config/routes.rb</code>:</p>
+
+<pre><code class="language-ruby">get "/books/new", to: "books.new", as: :new_book
+</code></pre>
+
+<p>We can then route to this page by updating our template at <code>app/templates/books/index.html.erb</code>. We’ll add a link to this page just under the header on that page:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;Books&lt;/h1&gt;
+
+&lt;%= link_to "New Book", routes.path(:new_book) %&gt;
+</code></pre>
+
+<p>This link will take us over to the new book view, which we’ll now need to fill out. The template for that view exists at <code>app/templates/books/new.html.erb</code>:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;New Book&lt;/h1&gt;
+
+&lt;%= form_for :book, routes.path(:create_book) do |f| %&gt;
+  &lt;div&gt;
+    &lt;%= f.label :title %&gt;
+    &lt;%= f.text_field :title %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.label :author %&gt;
+    &lt;%= f.text_field :author %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.label :year %&gt;
+    &lt;%= f.number_field :year %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.submit "Create Book" %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>This <code>form_for</code> helper looks a lot like Rails’ own, but varies in that it takes positional arguments, rather than keyword arguments. The first argument dictates the naming of the parameters that this form will submit. This means everything will be sent to action under <code>params[:book]</code>. The second parameter is the route to create a book, which does not yet exist.</p>
+
+<p>Let’s create that action and subsequent route now:</p>
+
+<pre><code>hanami g action books.create
+</code></pre>
+
+<p>We’ll change the route to have a name by updating the line in <code>config/routes.rb</code> to this:</p>
+
+<pre><code>post "/books", to: "books.create", as: :create_book
+</code></pre>
+
+<p>After adding this route, our form will now be able to render and display:</p>
+
+<p><img src="/images/hanami/new_book.jpg" alt="New book" /></p>
+
+<p>Next up, we need to give this form somewhere to submit to. To work with what this form submits, we’ll update the <code>books.create</code> action code in <code>app/actions/books/create.rb</code>:</p>
+
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+module Bookshelf
+  module Actions
+    module Books
+      class Create &lt; Bookshelf::Action
+        include Deps["repos.book_repo"]
+
+        def handle(request, response)
+          book = book_repo.create(request.params[:book])
+          response.flash[:success] = "Book created successfully"
+
+          response.redirect_to routes.path(:book, id: book.id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>You’ll notice that this action is a lot like a regular <code>create</code> action within Rails, with a few clear differences. In the Hanami action, we’re pulling <code>params</code> from <code>request</code>, as we did in the last part with the <code>year</code> parameter. We’re also working with the <code>response</code> object here, setting the flash and <code>redirect_to</code> specifically on those objects.</p>
+
+<p>To use <code>flash</code> within a Hanami application, we need to add session support to the application. Hanami applications don’t come with this enabled by default, because they may instead be used in an API-only context. To add this session support, we’ll go to Hanami’s application configuration file, <code>config/app.rb</code>, and add this line:</p>
+
+<pre><code class="language-ruby">require "hanami"
+
+module Bookshelf
+  class App &lt; Hanami::App
+    config.sessions = :cookie, { secret: "your_secret_key_goes_here" }
+  end
+end
+</code></pre>
+
+<p>With the session support added, our flash message will be stored correctly. But we’re currently not <em>displaying</em> that flash message anywhere! In a Rails application you would put this kind of thing in <code>app/views/layouts/application.html.erb</code>. Hanami has a different path, which is <code>app/templates/layouts/app.html.erb</code>. Let’s add the flash there just under the <code>&lt;body&gt;</code> tag:</p>
+
+<pre><code class="language-erb">&lt;% if flash[:success] %&gt;
+  &lt;div class="flash flash-success"&gt;&lt;%= flash[:success] %&gt;&lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>Now that we’ve setup the rendering of our flash message, there’s one final piece we need to do. Our <code>BookRepo</code> doesn’t know how to create a book. We can add this feature to <code>BookRepo</code> by adding this line:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Repos
+    class BookRepo &lt; Bookshelf::DB::Repo
+      commands :create
+</code></pre>
+
+<p>The <code>commands</code> method comes from the ROM series of gems, that Hanami uses under-the-hood as its persistence layer. ROM provides some simple commands that reproduce common behaviour, and <code>create</code> is one of these.</p>
+
+<p>That’ll be all we need to create a new book now. When we try out the form now, we’ll see that a book can be created:</p>
+
+<p><img src="/images/hanami/created_book.jpg" alt="Created book" /></p>
+
+<h3 id="adding-validations">Adding validations</h3>
+
+<p>Now that we’ve got the happy path working for creating a book, let’s work on adding some validations to this form so that books can no longer be submitted without an author or title.</p>
+
+<p>To add validations in an Hanami application, we add them to the action that processes the parameters, which would be the <code>Books::Create</code> action in our app. Let’s add this validation to <code>app/actions/books/create.rb</code> now:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Create &lt; Bookshelf::Action
+        include Deps["repos.book_repo"]
+
+        params do
+          required(:book).schema do
+            required(:title).filled(:string)
+            required(:author).filled(:string)
+            optional(:year).maybe(:integer)
+          end
+        end
+
+        # ...
+</code></pre>
+
+<p>This syntax uses another gem from the same organisation as Hanami called <a href="https://dry-rb.org/gems/dry-schema/1.5/"><code>dry-schema</code></a>. It validates our parameters when we take them in, rather than throwing yet another responsibility into the model class.</p>
+
+<p>This syntax validates that <code>title</code> and <code>author</code> are both filled in, and must be a string. It also validates <code>year</code>, but only that if it’s provided it’s going to be an integer, rather than any other type.</p>
+
+<p>On top of this, our parameters are now restricted to accepting only those specified in this set. This syntax both provides the same style of validation that <code>validates presence: true</code> would provide in a Rails model, and <em>also</em> the same features that <code>strong_parameters</code> (<code>params.require(:book).permit(:title, ...)</code>) would in a Rails application. Our validation logic now sits in one place, the action, rather than across two different places.</p>
+
+<p>Next up, we’ll need to have the behaviour of this <code>create </code>action do different things depending on if the parameters are valid or not. Let’s update this action to do that now. We’ll change the <code>handle</code> method of this action to this:</p>
+
+<pre><code class="language-ruby">def handle(request, response)
+  unless request.params.valid?
+    response.flash.now[:error] = "Your book could not be created"
+    response.render(new_view,
+      errors: request.params.errors[:book].to_h
+    )
+
+    return
+  end
+
+  book = book_repo.create(request.params[:book])
+  response.flash[:success] = "Book created successfully"
+
+  response.redirect_to routes.path(:book, id: book.id)
+end
+</code></pre>
+
+<p>This action now checks to see if the parameters passed in are valid or not. If they’re not, we’ll display a flash message and render the new view, passing it the errors from the validation. If the parameters <em>are</em> valid, then we go ahead with the action as before.</p>
+
+<p>Our new code refers to something called <code>new_view</code>, which we don’t have yet. To get that, we need to bring that in as a dependency at the top of this class:</p>
+
+<pre><code class="language-ruby">include Deps["repos.book_repo"]
+include Deps[new_view: "views.books.new"]
+</code></pre>
+
+<p>When we import dependencies in Hanami, it will use the last part of the name as the name for the method that becomes available to refer to that dependency. We can pick a different name here, by using Hash syntax where the key is the name we want, and the value is the dependency. If we didn’t give this dependency a different name in this case, we would have to refer to it as <code>new</code>, which is confusing to see by itself.</p>
+
+<p>When the form fails validation, we’ll re-render the <code>new</code> action passing it errors. If we want to display those errors in the template, we’ll need to expose them from the action. Let’s go to <code>app/actions/books/new.rb</code> and add an <code>expose</code> for that:</p>
+
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+module Bookshelf
+  module Views
+    module Books
+      class New &lt; Bookshelf::View
+        expose :errors
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>To display these errors at the top of the form, we’ll put this code into <code>app/templates/books/new.html.erb</code>:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;New Book&lt;/h1&gt;
+
+&lt;% if errors %&gt;
+  &lt;div id="error_explanation"&gt;
+    &lt;h2&gt;Your book could not be created:&lt;/h2&gt;
+    &lt;% errors.each do |field, field_errors| %&gt;
+      &lt;p&gt;&lt;%= inflector.humanize(field) %&gt; &lt;%= field_errors.join(", ") %&gt;&lt;/p&gt;
+    &lt;% end %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>We can use <code>errors</code> here as we’ve exposed them from the view. We then iterate through them, using Hanami’s built in <code>inflector</code> to turn these field names into something human-readable. They would be <code>title</code> and <code>author</code>, but they’re now <code>Title</code> and <code>Author</code>. It’s not much, but it’ll do the job.</p>
+
+<p>If we attempt to fill out the book form now, but leave either title or author blank, we’ll see errors:</p>
+
+<p><img src="/images/hanami/invalid_book.jpg" alt="Invalid book" /></p>
+
+<p>And if we fill out those fields, we’ll see that we’ve successfully created a book.</p>
+
+<h3 id="edit-form">Edit Form</h3>
+
+<p>Now that we’re able to create a book, we’re going to want to continue on completing the set of all the RESTful actions, including editing and updating. So let’s see what it’s going to take to do this in Hanami. Just like we did for the <code>new</code> and <code>create</code> actions, we’re going to need to generate the pair of actions for <code>edit</code> and <code>update</code>. Let’s run the generator now for both of them:</p>
+
+<pre><code>hanami g action books.edit
+hanami g action books.update
+</code></pre>
+
+<p>After generating these actions, we’ll give their routes names so that we can refer to them later. Let’s go into <code>config/routes.rb</code> and update the last two lines to this:</p>
+
+<pre><code class="language-ruby">get "/books/:id/edit", to: "books.edit", as: :edit_book
+patch "/books/:id", to: "books.update", as: :update_book
+</code></pre>
+
+<p>To be able to navigate to the edit page, we’ll add a small link in our <code>show</code> template using this <code>edit_book</code> path, at <code>app/templates/books/show.html.erb</code>:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;&lt;%= book.title %&gt;&lt;/h1&gt;
+
+&lt;%= link_to "Edit", routes.path(:edit_book, id: book.id) %&gt;
+</code></pre>
+
+<p>Now it’s time for the edit view itself. We have a perfectly good form over in <code>app/templates/books/new.html.erb</code>, and the way we would share this form in a Rails application between a <code>new</code> and <code>edit</code> view is to turn it into a partial. Hanami has the same style of support too! So we can move all of this code out of the <code>new</code> template, and into a new template at <code>app/templates/books/_form.html.erb</code>:</p>
+
+<pre><code class="language-erb">&lt;% if errors %&gt;
+  &lt;div id="error_explanation"&gt;
+    &lt;h2&gt;Your book could not be created:&lt;/h2&gt;
+    &lt;% errors.each do |field, field_errors| %&gt;
+      &lt;p&gt;&lt;%= inflector.humanize(field) %&gt; &lt;%= field_errors.join(", ") %&gt;&lt;/p&gt;
+    &lt;% end %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+
+&lt;%= form_for :book, routes.path(:create_book) do |f| %&gt;
+  &lt;div&gt;
+    &lt;%= f.label :title %&gt;
+    &lt;%= f.text_field :title %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.label :author %&gt;
+    &lt;%= f.text_field :author %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.label :year %&gt;
+    &lt;%= f.number_field :year %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.submit "Create Book" %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+
+</code></pre>
+
+<p>Then in our <code>app/templates/books/new.html.erb</code> file, we can render this same content with:</p>
+
+<pre><code>&lt;%= render "form", errors: errors %&gt;
+</code></pre>
+
+<p>The <code>render</code> method here takes in the name of the partial and then any local variable we would like to make available to that partial.</p>
+
+<p>We’ll now update our <code>app/templates/books/edit.html.erb</code> to use this same template:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;Editing a book&lt;/h1&gt;
+
+&lt;%= render "form", errors: nil %&gt;
+</code></pre>
+
+<p>We’re leaving out <code>errors</code> here for the moment, as we haven’t gotten to implementing that part just yet.</p>
+
+<p>When we’re rendering this form, we would like the fields to be automatically populated with what’s in the database. To do this, we need to load the book from the database and to load the book we’ll need the parameter to be passed in from the action. Let’s set that up now in <code>app/actions/books/edit.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Edit &lt; Bookshelf::Action
+        def handle(request, response)
+          response.render(view, id: request.params[:id])
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>With the parameter passed in, we can now proceed with loading the book over in <code>app/views/books/edit.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class Edit &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>We load the book by bringing in the <code>book_repo</code> dependency, and using the <code>find</code> method on that to load the book, pulling the <code>id</code> parameter out of the block argument for <code>expose</code>. Because this <code>expose</code> shares a name with the first argument to <code>form_for</code>, it will populate the form automatically. If we go to http://localhost:2300/books/1/edit, we’ll see the form is populated:</p>
+
+<p><img src="/images/books/editing_book.jpg" alt="Editing a book" /></p>
+
+<p>There’s an issue with the form at the moment that if we submit it, it’s going to create a duplicate of the book that we’ve got there rather than updating the existing book. This is because in the <code>app/templates/books/_form.html.erb</code> partial, we’re telling the form the route is this:</p>
+
+<pre><code class="language-erb">&lt;%= form_for :book, routes.path(:create_book) do |f| %&gt;
+</code></pre>
+
+<p>The form partial needs to understand that we want to go to different actions, depending on how it’s being rendered. Rails has some smarts in it to determine the route based on if the record is either new or persisted. Hanami does not have these smarts in it (yet). So we have to be the smart ones instead.</p>
+
+<p>We’ll change how we render this form partial in <code>app/templates/books/edit.html.erb</code> to this:</p>
+
+<pre><code class="language-erb">&lt;%= render "form",
+  book: book,
+  path: routes.path(:book, id: book.id),
+  form_type: :update
+%&gt;
+</code></pre>
+
+<p>This passes in two other local variables that we’ll use to determine where to take the form. While we’re making this change for edit, we’ll also make the change for the <code>new</code> template too:</p>
+
+<pre><code class="language-erb">&lt;%= render "form",
+  book: book,
+  errors: errors,
+  path: routes.path(:create_book)
+  form_type: :create
+%&gt;
+</code></pre>
+
+<p>Now that we’re passing these through to the partial, we’ll update the partial to handle both <code>path</code> and <code>form_type</code> by changing <code>app/templates/books/_form.html.erb</code> to this:</p>
+
+<pre><code class="language-erb">&lt;% if errors %&gt;
+  &lt;div id="error_explanation"&gt;
+    &lt;h2&gt;Your book could not be &lt;%= form_type == :create ? "created" : "updated" %&gt;:&lt;/h2&gt;
+    &lt;% errors.each do |field, field_errors| %&gt;
+      &lt;p&gt;&lt;%= inflector.humanize(field) %&gt; &lt;%= field_errors.join(", ") %&gt;&lt;/p&gt;
+    &lt;% end %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+
+&lt;%= form_for :book, path, method: form_type == :create ? :post : :patch do |f| %&gt;
+  &lt;div&gt;
+    &lt;%= f.label :title %&gt;
+    &lt;%= f.text_field :title %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.label :author %&gt;
+    &lt;%= f.text_field :author %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.label :year %&gt;
+    &lt;%= f.number_field :year %&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;%= f.submit form_type == :create ? "Create Book" : "Update Book" %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>The three changes here are:</p>
+
+<ol>
+  <li>Changing the errors box to say “Your book could not be created/updated”</li>
+  <li>Changing the path and the method of the form based on <code>form_type</code></li>
+  <li>Changing the wording of the submit button based on <code>form_type</code>.</li>
+</ol>
+
+<p>This will set up the form partial when rendered by the <code>edit</code> view to submit to the <code>update</code> action, while still maintaining its ability to submit to the <code>create</code> view when rendered by the <code>new</code> view.</p>
+
+<p>Speaking of <code>update</code> actions, let’s write one now in <code>app/actions/books/update.rb</code>. We’ll start by including the book repo as a dependency and defining the parameters that our request will work with:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Update &lt; Bookshelf::Action
+        include Deps["repos.book_repo"]
+
+        params do
+          required(:id).filled(:integer)
+          required(:book).schema do
+            required(:title).filled(:string)
+            required(:author).filled(:string)
+            optional(:year).maybe(:integer)
+          end
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>These parameters are the same as from the <code>create</code> action with one exception: we now need to <em>also</em> take in the <code>id</code> parameter. If we were to leave that out of the <code>params</code> specification here, we couldn’t access it within our action as it wouldn’t have been in the permitted set of parameters for this action.</p>
+
+<p>With the parameters defined, we can now write the <code>handle</code> method:</p>
+
+<pre><code class="language-ruby">def handle(request, response)
+  unless request.params.valid?
+    response.flash.now[:error] = "This book could not be updated"
+    response.render(edit_view,
+      id: request.params[:id],
+      errors: request.params.errors[:book].to_h,
+    )
+
+    return
+  end
+
+  book_repo.update(request.params[:id], request.params[:book])
+  response.flash[:success] = "Book updated successfully"
+
+  response.redirect_to routes.path(:book, id: request.params[:id])
+end
+</code></pre>
+
+<p>This action works similarly to <code>create</code>, except we’re going to be updating a book rather than creating it. We’re referring to <code>edit_view</code> here, but we haven’t yet defined that. Let’s import that as well at the top of this action:</p>
+
+<pre><code class="language-ruby">include Deps[edit_view: "views.books.edit"]
+</code></pre>
+
+<p>To make the <code>book_repo</code> accept a call to <code>update</code>, we’ll need to add a command to <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Repos
+    class BookRepo &lt; Bookshelf::DB::Repo
+      commands :create, update: :by_pk
+</code></pre>
+
+<p>This command takes a second argument to determine which method from the <code>books</code> relation to use when looking up a book to update.</p>
+
+<p>That’ll handle the successful flow of updating our book, but we also need to pay attention to the unsuccessful flow as well. The <code>edit</code> view will receive <code>errors</code>, which it will need to expose. Let’s update <code>app/actions/books/edit.rb</code> to this:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class Edit &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+        expose :errors
+
+        expose :book do |id:|
+          book_repo.find(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This will take in the errors from the re-rendering of this view from a failed <code>update</code>, and render a form with the errors.</p>
+
+<p>If we attempt to update a book correctly now, we’ll see it works:</p>
+
+<p><img src="/images/hanami/updated_book.jpg" alt="Updated book" /></p>
+
+<p>And if we attempt to update it with invalid data, it will fail:</p>
+
+<p><img src="/images/hanami/book_update_error.jpg" alt="Updated book errors" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 1: Models</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-1-models" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 1: Models" /><published>2025-10-05T00:00:00+10:00</published><updated>2025-10-05T00:00:00+10:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-1-models</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-1-models"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+
+<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a> (you are here)</li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
+</ul>
+
+<p>There’s plenty of writing out there for <em>why</em> you should use Hanami, and so this post won’t cover that. If you want those thoughts, see my <a href="https://ryanbigg.com/2022/11/hanami-20-thoughts">Hanami 2.0 thoughts</a> and my earlier <a href="https://ryanbigg.com/2018/03/my-thoughts-on-hanami">thoughts on Hanami</a> posts.</p>
+
+<p>This post covers off how to get started with Hanami, with a focus on those who are familiar with Rails and the MVC structure it provides. I’m unashamedly going to crib parts of this from the <a href="https://guides.hanamirb.org/v2.3/introduction/getting-started/">Hanami Getting Started Guide</a>, but explain them in a different way.</p>
+
+<p>With a Rails app, you’ll be familiar with the Model-View-Controller pattern. Hanami has adopted this pattern too, but has a take on it where the concerns are split across more distinct types of classes. This leads to a better separation of concerns and an easier-to-maintain application.</p>
+
+<p>Hanami’s layers of separation are designed with the intent of making long-term maintenance of your application easier. The layers that Hanami introduce don’t come from nowhere. They come out of decades of professionally building Rails applications and realizing what would make maintenance of those applications easier.</p>
+
+<p>In Part 1 of this series, I’m going to cover off how Hanami applications interact with databases.</p>
+
+<h2 id="the-model-layer">The Model Layer</h2>
+
+<p>Whenever you’re building a Rails application you typically want to pull data from a data source. When you’re building a Hanami application, you’ll want to do the same thing. Rather than having one model class to use as a dumping ground, Hanami separates these into a few distinct classes called repositories, relations and structs.</p>
+
+<ol>
+  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
+  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
+  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
+</ol>
+
+<p>Let’s take a look at each of these in turn by creating a table called <code>books</code>, and then inserting data into that table, and then requesting that data back out in various ways.</p>
+
+<h3 id="migrations">Migrations</h3>
+
+<p>Hanami, like Rails, supports database migrations. To create a migration, we use this command:</p>
+
+<pre><code>hanami g migration create_books
+</code></pre>
+
+<p>This migration syntax uses ROM – Hanami’s choice for a database library – and is currently empty. The migrations in Hanami live in <code>config/db/migrate</code>, rather than the <code>db/migrate</code> of Rails. The reason for this is that migrations are <em>configuration for your database</em>.</p>
+
+<p>Let’s see that migration file now in <code>config/db/migrate</code>:</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  # Add your migration here.
+  #
+  # See https://guides.hanamirb.org/v2.2/database/migrations/ for details.
+  change do
+  end
+end
+</code></pre>
+
+<p>We can fill out this migration to create the <code>books</code> table this way.</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  change do
+    create_table :books do
+      primary_key :id
+      column :title, :text, null: false
+      column :author, :text, null: false
+    end
+  end
+end
+</code></pre>
+
+<p>The syntax used here is not too dissimilar to what you’d see in a Rails migration. Notably, we have to include the <code>primary_key</code> here, whereas in Rails it comes automatically pre-defined. The migration feature comes from a gem called <code>rom-sql</code>, which itself uses another gem called <code>sequel</code>. The migration syntax itself comes from <code>sequel</code>. You can <a href="https://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html">read more about Sequel migrations here</a></p>
+
+<p>We can run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<p>With our table now existing in our database, we need something to insert and read data from that table. That “something” is called a relation.</p>
+
+<h3 id="relations">Relations</h3>
+
+<p>We can generate a relation using this command:</p>
+
+<pre><code>hanami g relation books
+</code></pre>
+
+<p>Relations in Hanami are pluralised, and match the name of the table. We can use this relation to insert some data by booting up the console:</p>
+
+<pre><code>hanami console
+</code></pre>
+
+<p>Hanami provides a <em>registry</em> for our applications classes, and we can use this registry to get the relation:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+</code></pre>
+
+<p>We’ll see this relation is already configured with our database, thanks to some setup taken care of by Hanami. Rails would do the same thing, but calls it <code>connection</code> on Active Record models.</p>
+
+<pre><code class="language-ruby">#&lt;Bookshelf::Relations::Books name=ROM::Relation::Name(books) dataset=#&lt;Sequel::SQLite::Dataset...
+</code></pre>
+
+<p>We can insert a book into our table by running:</p>
+
+<pre><code class="language-ruby">books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
+</code></pre>
+
+<p>This will simply return <code>1</code> as its the ID of the record that was inserted into the database. This may be surprising to Rails developers, who are used to getting instances back straight away from an <code>insert</code> request. To get back to the data that’s in the database, we can run:</p>
+
+<pre><code>book = books.first
+</code></pre>
+
+<p>We will now see the data as a Hash:</p>
+
+<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg"}
+</code></pre>
+
+<p>The relation for Hanami works with data in its barest form. We passed a Hash to <code>insert</code>, and got one back for <code>first</code>. To get back proper Ruby objects, we need a repository.</p>
+
+<h3 id="repository">Repository</h3>
+
+<p>Let’s generate a repository for our <code>books</code> table now, by exiting our <code>hanami console</code> session (with <code>exit</code>) then running this:</p>
+
+<pre><code>hanami g repo book
+</code></pre>
+
+<p>Repositories in Hanami are singularized, but relations are pluralized. This is because relations are working on your table, which is a collection of data. Repositories on the other hand represent a single type of that data, in this case <code>Book</code>. So the repository representing that type is called <code>BookRepo</code>.</p>
+
+<p>We can use this repository in the console by jumping back in with <code>hanami console</code> and then running:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+</code></pre>
+
+<p>To fetch the book we inserted, we can run:</p>
+
+<pre><code class="language-ruby">book_repo.books.first
+</code></pre>
+
+<p>This method calls <code>books</code>, which access the matching relation from the repository. Then it calls <code>first</code> on that relation.</p>
+
+<p>An interesting thing happens here: this will return a structured version of our data.</p>
+
+<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
+</code></pre>
+
+<p>We get this ability by using the relation through the repository.</p>
+
+<p>The returned object here has very few methods on it. Just enough methods to represent the data from the row, and that’s it.</p>
+
+<p>Calling <code>book_repo.books.&lt;whatever method&gt;</code> is going to get old very quickly, and that leads us to the point of repositories. We can provide shorter methods by adding them to our repository. Let’s add a <code>find</code> and an <code>all</code> method to our repository, over in <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Repos
+    class BookRepo &lt; Bookshelf::DB::Repo
+      def find(id)
+        books.by_pk(id).one
+      end
+
+      def all
+        books.to_a
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This method can then be used to find our book based on the table’s primary key. Let’s exit the console, start it again and try that now:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book = book_repo.find(1)
+</code></pre>
+
+<p>We’ll get back our book, all without having to type <code>where</code> + <code>first</code>.</p>
+
+<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
+</code></pre>
+
+<p>We can also retrieve all of our books by using <code>all</code>:</p>
+
+<pre><code>books = book_repo.all
+=&gt; [#&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;]
+</code></pre>
+
+<h3 id="scoping-queries">Scoping queries</h3>
+
+<p>To further demonstrate what a repository and relation do within a Hanami application, we’re now going to perform an action that would be common to a lot of Rails applications: adding a <code>by_year</code> scope to our queries. In Rails, we would add this to a model with this code:</p>
+
+<pre><code class="language-ruby">scope :by_year, -&gt;(year) { where(year: year) }
+</code></pre>
+
+<p>This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository. Before we can perform queries against a year column, let’s add it with one more migration. We’ll create this migration with:</p>
+
+<pre><code>hanami g migration add_year_to_books
+</code></pre>
+
+<p>We’ll open up that new migration file in <code>config/db/migrate</code> and fill it out this way:</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  change do
+    add_column :books, :year, :integer
+  end
+end
+</code></pre>
+
+<p>Let’s run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<p>Now that we have a <code>year</code> column, let’s open up <code>app/repos/book_repo.rb</code> and define a method to find books matching a particular year:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  books.where(year: year)
+end
+</code></pre>
+
+<p>This code can allow us to call <code>book_repo.by_year(2025)</code> to get all the books from the year 2025.</p>
+
+<p>As you can see by these <code>find</code> and <code>by_year</code> methods, we define the methods to interact with our database as we need them within a Hanami application.</p>
+
+<p>Let’s add one more of these to find by the author as well:</p>
+
+<pre><code class="language-ruby">def by_author(author)
+  books.where(author: author)
+end
+</code></pre>
+
+<p>If we do <code>book_repo.by_author("Ryan Bigg")</code> in our console, we’ll get back the book we added earlier on.</p>
+
+<p>Now what about if we wanted to chain these <code>by_author</code> and <code>by_year</code> methods together by calling:</p>
+
+<pre><code class="language-ruby">book_repo.by_year(2025).by_author("Ryan Bigg")
+</code></pre>
+
+<p>Well, if we try that out now, we’ll get an error:</p>
+
+<pre><code class="language-ruby">(irb):2:in `&lt;main&gt;': undefined method `by_author' for #&lt;Bookshelf::Relations::Books
+</code></pre>
+
+<p>This is because the object returned by <code>by_year</code> is an instance of the relation itself. If we want to chain these methods, we need to add them to the relation, and not to the repository. Let’s create similar methods over in <code>app/relations/books.rb</code> now:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  where(year: year)
+end
+
+def by_author(author)
+  where(author: author)
+end
+</code></pre>
+
+<p>We can now use these methods, rather than defining the same logic again, back in the repository. Let’s change the code there in <code>app/repos/book_repo.rb</code> to this:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  books.by_year(year)
+end
+
+def by_author(author)
+  books.by_author(author)
+end
+</code></pre>
+
+<p>By moving these methods over to the relation, we should now be able to chain them together. Let’s reload the console and try again:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg")
+</code></pre>
+
+<p>What we get back here is a new instance of <code>Bookshelf::Relations::Books</code>, because we haven’t asked this relation to do any more than to generate us a query based on books for a particular year and author. At this point, we <em>could</em> throw some more <code>where</code> clauses onto the end if we wanted to further scope the data.</p>
+
+<p>We can trigger a query to run by asking this for the <em>first</em> book.</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg").first
+</code></pre>
+
+<p>This returns nothing! This is because there is no book with that year in our dataset, we only created a book with a title and an author, not a year. We can update our record to have a year by running:</p>
+
+<pre><code class="language-ruby">book_repo.books.where(id: 1).update(year: 2025)
+</code></pre>
+
+<p>Instead of doing a <code>find</code> then an <code>update</code> like you might in a Rails app, we’re doing only an update. That’s all we need to do here. Let’s try running that query again to get the first book:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg").first
+=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg" year=2025&gt;
+</code></pre>
+
+<p>Great!</p>
+
+<p>As we can see from this “Model Layer” section of this guide, Hanami provides three distinct layers of separation here:</p>
+
+<ol>
+  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
+  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
+  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
+</ol>
+
+<p>Rails would have you throw all of this into the one class (a model), leading to quite a lot of mess and making things harder to read. Hanami’s separation is initially disorienting (which file was that code in?) but after a few days that disorientation will wear off!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 2: Controllers</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 2: Controllers" /><published>2025-10-05T00:00:00+10:00</published><updated>2025-10-05T00:00:00+10:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+
+<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a> (you are here)</li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
+</ul>
+
+<p>In the first part we saw how to interact with a database by using Hanami’s repositories and relations. In this part, we continue that by serving that data out through routes of our Hanami application.</p>
+
+<p>To get started here, we can run the Hanami server (and its asset compilation step) by running:</p>
+
+<pre><code>hanami dev
+</code></pre>
+
+<p>This will run a server on localhost:2300 and once you come back to the browser to figure out why your muscle-memory’d localhost:3000 didn’t work, change that 3000 to a 2300.</p>
+
+<h3 id="routing">Routing</h3>
+
+<p>In a Hanami application, you can find the routes in the familiar location of <code>config/routes.rb</code>. We can add a route to this application by changing this file to this code:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  class Routes &lt; Hanami::Routes
+    root to: "books.index"
+  end
+end
+</code></pre>
+
+<p>Note that the code here uses a dot to separate the controller and the action, rather than a hash/pound-sign (#).</p>
+
+<p>A route by itself, like in a Rails app, doesn’t do very much. We need a matching action for this.</p>
+
+<h3 id="actions">Actions</h3>
+
+<p>We generate an action in Hanami by running:</p>
+
+<pre><code>hanami g action books.index
+</code></pre>
+
+<p>This time, I will list the files this generates, as this a key part where Hanami differentiates itself from Rails:</p>
+
+<pre><code>Updated config/routes.rb
+Created app/actions/books/
+Created app/actions/books/index.rb
+Created app/views/books/
+Created app/views/books/index.rb
+Created app/templates/books/
+Created app/templates/books/index.html.erb
+Created spec/actions/books/index_spec.rb
+</code></pre>
+
+<p>This has updated our <code>config/routes.rb</code> file to include a new <code>/books</code> route:</p>
+
+<pre><code class="language-ruby">get "/books", to: "books.index"
+</code></pre>
+
+<p>Classes in Hanami applications are namespaced automatically under the application’s name. You can see this by looking at the two classes generated for us here which are both created under the <code>Bookshelf</code> namespace: <code>Actions::Books::Index</code>, and <code>Views::Books::Index</code>.</p>
+
+<p>Hanami has no controllers, and instead splits this logic between two classes: <strong>actions</strong> and <strong>views</strong>.</p>
+
+<p>The purpose of actions is to handle all the parameter parsing and response handling of a request. This is where you might also put behavior like authenticating or authorizing a user before they can perform this particular action. An action can decide based on these parameters to render either the default view, or a different one. An action in Hanami can also validate the input parameters before deciding to proceed with the action.</p>
+
+<p>The purpose of views is to gather up and present the data once an action has decided which version of a view to render. In a Rails app, you may see similar handling by way of <code>respond_to</code>.</p>
+
+<h3 id="views">Views</h3>
+
+<p>Views typically have a template to render as well, and in this application we now have <code>app/templates/books/index.html.erb</code>. This is the same kind of file you’d get with Rails, only in Rails it would be under <code>app/views</code>. Views in Hanami have a different meaning, and that can take some time to get your head around.</p>
+
+<p>At the moment, requests to http://localhost:2300/books shows very little, just a big H1 showing: <code>Bookshelf::Views::Books::Index</code>. This isn’t going to drive engagement for our book application. We’ll add some books to this page instead, by fetching them from the database and displaying them here.</p>
+
+<p>To fetch these books from the database, we will open <code>app/views/books/index.rb</code> and fetch all the books with this code:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class Index &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :books do
+          book_repo.all
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>When coming from a Rails application where it is almost forbidden (but possible!) to put a database query in a view, it might feel weird to put a database call into a class with “Views” in the name.</p>
+
+<p>In Hanami, we put the database loading in the view because the action might have had a reason to not need to load all the books, such as if there was an authorization rule on the action that was blocking the request.</p>
+
+<p>At the top of this view, we include the book repository as a dependency by using <code>include</code>. This makes it explicit what external dependencies this view has, right at the top of the file.</p>
+
+<p>In a Hanami view, we expose the data to the view explicitly with the use of <code>expose</code>, rather than defining an instance variable and it magically appearing in the template. The <code>book_repo</code> method here comes from the earlier <code>include</code>, and it will be an instantiated version of the <code>Repos::BookRepo</code> class.</p>
+
+<p>Speaking of templates, we can display these books from our database by writing some ERB code. This will land us in well familiar territory. The template for this action lives at <code>app/templates/books/index.html.erb</code>. We’ll remove all the content in this file, and replace it with our own:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;Books&lt;/h1&gt;
+
+&lt;% books.each do |book| %&gt;
+  &lt;div&gt;
+    &lt;h2&gt;&lt;%= book.title %&gt;&lt;/h2&gt;
+    &lt;p&gt;Author: &lt;%= book.author %&gt;&lt;/p&gt;
+    &lt;p&gt;Year: &lt;%= book.year %&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>When we refresh this page, we’ll now see our book coming back:</p>
+
+<p><img src="/images/hanami/books_index.jpg" alt="Books" /></p>
+
+<p>We’re now able to display a list of books, but let’s look at how we can display books from a given year.</p>
+
+<h3 id="working-with-parameters">Working with parameters</h3>
+
+<p>In this Hanami application, we would like a route at <code>/books/year/2025</code> to return only the books from that specified year. Let’s add that route to the <code>config/routes.rb</code> file in our application now:</p>
+
+<pre><code class="language-ruby">get "/books/year/:year", to: "books.index"
+</code></pre>
+
+<p>This action will route to the <code>index</code> action, the same as our previous route. To make this action behave differently based on if we’re asking for <em>all books</em> or <em>all books for a particular year</em>, we’re going to update the action’s code in <code>app/actions/books/index.rb</code> to this:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Index &lt; Bookshelf::Action
+        include Deps[
+          books_index: "views.books.index",
+          books_by_year: "views.books.by_year"
+        ]
+
+        def handle(request, response)
+          if request.params[:year]
+            response.render(books_by_year, year: request.params[:year])
+          else
+            response.render(books_index)
+          end
+        end
+      end
+    end
+  end
+end
+
+</code></pre>
+
+<p>We’re again importing dependencies into this action, this time some instances of our relative views. If the <code>year</code> parameter is specified, we’re going to render the <code>books_by_year</code> view, passing it the <code>year</code> parameter.</p>
+
+<p>If the parameter isn’t set, we’ll render <code>books_index</code>, which will show us the list of all books.</p>
+
+<p>The <code>books.by_year</code> view doesn’t exist yet, so let’s create it:</p>
+
+<pre><code>hanami g view books.by_year
+</code></pre>
+
+<p>In this view, we’ll want to fetch all the books for a particular year. We can do this with this code:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class ByYear &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :books do |year:|
+          book_repo.by_year(year).to_a
+        end
+
+        expose :year
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>The block used in <code>expose</code> take in the parameter passed in from the controller and display us a list of books from that year. As we’ll want to expose the year itself to our view, we need to explicitly call that out in the view too.</p>
+
+<p>In the matching template for this view, <code>app/templates/books/by_year.html.erb</code>, we’ll add this code:</p>
+
+<pre><code class="language-ruby">&lt;h1&gt;Books from &lt;%= year %&gt;&lt;/h1&gt;
+
+&lt;% books.each do |book| %&gt;
+  &lt;div&gt;
+    &lt;h2&gt;&lt;%= book.title %&gt;&lt;/h2&gt;
+    &lt;p&gt;Author: &lt;%= book.author %&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>This view will now display a list of books from 2025 when we go to http://localhost:2300/books/year/2025.</p>
+
+<p><img src="/images/hanami/books_by_year.jpg" alt="Books by year" /></p>
+
+<p>We’ve now added two ways to use the same action, with two different views. In a RESTful application, we would typically have more actions than this. You’d be familiar with the set of them from a Rails application:</p>
+
+<ul>
+  <li>index</li>
+  <li>show</li>
+  <li>new</li>
+  <li>create</li>
+  <li>edit</li>
+  <li>update</li>
+  <li>destroy</li>
+</ul>
+
+<p>In the remainder of this part, we’ll cover off the show action. We’ll leave the forms to the next part of this guide.</p>
+
+<h3 id="adding-a-show-route">Adding a show route</h3>
+
+<p>We’re now going to add a <code>show</code> action to our application, allowing us to display information about a single book. When we add this route, we will also add a link from our books “index” actions to the show action. Rather than starting with the route, we’ll start with generating an action:</p>
+
+<pre><code class="language-ruby">hanami g action books.show
+</code></pre>
+
+<p>Hanami is smart enough to generate us an action <em>and</em> a route with this command. Here’s what it has added to <code>config/routes.rb</code>:</p>
+
+<pre><code class="language-ruby">get "/books/:id", to: "books.show"
+</code></pre>
+
+<p>This route is exactly the kind of route you’d get with a Rails application. With one key difference: we don’t yet have a named way to refer to this route. In Hanami, we can give routes names using <code>as:</code>. Let’s make that change in our routes now:</p>
+
+<pre><code class="language-ruby">get "/books/:id", to: "books.show", as: :book
+</code></pre>
+
+<p>To send our users to this page, we need to create a link from there to the show page. Let’s open up <code>app/templates/books/index.html.erb</code> and change this line:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;&lt;%= book.title %&gt;&lt;/h2&gt;
+</code></pre>
+
+<p>To this:</p>
+
+<pre><code class="language-erb">&lt;h2&gt;&lt;%= link_to book.title, routes.path(:book, id: book.id) %&gt;&lt;/h2&gt;
+</code></pre>
+
+<p>Let’s also make this same change in <code>app/templates/books/by_year.html.erb</code> too.</p>
+
+<p>Routing methods in Hanami aren’t dynamically generated like in Rails, and so we need to write these out in a slightly longer format.</p>
+
+<p>Now that we have a route, we need to display some information on the page where this route goes to. We’ll need to pull that information out of the database before we can display it. Let’s go over to our <code>Books::Show</code> action in <code>app/actions/books/show.rb</code>, and pass down the <code>id</code> parameter to the view:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Actions
+    module Books
+      class Show &lt; Bookshelf::Action
+        def handle(request, response)
+          response.render(view, id: request.params[:id])
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>Rather than views instantly getting access to all parameters, we must expose these from the action first. We can pass these in with <code>response.render(view, ...)</code>, as this will render the default view for this action.</p>
+
+<p>To then make the view fetch this book from the database, we’ll make these changes in <code>app/views/books/show.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Books
+      class Show &lt; Bookshelf::View
+        include Deps["repos.book_repo"]
+
+        expose :book do |id:|
+          book_repo.find(id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This view is now using the book repository to find the book with that ID. When it finds that book, it’ll expose the book to the template. Let’s use that to display information about the book now in <code>app/templates/books/show.html.erb</code>:</p>
+
+<pre><code class="language-erb">&lt;h1&gt;&lt;%= book.title %&gt;&lt;/h1&gt;
+
+&lt;p&gt;Author: &lt;%= book.author %&gt;&lt;/p&gt;
+&lt;p&gt;Year: &lt;%= book.year %&gt;&lt;/p&gt;
+</code></pre>
+
+<h3 id="parts---hanamis-decorators">Parts - Hanami’s decorators</h3>
+
+<p>Writing these routes out in longer form is going to get tiring after a while. Fortunately for us, Hanami provides a location where we can add methods that decorate the objects that we use in a view.</p>
+
+<p>When we <code>expose</code> data from an action, Hanami wraps this data in another class, which it calls a Part. In the case of the <code>expose :books</code> that we have, it will wrap these in two distinct parts:</p>
+
+<ul>
+  <li><code>Views::Parts::Books</code> - for the whole array of books</li>
+  <li><code>Views::Parts::Book</code> - one wrapping for each of the books</li>
+</ul>
+
+<p>We didn’t create these classes. Hanami did that for us. Hanami uses the class of the struct to determine which part to use.</p>
+
+<p>We can define these classes ourselves if we want to add decorations to the objects exposed here. A good example of this would be to add a <code>show_path</code> method to books, so that we don’t have to write out the route long-form all the time.</p>
+
+<p>We can create a new class at <code>app/views/parts/book.rb</code> and define this method inside:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Views
+    module Parts
+      class Book &lt; Bookshelf::Views::Part
+        def show_path
+          context.routes.path(:book, id: id)
+        end
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>Methods of this class act as though they’re defined as instance methods on <code>Book</code>. This works because in the view we’re actually working with <code>Views::Parts::Book</code>, rather than a straight <code>Bookshelf::Structs::Book</code> instance. The <code>context</code> used here is the Hanami view rendering context, which we use to get to the <code>routes</code> method.</p>
+
+<p>By defining this <code>show_path</code> this way, we can now change our links in <code>app/templates/books/index.html.erb</code> and <code>app/templates/books/by_year.html.erb</code> to simply this:</p>
+
+<pre><code class="language-ruby">&lt;h2&gt;&lt;%= link_to book.title, book.show_path %&gt;&lt;/h2&gt;
+</code></pre>
+
+<p>The great thing about this is that if we ever want to know where <code>show_path</code> is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails’ dynamic routing methods, and you’ll see that this a vast improvement.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Show, Don’t Tell</title><link href="http://localhost:4000/2025/05/show-dont-tell" rel="alternate" type="text/html" title="Show, Don’t Tell" /><published>2025-05-03T00:00:00+10:00</published><updated>2025-05-03T00:00:00+10:00</updated><id>http://localhost:4000/2025/05/show-dont-tell</id><content type="html" xml:base="http://localhost:4000/2025/05/show-dont-tell"><![CDATA[<p>On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been <a href="https://ryanbigg.com/2018/03/hiring-juniors">a proponent for junior developers for a very long time</a>, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.</p>
 
 <p>My advice to the juniors of 2025 is plain and simple: <strong>Show, Don’t Tell.</strong> The first time I hear from a lot of juniors is probably when they apply for a job, or reach out about one. It used to be meetups but the tyranny of distance got in the way.</p>
 
@@ -135,467 +1702,4 @@ transactions
 <pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
 </code></pre>
 
-<p>And now can you write that code any shorter as well?</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:]]></summary></entry><entry><title type="html">Ghosts ‘n’ Stuff</title><link href="http://localhost:4000/2025/02/ghosts-n-stuff" rel="alternate" type="text/html" title="Ghosts ‘n’ Stuff" /><published>2025-02-10T00:00:00+11:00</published><updated>2025-02-10T00:00:00+11:00</updated><id>http://localhost:4000/2025/02/ghosts-n-stuff</id><content type="html" xml:base="http://localhost:4000/2025/02/ghosts-n-stuff"><![CDATA[<p>Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was <em>allowed to write them</em>. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s <em>interesting</em> but also <em>highly confidential</em>. I’d love to share those stories one day, perhaps a long way down the track.</p>
-
-<p>But today I want to talk about ghosts.</p>
-
-<p>The apps I’m working on have the lucky advantage of being around a decade and a half old. They also have the unlucky disadvantage of being a decade and a half old. Ruby and to a larger extent JavaScript tastes have rapidly evolved in this time. Both have since slowed to a much more agreeable-to-this-dad pace, and I am thankful for that.</p>
-
-<p>Not only do the languages change over time, but the applications do as well. Features get added, seldom removed. Bugs get removed and (hopefully) seldom added. Developers move on — Peopleware claims the average staying power of a dev was in the range of 15-36 months (I would be interested to hear how this has changed after the pandemic) — and new developers come in and claim their way is superior and this situation repeats three to five fold before the current day. The old developers then become “ghosts” of our history.</p>
-
-<p>The application gets into this liminal state of being “complete” (actually a well-known and appreciated fallacy in dev circles, but bear with me), owned by nobody (as those people have left and newer priorities meant the new people haven’t seen this app yet) and yet somehow business critical. I’m talking “people don’t get paid if this doesn’t run”, business critical. The app logs nothing to nowhere, and yet people rely on it intensely and would tell you quite quickly in all-caps if it wasn’t working.</p>
-
-<p>Perhaps this application is deployed to some sort of cloud compute environment and runs as its own function or suite of functions. Can’t have it running in a monolith as a worker because that’s boring and doesn’t add any keywords to your resume for potential recruiters to find – aka Resume Driven Development. How those functions tie together is a corkboard-and-red-string job for the lucky person who finds this app later.</p>
-
-<p>Time comes along and does its thing and the people who run the cloud compute environment say “we’re not going to support that version of that language any more because it’s <em>old</em>”. This announcement is made so far ahead of that deadline that nobody within the business seems to mind.</p>
-
-<p>The future arrives the next day, or it feels that way.</p>
-
-<p>By then, the security auditors come along and say “we require you to keep your systems up to date as possible, and yes, we mean even down to your packages.” And they make the very strong implication that if this isn’t done, that you may as well all go on a big company-wide holiday until it is. On a budget, of course, because if the company isn’t running then nobody’s getting paid a whole lot of anything.</p>
-
-<p>Then the serious discussions about how to approach these upgrades happen. Lots of stern faces. Me remaining mum about my borderline-obsession of banging the drum of “upgrade your apps or you’ll regret it” aka “pay the piper”. People really don’t like to hear “we’re spending time upgrading apps” when instead they could be hearing “we’re spending time delivering business and/or stakeholder value”, aka earning the dollars to keep things afloat. The dollars are nice, sure, but we can’t earn dollars if we’re not compliant with what our auditors require. So the audit wins the priority battle when a deadline is issued.</p>
-
-<p>(Anecdata: on the time split: 70% Value vs 30% maintenance is a good balance that works for my team, we’ve found. We track this mostly by doing what a lot of teams do:
-wetting a finger and sticking it in the air. On a good day we might even try to get the data out of our ticketing system.)</p>
-
-<p>That particular box of radioactive applications gets handballed around until it lands onto someone’s lap and then they get to have a “learning and development journey” of upgrading multiple applications of all sorts of flavours and varieties (think: gourmet ice cream shop, but apps), because from about 2014-2018 people decided microservices were the go. It becomes evident very quickly that someone or someone’s were practicing the aforementioned resume driven development.</p>
-
-<p>The task of auditing these applications and upgrading them should fall to a whole team, but more than likely it’ll land in one person’s lap. They can recruit others to help, and they’d be pretty silly not to. It’s always a huge task.</p>
-
-<hr />
-
-<p>The upgrade begins. The mind initially turns to questions like “How bad could it possibly be?”, then “What were these developers on?” and finally arriving at “Why, oh God why?” – a milder version of the Five Stages of Grief – as app after app reveals gradually the eldritch horrors of past coding styles, methodologies and arcane deployment strategies filled with reams of equally dubious and artisanal YAML. (Were these developers being paid by the line?)</p>
-
-<p>(Of course, the way we code <em>today</em> would <strong>never</strong> be viewed with that particular lens. Us being absolute beacons of
-perfection having learned so much over our long and storied careers, unpressured by deadlines and unbiased by our current obsessions.)</p>
-
-<p>The archaeological layers of these applications are sometimes stone, and at other times more… biological. You start to learn the quirks and styles of developers and can sight-identify code-strata where <em>this</em> block of code was written by Dev A, but <em>that</em> block of code was Dev B.  And this block of code was disputed territory. Both devs haven’t worked at the company in nearly half a decade. Their names aren’t recognised by most people who are current employees. A search online for them turns up only the fact that they probably existed.</p>
-
-<p>Both devs write good code in parts. You’d tick it in a PR review, or perhaps leave a pedantic comment about nested ternaries being unsightly. You imagine in-person meetings, perhaps at a meetup or a conference, between yourself and these devs, and deciding if during those meetings you want to shake their hand to say “well done” or your head in dismay to say the opposite, depending on what’s in view at the minute.</p>
-
-<p>Dev C, the most recent author in the <code>git log</code> history with a commit measuring in the tens of lines, who happens to still work at the company denies all knowledge of having ever worked on or near this system. Yet the proof is right there in black and white, or other colours depending on your terminal theme du jour.</p>
-
-<p>Any attempt to run these apps is met with things like arcane compilation issues because that one particular gem doesn’t work with the CPU architecture of the machine you’re now using. The newer version of the gem will install just fine… just right after you switch to the minimum language version that it now supports. Occasionally, the gem hasn’t received an update since many years ago.</p>
-
-<p>I initially bristled at this thing in particular: (Sass should be a gem, god damn it! It’s always been a gem!) but in the 3-point-something years of my FE-lead tenure I’ve come around to being a zealot of “CSS and JS are tools for the frontend, and the frontend stack is compiled with <em>these</em> tools” where the tools are usually written in one of the holy trinity of Go, Rust or (to a lesser extent) JavaScript. Or I guess in the case of Sass, Dart. The <code>dartsass-rails</code> gem looks promising, however.</p>
-
-<p>The gems gets upgraded, and you take extra special glee in removing <code>sassc</code> which has a compilation time measured in eons. Rubocop gets told to shove it a few new extra times and some quirks of the code’s setup (such as deprecation warnings) are addressed. Perfection is never achieved not only because it’s extremely subjective but also because time is relentless.</p>
-
-<hr />
-
-<p>These ghosts of the past were doing what they thought was the right thing that was acceptable under the circumstances and conditions that they were working in. Looking at the code now, is it still the right thing? That depends on who you’re asking. Code is subjective. There are arguably the “best” way to do certain things (hello, sorting algorithms) and then there are multitudinous ways of saying “put this JavaScript code on a server somewhere and make it wait for things to happen, so it can tell other things to happen”. That is where things get murky: the points of differences between how they, the ghosts, would do it and how I, the lead developer living in this current time and being tasked with working with this app in the <em>here and now</em>, would do it.</p>
-
-<p>Tastes change. The right way to write and deploy an application is akin to shifting sands. Even this week, the release of Docker’s “bake” command will change how I personally build apps. What was in style five years ago can be, considered a taboo in modern times. The blessed becomes the unspeakable. Developers are a finnicky bunch.</p>
-
-<p>I’ve left unintentional sins in systems I’ve worked on in the past, I’m sure of it. There’s stuff I’ve written that I’m certain of being a net-negative outcome of the apps I work in right now. Unintentional booby traps waiting to catch the next developer who happens across them. There’s other stuff I’m more on the fence about (such as when I introduced and encouraged the use of GraphQL and integrating it with TypeScript — let’s call it 65%/35% love/hate today). And then there’s stuff I’d use as exemplary things during an interview (while sweeping things in Category 1 waaaayyy under the rug).</p>
-
-<p>I think we need to be kind to the ghosts that have left their fingerprints on the systems we work in and on. They, overall, were doing their best. And I also think that we, being the ghosts of the future, need to strive to do our best to leave the <em>best</em> kind of fingerprints we can now. And to be kind to <em>ourselves</em> when the circumstances and conditions mean that we have to be flexible on what “right” means today.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Being a lead developer is an interesting time. I’d write a lot more blog posts if I wasn’t so busy, sure, but mostly I’d write them if I was allowed to write them. So many times I think “this’d make an interesting blog post” right before the thought of “imagine how much shit you’d be in if you told a soul”. There’s a lot about being a lead that’s interesting but also highly confidential. I’d love to share those stories one day, perhaps a long way down the track.]]></summary></entry><entry><title type="html">Rails tagged logging</title><link href="http://localhost:4000/2025/02/rails-tagged-logging" rel="alternate" type="text/html" title="Rails tagged logging" /><published>2025-02-02T00:00:00+11:00</published><updated>2025-02-02T00:00:00+11:00</updated><id>http://localhost:4000/2025/02/rails-tagged-logging</id><content type="html" xml:base="http://localhost:4000/2025/02/rails-tagged-logging"><![CDATA[<p>A feature within Rails is that it allows us to add data to our application’s log lines for tagging those lines. We can then use these tags for aggregating them together into a bunch. I’ll show you how to do this here. I used this in a Rails app that acts purely as an API, so there is only ever one request at a time I care about, in this case.</p>
-
-<p>We can configure this in <code>config/environments/development.rb</code>:</p>
-
-<pre><code>config.log_tags = [lambda {|r| Time.now.iso8601(4) }, :request_id]
-</code></pre>
-
-<p>This sets up two tags, one of a timestamp with millisecond precision, and another with the request ID. The symbol <code>:request_id</code> maps to a method on <code>ActionDispatch::Request</code>, and we can use any methods from that class in these tags if we wish.</p>
-
-<p>This log line configuration as it stands now will output this prefix to all log lines:</p>
-
-<pre><code>[2025-02-02T16:32:35.6772+11:00] [56937855b121fede4013141a6cf4ca46] A log message goes here.
-</code></pre>
-
-<p>We can eyeball our log file then to see the logs grouped together. Or, we could build a set of little shell commands to do that for us:</p>
-
-<pre><code>
-reqs() {
-  req_id=$(tail -n 1000 log/development.log |
-    awk -F'[][]' '{print $2, "|", $4}' | sort -u -r | fzf | awk '{print $NF}')
-
-  reqlogs "$req_id"
-}
-
-reqlogs() {
-  awk -v req_id="$1" '
-  $0 ~ "\\[" req_id "\\]" {
-    sub(/\[[0-9a-f]+\]/, "", $0)
-    print
-  }
-  ' log/development.log
-}
-</code></pre>
-
-<p>The <code>reqs</code> command here uses <code>awk</code> and <a href="https://github.com/junegunn/fzf">fzf</a> to find the last 1,000 log lines, and outputs the timestamps and request IDs for them, with the most recent request selected by default:</p>
-
-<pre><code>2025-02-02T16:32:35.6772+11:00 | 56937855b121fede4013141a6cf4ca46
-&gt; 2025-02-02T16:34:36.1173+11:00 | 3a87e274ee9f81c898d9d85abb0a8dd2
-</code></pre>
-
-<p>Once one is selected, it then uses the <code>reqlogs</code> function to display just the log messages that match that ID. Given we already know what the ID is, there’s no need to display it so <code>reqlogs</code> snips that bit out as that’ll save 32 characters each time.</p>
-
-<p>What we’ll end up with here is a set of log lines that match only <em>one</em> request at a time:</p>
-
-<pre><code>[2025-02-02T16:32:35.6772+11:00] A log message goes here.
-</code></pre>
-
-<p>This is much nicer than trawling through a giant log file or scrolling back through my console to find the particular lines I’m after!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A feature within Rails is that it allows us to add data to our application’s log lines for tagging those lines. We can then use these tags for aggregating them together into a bunch. I’ll show you how to do this here. I used this in a Rails app that acts purely as an API, so there is only ever one request at a time I care about, in this case.]]></summary></entry><entry><title type="html">Scoping an Active Record join</title><link href="http://localhost:4000/2024/12/scoping-an-active-record-join" rel="alternate" type="text/html" title="Scoping an Active Record join" /><published>2024-12-09T00:00:00+11:00</published><updated>2024-12-09T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/scoping-an-active-record-join</id><content type="html" xml:base="http://localhost:4000/2024/12/scoping-an-active-record-join"><![CDATA[<p>Active Record is well known for its footguns, like N+1 queries and letting you dump <em>all the business logic</em> for your applications in models. (For an alternative, read <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>.)</p>
-
-<p>A lesser-known footgun is this seemingly innocuous use of <code>joins</code> in a tenanted Rails application. By “tenanted” I mean that most records have something like a <code>tenant_id</code> on them that declares ownership. In our case, it’s <code>merchant_id</code>. Here’s the query:</p>
-
-<pre><code class="language-ruby">FraudCheck.where(merchant: merchant).joins(:purchase)
-</code></pre>
-
-<p>Fraud checks belong to a merchant, and they also belong to a purchase. Purchases have just the one fraud check. Merchants have many fraud checks and purchases.</p>
-
-<p>The query this executes is:</p>
-
-<pre><code class="language-sql">SELECT "fraud_checks".* FROM "fraud_checks"
-INNER JOIN "purchases" ON "purchases"."id" = "fraud_checks"."purchase_id"
-WHERE "fraud_checks"."merchant_id" = 1
-</code></pre>
-
-<p>This seems like a relatively good query and it’ll run “fast enough” on small data sets. However, as your dataset grows and becomes measured in multiple terabytes, such a query will get slower and slower.</p>
-
-<p>This query runs slow because it’s querying two tables, one very quickly because it has a small dataset to query through, and one very slowly because it has a much larger dataset to trawl through. The first table it queries is <code>fraud_checks</code>, and it finds all of those where the <code>merchant_id=1</code>, which is a smaller dataset than “all fraud checks ever”. The second table it queries is “purchases”, which it attempts to find all purchases from all time matching the <code>purchase_id</code> values returned by the fraud checks query.</p>
-
-<p>We can shorten this query’s execution time by scoping the purchases to just those from the merchant by using <code>merge</code>:</p>
-
-<pre><code class="language-ruby">FraudCheck
-  .where(merchant: merchant)
-  .joins(:purchase)
-  .merge(
-    Purchase.where(merchant: merchant)
-  )
-</code></pre>
-
-<p>This now executes this query:</p>
-
-<pre><code class="language-sql">SELECT "fraud_checks".* FROM "fraud_checks"
-INNER JOIN "purchases" ON "purchases"."id" = "fraud_checks"."transaction_id"
-WHERE "fraud_checks"."merchant_id" = 2736
-AND "purchases"."merchant_id" = 2736
-</code></pre>
-
-<p>The query is now limited to just fraud checks <em>and</em> purchases that match that <code>merchant_id</code>, resulting in a smaller table scan for purchases that match the selected fraud checks.</p>
-
-<p>We further limit this query by applying a date range scope on the purchases too:</p>
-
-<pre><code class="language-ruby">FraudCheck
-  .where(merchant: merchant)
-  .joins(:purchase)
-  .merge(
-    Purchase.where(merchant: merchant, created_at: start_date..end_date)
-  )
-</code></pre>
-
-<p>This results in a super fast query compared to what we started with, as we’ve now drastically reduced the scope of purchases that can match our query.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Active Record is well known for its footguns, like N+1 queries and letting you dump all the business logic for your applications in models. (For an alternative, read Maintainable Rails.)]]></summary></entry><entry><title type="html">Using Elastic Search’s Profile API</title><link href="http://localhost:4000/2024/12/using-elastic-searchs-profile-api" rel="alternate" type="text/html" title="Using Elastic Search’s Profile API" /><published>2024-12-05T00:00:00+11:00</published><updated>2024-12-05T00:00:00+11:00</updated><id>http://localhost:4000/2024/12/using-elastic-searchs-profile-api</id><content type="html" xml:base="http://localhost:4000/2024/12/using-elastic-searchs-profile-api"><![CDATA[<p>Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.</p>
-
-<p>We use Elastic Search to power this search (even though Postgres’ own full-text search would’ve been suitable!) and the query we wrote for Elastic Search was this one written about 10 years ago:</p>
-
-<pre><code class="language-json">{
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "query_string": {
-            "query": "Ryan*"
-          }
-        }
-      ],
-      "filter": [
-        {
-          "bool": {
-            "must": [
-              {
-                "terms": {
-                  "merchant_id": [2]
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>This query will search for the query string “Ryan*” across all fields on all documents within the <code>customers</code> index. Given the application has grown substantially over the last 10 years, there’s now <em>a lot</em> of customer documents to search through. As the number of documents grow, the amount of time to search through those documents gets increasingly slower.</p>
-
-<p>In order to figure out <em>why</em> this query was slow rather than “big data” and vibes-driven-development, I turned to the <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-profile.html">Profile API within Elastic Search</a>. We can use this by adding <code>profile: true</code> to the top of any query string:</p>
-
-<pre><code class="language-json">{
-  "profile": true,
-  "query": {
-    "bool": {
-  ...
-</code></pre>
-
-<p>This profile key gives us a <em>very</em> detailed breakdown of what a query is doing, including how long each of its distinct parts are taking. Fortunately for us, this query is relatively “simple” and only consists of one very large operation: search across all document fields for a wildcarded query string.</p>
-
-<p>The first thing I noticed when looking at this output is that the number of fields are quite long:</p>
-
-<pre><code>{
-  "profile": {
-    "shards": [
-      {
-        "id": "[JzYnfX2ORHiGumsVoL3jhg][customers][2]",
-        "searches": [
-          {
-            "query": [
-              {
-                "type": "BooleanQuery",
-                "description": "(last_name.keyword:Ryan* | &lt;a lot of fields&gt;"
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-</code></pre>
-
-<p>The excessive amount of fields are a combination of regular customer information and address information. So my first thought was could we limit the amount of fields that we’re letting users search through. To do this, we can use <code>fields</code> on the query to say “only search these fields”:</p>
-
-<pre><code class="language-json">{
-  "profile": true,
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "query_string": {
-            "query": "Ryan*",
-            "fields": [
-              "first_name",
-              "last_name",
-              "email",
-              "reference",
-              "card_token",
-              "card_number",
-              "public_id"
-            ]
-          }
-        }
-      ],
-      "filter": [
-        {
-          "bool": {
-            "must": [
-              {
-                "terms": {
-                  "merchant_id": [2]
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>This time the profile output only contained the fields that I was interested in. These fields are all the fields we display in the UI for customers – notably <code>card_number</code> is a masked version of the number.</p>
-
-<p>After making this change, the query time went from multiple-digit seconds to single-digit seconds. This is because the query now looks in fewer locations across each document within its index. Importantly, the query also passed all our feature tests around searching within our application too.</p>
-
-<p>I still felt like there was space to improve the query. Did we really need it to use a wildcard search, given that Elastic Search is pretty decent at matching text? So I tried it again without the wildcard on the end of the query:</p>
-
-<pre><code class="language-json">{
-  "profile": true,
-  "query": {
-    "bool": {
-      "must": [
-        {
-          "query_string": {
-            "query": "Ryan",
-            "fields": [
-              "first_name",
-              "last_name",
-              "email",
-              "reference",
-              "card_token",
-              "card_number",
-              "public_id"
-            ]
-          }
-        }
-      ],
-      "filter": [
-        {
-          "bool": {
-            "must": [
-              {
-                "terms": {
-                  "merchant_id": [2]
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
-</code></pre>
-
-<p>This query now operated in two-digit milliseconds. Without using a wildcard, the query is pre-analysed by Elastic Search and breaks it down into tokens that can then be matched to pre-analysed documents within the index.</p>
-
-<p>Comparing the two profile outputs, the one with the wildcard shows a series of <code>MultiTermQueryConstantScoreWrapper</code>, matching against all different fields. The one without the wildcard shows a range of different ones such as <code>TermQuery</code> for fields classified as <code>term</code>, which will match faster as we’re searching based on the pre-analysed data within the index.</p>
-
-<p>(And if we want to be completely un-scientific about it, the profile output for wildcard searching is 1,100 lines, while the profile output for non-wildcard searching is only 700 lines. Fewer lines of profiling output is a very good indicator that the searcher is doing less work!)</p>
-
-<p>This is more suitable for matching against customer records in most circumstances, as our users are searching either by a customer’s full name or their email addresses. In rarer cases, they’re using reference values, and when that happens it appears to be the full reference value. The <code>card_token</code> and <code>card_number</code> fields are used the least frequently.</p>
-
-<p>I’m going to be rolling out this change next week and I have strong faith in its ability to reduce search time for people. I now have an additional tool in my toolbelt for diagnosing slow Elastic Search queries, and a better understanding from the profile output as to what different queries are doing.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Recently, we saw that one of our production applications was experiencing very long query times when users were searching for their customers, with some queries taking as long as 60 seconds.]]></summary></entry><entry><title type="html">React is fine</title><link href="http://localhost:4000/2024/11/react-is-fine" rel="alternate" type="text/html" title="React is fine" /><published>2024-11-26T00:00:00+11:00</published><updated>2024-11-26T00:00:00+11:00</updated><id>http://localhost:4000/2024/11/react-is-fine</id><content type="html" xml:base="http://localhost:4000/2024/11/react-is-fine"><![CDATA[<p><a href="https://joshcollinsworth.com/blog/antiquated-react">This post called “Things you forgot (or never knew) because of React</a> by Josh Collinsworth is a good read about the deficiencies of React, and includes a good comparison between React and the other frontend frameworks at the moment.</p>
-
-<p>And yet, I find myself and my team consistently being productive with React. The main application we develop uses a lot of it, a second application has had a re-write of a key component into React, and other apps have “React sprinkles” through them. It’s a versatile framework!</p>
-
-<p>In our main application, we have React componentry brought in from our design system, which is then bundled together into much larger components. Most of these are static components: take some data, render an element a certain way depending on that data. Where we use React’s “reactivity” is typically in a few small places:</p>
-
-<ol>
-  <li>Make this menu appear when its “open” button is clicked</li>
-  <li>Show a loading spinner while a request is processing</li>
-  <li>Display a validation error message if a field doesn’t pass validation (for example: a card expiry that is in the past, or an invalid card number – neither of which browsers support natively.)</li>
-</ol>
-
-<p>We also leverage a lot of what GraphQL provides by exporting types from the backend to then inform types on the frontend. Yes, we <em>could</em> do this <a href="https://the-guild.dev/graphql/codegen/docs/guides/svelte">with another framework</a> but even adding a single component that uses this framework doubles our team’s cognitive load for what seems like minimal benefit. These GraphQL types then go on to inform what the data used in those React components of the app should look like.</p>
-
-<p>In terms of styling: we use Tailwind, which I covered in <a href="https://ryanbigg.com/2024/03/tailwind-has-won">“Tailwind has won”</a>. We don’t need styles that are limited in scope to a particular component because of how Tailwind operates – it’s all utility classes and they don’t apply <em>until you apply them</em>. Yes, you can have really really long class lists, but you can compress these down into your own utility classes, as we’ve done with things such as <code>.zeal-button-primary</code>.</p>
-
-<p>Two things that we don’t have yet in how our applications operate are server-side rendering and web components.</p>
-
-<p>Server-side-rendering would mean that we could get away with displaying dynamic data, still using our existing React components, without displaying loading spinners all over the place. It’s a trivial thing, but a loading spinner makes me think “this app could’ve taken an extra 100ms to fetch this data in the original request”. We could probably get there with a little effort, though I do wonder how it’d work with the GraphQL things we have in place.</p>
-
-<p>On web components: I would like to move parts of our design system towards adopting those. I’m somewhat wary of the “newness” of interactivity between React + web components, and also about the “split brain” of switching between “this is a React component” and “this is a web component”. But I think web components is ultimately where we’re headed, as the browser always wins.</p>
-
-<p>(And on one more note: Don’t get me started on Stimulus.)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This post called “Things you forgot (or never knew) because of React by Josh Collinsworth is a good read about the deficiencies of React, and includes a good comparison between React and the other frontend frameworks at the moment.]]></summary></entry><entry><title type="html">Ruby Retreat 2024</title><link href="http://localhost:4000/2024/10/ruby-retreat-2024" rel="alternate" type="text/html" title="Ruby Retreat 2024" /><published>2024-10-22T00:00:00+11:00</published><updated>2024-10-22T00:00:00+11:00</updated><id>http://localhost:4000/2024/10/ruby-retreat-2024</id><content type="html" xml:base="http://localhost:4000/2024/10/ruby-retreat-2024"><![CDATA[<p>This weekend was Ruby Retreat (a re-branded <a href="https://rails.camp/">Rails Camp</a>) where we gathered 60 people from Australia and New Zealand at a camp ground in Warrnambool, the town where I live. Ruby Retreat is an un-conference event where Rubyists of all skill levels come together to hang out from a Friday night until a Monday morning. There may have even been some non-Rubyists there too. We provided catering and beds, they provided the activities.</p>
-
-<p>The idea for this event came out of a Ruby Australia conference earlier in the year when a group of Ruby friends pulled me aside and said “we should have a camp again!”. We’ve had about 27 of these in the past, with them dating back to 2007. Covid threw a spanner in the works and we ended up not running one for a while.</p>
-
-<p>After a few suggestions of locations, I suggested Warrnambool, pitching that there’s a venue there that’s close to the beach and there’s plenty of activities near by. It sounded enough like a good idea that I was suddenly made de facto organiser of the camp. Others such as Jupiter Haehn, Kieran Andrews, Ed Tippett and Richie Khoo helped out too and offered very good advice.</p>
-
-<h2 id="selling-tickets">Selling tickets</h2>
-
-<p>We sold tickets to the camp by advertising them at https://retreat.ruby.org.au by recycling a previous version of the website, and selling them through <a href="https://ti.to">Tito</a>. We eye-balled a rough estimate on what the camp would cost us and used that to set the ticket prices ($350 full price, $300 concession). We weren’t too far off, with the debt (measured in &lt; $2,000 terms) being covered by Ruby Australia’s sponsors for the year.</p>
-
-<p>I think we could’ve done a better job with marketing the camp, probably by having organisers (or proxies) visit each meetup around the country and spruik the benefit of it.</p>
-
-<p>We ended up selling 60 tickets to the event and also gave an option for people to put in for an Opportunity Ticket cost. This was enough to bring one extra person <em>for free</em> along to the camp. We didn’t make a big deal about it at the camp but I reckon it is a big deal! Generosity like this is awesome to see from this community.</p>
-
-<h2 id="location-location-location">Location, Location, Location</h2>
-
-<p>The camp site was Warra Gnan Coastal Camp, located 600m from the ocean. Liasing with the camp site owners was a relatively straightforward affair with tours given early on in the planning process. Big “ticks” for why we picked that place (besides it being 3km from my house) was the location, the kitchen area and the sufficient beds down the back area. Some of the rooms contained en suites with toilets and showers, while the others had a pair of shower rooms, one for men and one for women.</p>
-
-<p>Other perks included the grassed area at the back for tent setup (some people like to camp away from the snorers!), and ample outside room for people who wanted to catch some sun during the day.</p>
-
-<p>Closer towards the camp the camp site also installed a projector in the main space as well as two heaters. We made ample use of this projector for talks at beginning and end of camp. We didn’t end up needing the heaters but in the colder months they’d be a necessity.</p>
-
-<p>The location also meant people could get to Thunder Point, Stingray Bay, the main beach, Lake Pertobe and the Sunday markets by walking. Having it so close to town as well meant supplies could be easily gathered if people needed anything that the camp didn’t have. Warrnambool’s a big enough town that there’s multiple Coles, Woolworths and Aldis.</p>
-
-<h2 id="catering">Catering</h2>
-
-<p>Catering was provided by the Beach Kiosk Cafe. After being inflicted with Tinned Spaghetti Bolognese In A Big Pot and Some Toast with Spreads masquerading as dinner and/or lunch at a long-ago past event, I wanted something better for catering options this time around. I reached out to the Beach Kiosk who I know through a family-connection and they were happy to provide the catering. We catered for lunch and dinners with this menu:</p>
-
-<blockquote>
-  <p>DF = Dairy Free, GF = Gluten Free, V = Vegetarian, VG = Vegan</p>
-
-  <p><strong>Dinner 18th October</strong></p>
-
-  <p>Slow braised lamb shoulder in with tomato paprika sauce(DF GF)</p>
-
-  <p>Grilled chicken with onions, capsicum, and olives(DF GF)</p>
-
-  <p>Roasted half eggplant w tomato and paprika(VG)</p>
-
-  <p>Ratatouille(VG GF DF)</p>
-
-  <p>Green beans, feta and pine nuts(GF V)</p>
-
-  <p>Garlic mash potato(GF)</p>
-
-  <p>Banana fritter with vanilla ice cream
-Sticky rice w cinnamon coconut sauce with banana and berries(VG DF GF)</p>
-
-  <p><strong>Lunch Oct 19</strong></p>
-
-  <p>Stir fry egg noodles with chickened veggies(DF VGA)</p>
-
-  <p>Pork belly fried rice(GF DF VGA)</p>
-
-  <p>Fruit Salad</p>
-
-  <p><strong>Dinner Oct 19</strong></p>
-
-  <p>Ginger soy braised beef with shitake mushroom (DF GF)</p>
-
-  <p>Crispy tofu with miso chilli with cauliflower, mushroom and herbs (VG GF DF)</p>
-
-  <p>Asian Greens w soy and garlic(VG)</p>
-
-  <p>Fragrant rice(VG DF GF)</p>
-
-  <p>Strawberry panacotta with coconut chocolate mousse and fresh berries (VG DF GF)</p>
-
-  <p><strong>Lunch Oct 20</strong></p>
-
-  <p>Roast pumpkin, roast cauliflower, mushroom, beetroot hummus, haloumi, seeds, and cashew aioli (VG GF DF)</p>
-
-  <p>Fruit Salad</p>
-
-  <p><strong>Dinner Oct 20</strong></p>
-
-  <p>Roast cauliflower and fennel paella (VG GF DF)</p>
-
-  <p>Chicken chorizo paella(GF DF)</p>
-
-  <p>Salad with mix lettuce, carrots, red onion, cucumber and fennel, with vinaigrette dressing(VG DF GF)</p>
-
-  <p>Raspberry Cheesecake(GF)</p>
-
-</blockquote>
-
-<p>You’ll notice that most meals were suitable for vegans or vegetarians. This is so that we could include as many people as possible for lunches and dinners. This food worked out to $60/head/day. It was exceptional each night and as someone who has been called “food-oriented” on more than one occasion, I really appreciated the quality and good mix of healthy veg and meat. And desserts! Other camp attendees rated the food highly too!</p>
-
-<p>On top of this, we also bought breakfast cereals, milk, coffee, bread and spreads so people could build their own breakfasts. Jupiter also bought an absolute wealth of snacks from Costco for cheap. Kieran cooked trays of scrambled eggs on the morning. On the Sunday and Monday mornings we also made a tray of pancakes for early risers. Next time I’d bring a second pan so I could cook them faster!</p>
-
-<p>All 3 mornings had the coffee van turn up for 2 hours (8-10 Saturday/Sunday, 7-9 Monday) where people could order their coffees and we covered the cost of those too.</p>
-
-<p>I was arranging the washing up on Friday night and outta nowhere an attendee, Michael Morris, self-organised a schedule for the rest of the camp, taping a laminated piece of paper to a wall with a whiteboard-marker schedule on it. I damn near cried it was that nice of an offer. The cleaning up on Saturday/Sunday/Monday was a lot easier than Friday to the point where I didn’t need to think about it for the rest of the camp.</p>
-
-<p>In terms of drinks, we catered by buying some juices and milk, and others brought their own soft drinks or alcohol and put them into the shared fridge. Rails Camps in the past have catered for their own alcohol but we decided not to this time. We spent the alcohol money on kick-ass food instead. Those that wanted to drink could still do it, just on their own dollar. Nobody complained.</p>
-
-<h2 id="transport">Transport</h2>
-
-<p>We had a few people fly in from New Zealand and one guy flew in from Japan (!), but most people came in from around Australia and ended up arriving in Melbourne. Warrnambool has a <em>private</em> airport, so there’s no direct commercial flights in.</p>
-
-<p>Some of those people drove over from Melbourne (despite the stormy conditions on Friday afternoon). The remaining group of around 20 caught the train over, with the camp funding the $20/ticket/day cost for those tickets. We had Brent Chuang from Fat Zebra being the “ticket holder” for the train tickets as he was catching the train from Melbourne. I didn’t mind this too much, but I would’ve preferred V/Line offered an electronic option that was easier to manage than paper tickets.</p>
-
-<p>As the camp approached it became clearer and clearer that the weather on Friday was going to be very bad, so we ended up booking a bus at $10/head for that day. And glad we did, as the weather was stormy all day. Attendees who caught the bus ended up being treated to a (surprise) mini-tour of Warrnambool too thanks to the bus tour company. They arrived dry at the camp, which is always a nice way to get a start to an event.</p>
-
-<p>There was no bus back on the Monday afternoon as the time of venue departure was 9am and the train was due to depart at 12pm, and the weather was <em>exceptionally sunny</em>. This left people able to explore Warrnambool more and find their own way to the station.</p>
-
-<h2 id="inside-the-building-itself">Inside the building itself</h2>
-
-<p>Internet: This time there was no internet access at the camp <em>by choice</em> rather than from past camps where it’s absolutely an <em>impracticality</em> due to location (i.e. the last Ruby Retreat, held up the top of a mountain in New Zealand). I ummed and ahhed about setting up a proper router with a 5G sim in it from Telstra but ultimately decided people could sort out their own access with their hotspots on their phones. It seemed to work alright. I think with a shared router between 50 people you’d run into people/machines being greedy, or random network issues like “this router has handed out 32 DHCP addresses and refuses to do anymore”. Perhaps we dodged a bullet.</p>
-
-<p>Tables &amp; powerboards: Some of the attendees setup the tables and powerboards with minimal direction (thank you!!). We found that we were mildly <em>short</em> of powerboards for the number of people, but ultimately other people ended up bringing their own and making up the numbers. There was just enough power sockets in the walls for these and we ran out extension cables from these sockets to power the boards.</p>
-
-<p>We were at capacity for the tables at the camp as well (but strangely, not the provided chairs…), and perhaps if we were to use this venue again we’d have to hire some more tables. Fortunately, I found an events hire company that would do that for a reasonable rate of $18/table. We didn’t end up needing them this time, but I imagine with higher attendance it’d be high on the list of stuff to organise. There’s room in the venue for more. Not only was this where people sat and worked, but it’s also where they had dinner. We also had tables outside that people made use of for this too.</p>
-
-<p>I couldn’t imagine having an attendance above about 75 adults at the camp because it’d be super cozy in the main hall.</p>
-
-<h2 id="activities">Activities</h2>
-
-<p>As it’s an unconference we’re extremely loosey-goosey when it comes to actually scheduling anything in. We had the welcome on the Friday night, a Ruby Australia AGM on Saturday afternoon, and a demo night on Sunday night. That’s it. If anyone else wanted to do anything else, they had to make up their own plans. A lot of people spent the weekend hacking on things, and a similar number spent the time just hanging out. You make the event how you want to make it.</p>
-
-<p>I ended up playing Magic for a few hours on Saturday against Kieran and whoever else wanted to join us. I also extended my <a href="https://github.com/radar/mtg">Magic project</a> with a few new cards.</p>
-
-<p>Jupiter ran a few sessions on Blood on the Clocktower, which is more than a spiritual successor to the traditional Werewolf. That was really fun to play! I love the diversity of the roles (instead of a few sporadic “specials”), the interplay between alive &amp; dead people, and the mechanics of the imp + minion. Definitely recommend!</p>
-
-<p>A group formed around a table-top game like DND but not DND (I didn’t catch the name!) on Sunday afternoon and played that long enough for the guy who was running it to turn a great shade of red from his sunburn.</p>
-
-<p>Other attendees ended up touring around Warrnambool doing things like riding the flying fox at Lake Pertobe, walking around the coastal walk at Thunder Point or visiting the nearby beaches. Some people were even able to make bookings at the Deep Blue Hot Springs. Others spent time further afield going out to Tower Hill and other locations.</p>
-
-<h2 id="would-i-do-it-again">Would I do it again?</h2>
-
-<p>Yes. This was really fun to organise and be a part of. I don’t think I’d run one again in the next 6 months, but perhaps in a year? We’ll see.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This weekend was Ruby Retreat (a re-branded Rails Camp) where we gathered 60 people from Australia and New Zealand at a camp ground in Warrnambool, the town where I live. Ruby Retreat is an un-conference event where Rubyists of all skill levels come together to hang out from a Friday night until a Monday morning. There may have even been some non-Rubyists there too. We provided catering and beds, they provided the activities.]]></summary></entry></feed>
+<p>And now can you write that code any shorter as well?</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:]]></summary></entry></feed>
