@@ -8,7 +8,9 @@ At Fat Zebra, one of my duties as a team lead is managing the workloads of those
 
 Another rule of thumb is that when I can see a ticket is about my team's work is that I'll assign it to the on-call person for the team to investigate. This helps spread the load away from myself, and trains up the rest of the team on how to investigate all sorts of issues. Other people may be roped into help investigate if the issues lies in their area of expertise.
 
-My team came up with this list of triage questions to ask and posted about it in our internal wiki. We train people who interact with our team on this triaging method.
+My team came up with this list of triage questions to ask and posted about it in our internal wiki. We train people who interact with our team on this triaging method. We heavily encourage all work to be logged in a ticket, so that we get a general idea of how much time has been taken up by this triaging process or "BAU" and how much has been taken up by features.
+
+The questions we want answered in the tickets are these:
 
 1. **Which merchant is having this issue?** Who is the issue affecting? Are they are one of our larger merchants or a smaller merchant? Or is it more than one merchant reporting this issue?
 2. **What is the scope of the issue?** At a rough guess, what % of this merchant’s functionality is degraded? For example if it’s a transactional issue, is it an issue with one type of transaction (such as Apple Pay) or is it across the board?
