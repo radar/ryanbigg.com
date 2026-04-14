@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Beware grpc gem and Ruby 4.0 - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css' media='screen'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Beware grpc gem and Ruby 4.0" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2026-01-19">
+  
+
+  
+  <meta content="https://ryanbigg.com/2026/01/beware-grpc-gem-and-ruby-40" property="og:url">
+  
+  
+  <meta content="Beware grpc gem and Ruby 4.0" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Beware grpc gem and Ruby 4.0">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4">Ryan Bigg</h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2026/01/beware-grpc-gem-and-ruby-40">
+        <h2 class="my-0 mt-4">Beware grpc gem and Ruby 4.0</h2>
+      </a>
+      <small>19 Jan 2026</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>Finally got to the bottom of ridiculously slow build times on one of my applications. I’m talking 30+ minute builds, all without <code>sassc</code>!</p>
+
+<p>We use a gem in the app called <code>newrelic-infinite_tracing</code>, which has a dependency on another gem called <code>grpc</code>. This gem has native extensions that are pre-built. You’ll see these listed on RubyGems as lists like:</p>
+
+<ul>
+  <li>1.76.0 October 24, 2025 x86-linux-gnu (22.5 MB)</li>
+  <li>1.76.0 October 24, 2025 x86_64-linux-gnu (19.8 MB)</li>
+  <li>1.76.0 October 24, 2025 x86_64-linux-musl (18.8 MB)</li>
+  <li>…</li>
+</ul>
+
+<p>These list the version, architecture and platform that you’re going to be installing these gems on. These gems can also be locked to specific Ruby versions, and these 1.76.0 gems are indeed locked to only Ruby <code>&gt;= 3.1</code> and <code>&lt;= 3.5.dev</code>. <strong>This does not include Ruby 4.0!</strong> So when we go to install this gem onto Ruby 4.0, it finds <em>no</em> precompiled binaries, and instead compiles it all from scratch, bringing back memories of <code>sassc</code> and <code>nokogiri</code>’s old compile times before RubyGems introduced this wonderful precompiled binaries feature.</p>
+
+<p>I got to the bottom of this issue by running <code>bundle install</code> with no more <code>-j</code> option, and then measuring which gem took the longest time to install during a CI build step. The step helpfully output timestamps on each line of the <code>bundle install</code> process, which helped a lot toward narrowing it down!</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

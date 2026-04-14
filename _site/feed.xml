@@ -1,4 +1,107 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-12-01T09:09:22+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ryan Bigg’s Blog</title><entry><title type="html">Triaging bugs</title><link href="http://localhost:4000/2025/11/triaging-bugs" rel="alternate" type="text/html" title="Triaging bugs" /><published>2025-11-30T00:00:00+11:00</published><updated>2025-11-30T00:00:00+11:00</updated><id>http://localhost:4000/2025/11/triaging-bugs</id><content type="html" xml:base="http://localhost:4000/2025/11/triaging-bugs"><![CDATA[<p>At Fat Zebra, one of my duties as a team lead is managing the workloads of those I work with and falling into that ambit is bug triaging. We have a dedicated support channel where people can tag all leads and then the responsible leads can triage those issues. All leads get tagged as it’s sometimes unclear who is responsible for an issue, and it helps with the “pinball effect” that can go on for tickets in their early stages.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2026-04-14T20:23:09+10:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ryan Bigg’s Blog</title><entry><title type="html">From Heroku to Render</title><link href="http://localhost:4000/2026/03/from-heroku-to-render" rel="alternate" type="text/html" title="From Heroku to Render" /><published>2026-03-15T00:00:00+11:00</published><updated>2026-03-15T00:00:00+11:00</updated><id>http://localhost:4000/2026/03/from-heroku-to-render</id><content type="html" xml:base="http://localhost:4000/2026/03/from-heroku-to-render"><![CDATA[<p>After <a href="https://www.heroku.com/blog/an-update-on-heroku/">the announcement that Heroku is entering maintenance mode</a>, I got wary of the one (1) application I host on there going down. It’s a Rails app for photos for my kid, which has almost 2,500 photos of her since before she was born until the modern day. I created the app to share these photos with my family back in Adelaide.</p>
+
+<p>I was also listening to <a href="https://www.remoteruby.com/2260490/episodes/18827088-heroku-hosting-and-the-ai-era">this Remote Ruby episode</a> Saturday morning that convinced me to go looking abroad too.</p>
+
+<p>For a Rails app that’s nearing ten years old (for a kid that’s nearing ten years old), it holds up pretty well. This weekend-gone I bumped the Ruby and Rails versions to modern ones without much fuss. The biggest thing in that upgrade was moving off Webpacker and switching to ESBuild, just as that’s my personal preference now. And I brought in Propshaft over Sprockets. That’s all just for the sprinkles of React + Sass I have in this application.</p>
+
+<p>That done, I went and tried to sign up to <a href="https://fly.io">Fly</a> and got some errors saying my attempt had “Validation errors” but it wasn’t clear what that meant. Then I got into the dashboard and attempted to setup an app, and got confused on the instructions for connecting a Rails app to either Fly’s managed or unmanaged PostgreSQL. This was <em>after</em> I dockerised the application based on Fly’s advice.</p>
+
+<p>That’s the thing about Heroku: I didn’t have to care about dockerising or what PostgreSQL I was using. I could <code>git push</code> and Heroku would handle the rest of the setup.</p>
+
+<p>After Fly gave me the irrits on Saturday, I started afresh on Sunday with a go of <a href="https://render.com">Render</a>. Sign up succeeded without validation errors (big tick) and after pushing my now-Dockerised app over to GitHub’s private container registry, I was able to deploy the app to Render easily.</p>
+
+<p>Next up was the database setup which is its own separate service under the same project. That was a few button presses away. Switching back over to the app to add a <code>DATABASE_URL</code> environment variable I was pleasantly surprised to see a “Datastore URL” as an option in the environment variable screen. This set up the database URL correctly first try without me having to copy each part (username, password, dbname) over one by one.</p>
+
+<p>Then it was only a matter of dumping the database from Heroku with <code>heroku pg:backups</code> incantations, and then restoring it into Render with a straight <code>pg_restore</code>, and then the app was fully deployed.</p>
+
+<p>DNS cutover was straightforward too. I took out the Heroku entries, pointed them to Render’s load balancer and setup a Custom Domain for the app. I removed the SSL certificates from the Heroku app. It took about half an hour for the app to switch over properly.</p>
+
+<p>I’m sure I’m only just touching the edges of what Render can provide, with nothing in this app needing things like autoscaling, one-off jobs, etc.</p>
+
+<p>This is breath of fresh air compared to my day job where it’s Terraform-this and AWS-that. Being able to deploy an application with a few straightforward button presses in a UI felt like magic. The AWS UI designers sure could learn a lot from the Render team.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[After the announcement that Heroku is entering maintenance mode, I got wary of the one (1) application I host on there going down. It’s a Rails app for photos for my kid, which has almost 2,500 photos of her since before she was born until the modern day. I created the app to share these photos with my family back in Adelaide.]]></summary></entry><entry><title type="html">Hearts &amp;amp; Clubs</title><link href="http://localhost:4000/2026/02/hearts-clubs" rel="alternate" type="text/html" title="Hearts &amp;amp; Clubs" /><published>2026-02-06T00:00:00+11:00</published><updated>2026-02-06T00:00:00+11:00</updated><id>http://localhost:4000/2026/02/hearts-clubs</id><content type="html" xml:base="http://localhost:4000/2026/02/hearts-clubs"><![CDATA[<p>At the end of May 2025, my partner (Shaz) and I went to buy a new house. We had inspected it a few times previously and loved it. It was the day of the auction, and we went out for a morning walk with the dog and my heart started doing a weird thing: it started beating really really fast. It sustained the pace for about 5-10 seconds, then returned to baseline. Then it would repeat this about every minute. I put it down to the stress of the auction.</p>
+
+<p>We went to the auction and we were the only bidders, and got bumped up a few notches by vendor bids, and then settled on a final price. All through this time my heart was still doing its slow-fast-slow switching every minute or two. Still putting it down to stress. We sign the contract for the house and so on, and the heart is still doing its thing.</p>
+
+<p>Sunday morning rolls around and it’s <em>still</em> going slow-fast-slow. I start up the heart rate app on my Apple Watch and clock a 160 while lying completely still in bed. Then a 170. I switch to the ECG and I see my heart <em>stopping</em> for about a second, then beating rapidly and then resuming a regular pace. A flat line is not the kind of line you want to see on an ECG.</p>
+
+<p>This continues all through Sunday, and I’ve not let anyone know. Then I mention it to Shaz in the evening and I say I’m going to the Emergency Department. We have a good conversation about how I’m an idiot for not doing this sooner. I get in there, tell them about my condition and they hook me up to a heart monitor for a few minutes. It does not catch the condition. I stay there for approximately 6 hours, un-monitored, and then I’m told that I should be alright to go home. I get home at 2am.</p>
+
+<p>Throughout the next week, it happens more than a dozen times every hour. It gets to Wednesday night and I’m at trivia with my friends, a few ciders deep and my heart is going off <em>every single trivia question</em>. That’s a quicker pace than it’s ever done. On Wednesday night I’m exhausted from trivia and the week in general, so resolve to go to the Emergency Department on Thursday morning. I put it off due to my nothing-burger of an experience on Sunday/Monday.</p>
+
+<p>Thursday morning, I go into Emergency Department, let them know I was in Sunday (no, they don’t do “fifth visit is free!” loyalty cards) and they immediately hook me up to an ECG. Within seconds it’s going off its nut. The heart rate indicator flashes yellow briefly and it goes beep-beep-beep before it flashes a faster red colour and goes BLART-BLART-BLART. The heart rate reads at ~180bpm. I’m in a hospital bed. I only hit 180 on the regular towards the end of my workouts or on a tough bike ride.</p>
+
+<p>They give me medicine called Metoprolol. It quietens the condition for a few hours, and it starts to kick off again just after dinner time. I get a photo of the machine reading 173, but that’s only because it changed when I went to capture the 193 it flashed up right before that. I’ve never seen a 193 during a workout.</p>
+
+<p>I’m given another dose. It goes quiet again for another couple of hours, and kicks off again around 3am. The machine is doing its beep-beep BLART-BLART-BLART routine and I’m a light-sleeper at the best of times. It doesn’t help that this is a shared room and someone in the bed across the way is a worse snorer than me. I put some earbuds in and blast KGLW’s PetroDragonic Apocalypse on loop all night. It actually works and I get back to sleep.</p>
+
+<p>The morning comes and I’m sent home with a referral to a cardiologist and a heart clinic and a prescription for the meds I was on. I <em>immediately</em> take that prescription and get the meds, taking two a day to keep the heart calm. They discharge me with a <em>suspected</em> condition called <a href="https://www.mayoclinic.org/diseases-conditions/supraventricular-tachycardia/symptoms-causes/syc-20355243">SVT</a>.</p>
+
+<p>The referral to a heart clinic leads to me getting a Holter Monitor, not in Warrnambool but in Colac, a 3-hour return-trip away. At the end of June. The Holter Monitor is hooked up to me and I look part-cyborg. I wear it for 24 hours, during which no events happen … because I’m religiously taking the medicine the hospital prescribed.</p>
+
+<p>The referral to the cardiologist leads to a phone call a month later while I’m in Melbourne. They say they’ve got a booking the next day and could I come in for that. I say I can’t make it because of a prior commitment and ask when their next available appointment is. They tell me the 3rd of February, 2026. Yes, 7 months later <em>for a heart condition</em>.</p>
+
+<hr />
+
+<p>That appointment rolled around just this week gone. I am now on my third “bottle” of prescription pills, thankfully only costing $13.75 for 100 pills (and I take a half-dose) because I live in a country with socialised medical care. A++ would recommend to others.</p>
+
+<p>I drive the 3 hours to Geelong and arrive early at the clinic. When I get in to see the Cardiologist, I can see his computer screen. He pulls up my record and makes a face. There’s no referral data there, at all. Nothing from the hospital. Nothing from my GP. Nothing from the clinic. I end up showing him the ECG results I recorded on my Apple Watch and he hesitantly accepts those. He makes suggestions for what it could be, but is unable to diagnose the condition. A follow-up appointment gets booked, and they tell me they’ll <em>mail out a letter</em> like it’s eighteen-bloody-fourty-six.</p>
+
+<p>On the 3 hour drive back, I have a long time to make enquiries as to who fucked up here. I call the hospital. I call the clinic. I call the GP. It is unclear who has what information, and I ask each to send me everything they have. I put on my <em>best</em> “Customer Service” voice and approach each call with the attitude of: “this person I’m speaking to is not responsible for this issue, they’re a messenger”.</p>
+
+<hr />
+
+<p>All last week and this week I’ve been troubleshooting work issues. This week I worked Monday, off Tuesday for Cardiologist, and worked Wednesday &amp; Thursday. We’re in the end-phase of a migration project that’s been going since April, cutting merchants over from one payment processing system to another. We acquired another company in April, and we’re porting all of their merchants over to our systems as best we can. This process is not without its issues, as we have well-and-truly discovered since almost day-dot.</p>
+
+<p>Simultaneously to this, we have other parts of the business handling money-in and money-out for merchants. I learned very early in business that people are sensitive to money issues. And fair enough because money is oxygen for businesses, and money is how we as people survive in this world. What ends up happening is that the bank can be late in their payment, which makes us late in our payments. We’re talking millions of dollars here. Ultimately, everything reconciles out and all the money gets to where it needs to go. When there’s a hiccup, it can feel pretty stressful.</p>
+
+<p>In the past, I have glibly remarked to others that when there’s been issues with money that: “at least nobody’s gonna die”. My viewpoint there is that yes, the job is stressful, but nobody’s going to die if the money takes an extra few hours to arrive. I’m trying to set perspective for myself and for others. It works (for me), but barely.</p>
+
+<p>These work issues that I’ve been troubleshooting come through our support email and these emails can vary in description from “it no work good” all the way up to drawing a big red target on the issue and putting a neon sign abve it saying “right here, this one”. Such is the nature of any support line. I like the target issues because they’re easy, but I also like the “no work good” ones too, because I’m a sicko for a good puzzle.</p>
+
+<p>In a lot of the cases of both, I’ve been helping triage those issues by reading through what the merchants have written and attempting to diagnose the issue. This isn’t always successful. In those cases, I’ve taken the liberty to do a radical thing and <em>call the customer on the phone</em>. Radical, I know. Then when that’s not worked, we’ve gotten on a video call and walked through the issue. Both of these have been immensely helpful to nail down some tricky issues pretty quickly, without having the messages bounce up and down the chain of me -&gt; support -&gt; customer and back again.</p>
+
+<p>There’s been some pretty obvious bugs, including one which was a <code>LIKE</code> that should’ve been an <code>ILIKE</code> that I wrote about three months ago. Mea culpa.</p>
+
+<p>There’s been some more nefarious ones like if these 8 interlocking things are all true but these other 3 things are false then we’ve gotta do a thing.</p>
+
+<p>It’s been helpful to consult with the customers and walkthrough these issues with them and to work with some really awesome people on my team to further diagnose and fix these bugs in a timely manner. I think we ended up shipping over twenty changes over the week in response to these issues and other feedback. It was pretty productive despite being so short a week.</p>
+
+<hr />
+
+<p>Then we get some customers who are (rightfully) upset that the new system isn’t working the same way as the old system. The two aren’t one-to-one compatible because the new system is a re-implementation of things from mostly spoken-word generational-lore. It’s been a swell time. Many learning and development experiences were had. “If I was to have my time again” has been bandied around <em>a lot</em>.</p>
+
+<p>These customers <em>demand</em> immediate rectification of the issues, lengthy explanations of what has happened, and guarantees that all attempts to use the system will be bug-free on an on-going basis. Anyone adjacent to software for any length of time knows full well that the rectifications aren’t going to be immediate, that the explanations will be patchy, and the software <em>will</em> contain bugs.</p>
+
+<p>We listen to their concerns, make Jira cards about the issues and set about fixing them. We write up explanations of how the bugs can occur, and estimate how long it’s going to take them which, again, as we all know, is a precise art.</p>
+
+<p>One “great” thing about payments is that in some cases we can’t know if something’s going to succeed in production until it’s attempted. So we let those customers know that the known bugs have been fixed, they re-attempt some payments, and a subset of those payments fail. We fix <em>those</em> bugs or tweak <em>those</em> configuration settings, and get them to try again. Understandably, people are hesitant to “test in production” when it involves real people and real money, but such is the nature of payments. This usually takes a few tries to iron out most issues.</p>
+
+<p>As the issues are being ironed out, tempers flare as other bugs pop up further “down the road”. Those bugs get fixed as well. Payments are complicated. I reply back and say that the team is working as hard as they can on rectifying issues, which is the honest truth. It falls on deaf ears.</p>
+
+<hr />
+
+<p>Today, the follow up cardiologist letter arrives. The next available appointment is on the 18th of August. 1 year, 2 months and 2 weeks since my initial admission to hospital. I get quite angry about this and fortunately I’m home and nobody’s around to witness how I react to this news. I recover and end up taking the dog for an overdue walk to the park. She runs around like a doofus and brightens my day.</p>
+
+<p>I come back from the park walk and start making some more phone calls. I call everyone I called on Tuesday and follow up the paper trail for my heart condition. I explain the situation calmly and with empathy, because I know these people aren’t the ones directly responsible. They’re just the messenger.</p>
+
+<p>What sits in the back of my mind the whole time is this: “what if my heart failed during this call?”. I’m home alone today with nobody else except the dog and two cats. The other people in this house arrive back here in four hours time. If my heart <em>does</em> decide to go “bad”, will I have enough time to call emergency? That same question sits in my mind all day, every day.</p>
+
+<p>In payments, at least nobody is going to die. But with this heart condition and this massive delay on treatment (14 months and counting), maybe somebody <em>is</em> going to die – me. And maybe it could be prevented by someone doing something as simple as sending an email or a fax, and having the process expedited by that.</p>
+
+<p>I intend to find out what records people have about my stay in hospital and visits to the various clinics. I intend to get paper evidence of all of this. And I intend to do this in a way that is <em>not</em> demanding immediate rectification, lengthy explanations of what happens and guarantees of a flawless system. Because I know that people are <em>falliable</em>  and make mistakes. I will choose in this situation to use my heart instead of my club.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[At the end of May 2025, my partner (Shaz) and I went to buy a new house. We had inspected it a few times previously and loved it. It was the day of the auction, and we went out for a morning walk with the dog and my heart started doing a weird thing: it started beating really really fast. It sustained the pace for about 5-10 seconds, then returned to baseline. Then it would repeat this about every minute. I put it down to the stress of the auction.]]></summary></entry><entry><title type="html">Beware grpc gem and Ruby 4.0</title><link href="http://localhost:4000/2026/01/beware-grpc-gem-and-ruby-40" rel="alternate" type="text/html" title="Beware grpc gem and Ruby 4.0" /><published>2026-01-19T00:00:00+11:00</published><updated>2026-01-19T00:00:00+11:00</updated><id>http://localhost:4000/2026/01/beware-grpc-gem-and-ruby-40</id><content type="html" xml:base="http://localhost:4000/2026/01/beware-grpc-gem-and-ruby-40"><![CDATA[<p>Finally got to the bottom of ridiculously slow build times on one of my applications. I’m talking 30+ minute builds, all without <code>sassc</code>!</p>
+
+<p>We use a gem in the app called <code>newrelic-infinite_tracing</code>, which has a dependency on another gem called <code>grpc</code>. This gem has native extensions that are pre-built. You’ll see these listed on RubyGems as lists like:</p>
+
+<ul>
+  <li>1.76.0 October 24, 2025 x86-linux-gnu (22.5 MB)</li>
+  <li>1.76.0 October 24, 2025 x86_64-linux-gnu (19.8 MB)</li>
+  <li>1.76.0 October 24, 2025 x86_64-linux-musl (18.8 MB)</li>
+  <li>…</li>
+</ul>
+
+<p>These list the version, architecture and platform that you’re going to be installing these gems on. These gems can also be locked to specific Ruby versions, and these 1.76.0 gems are indeed locked to only Ruby <code>&gt;= 3.1</code> and <code>&lt;= 3.5.dev</code>. <strong>This does not include Ruby 4.0!</strong> So when we go to install this gem onto Ruby 4.0, it finds <em>no</em> precompiled binaries, and instead compiles it all from scratch, bringing back memories of <code>sassc</code> and <code>nokogiri</code>’s old compile times before RubyGems introduced this wonderful precompiled binaries feature.</p>
+
+<p>I got to the bottom of this issue by running <code>bundle install</code> with no more <code>-j</code> option, and then measuring which gem took the longest time to install during a CI build step. The step helpfully output timestamps on each line of the <code>bundle install</code> process, which helped a lot toward narrowing it down!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Finally got to the bottom of ridiculously slow build times on one of my applications. I’m talking 30+ minute builds, all without sassc!]]></summary></entry><entry><title type="html">Triaging bugs</title><link href="http://localhost:4000/2025/11/triaging-bugs" rel="alternate" type="text/html" title="Triaging bugs" /><published>2025-11-30T00:00:00+11:00</published><updated>2025-11-30T00:00:00+11:00</updated><id>http://localhost:4000/2025/11/triaging-bugs</id><content type="html" xml:base="http://localhost:4000/2025/11/triaging-bugs"><![CDATA[<p>At Fat Zebra, one of my duties as a team lead is managing the workloads of those I work with and falling into that ambit is bug triaging. We have a dedicated support channel where people can tag all leads and then the responsible leads can triage those issues. All leads get tagged as it’s sometimes unclear who is responsible for an issue, and it helps with the “pinball effect” that can go on for tickets in their early stages.</p>
 
 <p>Another rule of thumb is that when I can see a ticket is about my team’s work is that I’ll assign it to the on-call person for the team to investigate. This helps spread the load away from myself, and trains up the rest of the team on how to investigate all sorts of issues. Other people may be roped into help investigate if the issues lies in their area of expertise.</p>
 
@@ -960,297 +1063,7 @@ end
 
 <p>And if we attempt to update it with invalid data, it will fail:</p>
 
-<p><img src="/images/hanami/book_update_error.jpg" alt="Updated book errors" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 1: Models</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-1-models" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 1: Models" /><published>2025-10-05T00:00:00+10:00</published><updated>2025-10-05T00:00:00+10:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-1-models</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-1-models"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
-
-<ul>
-  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a> (you are here)</li>
-  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
-  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
-  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
-</ul>
-
-<p>There’s plenty of writing out there for <em>why</em> you should use Hanami, and so this post won’t cover that. If you want those thoughts, see my <a href="https://ryanbigg.com/2022/11/hanami-20-thoughts">Hanami 2.0 thoughts</a> and my earlier <a href="https://ryanbigg.com/2018/03/my-thoughts-on-hanami">thoughts on Hanami</a> posts.</p>
-
-<p>This post covers off how to get started with Hanami, with a focus on those who are familiar with Rails and the MVC structure it provides. I’m unashamedly going to crib parts of this from the <a href="https://guides.hanamirb.org/v2.3/introduction/getting-started/">Hanami Getting Started Guide</a>, but explain them in a different way.</p>
-
-<p>With a Rails app, you’ll be familiar with the Model-View-Controller pattern. Hanami has adopted this pattern too, but has a take on it where the concerns are split across more distinct types of classes. This leads to a better separation of concerns and an easier-to-maintain application.</p>
-
-<p>Hanami’s layers of separation are designed with the intent of making long-term maintenance of your application easier. The layers that Hanami introduce don’t come from nowhere. They come out of decades of professionally building Rails applications and realizing what would make maintenance of those applications easier.</p>
-
-<p>In Part 1 of this series, I’m going to cover off how Hanami applications interact with databases.</p>
-
-<h2 id="the-model-layer">The Model Layer</h2>
-
-<p>Whenever you’re building a Rails application you typically want to pull data from a data source. When you’re building a Hanami application, you’ll want to do the same thing. Rather than having one model class to use as a dumping ground, Hanami separates these into a few distinct classes called repositories, relations and structs.</p>
-
-<ol>
-  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
-  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
-  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
-</ol>
-
-<p>Let’s take a look at each of these in turn by creating a table called <code>books</code>, and then inserting data into that table, and then requesting that data back out in various ways.</p>
-
-<h3 id="migrations">Migrations</h3>
-
-<p>Hanami, like Rails, supports database migrations. To create a migration, we use this command:</p>
-
-<pre><code>hanami g migration create_books
-</code></pre>
-
-<p>This migration syntax uses ROM – Hanami’s choice for a database library – and is currently empty. The migrations in Hanami live in <code>config/db/migrate</code>, rather than the <code>db/migrate</code> of Rails. The reason for this is that migrations are <em>configuration for your database</em>.</p>
-
-<p>Let’s see that migration file now in <code>config/db/migrate</code>:</p>
-
-<pre><code class="language-ruby">ROM::SQL.migration do
-  # Add your migration here.
-  #
-  # See https://guides.hanamirb.org/v2.2/database/migrations/ for details.
-  change do
-  end
-end
-</code></pre>
-
-<p>We can fill out this migration to create the <code>books</code> table this way.</p>
-
-<pre><code class="language-ruby">ROM::SQL.migration do
-  change do
-    create_table :books do
-      primary_key :id
-      column :title, :text, null: false
-      column :author, :text, null: false
-    end
-  end
-end
-</code></pre>
-
-<p>The syntax used here is not too dissimilar to what you’d see in a Rails migration. Notably, we have to include the <code>primary_key</code> here, whereas in Rails it comes automatically pre-defined. The migration feature comes from a gem called <code>rom-sql</code>, which itself uses another gem called <code>sequel</code>. The migration syntax itself comes from <code>sequel</code>. You can <a href="https://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html">read more about Sequel migrations here</a></p>
-
-<p>We can run this migration with:</p>
-
-<pre><code>hanami db migrate
-</code></pre>
-
-<p>With our table now existing in our database, we need something to insert and read data from that table. That “something” is called a relation.</p>
-
-<h3 id="relations">Relations</h3>
-
-<p>We can generate a relation using this command:</p>
-
-<pre><code>hanami g relation books
-</code></pre>
-
-<p>Relations in Hanami are pluralised, and match the name of the table. We can use this relation to insert some data by booting up the console:</p>
-
-<pre><code>hanami console
-</code></pre>
-
-<p>Hanami provides a <em>registry</em> for our applications classes, and we can use this registry to get the relation:</p>
-
-<pre><code class="language-ruby">books = app["relations.books"]
-</code></pre>
-
-<p>We’ll see this relation is already configured with our database, thanks to some setup taken care of by Hanami. Rails would do the same thing, but calls it <code>connection</code> on Active Record models.</p>
-
-<pre><code class="language-ruby">#&lt;Bookshelf::Relations::Books name=ROM::Relation::Name(books) dataset=#&lt;Sequel::SQLite::Dataset...
-</code></pre>
-
-<p>We can insert a book into our table by running:</p>
-
-<pre><code class="language-ruby">books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
-</code></pre>
-
-<p>This will simply return <code>1</code> as its the ID of the record that was inserted into the database. This may be surprising to Rails developers, who are used to getting instances back straight away from an <code>insert</code> request. To get back to the data that’s in the database, we can run:</p>
-
-<pre><code>book = books.first
-</code></pre>
-
-<p>We will now see the data as a Hash:</p>
-
-<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg"}
-</code></pre>
-
-<p>The relation for Hanami works with data in its barest form. We passed a Hash to <code>insert</code>, and got one back for <code>first</code>. To get back proper Ruby objects, we need a repository.</p>
-
-<h3 id="repository">Repository</h3>
-
-<p>Let’s generate a repository for our <code>books</code> table now, by exiting our <code>hanami console</code> session (with <code>exit</code>) then running this:</p>
-
-<pre><code>hanami g repo book
-</code></pre>
-
-<p>Repositories in Hanami are singularized, but relations are pluralized. This is because relations are working on your table, which is a collection of data. Repositories on the other hand represent a single type of that data, in this case <code>Book</code>. So the repository representing that type is called <code>BookRepo</code>.</p>
-
-<p>We can use this repository in the console by jumping back in with <code>hanami console</code> and then running:</p>
-
-<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
-</code></pre>
-
-<p>To fetch the book we inserted, we can run:</p>
-
-<pre><code class="language-ruby">book_repo.books.first
-</code></pre>
-
-<p>This method calls <code>books</code>, which access the matching relation from the repository. Then it calls <code>first</code> on that relation.</p>
-
-<p>An interesting thing happens here: this will return a structured version of our data.</p>
-
-<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
-</code></pre>
-
-<p>We get this ability by using the relation through the repository.</p>
-
-<p>The returned object here has very few methods on it. Just enough methods to represent the data from the row, and that’s it.</p>
-
-<p>Calling <code>book_repo.books.&lt;whatever method&gt;</code> is going to get old very quickly, and that leads us to the point of repositories. We can provide shorter methods by adding them to our repository. Let’s add a <code>find</code> and an <code>all</code> method to our repository, over in <code>app/repos/book_repo.rb</code>:</p>
-
-<pre><code class="language-ruby">module Bookshelf
-  module Repos
-    class BookRepo &lt; Bookshelf::DB::Repo
-      def find(id)
-        books.by_pk(id).one
-      end
-
-      def all
-        books.to_a
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>This method can then be used to find our book based on the table’s primary key. Let’s exit the console, start it again and try that now:</p>
-
-<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
-book = book_repo.find(1)
-</code></pre>
-
-<p>We’ll get back our book, all without having to type <code>where</code> + <code>first</code>.</p>
-
-<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
-</code></pre>
-
-<p>We can also retrieve all of our books by using <code>all</code>:</p>
-
-<pre><code>books = book_repo.all
-=&gt; [#&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;]
-</code></pre>
-
-<h3 id="scoping-queries">Scoping queries</h3>
-
-<p>To further demonstrate what a repository and relation do within a Hanami application, we’re now going to perform an action that would be common to a lot of Rails applications: adding a <code>by_year</code> scope to our queries. In Rails, we would add this to a model with this code:</p>
-
-<pre><code class="language-ruby">scope :by_year, -&gt;(year) { where(year: year) }
-</code></pre>
-
-<p>This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository. Before we can perform queries against a year column, let’s add it with one more migration. We’ll create this migration with:</p>
-
-<pre><code>hanami g migration add_year_to_books
-</code></pre>
-
-<p>We’ll open up that new migration file in <code>config/db/migrate</code> and fill it out this way:</p>
-
-<pre><code class="language-ruby">ROM::SQL.migration do
-  change do
-    add_column :books, :year, :integer
-  end
-end
-</code></pre>
-
-<p>Let’s run this migration with:</p>
-
-<pre><code>hanami db migrate
-</code></pre>
-
-<p>Now that we have a <code>year</code> column, let’s open up <code>app/repos/book_repo.rb</code> and define a method to find books matching a particular year:</p>
-
-<pre><code class="language-ruby">def by_year(year)
-  books.where(year: year)
-end
-</code></pre>
-
-<p>This code can allow us to call <code>book_repo.by_year(2025)</code> to get all the books from the year 2025.</p>
-
-<p>As you can see by these <code>find</code> and <code>by_year</code> methods, we define the methods to interact with our database as we need them within a Hanami application.</p>
-
-<p>Let’s add one more of these to find by the author as well:</p>
-
-<pre><code class="language-ruby">def by_author(author)
-  books.where(author: author)
-end
-</code></pre>
-
-<p>If we do <code>book_repo.by_author("Ryan Bigg")</code> in our console, we’ll get back the book we added earlier on.</p>
-
-<p>Now what about if we wanted to chain these <code>by_author</code> and <code>by_year</code> methods together by calling:</p>
-
-<pre><code class="language-ruby">book_repo.by_year(2025).by_author("Ryan Bigg")
-</code></pre>
-
-<p>Well, if we try that out now, we’ll get an error:</p>
-
-<pre><code class="language-ruby">(irb):2:in `&lt;main&gt;': undefined method `by_author' for #&lt;Bookshelf::Relations::Books
-</code></pre>
-
-<p>This is because the object returned by <code>by_year</code> is an instance of the relation itself. If we want to chain these methods, we need to add them to the relation, and not to the repository. Let’s create similar methods over in <code>app/relations/books.rb</code> now:</p>
-
-<pre><code class="language-ruby">def by_year(year)
-  where(year: year)
-end
-
-def by_author(author)
-  where(author: author)
-end
-</code></pre>
-
-<p>We can now use these methods, rather than defining the same logic again, back in the repository. Let’s change the code there in <code>app/repos/book_repo.rb</code> to this:</p>
-
-<pre><code class="language-ruby">def by_year(year)
-  books.by_year(year)
-end
-
-def by_author(author)
-  books.by_author(author)
-end
-</code></pre>
-
-<p>By moving these methods over to the relation, we should now be able to chain them together. Let’s reload the console and try again:</p>
-
-<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
-book_repo.by_year(2025).by_author("Ryan Bigg")
-</code></pre>
-
-<p>What we get back here is a new instance of <code>Bookshelf::Relations::Books</code>, because we haven’t asked this relation to do any more than to generate us a query based on books for a particular year and author. At this point, we <em>could</em> throw some more <code>where</code> clauses onto the end if we wanted to further scope the data.</p>
-
-<p>We can trigger a query to run by asking this for the <em>first</em> book.</p>
-
-<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
-book_repo.by_year(2025).by_author("Ryan Bigg").first
-</code></pre>
-
-<p>This returns nothing! This is because there is no book with that year in our dataset, we only created a book with a title and an author, not a year. We can update our record to have a year by running:</p>
-
-<pre><code class="language-ruby">book_repo.books.where(id: 1).update(year: 2025)
-</code></pre>
-
-<p>Instead of doing a <code>find</code> then an <code>update</code> like you might in a Rails app, we’re doing only an update. That’s all we need to do here. Let’s try running that query again to get the first book:</p>
-
-<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
-book_repo.by_year(2025).by_author("Ryan Bigg").first
-=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg" year=2025&gt;
-</code></pre>
-
-<p>Great!</p>
-
-<p>As we can see from this “Model Layer” section of this guide, Hanami provides three distinct layers of separation here:</p>
-
-<ol>
-  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
-  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
-  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
-</ol>
-
-<p>Rails would have you throw all of this into the one class (a model), leading to quite a lot of mess and making things harder to read. Hanami’s separation is initially disorienting (which file was that code in?) but after a few days that disorientation will wear off!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 2: Controllers</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 2: Controllers" /><published>2025-10-05T00:00:00+10:00</published><updated>2025-10-05T00:00:00+10:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+<p><img src="/images/hanami/book_update_error.jpg" alt="Updated book errors" /></p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 2: Controllers</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 2: Controllers" /><published>2025-10-05T00:00:00+10:00</published><updated>2025-10-05T00:00:00+10:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-2-controllers"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
 
 <ul>
   <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a></li>
@@ -1567,7 +1380,297 @@ end
 <pre><code class="language-ruby">&lt;h2&gt;&lt;%= link_to book.title, book.show_path %&gt;&lt;/h2&gt;
 </code></pre>
 
-<p>The great thing about this is that if we ever want to know where <code>show_path</code> is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails’ dynamic routing methods, and you’ll see that this a vast improvement.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Show, Don’t Tell</title><link href="http://localhost:4000/2025/05/show-dont-tell" rel="alternate" type="text/html" title="Show, Don’t Tell" /><published>2025-05-03T00:00:00+10:00</published><updated>2025-05-03T00:00:00+10:00</updated><id>http://localhost:4000/2025/05/show-dont-tell</id><content type="html" xml:base="http://localhost:4000/2025/05/show-dont-tell"><![CDATA[<p>On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been <a href="https://ryanbigg.com/2018/03/hiring-juniors">a proponent for junior developers for a very long time</a>, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.</p>
+<p>The great thing about this is that if we ever want to know where <code>show_path</code> is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails’ dynamic routing methods, and you’ll see that this a vast improvement.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Hanami for Rails Developers: Part 1: Models</title><link href="http://localhost:4000/2025/10/hanami-for-rails-developers-1-models" rel="alternate" type="text/html" title="Hanami for Rails Developers: Part 1: Models" /><published>2025-10-05T00:00:00+10:00</published><updated>2025-10-05T00:00:00+10:00</updated><id>http://localhost:4000/2025/10/hanami-for-rails-developers-1-models</id><content type="html" xml:base="http://localhost:4000/2025/10/hanami-for-rails-developers-1-models"><![CDATA[<p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+
+<ul>
+  <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a> (you are here)</li>
+  <li>Part 2: <a href="/2025/10/hanami-for-rails-developers-2-controllers">Controllers</a></li>
+  <li>Part 3: <a href="/2025/10/hanami-for-rails-developers-3-forms">Forms</a></li>
+  <li>Part 4: <a href="/2025/10/hanami-for-rails-developers-4-associations">Associations</a></li>
+</ul>
+
+<p>There’s plenty of writing out there for <em>why</em> you should use Hanami, and so this post won’t cover that. If you want those thoughts, see my <a href="https://ryanbigg.com/2022/11/hanami-20-thoughts">Hanami 2.0 thoughts</a> and my earlier <a href="https://ryanbigg.com/2018/03/my-thoughts-on-hanami">thoughts on Hanami</a> posts.</p>
+
+<p>This post covers off how to get started with Hanami, with a focus on those who are familiar with Rails and the MVC structure it provides. I’m unashamedly going to crib parts of this from the <a href="https://guides.hanamirb.org/v2.3/introduction/getting-started/">Hanami Getting Started Guide</a>, but explain them in a different way.</p>
+
+<p>With a Rails app, you’ll be familiar with the Model-View-Controller pattern. Hanami has adopted this pattern too, but has a take on it where the concerns are split across more distinct types of classes. This leads to a better separation of concerns and an easier-to-maintain application.</p>
+
+<p>Hanami’s layers of separation are designed with the intent of making long-term maintenance of your application easier. The layers that Hanami introduce don’t come from nowhere. They come out of decades of professionally building Rails applications and realizing what would make maintenance of those applications easier.</p>
+
+<p>In Part 1 of this series, I’m going to cover off how Hanami applications interact with databases.</p>
+
+<h2 id="the-model-layer">The Model Layer</h2>
+
+<p>Whenever you’re building a Rails application you typically want to pull data from a data source. When you’re building a Hanami application, you’ll want to do the same thing. Rather than having one model class to use as a dumping ground, Hanami separates these into a few distinct classes called repositories, relations and structs.</p>
+
+<ol>
+  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
+  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
+  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
+</ol>
+
+<p>Let’s take a look at each of these in turn by creating a table called <code>books</code>, and then inserting data into that table, and then requesting that data back out in various ways.</p>
+
+<h3 id="migrations">Migrations</h3>
+
+<p>Hanami, like Rails, supports database migrations. To create a migration, we use this command:</p>
+
+<pre><code>hanami g migration create_books
+</code></pre>
+
+<p>This migration syntax uses ROM – Hanami’s choice for a database library – and is currently empty. The migrations in Hanami live in <code>config/db/migrate</code>, rather than the <code>db/migrate</code> of Rails. The reason for this is that migrations are <em>configuration for your database</em>.</p>
+
+<p>Let’s see that migration file now in <code>config/db/migrate</code>:</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  # Add your migration here.
+  #
+  # See https://guides.hanamirb.org/v2.2/database/migrations/ for details.
+  change do
+  end
+end
+</code></pre>
+
+<p>We can fill out this migration to create the <code>books</code> table this way.</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  change do
+    create_table :books do
+      primary_key :id
+      column :title, :text, null: false
+      column :author, :text, null: false
+    end
+  end
+end
+</code></pre>
+
+<p>The syntax used here is not too dissimilar to what you’d see in a Rails migration. Notably, we have to include the <code>primary_key</code> here, whereas in Rails it comes automatically pre-defined. The migration feature comes from a gem called <code>rom-sql</code>, which itself uses another gem called <code>sequel</code>. The migration syntax itself comes from <code>sequel</code>. You can <a href="https://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html">read more about Sequel migrations here</a></p>
+
+<p>We can run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<p>With our table now existing in our database, we need something to insert and read data from that table. That “something” is called a relation.</p>
+
+<h3 id="relations">Relations</h3>
+
+<p>We can generate a relation using this command:</p>
+
+<pre><code>hanami g relation books
+</code></pre>
+
+<p>Relations in Hanami are pluralised, and match the name of the table. We can use this relation to insert some data by booting up the console:</p>
+
+<pre><code>hanami console
+</code></pre>
+
+<p>Hanami provides a <em>registry</em> for our applications classes, and we can use this registry to get the relation:</p>
+
+<pre><code class="language-ruby">books = app["relations.books"]
+</code></pre>
+
+<p>We’ll see this relation is already configured with our database, thanks to some setup taken care of by Hanami. Rails would do the same thing, but calls it <code>connection</code> on Active Record models.</p>
+
+<pre><code class="language-ruby">#&lt;Bookshelf::Relations::Books name=ROM::Relation::Name(books) dataset=#&lt;Sequel::SQLite::Dataset...
+</code></pre>
+
+<p>We can insert a book into our table by running:</p>
+
+<pre><code class="language-ruby">books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
+</code></pre>
+
+<p>This will simply return <code>1</code> as its the ID of the record that was inserted into the database. This may be surprising to Rails developers, who are used to getting instances back straight away from an <code>insert</code> request. To get back to the data that’s in the database, we can run:</p>
+
+<pre><code>book = books.first
+</code></pre>
+
+<p>We will now see the data as a Hash:</p>
+
+<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg"}
+</code></pre>
+
+<p>The relation for Hanami works with data in its barest form. We passed a Hash to <code>insert</code>, and got one back for <code>first</code>. To get back proper Ruby objects, we need a repository.</p>
+
+<h3 id="repository">Repository</h3>
+
+<p>Let’s generate a repository for our <code>books</code> table now, by exiting our <code>hanami console</code> session (with <code>exit</code>) then running this:</p>
+
+<pre><code>hanami g repo book
+</code></pre>
+
+<p>Repositories in Hanami are singularized, but relations are pluralized. This is because relations are working on your table, which is a collection of data. Repositories on the other hand represent a single type of that data, in this case <code>Book</code>. So the repository representing that type is called <code>BookRepo</code>.</p>
+
+<p>We can use this repository in the console by jumping back in with <code>hanami console</code> and then running:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+</code></pre>
+
+<p>To fetch the book we inserted, we can run:</p>
+
+<pre><code class="language-ruby">book_repo.books.first
+</code></pre>
+
+<p>This method calls <code>books</code>, which access the matching relation from the repository. Then it calls <code>first</code> on that relation.</p>
+
+<p>An interesting thing happens here: this will return a structured version of our data.</p>
+
+<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
+</code></pre>
+
+<p>We get this ability by using the relation through the repository.</p>
+
+<p>The returned object here has very few methods on it. Just enough methods to represent the data from the row, and that’s it.</p>
+
+<p>Calling <code>book_repo.books.&lt;whatever method&gt;</code> is going to get old very quickly, and that leads us to the point of repositories. We can provide shorter methods by adding them to our repository. Let’s add a <code>find</code> and an <code>all</code> method to our repository, over in <code>app/repos/book_repo.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  module Repos
+    class BookRepo &lt; Bookshelf::DB::Repo
+      def find(id)
+        books.by_pk(id).one
+      end
+
+      def all
+        books.to_a
+      end
+    end
+  end
+end
+</code></pre>
+
+<p>This method can then be used to find our book based on the table’s primary key. Let’s exit the console, start it again and try that now:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book = book_repo.find(1)
+</code></pre>
+
+<p>We’ll get back our book, all without having to type <code>where</code> + <code>first</code>.</p>
+
+<pre><code>=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;
+</code></pre>
+
+<p>We can also retrieve all of our books by using <code>all</code>:</p>
+
+<pre><code>books = book_repo.all
+=&gt; [#&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg"&gt;]
+</code></pre>
+
+<h3 id="scoping-queries">Scoping queries</h3>
+
+<p>To further demonstrate what a repository and relation do within a Hanami application, we’re now going to perform an action that would be common to a lot of Rails applications: adding a <code>by_year</code> scope to our queries. In Rails, we would add this to a model with this code:</p>
+
+<pre><code class="language-ruby">scope :by_year, -&gt;(year) { where(year: year) }
+</code></pre>
+
+<p>This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository. Before we can perform queries against a year column, let’s add it with one more migration. We’ll create this migration with:</p>
+
+<pre><code>hanami g migration add_year_to_books
+</code></pre>
+
+<p>We’ll open up that new migration file in <code>config/db/migrate</code> and fill it out this way:</p>
+
+<pre><code class="language-ruby">ROM::SQL.migration do
+  change do
+    add_column :books, :year, :integer
+  end
+end
+</code></pre>
+
+<p>Let’s run this migration with:</p>
+
+<pre><code>hanami db migrate
+</code></pre>
+
+<p>Now that we have a <code>year</code> column, let’s open up <code>app/repos/book_repo.rb</code> and define a method to find books matching a particular year:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  books.where(year: year)
+end
+</code></pre>
+
+<p>This code can allow us to call <code>book_repo.by_year(2025)</code> to get all the books from the year 2025.</p>
+
+<p>As you can see by these <code>find</code> and <code>by_year</code> methods, we define the methods to interact with our database as we need them within a Hanami application.</p>
+
+<p>Let’s add one more of these to find by the author as well:</p>
+
+<pre><code class="language-ruby">def by_author(author)
+  books.where(author: author)
+end
+</code></pre>
+
+<p>If we do <code>book_repo.by_author("Ryan Bigg")</code> in our console, we’ll get back the book we added earlier on.</p>
+
+<p>Now what about if we wanted to chain these <code>by_author</code> and <code>by_year</code> methods together by calling:</p>
+
+<pre><code class="language-ruby">book_repo.by_year(2025).by_author("Ryan Bigg")
+</code></pre>
+
+<p>Well, if we try that out now, we’ll get an error:</p>
+
+<pre><code class="language-ruby">(irb):2:in `&lt;main&gt;': undefined method `by_author' for #&lt;Bookshelf::Relations::Books
+</code></pre>
+
+<p>This is because the object returned by <code>by_year</code> is an instance of the relation itself. If we want to chain these methods, we need to add them to the relation, and not to the repository. Let’s create similar methods over in <code>app/relations/books.rb</code> now:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  where(year: year)
+end
+
+def by_author(author)
+  where(author: author)
+end
+</code></pre>
+
+<p>We can now use these methods, rather than defining the same logic again, back in the repository. Let’s change the code there in <code>app/repos/book_repo.rb</code> to this:</p>
+
+<pre><code class="language-ruby">def by_year(year)
+  books.by_year(year)
+end
+
+def by_author(author)
+  books.by_author(author)
+end
+</code></pre>
+
+<p>By moving these methods over to the relation, we should now be able to chain them together. Let’s reload the console and try again:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg")
+</code></pre>
+
+<p>What we get back here is a new instance of <code>Bookshelf::Relations::Books</code>, because we haven’t asked this relation to do any more than to generate us a query based on books for a particular year and author. At this point, we <em>could</em> throw some more <code>where</code> clauses onto the end if we wanted to further scope the data.</p>
+
+<p>We can trigger a query to run by asking this for the <em>first</em> book.</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg").first
+</code></pre>
+
+<p>This returns nothing! This is because there is no book with that year in our dataset, we only created a book with a title and an author, not a year. We can update our record to have a year by running:</p>
+
+<pre><code class="language-ruby">book_repo.books.where(id: 1).update(year: 2025)
+</code></pre>
+
+<p>Instead of doing a <code>find</code> then an <code>update</code> like you might in a Rails app, we’re doing only an update. That’s all we need to do here. Let’s try running that query again to get the first book:</p>
+
+<pre><code class="language-ruby">book_repo = app["repos.book_repo"]
+book_repo.by_year(2025).by_author("Ryan Bigg").first
+=&gt; #&lt;Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg" year=2025&gt;
+</code></pre>
+
+<p>Great!</p>
+
+<p>As we can see from this “Model Layer” section of this guide, Hanami provides three distinct layers of separation here:</p>
+
+<ol>
+  <li><strong>Repositories</strong>: Defines the interactions between your database and your application.</li>
+  <li><strong>Relations</strong>: Provides a home for your application’s complicated queries.</li>
+  <li><strong>Structs</strong>: Represents rows from your database in plain and simple Ruby objects.</li>
+</ol>
+
+<p>Rails would have you throw all of this into the one class (a model), leading to quite a lot of mess and making things harder to read. Hanami’s separation is initially disorienting (which file was that code in?) but after a few days that disorientation will wear off!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post is part of a series called “Hanami for Rails Developers”.]]></summary></entry><entry><title type="html">Show, Don’t Tell</title><link href="http://localhost:4000/2025/05/show-dont-tell" rel="alternate" type="text/html" title="Show, Don’t Tell" /><published>2025-05-03T00:00:00+10:00</published><updated>2025-05-03T00:00:00+10:00</updated><id>http://localhost:4000/2025/05/show-dont-tell</id><content type="html" xml:base="http://localhost:4000/2025/05/show-dont-tell"><![CDATA[<p>On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been <a href="https://ryanbigg.com/2018/03/hiring-juniors">a proponent for junior developers for a very long time</a>, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.</p>
 
 <p>My advice to the juniors of 2025 is plain and simple: <strong>Show, Don’t Tell.</strong> The first time I hear from a lot of juniors is probably when they apply for a job, or reach out about one. It used to be meetups but the tyranny of distance got in the way.</p>
 
@@ -1585,123 +1688,4 @@ end
 
 <p>So: <em>Show me</em> what you can do, rather than giving me a list of tools. A Luthier and I both know how to use a saw, but only one of us knows how to make a guitar. The proof is in the doing, not the telling.</p>
 
-<p><small>(And for god sake: use a colour other than black and white on your resumé!)</small></p>]]></content><author><name></name></author><summary type="html"><![CDATA[On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been a proponent for junior developers for a very long time, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.]]></summary></entry><entry><title type="html">Cursor-based querying with Rails</title><link href="http://localhost:4000/2025/04/cursor-based-querying" rel="alternate" type="text/html" title="Cursor-based querying with Rails" /><published>2025-04-03T00:00:00+11:00</published><updated>2025-04-03T00:00:00+11:00</updated><id>http://localhost:4000/2025/04/cursor-based-querying</id><content type="html" xml:base="http://localhost:4000/2025/04/cursor-based-querying"><![CDATA[<p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
-
-<p>This sort of addition of a <code>LIMIT</code> + <code>OFFSET</code> to a slow query is commonly also used as a stop-gap for expensive queries. Perhaps before adding this, you have a query that’s building up a long list of transactions for another business to consume, and then one of your customers has a particularly impressive day and then your database has a particularly not-so-impressive time with that query. No problem, you think, you’ll find the data in batches of 1000 by using a <code>LIMIT</code> and <code>OFFSET</code> (such as how <code>find_in_batches</code> in Rails operates). This query will operate <em>better</em> than one without, but as soon as that <code>OFFSET</code> value hits a high number, you’ll run into performance problems again.</p>
-
-<p>When I’ve run into these problems, I’ve turned to the <a href="https://github.com/afair/postgresql_cursor">postgresql_cursor</a> gem. This gem uses <a href="https://www.postgresql.org/docs/current/plpgsql-cursors.html">PostgreSQL cursors</a> to iterate through all the rows of a query without loading the entire query at once.</p>
-
-<p>We can use this in application by calling its methods on a model:</p>
-
-<pre><code class="language-ruby">Purchase.each_instance do |purchase|
-  # do something with the data here
-end
-</code></pre>
-
-<p>This will instantiate each of the rows into instances of the model, but sometimes you just want the raw data instead. For that, the gem provides a different method:</p>
-
-<pre><code class="language-ruby">Purchase.each_row do |row|
-  # do something with the raw data
-end
-</code></pre>
-
-<p>This breaks the queries down by defining a cursor and then iterating through the rows in batches of 1,000 by default. Here’s an example of what the queries for this look like in an application I’m running locally:</p>
-
-<pre><code>   (2.0ms)  declare cursor_58f312c30e9a4719826fbdef24ed2017 no scroll cursor for SELECT "purchases".* FROM "purchases"
-   (16.5ms)  fetch 1000 from cursor_58f312c30e9a4719826fbdef24ed2017
-   (0.2ms)  fetch 1000 from cursor_58f312c30e9a4719826fbdef24ed2017
-   (0.1ms)  close cursor_58f312c30e9a4719826fbdef24ed2017
-</code></pre>
-
-<p>Once I’m done working on the first set of thousand, then the gem will fetch the next thousand by calling <code>fetch 1000 from &lt;cursor_id&gt;</code>, with a final call to close off the cursor once there’s no more data returned.</p>
-
-<p>This massively eases the memory pressure on the database as it doesn’t need to load more than 1,000 records at a single time, and keeps its performance linear even if we’re iterating through a whole bunch of different records. All without needing a <code>LIMIT</code> or <code>OFFSET</code>!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[It’s a well known issue that LIMIT + OFFSET pagination in any SQL server will lead to performance problems once the value of OFFSET reaches a high enough value. This is because the database has to scan through the first [OFFSET amount] of records that match the query before it can start returning an amount of records up to the LIMIT.]]></summary></entry><entry><title type="html">Note taking</title><link href="http://localhost:4000/2025/03/note-taking" rel="alternate" type="text/html" title="Note taking" /><published>2025-03-18T00:00:00+11:00</published><updated>2025-03-18T00:00:00+11:00</updated><id>http://localhost:4000/2025/03/note-taking</id><content type="html" xml:base="http://localhost:4000/2025/03/note-taking"><![CDATA[<p>There was a question on the Ruby Oceania Slack recently:</p>
-
-<blockquote>
-  <p>What tools/apps are folks using in 2025 to manage their own tasks/life?</p>
-</blockquote>
-
-<p>I gave an answer, which I’ve modified slightly for blogability, and kept focussed to just note taking:</p>
-
-<p>Physical A5 note book with 0.8mm Uni-Ball Fineliner in either blue or black depending on the mood. Coincidentally, <a href="https://www.theverge.com/2024/11/25/24305832/sam-altman-pen-notebook-muji-uniball">Sam Altmann has similar tastes.</a></p>
-
-<p>Each page is a day. Write down intentions at start of day and then add to list as day continues. Review calendar, note down meetings and their times. Finish day by reviewing the list from the day and figuring out what to do next, then writing notes into next day’s page if necessary. Good for brain dumping end of day to then clear brain for home.</p>
-
-<p>Bigger projects, longer term storage: <a href="https://bear.app/">Bear app</a>, which is similar in featureset to <a href="https://obsidian.md/">Obsidian</a>. Typically one note per project, person, team or theme. Most of the time these are date-headed as well, so for example project standup today was headed with March 17th, and can tag that with <code>#Journal/2025/03/17</code> so I could look at <code>#Journal/2025/03</code> and find all the things that I thought were notable for the month.</p>
-
-<p>One on one notes with reports or managers go into this app directly as it’s helpful to track certain initiatives or discussions over time. Each time we talk, there’s as sub-heading in the person’s note with the date. All Bear notes being date-headed means I can say with assurance that “you said X on Y date” with some degree of confidence.</p>
-
-<p>Other notes of note:</p>
-
-<ul>
-  <li>(passworded) Tax Return check list (find these invoices for all your sass apps, other subscriptions, here’s what you had last year and their costs…)</li>
-  <li>Blog post drafts a plenty (including this one)</li>
-  <li>A very rough outline of a DND one shot I’m planning</li>
-  <li>A list of magic cards I’m seeking</li>
-  <li>Local burger shop order</li>
-</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[There was a question on the Ruby Oceania Slack recently:]]></summary></entry><entry><title type="html">Decorating arrays with SimpleDelegator</title><link href="http://localhost:4000/2025/03/decorating-arrays-with-simpledelegator" rel="alternate" type="text/html" title="Decorating arrays with SimpleDelegator" /><published>2025-03-03T00:00:00+11:00</published><updated>2025-03-03T00:00:00+11:00</updated><id>http://localhost:4000/2025/03/decorating-arrays-with-simpledelegator</id><content type="html" xml:base="http://localhost:4000/2025/03/decorating-arrays-with-simpledelegator"><![CDATA[<p>Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:</p>
-
-<pre><code class="language-ruby">Transaction  = Data.define(:date, :amount, :status)
-
-transactions = 100.times.map do
-  Transaction.new(
-    date: Date.today - rand(30),
-    amount: rand(1.0..250.0).round(2),
-    status: rand &lt; 0.9 ? "Approved" : "Declined"
-  )
-end
-</code></pre>
-
-<p>These transactions are a list occurring anywhere in the last 30 days, with amounts between $1 and $250, with a status that has a 90% chance of being “Approved” and 10% chance of being “Declined”.</p>
-
-<p>To filter on these I can use common methods like <code>select</code>:</p>
-
-<pre><code class="language-ruby">transactions
-  .select { it.amount &lt;= 25 }
-  .select { it.date == Date.parse("2025-02-26") }
-</code></pre>
-
-<p>That would find me any transaction with an amount less than $25, occurring on the 26th of February. Easy enough!</p>
-
-<p>But we can bring this code closer to English by using <code>SimpleDelegator</code> to decorate our array, creating a neat DSL:</p>
-
-<pre><code class="language-ruby">class Transactions &lt; SimpleDelegator
-  def amount_lte(amount)
-    select { it.amount &lt;= amount }
-  end
-
-  def for_date(date)
-    select { it.date == Date.parse(date) }
-  end
-
-  def select(&amp;block)
-    self.class.new(super(&amp;block))
-  end
-end
-</code></pre>
-
-<p>This class inherits from SimpleDelegator and defines methods to provide that simple DSL. Our code from before:</p>
-
-<pre><code class="language-ruby">transactions
-  .select { it.amount &lt;= 25 }
-  .select { it.date == Date.parse("2025-02-26") }
-</code></pre>
-
-<p>Can now instead be written as:</p>
-
-<pre><code class="language-ruby">transactions = Transactions.new(transactions)
-transactions
-  .amount_lte(25)
-  .for_date("2025-02-06")
-</code></pre>
-
-<p>This has centralized the implementation details of how we query the transactions into one simple class. Anything that needs to massage the input before we run a query on transactions now has a nice place to live. An example of this is to put <code>Date.parse</code> inside <code>for_date</code>. This could be customized further to <em>only</em> do that <code>Date.parse</code> if the object passed in is a string and not a <code>Date</code> already.</p>
-
-<p>As a bit of “homework” here, can you update this class to add methods for finding only approved or declined transactions? Is there a chance you could make outside this <code>Transactions</code> class to make the syntax cleaner?</p>
-
-<p>Could you also support this syntax?</p>
-
-<pre><code class="language-ruby">transactions.for_date(date_1).or(transactions.for_date(date_2))
-</code></pre>
-
-<p>And now can you write that code any shorter as well?</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Let’s say that I have a long list of transactions and that I want to apply some filtering steps to these with Ruby. I might have gathered this list from somewhere in particular, or I could generate it with some quick Ruby:]]></summary></entry></feed>
+<p><small>(And for god sake: use a colour other than black and white on your resumé!)</small></p>]]></content><author><name></name></author><summary type="html"><![CDATA[On Monday night, I’m going to be on a panel in Melbourne, in front of a crowd of aspirational junior developers, answering questions and giving advice. I’ve been a proponent for junior developers for a very long time, and ran two successful iterations of my Junior Engineering Program at Culture Amp, ending in 2019, as well as continuing to mentor developers in my current line of work.]]></summary></entry></feed>
