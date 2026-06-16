@@ -17,5 +17,6 @@ A few things that our team has worked on to fix this has been:
 - Removing `bullet` from the majority of our specs, which garnered a 12% across-the-board speedup.
 - Adding a way of checking which branch & commit our app is running in any environment, without having to check the New Relic logs.
 - Swapping from `yarn` to `pnpm`, as the `yarn` audit endpoint is [browning out](https://ryanbigg.com/2026/04/npm-putting-the-brown-in-brownout).
+- Diagnosing why certain users could set feature flags in staging, and others could not, and fixing this.
 
-Each of these is a good improvement on its own, but collectively it's meant that our timeline for getting changes through CI and out to users has been reduced. We chose to prioritise this work during a really busy time so that we could move faster. If we weren't working on being faster _now_, then when would we otherwise?
+Each of these is a good improvement on its own, but collectively it's meant that our timeline for getting changes through CI and out to users has been reduced. We chose to prioritise this work during a really busy time so that we could move faster. If we weren't working on being faster _now_, then when would we otherwise? I think these efforts to verify faster are what are contributing to our team being efficient during this crunch time.
