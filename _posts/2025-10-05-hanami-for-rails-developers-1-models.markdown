@@ -4,12 +4,12 @@ layout: post
 title: "Hanami for Rails Developers: Part 1: Models"
 ---
 
-This blog post is part of a series called "Hanami for Rails Developers".
+This blog post is part of a series called "Hanami for Rails Developers". These guides are written using Hanami 3.0.1.
 
-* Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models) (you are here)
-* Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
-* Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
-* Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations)
+- Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models) (you are here)
+- Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
+- Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
+- Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations)
 
 There's plenty of writing out there for _why_ you should use Hanami, and so this post won't cover that. If you want those thoughts, see my [Hanami 2.0 thoughts](https://ryanbigg.com/2022/11/hanami-20-thoughts) and my earlier [thoughts on Hanami](https://ryanbigg.com/2018/03/my-thoughts-on-hanami) posts.
 
@@ -44,10 +44,12 @@ This migration syntax uses ROM -- Hanami's choice for a database library -- and 
 Let's see that migration file now in `config/db/migrate`:
 
 ```ruby
+# frozen_string_literal: true
+
 ROM::SQL.migration do
   # Add your migration here.
   #
-  # See https://guides.hanamirb.org/v2.2/database/migrations/ for details.
+  # See https://hanakai.org/learn/hanami/database/migrations/ for details.
   change do
   end
 end
@@ -75,9 +77,15 @@ We can run this migration with:
 hanami db migrate
 ```
 
+This creates our table, and creates a structure file at `config/db/structure.sql`. This is in SQL format, as Hanami's belief is that we should represent database structure in terms a database should understand.
+
 With our table now existing in our database, we need something to insert and read data from that table. That "something" is called a relation.
 
 ### Relations
+
+A relation in Hanami is used as a class to store the relational logic of your queries. As Hanami's own documentation says:
+
+> Relations own the responsibility of querying your database.
 
 We can generate a relation using this command:
 
@@ -99,15 +107,15 @@ books = app["relations.books"]
 
 We'll see this relation is already configured with our database, thanks to some setup taken care of by Hanami. Rails would do the same thing, but calls it `connection` on Active Record models.
 
-```ruby
+````ruby
 #<Bookshelf::Relations::Books name=ROM::Relation::Name(books) dataset=#<Sequel::SQLite::Dataset...
-```
+```****
 
 We can insert a book into our table by running:
 
 ```ruby
 books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
-```
+````
 
 This will simply return `1` as its the ID of the record that was inserted into the database. This may be surprising to Rails developers, who are used to getting instances back straight away from an `insert` request. To get back to the data that's in the database, we can run:
 
@@ -118,12 +126,18 @@ book = books.first
 We will now see the data as a Hash:
 
 ```
-=> {:id=>1, :title=>"Hanami for Rails Developers", :author=>"Ryan Bigg"}
+=> {id: 1, title: "Hanami for Rails Developers", author: "Ryan Bigg"}
 ```
 
 The relation for Hanami works with data in its barest form. We passed a Hash to `insert`, and got one back for `first`. To get back proper Ruby objects, we need a repository.
 
 ### Repository
+
+Hanami's documentation says this about repositories:
+
+> \[Repositories\] exist to bridge the gap between business objects and database objects.
+
+A repository in Hanami is where we provide the public API of a database layer back to our application. We'll see examples of this in a moment.
 
 Let's generate a repository for our `books` table now, by exiting our `hanami console` session (with `exit`) then running this:
 
@@ -195,7 +209,6 @@ books = book_repo.all
 => [#<Bookshelf::Structs::Book id=1 title="Hanami for Rails Developers" author="Ryan Bigg">]
 ```
 
-
 ### Scoping queries
 
 To further demonstrate what a repository and relation do within a Hanami application, we're now going to perform an action that would be common to a lot of Rails applications: adding a `by_year` scope to our queries. In Rails, we would add this to a model with this code:
@@ -204,7 +217,9 @@ To further demonstrate what a repository and relation do within a Hanami applica
 scope :by_year, ->(year) { where(year: year) }
 ```
 
-This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository. Before we can perform queries against a year column, let's add it with one more migration. We'll create this migration with:
+This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository.
+
+Before we can perform queries against a year column, let's add it with one more migration. We'll create this migration with:
 
 ```
 hanami g migration add_year_to_books
@@ -271,6 +286,8 @@ def by_author(author)
   where(author: author)
 end
 ```
+
+
 
 We can now use these methods, rather than defining the same logic again, back in the repository. Let's change the code there in `app/repos/book_repo.rb` to this:
 
