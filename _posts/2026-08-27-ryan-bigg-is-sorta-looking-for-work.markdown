@@ -1,7 +1,7 @@
 ---
 wordpress_id: RB-1787801117
 layout: post
-title: "Ryan Bigg is (sorta) looking for work"
+title: "Ryan Bigg is looking for work"
 ---
 
 As of last week, I've been working at [Fat Zebra](https://fatzebra.com) for 5 years. (To celebrate, I caught up with my cardiologist.) In about a year and a half, it'll be double the amount of time that I've worked anywhere else. So I think that has to count for something in both Fat Zebra's favour and my own.
@@ -18,8 +18,8 @@ Ironically, I was wearing my "This is actually my second rodeo" t-shirt while I 
 1. Take the redundancy package and go find another fully-remote job.
 2. Stay at Fat Zebra, and work on things that I've not had the chance to yet.
 
-It would be insane to not explore both options. They're both really excellent!
+I've decided to take the first option. So I'm now going to be looking for my next 5+ year gig.
 
-So I'm putting this post up to see what else is out there and so I can have a fair comparison to make between my two choices. If you're hiring a fully-remote, Australian senior / lead developer with a lot of Ruby + JavaScript experience, I'd be happy to have a chat with you.
+If you're hiring a fully-remote, Australian senior / lead developer with a lot of Ruby + JavaScript experience, I'd be happy to have a chat with you. And yeah, it needs to be fully-remote as I live in Warrnambool, 250km from Melbourne. I _can_ travel in a few times a month to an office if/when required.
 
 You can email me@ryanbigg.com, or contact me through LinkedIn. My [resume is at /work](https://ryanbigg.com/work).
