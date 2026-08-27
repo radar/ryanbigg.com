@@ -6,10 +6,10 @@ title: "Hanami for Rails Developers: Part 2: Controllers"
 
 This blog post is part of a series called "Hanami for Rails Developers".
 
-* Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
-* Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers) (you are here)
-* Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
-* Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations)
+- Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
+- Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers) (you are here)
+- Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
+- Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations)
 
 In the first part we saw how to interact with a database by using Hanami's repositories and relations. In this part, we continue that by serving that data out through routes of our Hanami application.
 
@@ -49,11 +49,8 @@ This time, I will list the files this generates, as this a key part where Hanami
 
 ```
 Updated config/routes.rb
-Created app/actions/books/
 Created app/actions/books/index.rb
-Created app/views/books/
 Created app/views/books/index.rb
-Created app/templates/books/
 Created app/templates/books/index.html.erb
 Created spec/actions/books/index_spec.rb
 ```
@@ -209,13 +206,13 @@ This view will now display a list of books from 2025 when we go to http://localh
 
 We've now added two ways to use the same action, with two different views. In a RESTful application, we would typically have more actions than this. You'd be familiar with the set of them from a Rails application:
 
-* index
-* show
-* new
-* create
-* edit
-* update
-* destroy
+- index
+- show
+- new
+- create
+- edit
+- update
+- destroy
 
 In the remainder of this part, we'll cover off the show action. We'll leave the forms to the next part of this guide.
 
@@ -300,42 +297,4 @@ This view is now using the book repository to find the book with that ID. When i
 <p>Year: <%= book.year %></p>
 ```
 
-
-### Parts - Hanami's decorators
-
-Writing these routes out in longer form is going to get tiring after a while. Fortunately for us, Hanami provides a location where we can add methods that decorate the objects that we use in a view.
-
-When we `expose` data from an action, Hanami wraps this data in another class, which it calls a Part. In the case of the `expose :books` that we have, it will wrap these in two distinct parts:
-
-* `Views::Parts::Books` - for the whole array of books
-* `Views::Parts::Book` - one wrapping for each of the books
-
-We didn't create these classes. Hanami did that for us. Hanami uses the class of the struct to determine which part to use.
-
-We can define these classes ourselves if we want to add decorations to the objects exposed here. A good example of this would be to add a `show_path` method to books, so that we don't have to write out the route long-form all the time.
-
-We can create a new class at `app/views/parts/book.rb` and define this method inside:
-
-```ruby
-module Bookshelf
-  module Views
-    module Parts
-      class Book < Bookshelf::Views::Part
-        def show_path
-          context.routes.path(:book, id: id)
-        end
-      end
-    end
-  end
-end
-```
-
-Methods of this class act as though they're defined as instance methods on `Book`. This works because in the view we're actually working with `Views::Parts::Book`, rather than a straight `Bookshelf::Structs::Book` instance. The `context` used here is the Hanami view rendering context, which we use to get to the `routes` method.
-
-By defining this `show_path` this way, we can now change our links in `app/templates/books/index.html.erb` and `app/templates/books/by_year.html.erb` to simply this:
-
-```ruby
-<h2><%= link_to book.title, book.show_path %></h2>
-```
-
-The great thing about this is that if we ever want to know where `show_path` is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails' dynamic routing methods, and you'll see that this a vast improvement.
+Now this will display the information of the book.

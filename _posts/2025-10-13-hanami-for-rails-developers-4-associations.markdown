@@ -4,10 +4,10 @@ layout: post
 title: "Hanami for Rails Developers: Part 4: Associations"
 ---
 
-* Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
-* Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
-* Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
-* Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations) (you are here)
+- Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
+- Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
+- Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms)
+- Part 4: [Associations](/2025/10/hanami-for-rails-developers-4-associations) (you are here)
 
 In the first three parts of this guide, we set about building up a way that works with a table called `books` to display these records through some controller actions, and to allow us to create more and edit them in forms.
 
@@ -54,7 +54,6 @@ hanami g relation reviews
 ```
 
 Let's see how we can create a new review with this relation by booting into the console:
-
 
 ```
 hanami console
@@ -152,7 +151,6 @@ WHERE (`reviews`.`book_id` IN (1))
 ORDER BY `reviews`.`id`
 ```
 
-
 In a Hanami application, we load all the data we need up front, rather than letting method calls way down in the view template dictate what queries are run. This way, there's no surprises like N+1 queries.
 
 This combination can be setup to happen the other way as well. When we define an association from review to book, over in `app/relations/reviews.rb`:
@@ -181,17 +179,12 @@ reviews.by_pk(1).combine(:book).first
 This code will return all the information about a review and its book:
 
 ```ruby
-{:id=>1,
- :book_id=>1,
- :content=>"I now finally understand Hanami!",
- :rating=>5,
- :created_at=>2025-10-13 07:19:48 +1100,
- :updated_at=>2025-10-13 07:19:48 +1100,
- :book=>{
-   :id=>1,
-   :title=>"Hanami for Rails Developers",
-   :author=>"Ryan Bigg",
-   :year=>2027}
+{id: 1,
+ book_id: 1,
+ content: "I now finally understand Hanami!",
+ rating: 5,
+ created_at: 2026-07-06 14:57:59 +1000,
+ book: {id: 1, title: "Hanami for Rails Developers", author: "Ryan Bigg", year: nil}}
  }
 ```
 
@@ -256,7 +249,7 @@ Book
 
 This will generate a query with an `INNER JOIN` between the `books` and `reviews` table, with a `GROUP` statement on `books.id`, and a `HAVING` statement that uses the raw SQL we've passed in.
 
-In a Rails app, we would add this code to our model. But in a Hanami application we'll have to do this on our relation. Let's define a method in `app/relations/books.rb` for this now:
+In a Rails app, we would add this code to our model. But in a Hanami application we'll have to do this on our relation, as that's the place we define relational query logic. Let's define a method in `app/relations/books.rb` for this now:
 
 ```ruby
 def popular
@@ -313,7 +306,6 @@ This gives us:
 ```
 => {:id=>1, :title=>"Hanami for Rails Developers", :author=>"Ryan Bigg", :year=>2027}
 ```
-
 
 We've got the first method added, now let's look at finding books where the review average rating is above a 3:
 
@@ -385,7 +377,9 @@ Before we move on from here, we can add our other method to find the books with 
 
 ```ruby
 def disliked
-  join(:reviews).having { avg(reviews[:rating]) >= 2 }
+  join(:reviews)
+    .group(:id)
+    .having { avg(reviews[:rating]) < 2 }
 end
 ```
 

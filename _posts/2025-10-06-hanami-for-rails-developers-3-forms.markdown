@@ -6,9 +6,9 @@ title: "Hanami for Rails Developers: Part 3: Forms"
 
 This blog post is part of a series called "Hanami for Rails Developers".
 
-* Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
-* Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
-* Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms) (you are here)
+- Part 1: [Models](/2025/10/hanami-for-rails-developers-1-models)
+- Part 2: [Controllers](/2025/10/hanami-for-rails-developers-2-controllers)
+- Part 3: [Forms](/2025/10/hanami-for-rails-developers-3-forms) (you are here)
 
 In the first two parts of this guide, we covered off the familiar concepts of models and controllers, and saw how Hanami approached these designs. We saw that Hanami split the responsibilities of models between **repositories**, **relations** and **structs**, and we saw that the responsibilities of a controller and its views were split between **actions**, **views** and **templates**.
 
@@ -114,12 +114,32 @@ require "hanami"
 
 module Bookshelf
   class App < Hanami::App
-    config.sessions = :cookie, { secret: "your_secret_key_goes_here" }
+    config.actions.sessions = :cookie, {
+      key: "bookshelf.session",
+      secret: settings.session_secret,
+      expire_after: 60*60*24*365
+    }
   end
 end
 ```
 
-With the session support added, our flash message will be stored correctly. But we're currently not _displaying_ that flash message anywhere! In a Rails application you would put this kind of thing in `app/views/layouts/application.html.erb`. Hanami has a different path, which is `app/templates/layouts/app.html.erb`. Let's add the flash there just under the `<body>` tag:
+Then we need to configure this as a setting for our application over in `config/settings.rb`:
+
+```ruby
+module Bookshelf
+  class Settings < Hanami::Settings
+    setting :session_secret, constructor: Types::String
+  end
+end
+```
+
+This tells Hanami that we've got a `session_secret` setting value that we can access. Hanami pulls these from the environment variables. We can set one up for `session_secret` in `.env`:
+
+```
+SESSION_SECRET=<a value longer than 64 characters>
+```
+
+After our brief detour into the settings features of Hanami, our flash message will be stored correctly in the users' sessions. But we're currently not _displaying_ that flash message anywhere! In a Rails application you would put this kind of thing in `app/views/layouts/application.html.erb`. Hanami has a different path, which is `app/templates/layouts/app.html.erb`. Let's add the flash there just under the `<body>` tag:
 
 ```erb
 <% if flash[:success] %>
@@ -138,6 +158,7 @@ module Bookshelf
 
 The `commands` method comes from the ROM series of gems, that Hanami uses under-the-hood as its persistence layer. ROM provides some simple commands that reproduce common behaviour, and `create` is one of these.
 
+As you've seen from now both the `session` setup earlier, and the `create` command now, many of Hanami's features are opt-in, rather than automatically bolted on.
 
 That'll be all we need to create a new book now. When we try out the form now, we'll see that a book can be created:
 
@@ -146,6 +167,8 @@ That'll be all we need to create a new book now. When we try out the form now, w
 ### Adding validations
 
 Now that we've got the happy path working for creating a book, let's work on adding some validations to this form so that books can no longer be submitted without an author or title.
+
+In a Rails application, the place to add these validations to would be the model. Hanami doesn't do this, and instead prefers to validate the parameters where we first come across them: in the actions themselves.
 
 To add validations in an Hanami application, we add them to the action that processes the parameters, which would be the `Books::Create` action in our app. Let's add this validation to `app/actions/books/create.rb` now:
 
@@ -167,13 +190,13 @@ module Bookshelf
         # ...
 ```
 
-This syntax uses another gem from the same organisation as Hanami called [`dry-schema`](https://dry-rb.org/gems/dry-schema/1.5/). It validates our parameters when we take them in, rather than throwing yet another responsibility into the model class.
+This syntax uses another gem from the same organisation as Hanami called [`dry-schema`](https://hanakai.org/learn/dry/dry-schema/v1.14). It validates our parameters when we take them in, rather than throwing yet another responsibility into the model class.
 
 This syntax validates that `title` and `author` are both filled in, and must be a string. It also validates `year`, but only that if it's provided it's going to be an integer, rather than any other type.
 
 On top of this, our parameters are now restricted to accepting only those specified in this set. This syntax both provides the same style of validation that `validates presence: true` would provide in a Rails model, and _also_ the same features that `strong_parameters` (`params.require(:book).permit(:title, ...)`) would in a Rails application. Our validation logic now sits in one place, the action, rather than across two different places.
 
-Next up, we'll need to have the behaviour of this `create `action do different things depending on if the parameters are valid or not. Let's update this action to do that now. We'll change the `handle` method of this action to this:
+Next up, we'll need to have the behaviour of this `create` action do different things depending on if the parameters are valid or not. Let's update this action to do that now. We'll change the `handle` method of this action to this:
 
 ```ruby
 def handle(request, response)
@@ -296,7 +319,6 @@ Now it's time for the edit view itself. We have a perfectly good form over in `a
     <%= f.submit "Create Book" %>
   </div>
 <% end %>
-
 ```
 
 Then in our `app/templates/books/new.html.erb` file, we can render this same content with:
@@ -334,7 +356,6 @@ end
 ```
 
 With the parameter passed in, we can now proceed with loading the book over in `app/views/books/edit.rb`:
-
 
 ```ruby
 module Bookshelf
