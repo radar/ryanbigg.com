@@ -4,8 +4,6 @@ layout: post
 title: "R U OK: Yeah nah yeah"
 ---
 
-# Am I OK? Yeah nah yeah
-
 As a way of acknowledging "R U OK?" day on the 9th of September, I'm writing this post as a bit of a reply to that question. I'm also going to check in with some people close to me this week and I hope you do the same. Most everyone's fighting a battle. See where you can help.
 
 On the day - a Wednesday - I recovered from my worst cold in a year I learned that I was being made redundant. The redundancy contract says that I can't say more about it, even as much as I want to write about my experience. What I can say is that I found it quite enjoyably ironic that I was wearing my "This is actually my second rodeo" t-shirt (under a jumper) while receiving my second ever redundancy.
