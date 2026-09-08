@@ -62,7 +62,7 @@ Things have changed since 2021 (when I last looked for a job) and they feel much
 
 At least I wouldn't have to deal with the frothiness about AI. Just the frothiness of a latte.
 
-![](/images/r-u-ok/tilly-devine.png)
+![](/images/r-u-ok/tilly-devine.jpg)
 
 I've talked to some recruiters who've been pretty helpful for figuring out what to do next and who to speak to. I'm planning on coming to the next versions of the Melbourne Ruby and JavaScript meetups, and maybe off the back of those I'll score my next gig. I'm also considering opening back up to contracting, which was pretty fun during 2021 when I was in between full time jobs.
 
