@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Amiko: A desperate virtue signalling attempt - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Amiko: A desperate virtue signalling attempt" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2026-08-08">
+  
+
+  
+  <meta content="https://ryanbigg.com/2026/08/amiko-a-desperate-virtue-signalling-attempt" property="og:url">
+  
+  
+  <meta content="Amiko: A desperate virtue signalling attempt" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Amiko: A desperate virtue signalling attempt">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2026/08/amiko-a-desperate-virtue-signalling-attempt">
+        <h2 class="my-0 mt-4">Amiko: A desperate virtue signalling attempt</h2>
+      </a>
+      <small>08 Aug 2026</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>After Rails’ Dear Leader DHH once again espoused far-right views on his blog (which I’m not going to link to here), some of the Ruby community said “enough is enough” and decided to fork Rails into a project called Amiko. I don’t want to mince words here, so I’ll talk straight: I think this is a vain attempt at virtue signalling, and will ultimately end up achieving very little.</p>
+
+<p>The Amiko project has started out this fork by renaming all the Rails things into Amiko flavoured things. They have <code>amiko-pack</code>, <code>amiko-view</code>, and so on. All the <code>rails</code> commands are now <code>amiko</code> commands. The structure of the framework remains the same, so far.</p>
+
+<p>The momentum behind the Rails framework itself is monumental and to get people to switch from that to a renamed alternative is an exercise in futility. The not-so-benevolent dictator for life said absolutely atrocious things about at least one particular group of people, and just for that Amiko’s proponents want you to change <code>gem 'rails'</code> in your Gemfile to <code>gem 'amiko'</code>.</p>
+
+<p>I don’t want to continue chatting about DHH because it’s well documented in posts like:</p>
+
+<ul>
+  <li><a href="https://okayfail.com/2025/in-praise-of-dhh.html">Filipa Mendonça-Vieira’s, In praise of DHH</a></li>
+  <li><a href="https://tomstu.art/the-dhh-problem">Tom Stuart’s talk</a></li>
+  <li><a href="https://davidcel.is/articles/rails-needs-new-governance">David Celis’, Rails Needs New Governance</a></li>
+</ul>
+
+<p>And not to mention exhibited in its starkness on his own blog.</p>
+
+<p>There’s also been <a href="https://github.com/Plan-Vert/open-letter">this open letter</a> asking the Rails core team to cut ties with DHH, to no avail.</p>
+
+<p>So let’s not chat about DHH because I think that ground has been covered extensively.</p>
+
+<p>I want to talk about Rails, the framework.</p>
+
+<p>There was an exciting time in 2010 when Rails 3 came out and introduced some radical shifts in how Rails applications were designed. We had the introduction of ARel, as well as some major routes change upgrades. This was also around the time of the Rails guides initiatives too. These were vast improvements for how we wrote Rails applications at the time.</p>
+
+<p>Since then, Rails has bolted on additional features at a rate of knots, like Action Cable, Solid Queue, Hotwire, and at least 3 different styles of asset pipelines. This has resulted in the framework bloating to such an incredible size.</p>
+
+<p>None of these additions actually fix the underlying issues with the framework itself. It smells a lot of the kind of misdirection you see in a magic trick: “look over here and don’t look at what my other hand is doing”.</p>
+
+<p>I cover a lot of these issues in my book, <a href="https://leanpub.com/maintain-rails">Maintainable Rails</a>. To summarise it here, my issues with Rails are these:</p>
+
+<ol>
+  <li>Active Record provides <em>one</em> class for you to dump all your model / database logic into. Then it provides you with a swiss army set of footguns for you blow your foot off with.</li>
+  <li>There is no specific place within Rails applications to put Ruby-view code besides helpers, which are <em>by default</em> globally shared across <em>all</em> views.</li>
+  <li>There is no specific pattern or structure for “service objects” or “operations” within Rails applications, leading to people dumping this logic into controllers or models as a pattern. This ties that logic very closely in with database queries or request / response handling and makes it difficult to test in isolation.</li>
+</ol>
+
+<p>There you go, now you don’t need to read the book. (JK, you should totally read it to see what the alternatives are like!)</p>
+
+<p>These have been very long standing issues with Rails for the longest time and ones that I think Rails should’ve fixed in versions 4 through 8. Instead, the frameworks maintainers have gone too cautious, leading to the framework stagnating. Another example is how the framework and its authors concern themselves with frontend tooling despite the JavaScript ecosystem providing much better alternatives with the likes of <a href="https://vite.dev/">Vite</a> and <a href="https://esbuild.github.io/">ESBuild</a>. It feels like there is a new suggested alternative every year or two in Rails. By sticking with ESBuild in my own work projects for 5 years, I’ve had an unprecedented era of stablity. It’s been great.</p>
+
+<p>To fix these issues in Rails would require some courageous amount of work, and would require breaking most Rails applications out there. Amiko most likely won’t make these changes, because otherwise it would put up a barrier to entry for those switching from Rails to Amiko.</p>
+
+<p>Amiko is attempting to offer an alternative to Rails in a time where we’ve already got an alternative to Rails. One that deals with the issues I put up above, and has been stable and in-use in Ruby shops for close to a decade now.</p>
+
+<p>That alternative is <a href="https://hanakai.org/hanami">Hanami</a>. Version 3 of this framework was just released this year and it’s a really great alternative to Rails, and is built from a perspective of having worked on Ruby/Rails apps for two decades and learning from those mistakes.</p>
+
+<p>I re-built my book review tool, Twist, in Hanami. You can see the code on GitHub here: <a href="https://github.com/radar/twist-v3">https://github.com/radar/twist-v3</a>.</p>
+
+<p>If Amiko’s contributors put half as much effort into Hanami as they do into virtue-signalling with Amiko, Hanami’s growth and adoption would skyrocket. We would be able to have clear use cases demonstrating that this framework <em>is</em> a better alternative to Rails itself. We would have a framework that does not have its history sullied by a far-right white-supremacist’s views or his ideas from the early 2000s.</p>
+
+<p>I would encourage the Amiko contributors to come over to Hanami and see what’s already there. I reckon you’ll like the vibe and the direction of the project. Come and help Hanami grow and build into the next top Ruby web framework.</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

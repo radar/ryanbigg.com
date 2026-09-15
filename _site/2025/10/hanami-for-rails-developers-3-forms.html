@@ -9,8 +9,7 @@
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/style.css' media='print'>
+  <link rel='stylesheet' href='/css/style.css'>
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -167,12 +166,30 @@ end
 
 module Bookshelf
   class App &lt; Hanami::App
-    config.sessions = :cookie, { secret: "your_secret_key_goes_here" }
+    config.actions.sessions = :cookie, {
+      key: "bookshelf.session",
+      secret: settings.session_secret,
+      expire_after: 60*60*24*365
+    }
   end
 end
 </code></pre>
 
-<p>With the session support added, our flash message will be stored correctly. But we’re currently not <em>displaying</em> that flash message anywhere! In a Rails application you would put this kind of thing in <code>app/views/layouts/application.html.erb</code>. Hanami has a different path, which is <code>app/templates/layouts/app.html.erb</code>. Let’s add the flash there just under the <code>&lt;body&gt;</code> tag:</p>
+<p>Then we need to configure this as a setting for our application over in <code>config/settings.rb</code>:</p>
+
+<pre><code class="language-ruby">module Bookshelf
+  class Settings &lt; Hanami::Settings
+    setting :session_secret, constructor: Types::String
+  end
+end
+</code></pre>
+
+<p>This tells Hanami that we’ve got a <code>session_secret</code> setting value that we can access. Hanami pulls these from the environment variables. We can set one up for <code>session_secret</code> in <code>.env</code>:</p>
+
+<pre><code>SESSION_SECRET=&lt;a value longer than 64 characters&gt;
+</code></pre>
+
+<p>After our brief detour into the settings features of Hanami, our flash message will be stored correctly in the users’ sessions. But we’re currently not <em>displaying</em> that flash message anywhere! In a Rails application you would put this kind of thing in <code>app/views/layouts/application.html.erb</code>. Hanami has a different path, which is <code>app/templates/layouts/app.html.erb</code>. Let’s add the flash there just under the <code>&lt;body&gt;</code> tag:</p>
 
 <pre><code class="language-erb">&lt;% if flash[:success] %&gt;
   &lt;div class="flash flash-success"&gt;&lt;%= flash[:success] %&gt;&lt;/div&gt;
@@ -189,6 +206,8 @@ end
 
 <p>The <code>commands</code> method comes from the ROM series of gems, that Hanami uses under-the-hood as its persistence layer. ROM provides some simple commands that reproduce common behaviour, and <code>create</code> is one of these.</p>
 
+<p>As you’ve seen from now both the <code>session</code> setup earlier, and the <code>create</code> command now, many of Hanami’s features are opt-in, rather than automatically bolted on.</p>
+
 <p>That’ll be all we need to create a new book now. When we try out the form now, we’ll see that a book can be created:</p>
 
 <p><img src="/images/hanami/created_book.jpg" alt="Created book" /></p>
@@ -196,6 +215,8 @@ end
 <h3 id="adding-validations">Adding validations</h3>
 
 <p>Now that we’ve got the happy path working for creating a book, let’s work on adding some validations to this form so that books can no longer be submitted without an author or title.</p>
+
+<p>In a Rails application, the place to add these validations to would be the model. Hanami doesn’t do this, and instead prefers to validate the parameters where we first come across them: in the actions themselves.</p>
 
 <p>To add validations in an Hanami application, we add them to the action that processes the parameters, which would be the <code>Books::Create</code> action in our app. Let’s add this validation to <code>app/actions/books/create.rb</code> now:</p>
 
@@ -216,13 +237,13 @@ end
         # ...
 </code></pre>
 
-<p>This syntax uses another gem from the same organisation as Hanami called <a href="https://dry-rb.org/gems/dry-schema/1.5/"><code>dry-schema</code></a>. It validates our parameters when we take them in, rather than throwing yet another responsibility into the model class.</p>
+<p>This syntax uses another gem from the same organisation as Hanami called <a href="https://hanakai.org/learn/dry/dry-schema/v1.14"><code>dry-schema</code></a>. It validates our parameters when we take them in, rather than throwing yet another responsibility into the model class.</p>
 
 <p>This syntax validates that <code>title</code> and <code>author</code> are both filled in, and must be a string. It also validates <code>year</code>, but only that if it’s provided it’s going to be an integer, rather than any other type.</p>
 
 <p>On top of this, our parameters are now restricted to accepting only those specified in this set. This syntax both provides the same style of validation that <code>validates presence: true</code> would provide in a Rails model, and <em>also</em> the same features that <code>strong_parameters</code> (<code>params.require(:book).permit(:title, ...)</code>) would in a Rails application. Our validation logic now sits in one place, the action, rather than across two different places.</p>
 
-<p>Next up, we’ll need to have the behaviour of this <code>create </code>action do different things depending on if the parameters are valid or not. Let’s update this action to do that now. We’ll change the <code>handle</code> method of this action to this:</p>
+<p>Next up, we’ll need to have the behaviour of this <code>create</code> action do different things depending on if the parameters are valid or not. Let’s update this action to do that now. We’ll change the <code>handle</code> method of this action to this:</p>
 
 <pre><code class="language-ruby">def handle(request, response)
   unless request.params.valid?
@@ -337,7 +358,6 @@ patch "/books/:id", to: "books.update", as: :update_book
     &lt;%= f.submit "Create Book" %&gt;
   &lt;/div&gt;
 &lt;% end %&gt;
-
 </code></pre>
 
 <p>Then in our <code>app/templates/books/new.html.erb</code> file, we can render this same content with:</p>

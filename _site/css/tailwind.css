@@ -174,5 +174,77 @@ hr {
 }
 
 .resume .skill {
-  @apply px-3 py-1 rounded-full border border-emerald-700/30 bg-emerald-50/80 text-emerald-900 text-sm font-semibold;
+  @apply px-3 py-1 rounded-full border border-purple-950/50 text-purple-100 text-sm font-semibold;
+  background: linear-gradient(135deg, #1e1033, #2e1065);
+}
+
+body.resume-cv {
+  background: linear-gradient(135deg, #2e1065, #4c1d95);
+  background-attachment: fixed;
+}
+
+body.resume-ai-page {
+  background: linear-gradient(135deg, #2e1065, #4c1d95);
+  background-attachment: fixed;
+  color: var(--color-slate-100);
+}
+
+.resume-ai-page .skill {
+  background: var(--color-white);
+  color: var(--color-purple-900);
+  border-color: color-mix(in oklab, var(--color-purple-700) 30%, transparent);
+}
+
+@media print {
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html {
+    font-size: 8pt;
+  }
+
+  body {
+    @apply bg-white text-black m-0;
+  }
+
+  body.resume-cv {
+    @apply bg-emerald-400 text-slate-900;
+  }
+
+  body.resume-ai-page {
+    background: linear-gradient(135deg, #2e1065, #4c1d95);
+    color: var(--color-slate-100);
+  }
+
+  nav,
+  footer,
+  .no-print {
+    @apply hidden;
+  }
+
+  a {
+    @apply text-black underline;
+  }
+
+  img {
+    @apply max-w-full;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    break-after: avoid;
+  }
+
+  table,
+  figure,
+  pre,
+  blockquote {
+    break-inside: avoid;
+  }
 }

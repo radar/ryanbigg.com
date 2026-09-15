@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify faster - Ryan Bigg</title>
+  <link rel="shortcut icon" href="https://ryanbigg.com/favicon.png" type="image/x-icon">
+  <link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
+    rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='/css/style.css'>
+  <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
+  <script src="/js/highlight.js"></script>
+  <script>hljs.highlightAll();</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <meta content="Ryan Bigg - Verify faster" property="og:title">
+  
+  <meta property="og:site_name" content="Ryan Bigg">
+
+
+  
+    <meta name="publish_date" property="og:publish_date" content="2026-06-16">
+  
+
+  
+  <meta content="https://ryanbigg.com/2026/06/verify-faster" property="og:url">
+  
+  
+  <meta content="Verify faster" property="og:description">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://ryanbigg.com/images/og.png">
+  <meta name="twitter:image" content="https://ryanbigg.com/images/og.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@ryanbigg">
+  <meta name="twitter:creator" content="@ryanbigg">
+  
+  <meta name="twitter:title" content="Verify faster">
+  
+</head>
+
+
+<body>
+  <div class="flex">
+    <div class='text-center mr-8'>
+      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
+      <a href="/blog">&#x27F5; Posts</a>
+    </div>
+
+    <div class="post-title ml-auto">
+      <a href="/2026/06/verify-faster">
+        <h2 class="my-0 mt-4">Verify faster</h2>
+      </a>
+      <small>16 Jun 2026</small>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class='content'>
+      <div class='content-inner'>
+        <article class="mt-8 mb-16">
+          <p>We’ve been working to a pretty tight deadline as a team recently. We had a period of relative stability with a few concurrent projects on the go, and then we had this new elephant-sized project dropped on us. The entire team has rallied around it and everyone’s contributing exceedingly well to their own parts.</p>
+
+<p>During the last few months of this project, I’ve been taking a look at how we can get to the point of verifying our changes faster after reading <a href="https://www.amazon.com.au/Accelerate-Software-Performing-Technology-Organizations/dp/1942788339">Accelerate</a> for the second time. Trying to find answers for how we from “push” to knowing something works, and then shipping that with less time passing between all of those points.</p>
+
+<p>A few things that our team has worked on to fix this has been:</p>
+
+<ul>
+  <li>Improving Docker build caching so that our tests start running sooner (8min -&gt; 2min startup)</li>
+  <li>Addressing flaky specs as they’re detected, rather than backlogging them as a fix for “later”. Specs are split into groups, and each group would take 10 mins per retry, retrying up to 3 times.</li>
+  <li>Adding a <code>/pick-reviewers</code> skill, so that pairs of developers are assigned to a PR to avoid the bystander effect.</li>
+  <li>Creating “unique staging” environments, rather than having one shared between all developers</li>
+  <li>Removing <code>bullet</code> from the majority of our specs, which garnered a 12% across-the-board speedup.</li>
+  <li>Adding a way of checking which branch &amp; commit our app is running in any environment, without having to check the New Relic logs.</li>
+  <li>Swapping from <code>yarn</code> to <code>pnpm</code>, as the <code>yarn</code> audit endpoint is <a href="https://ryanbigg.com/2026/04/npm-putting-the-brown-in-brownout">browning out</a>.</li>
+  <li>Diagnosing why certain users could set feature flags in staging, and others could not, and fixing this.</li>
+</ul>
+
+<p>Each of these is a good improvement on its own, but collectively it’s meant that our timeline for getting changes through CI and out to users has been reduced. We chose to prioritise this work during a really busy time so that we could move faster. If we weren’t working on being faster <em>now</em>, then when would we otherwise? I think these efforts to verify faster are what are contributing to our team being efficient during this crunch time.</p>
+
+        </article>
+      </div>
+    </div>
+  </div>
+  <footer>
+</footer>
+
+
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-60556315-1', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+
+</html>

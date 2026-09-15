@@ -9,8 +9,7 @@
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/style.css' media='print'>
+  <link rel='stylesheet' href='/css/style.css'>
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -63,7 +62,7 @@
     <div class='content'>
       <div class='content-inner'>
         <article class="mt-8 mb-16">
-          <p>This blog post is part of a series called “Hanami for Rails Developers”.</p>
+          <p>This blog post is part of a series called “Hanami for Rails Developers”. These guides are written using Hanami 3.0.1.</p>
 
 <ul>
   <li>Part 1: <a href="/2025/10/hanami-for-rails-developers-1-models">Models</a> (you are here)</li>
@@ -105,10 +104,12 @@
 
 <p>Let’s see that migration file now in <code>config/db/migrate</code>:</p>
 
-<pre><code class="language-ruby">ROM::SQL.migration do
+<pre><code class="language-ruby"># frozen_string_literal: true
+
+ROM::SQL.migration do
   # Add your migration here.
   #
-  # See https://guides.hanamirb.org/v2.2/database/migrations/ for details.
+  # See https://hanakai.org/learn/hanami/database/migrations/ for details.
   change do
   end
 end
@@ -134,9 +135,17 @@ end
 <pre><code>hanami db migrate
 </code></pre>
 
+<p>This creates our table, and creates a structure file at <code>config/db/structure.sql</code>. This is in SQL format, as Hanami’s belief is that we should represent database structure in terms a database should understand.</p>
+
 <p>With our table now existing in our database, we need something to insert and read data from that table. That “something” is called a relation.</p>
 
 <h3 id="relations">Relations</h3>
+
+<p>A relation in Hanami is used as a class to store the relational logic of your queries. As Hanami’s own documentation says:</p>
+
+<blockquote>
+  <p>Relations own the responsibility of querying your database.</p>
+</blockquote>
 
 <p>We can generate a relation using this command:</p>
 
@@ -156,11 +165,12 @@ end
 <p>We’ll see this relation is already configured with our database, thanks to some setup taken care of by Hanami. Rails would do the same thing, but calls it <code>connection</code> on Active Record models.</p>
 
 <pre><code class="language-ruby">#&lt;Bookshelf::Relations::Books name=ROM::Relation::Name(books) dataset=#&lt;Sequel::SQLite::Dataset...
-</code></pre>
+```****
 
-<p>We can insert a book into our table by running:</p>
+We can insert a book into our table by running:
 
-<pre><code class="language-ruby">books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
+```ruby
+books.insert(title: "Hanami for Rails Developers", author: "Ryan Bigg")
 </code></pre>
 
 <p>This will simply return <code>1</code> as its the ID of the record that was inserted into the database. This may be surprising to Rails developers, who are used to getting instances back straight away from an <code>insert</code> request. To get back to the data that’s in the database, we can run:</p>
@@ -170,12 +180,20 @@ end
 
 <p>We will now see the data as a Hash:</p>
 
-<pre><code>=&gt; {:id=&gt;1, :title=&gt;"Hanami for Rails Developers", :author=&gt;"Ryan Bigg"}
+<pre><code>=&gt; {id: 1, title: "Hanami for Rails Developers", author: "Ryan Bigg"}
 </code></pre>
 
 <p>The relation for Hanami works with data in its barest form. We passed a Hash to <code>insert</code>, and got one back for <code>first</code>. To get back proper Ruby objects, we need a repository.</p>
 
 <h3 id="repository">Repository</h3>
+
+<p>Hanami’s documentation says this about repositories:</p>
+
+<blockquote>
+  <p>[Repositories] exist to bridge the gap between business objects and database objects.</p>
+</blockquote>
+
+<p>A repository in Hanami is where we provide the public API of a database layer back to our application. We’ll see examples of this in a moment.</p>
 
 <p>Let’s generate a repository for our <code>books</code> table now, by exiting our <code>hanami console</code> session (with <code>exit</code>) then running this:</p>
 
@@ -246,7 +264,9 @@ book = book_repo.find(1)
 <pre><code class="language-ruby">scope :by_year, -&gt;(year) { where(year: year) }
 </code></pre>
 
-<p>This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository. Before we can perform queries against a year column, let’s add it with one more migration. We’ll create this migration with:</p>
+<p>This defines a method on the model within Rails. The approach in Hanami is very similar, but instead of defining the method on the model, we define it on the repository.</p>
+
+<p>Before we can perform queries against a year column, let’s add it with one more migration. We’ll create this migration with:</p>
 
 <pre><code>hanami g migration add_year_to_books
 </code></pre>

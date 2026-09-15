@@ -4,7 +4,7 @@ layout: post
 title: "R U OK: Yeah nah yeah"
 ---
 
-As a way of acknowledging "R U OK?" day on the 9th of September, I'm writing this post as a bit of a reply to that question. I'm also going to check in with some people close to me this week and I hope you do the same. Most everyone's fighting a battle. See where you can help.
+As a way of acknowledging "R U OK?" day on the 10th of September, I'm writing this post as a bit of a reply to that question. I'm also going to check in with some people close to me this week and I hope you do the same. Most everyone's fighting a battle. See where you can help.
 
 On the day - a Wednesday - I recovered from my worst cold in a year I learned that I was being made redundant. The redundancy contract says that I can't say more about it, even as much as I want to write about my experience. What I can say is that I found it quite enjoyably ironic that I was wearing my "This is actually my second rodeo" t-shirt (under a jumper) while receiving my second ever redundancy.
 
@@ -50,7 +50,15 @@ After lego club, I packed up and went home. I set up my Windows PC on my main de
 
 I've applied for less than a half-dozen positions so far and I've heard back from 3 of them, all with rejections. This process is giving me a lot of practice for dealing with rejections. We'll see if we can beat the all-time high score of 34 rejections I got while looking for my first dev gig.
 
-I've also been handing rejections out myself. I was contacted by an ex-colleague who suggested I go work for a crypto startup. Hell no. Another person who I worked with over a decade ago asked if I would like to come work for him at his virtual AI girlfriend/boyfriend startup. Hell fuck no. I have ethical qualms with these, and any sort of addiction / gambling-based companies as well. I would like to work somewhere that's doing something good for humanity, rather than preying on the impulses of the weak-willed.
+I've also been handing rejections out myself. I refused to do an initial interview at one company that wanted to use an AI video call to screen me. Gross.
+
+I was contacted by an ex-colleague who suggested I go work for a crypto startup. Hell no.
+
+Another person who I worked with over a decade ago asked if I would like to come work for him at his virtual AI girlfriend/boyfriend startup. Hell fuck no.
+
+I have ethical qualms with these, and any sort of addiction / gambling-based companies as well.
+
+I would like to work somewhere that's doing something good for humanity, rather than preying on the impulses of the weak-willed.
 
 The good looking jobs are few and far between at the moment. The ones that _are_ looking good are typically requiring 2-3 days in an office in either Sydney or Melbourne, which are non-starters given I live out in Warrnambool. I was open to the idea of commuting to Melbourne perhaps 2 days a week, right up until I got the absolute best cuddles from my daughter last night at bed time. I don't want to miss out on those or other moments like them.
 

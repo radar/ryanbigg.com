@@ -9,8 +9,7 @@
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
   <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
-  <link rel='stylesheet' href='/css/style.css' media='screen'>
-  <link rel='stylesheet' href='/css/style.css' media='print'>
+  <link rel='stylesheet' href='/css/style.css'>
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -106,11 +105,8 @@ end
 <p>This time, I will list the files this generates, as this a key part where Hanami differentiates itself from Rails:</p>
 
 <pre><code>Updated config/routes.rb
-Created app/actions/books/
 Created app/actions/books/index.rb
-Created app/views/books/
 Created app/views/books/index.rb
-Created app/templates/books/
 Created app/templates/books/index.html.erb
 Created spec/actions/books/index_spec.rb
 </code></pre>
@@ -343,44 +339,7 @@ end
 &lt;p&gt;Year: &lt;%= book.year %&gt;&lt;/p&gt;
 </code></pre>
 
-<h3 id="parts---hanamis-decorators">Parts - Hanami’s decorators</h3>
-
-<p>Writing these routes out in longer form is going to get tiring after a while. Fortunately for us, Hanami provides a location where we can add methods that decorate the objects that we use in a view.</p>
-
-<p>When we <code>expose</code> data from an action, Hanami wraps this data in another class, which it calls a Part. In the case of the <code>expose :books</code> that we have, it will wrap these in two distinct parts:</p>
-
-<ul>
-  <li><code>Views::Parts::Books</code> - for the whole array of books</li>
-  <li><code>Views::Parts::Book</code> - one wrapping for each of the books</li>
-</ul>
-
-<p>We didn’t create these classes. Hanami did that for us. Hanami uses the class of the struct to determine which part to use.</p>
-
-<p>We can define these classes ourselves if we want to add decorations to the objects exposed here. A good example of this would be to add a <code>show_path</code> method to books, so that we don’t have to write out the route long-form all the time.</p>
-
-<p>We can create a new class at <code>app/views/parts/book.rb</code> and define this method inside:</p>
-
-<pre><code class="language-ruby">module Bookshelf
-  module Views
-    module Parts
-      class Book &lt; Bookshelf::Views::Part
-        def show_path
-          context.routes.path(:book, id: id)
-        end
-      end
-    end
-  end
-end
-</code></pre>
-
-<p>Methods of this class act as though they’re defined as instance methods on <code>Book</code>. This works because in the view we’re actually working with <code>Views::Parts::Book</code>, rather than a straight <code>Bookshelf::Structs::Book</code> instance. The <code>context</code> used here is the Hanami view rendering context, which we use to get to the <code>routes</code> method.</p>
-
-<p>By defining this <code>show_path</code> this way, we can now change our links in <code>app/templates/books/index.html.erb</code> and <code>app/templates/books/by_year.html.erb</code> to simply this:</p>
-
-<pre><code class="language-ruby">&lt;h2&gt;&lt;%= link_to book.title, book.show_path %&gt;&lt;/h2&gt;
-</code></pre>
-
-<p>The great thing about this is that if we ever want to know where <code>show_path</code> is defined, we can simply do a find in our codebase for this method, and it will turn up the part. Contrast that to Rails’ dynamic routing methods, and you’ll see that this a vast improvement.</p>
+<p>Now this will display the information of the book.</p>
 
         </article>
       </div>
