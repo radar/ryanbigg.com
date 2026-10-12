@@ -1,6 +1,8 @@
-——
+---
+wordpress_id: RB-1788839489
+layout: post
 title: Leaving Tech
-——
+---
 
 I’ve now applied for over 3 dozen jobs and I’ve heard back from 24 of them with a rejection. This tech market at the moment is so very cooked and for that reason I’m stepping away from tech.
 
