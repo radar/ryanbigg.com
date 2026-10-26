@@ -2,6 +2,7 @@
 wordpress_id: RB-1788839489
 layout: post
 title: Leaving Tech
+published: false
 ---
 
 I’ve now applied for over 3 dozen jobs and I’ve heard back from 24 of them with a rejection. This tech market at the moment is so very cooked and for that reason I’m stepping away from tech.
@@ -15,4 +16,3 @@ The industry at the moment wants people who know how to use AI to further the bu
 My life is based here in Warrnambool and I choose to work remotely from here. Hybrid is infeasible even if it were in Melbourne because Melbourne is 3.5hrs away on the train. I know I can work remotely effectively because I did it for the last 6 years. And I helped others adjust to that as well!
 
 So it’s clear that there’s no room for me in tech anymore, so I’m going to chat to some people to figure out what’s next.
-
