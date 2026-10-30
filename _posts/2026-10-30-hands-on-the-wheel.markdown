@@ -19,7 +19,7 @@ I wrote this on LinkedIn at the start of this month:
 
 I've now interviewed at a few more places, and those interviews have only compounded these viewpoints.
 
-Point 1: spurred on by some serious FOMO, C-level executives see others who are using AI and spur their employees onto using it as well. The employees then use it for writing code (Claude Code, etc), un-spice-ifying emails, and hurridley adding a chatbot into their core system that allows prompt injection attacks.
+Point 1: [spurred on by some serious FOMO, C-level executives see others](https://ludic.mataroa.blog/blog/ai-mania-is-eviscerating-global-decision-making/) who are using AI and spur their employees onto using it as well. The employees then use it for writing code (Claude Code, etc), un-spice-ifying emails, and hurridley adding a chatbot into their core system that allows prompt injection attacks.
 
 Points 2 & 3: Lots of chat around "we've been told to use AI" and a lot of experiments around what it actually means. Getting AI to build out particular things like custom forms for their applications, or the like. Maybe they've put an aforementioned chat window in to keep the CEO quiet. (It runs AI-crafted SQL queries on prod.)
 
