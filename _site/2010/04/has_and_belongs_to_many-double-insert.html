@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2010/04/has_and_belongs_to_many-double-insert">
-        <h2 class="my-0 mt-4">has_and_belongs_to_many double insert</h2>
-      </a>
-      <small>14 Apr 2010</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>This is a story about my work with GetUp, in particular the past week. It’s about a problem that I’ve been putting off help one of the guys (James) solve, it didn’t seem all that important to me. So last night I kind of promised that I’d sit down with him this morning and help him work out what it was. Hopefully it was something silly either of us did and it would only take us an hour.</p>
+
+  <p class="date">14 April 2010</p>
+  <h1>has_and_belongs_to_many double insert</h1>
+
+  <article>
+    <p>This is a story about my work with GetUp, in particular the past week. It’s about a problem that I’ve been putting off help one of the guys (James) solve, it didn’t seem all that important to me. So last night I kind of promised that I’d sit down with him this morning and help him work out what it was. Hopefully it was something silly either of us did and it would only take us an hour.</p>
 
 <p>You know how this story is going to end up already.</p>
 
@@ -104,14 +103,21 @@ class Person &lt; ActiveRecord::Base
 <p>As I found out this (the next) morning and <a href="http://ryanbigg.com/2010/04/has_and_belongs_to_many-double-insert/#comment-36741">Tim Riley points out in the comments</a> the ticket for this bug is <a href="https://rails.lighthouseapp.com/projects/8994/tickets/3575-multiple-join-records-when-using-nested_attributes-in-habtm">#3575</a> and the related commit is <code>146a7505</code> by Eloy Duran also. Freezing rails to <code>v2.3.5</code> and <code>git cherry-pick</code>ing this commit into this frozen version fixes it.</p>
 
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2010/04/when-rails-3-is-due">When Rails 3 is Due</a></p>
+    <p><span>After this:</span> <a href="/2010/04/i-want-you-to-give">I want you to give</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

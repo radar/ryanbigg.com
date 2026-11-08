@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2016/05/elixir-tip-enum-any-match">
-        <h2 class="my-0 mt-4">Elixir Tip: Enum.any? + match?</h2>
-      </a>
-      <small>28 May 2016</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>I recently found out about the <a href="http://elixir-lang.org/docs/stable/elixir/Kernel.html#match?/2">match?/2</a> function in Elixir through the #elixir-lang IRC channel on Freenode.</p>
+
+  <p class="date">28 May 2016</p>
+  <h1>Elixir Tip: Enum.any? + match?</h1>
+
+  <article>
+    <p>I recently found out about the <a href="http://elixir-lang.org/docs/stable/elixir/Kernel.html#match?/2">match?/2</a> function in Elixir through the #elixir-lang IRC channel on Freenode.</p>
 
 <p>What this function allows you to do is to determine if a given pattern matches a given expression. For instance, if you wanted to know if a list of maps contained a particular key + value combination, you could do this:</p>
 
@@ -76,14 +75,21 @@ Enum.any?(people, fn (person) -&gt; match?(%{name: "John"}, person) end)
 
 <p>This shorter function defines the same function in the first example, but instead of having a named argument to the function, <code>&amp;1</code> is used instead.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2016/05/multitenancy-with-rails-2nd-edition">Multitenancy with Rails 2nd Edition</a></p>
+    <p><span>After this:</span> <a href="/2016/11/validating-nested-json-data-with-ex_json_schema">Validating nested JSON data with ex_json_schema</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

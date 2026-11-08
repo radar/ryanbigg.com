@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2008/04/rails-21-migration-timestamping">
-        <h2 class="my-0 mt-4">Rails 2.1: Migration Timestamping</h2>
-      </a>
-      <small>03 Apr 2008</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>Rails 2.1 is right around the corner, and with it come a few new changes, and one of them is migration timestamping. Instead of adding a number before the migration, for example <em><strong>001</strong>_create_forums.rb, </em>it now adds a UTC timestamp before it, for example <em><strong>20080403021817</strong>_create_forums.rb</em>.</p>
+
+  <p class="date">3 April 2008</p>
+  <h1>Rails 2.1: Migration Timestamping</h1>
+
+  <article>
+    <p>Rails 2.1 is right around the corner, and with it come a few new changes, and one of them is migration timestamping. Instead of adding a number before the migration, for example <em><strong>001</strong>_create_forums.rb, </em>it now adds a UTC timestamp before it, for example <em><strong>20080403021817</strong>_create_forums.rb</em>.</p>
 
 <p>Now, you may think this is a good idea because it will stop the problem of conflicting version numbers on migrations when two developers are working on the same thing, which happens frequently and even there were a few cases at SeaLink where we had this problem and spent some time sorting it out. With the new timestamping it requires that two developers create migrations at precisely the same second, which is less common to happen than creating migrations with the same version number.</p>
 
@@ -69,14 +68,21 @@
 
 <p>I myself don’t mind this new change, as I open migrations using Netbeans 99% of the time. There was a lot of heated debate on this in #rubyonrails recently, and there was little talk on <a href="http://dev.rubyonrails.org/ticket/11458">the actual ticket</a> which was accepted rather quickly; not that I’m saying that’s a bad thing. <a href="http://dev.rubyonrails.org/changeset/9122">The changeset is also available.</a></p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2008/04/fool">Fool!</a></p>
+    <p><span>After this:</span> <a href="/2008/04/unintialized-constant-gemgemrunner">unintialized constant Gem::GemRunner </a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2022/05/ruby-graphql-mutations-with-union-types">
-        <h2 class="my-0 mt-4">Using Union Types with GraphQL Mutations in Ruby</h2>
-      </a>
-      <small>06 May 2022</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>The <a href="https://graphql-ruby.org/mutations/mutation_classes.html">official documentation for the graphql-ruby gem</a> recommends this code for a mutation class that can either succeed or fail:</p>
+
+  <p class="date">6 May 2022</p>
+  <h1 class="long">Using Union Types with GraphQL Mutations in Ruby</h1>
+
+  <article>
+    <p>The <a href="https://graphql-ruby.org/mutations/mutation_classes.html">official documentation for the graphql-ruby gem</a> recommends this code for a mutation class that can either succeed or fail:</p>
 
 <pre><code class="language-ruby">class Mutations::CreateComment &lt; Mutations::BaseMutation
   argument :body, String
@@ -221,14 +220,21 @@ end
 
 <p>When using this API (for example, within a frontend codebase), we can assert on <code>__typename</code> to determine how to show the result to a user – if it’s a <code>Comment</code>, then indicate a successful comment creation. If it’s <code>Errors</code>, then show those errors on the form.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2022/03/typed-view-components">Typed View Components with dry-types</a></p>
+    <p><span>After this:</span> <a href="/2022/11/a-replacement-for-strong-parameters">A replacement for strong parameters</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

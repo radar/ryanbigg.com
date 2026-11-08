@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="en">
+{% include head.html bare=true %}
+<link rel="stylesheet" href="/css/post.css">
+
+<body>
+<div class="page">
+  {% include post_top.html %}
+
+  <p class="date">{{ include.post.date | date: "%-d %B %Y" }}</p>
+  <h1{% if include.post.title.size > 40 %} class="long"{% endif %}>{{ include.post.title }}</h1>
+
+  <article>
+    {{ include.body }}
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
+  </div>
+
+  <div class="more">
+    {% if include.post.previous %}<p><span>Before this:</span> <a href="{{ include.post.previous.url }}">{{ include.post.previous.title }}</a></p>{% endif %}
+    {% if include.post.next %}<p><span>After this:</span> <a href="{{ include.post.next.url }}">{{ include.post.next.title }}</a></p>{% else %}<p><span>After this:</span> nothing yet</p>{% endif %}
+  </div>
+
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
+</body>
+
+</html>

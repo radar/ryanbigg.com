@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editorial post - Ryan Bigg</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #fdfdfb; --fg: #1d2420; --muted: #6b7570; --line: #e4e8e3; --link: oklch(52% .17 150); --code-bg: #f1f4f0; --callout: #ecf7ef; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111513; --fg: #d9e0db; --muted: #8b958f; --line: #26302a; --link: oklch(80% .18 150); --code-bg: #1a211d; --callout: #14261b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 19px/1.75 "Lora", Georgia, serif; }
+  a { color: var(--link); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  nav.top { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1.25rem 0; display: flex; justify-content: space-between; font: 600 .85rem/1 system-ui, sans-serif; }
+  nav.top a { text-decoration: none; color: var(--muted); }
+  nav.top a:hover { color: var(--link); }
+  header.post { max-width: 44rem; margin: 0 auto; padding: 5rem 1.25rem 2.5rem; border-bottom: 1px solid var(--line); }
+  header.post h1 { font-size: clamp(2.3rem, 6vw, 3.6rem); line-height: 1.08; letter-spacing: -.025em; margin: 0 0 1.25rem; text-wrap: balance; }
+  header.post .meta { font: .9rem/1 system-ui, sans-serif; color: var(--muted); display: flex; gap: .75rem; }
+  article { max-width: 44rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  article p { margin: 0 0 1.5rem; text-wrap: pretty; }
+  article > p:first-of-type::first-letter { float: left; font-size: 4.2em; line-height: .8; padding: .08em .1em 0 0; font-weight: 700; color: var(--link); }
+  article h2 { font-size: 1.7rem; letter-spacing: -.015em; line-height: 1.25; margin: 3rem 0 1rem; text-wrap: balance; }
+  article h3 { font-size: 1.3rem; margin: 2rem 0 .75rem; }
+  article ul { padding-left: 1.4rem; margin: 0 0 1.5rem; }
+  article li { margin-bottom: .4rem; }
+  article blockquote { margin: 2rem 0; padding: 0 0 0 1.5rem; border-left: 3px solid var(--link); font-style: italic; font-size: 1.15em; color: var(--muted); }
+  article code { font: .85em ui-monospace, "SF Mono", Menlo, monospace; background: var(--code-bg); padding: .15em .4em; border-radius: .3em; }
+  article pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: .6rem; padding: 1.1rem 1.25rem; overflow-x: auto; margin: 0 0 1.75rem; font-size: .85rem; line-height: 1.6; }
+  article pre code { background: none; padding: 0; font-size: inherit; }
+  .callout { background: var(--callout); border-radius: .6rem; padding: 1rem 1.25rem; margin: 0 0 1.75rem; font-size: .95em; }
+  .callout p { margin: 0; }
+  figure { margin: 2.5rem -3rem; }
+  figure .ph { aspect-ratio: 16/8; border-radius: .6rem; background: linear-gradient(135deg, #22c55e33, #0ea5e933); display: grid; place-content: center; color: var(--muted); font: .85rem system-ui; }
+  figcaption { text-align: center; font: .85rem system-ui, sans-serif; color: var(--muted); margin-top: .6rem; }
+  @media (max-width: 52rem) { figure { margin-inline: 0; } }
+  .pn { max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font: 1rem/1.4 system-ui, sans-serif; border-top: 1px solid var(--line); }
+  .pn a { text-decoration: none; padding: 1rem; border: 1px solid var(--line); border-radius: .6rem; }
+  .pn a:hover { border-color: var(--link); }
+  .pn small { display: block; color: var(--muted); font-size: .75rem; margin-bottom: .25rem; }
+  .pn a:last-child { text-align: right; }
+</style>
+</head>
+<body>
+<nav class="top"><a href="/design-lab/posts/">← All post designs</a><a href="/">Ryan Bigg</a></nav>
+
+<header class="post">
+  <h1>Hands on the wheel</h1>
+  <div class="meta"><time>6 October 2026</time><span>·</span><span>6 min read</span></div>
+</header>
+
+<article>
+  <p>I've been writing software for two decades, and for the last year a good part of that has been done with an AI sitting beside me. People keep asking what I think about it. This is that answer, and I wrote every word of it myself.</p>
+
+  <p>The short version: it's a very fast, very confident junior who has read everything and understood some of it. That's useful, provided <a href="#">somebody competent is reviewing the work</a>.</p>
+
+  <h2>Where it helps</h2>
+  <p>Boring, well-understood work. Migrations, test scaffolding, the fourth form that looks exactly like the previous three.</p>
+  <ul>
+    <li>Writing the first draft of tests I'd have written anyway</li>
+    <li>Explaining an unfamiliar codebase back to me</li>
+    <li>Mechanical refactors across <code>40+</code> files</li>
+  </ul>
+
+  <blockquote>The model doesn't get tired, but it also doesn't get nervous, and nervous is a useful feeling when you're touching payments.</blockquote>
+
+  <h2>Where it doesn't</h2>
+  <p>Anything where the hard part is deciding <em>what</em> to build. Here's the sort of thing it will happily produce:</p>
+<pre><code>def charge(amount, card)
+  Gateway.charge(amount: amount, card: card)
+rescue StandardError
+  nil # everything is fine
+end</code></pre>
+
+  <div class="callout"><p><strong>Rule of thumb:</strong> if you couldn't explain the diff to a teammate, you're not ready to merge it.</p></div>
+
+  <figure><div class="ph">full-bleed image</div><figcaption>A caption, because images deserve one.</figcaption></figure>
+
+  <h3>Guardrails</h3>
+  <p>Keep the tests, the linting, and the code review exactly as they were. The AI doesn't get a lighter process; if anything it gets a stricter one.</p>
+</article>
+
+<div class="pn">
+  <a href="#"><small>← Older</small>Ryan Bigg is sorta looking for work</a>
+  <a href="#"><small>Newer →</small>Nothing yet</a>
+</div>
+</body>
+</html>

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2011/01/rails-3-in-action-saas">
-        <h2 class="my-0 mt-4">Rails 3 in Action: SaaS</h2>
-      </a>
-      <small>06 Jan 2011</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>I’ve been writing the 12th chapter for Rails 3 in Action for about a month now. It’s been a tough process because I haven’t felt sold on the idea or the “flow” of the chapter since I begun writing it. It’s a chapter about Software as a Service (SaaS), mainly covering letting users sign up for an account on a monthly subscription that has different limits depending on the plans they picked. My main thought has been “What does this have to do with Rails 3?”. Sure, there’s some elements of it such as using the <code>scope</code> method in routes to change the URLs from <code>/projects/1/tickets/2</code> to <code>/[account_name]/projects/1/tickets/2</code>, (which by the way I hear the <a href="http://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-scope">API’s got a pretty good example of</a>) but as for introducing new features, it’s a pretty barren chapter.</p>
+
+  <p class="date">6 January 2011</p>
+  <h1>Rails 3 in Action: SaaS</h1>
+
+  <article>
+    <p>I’ve been writing the 12th chapter for Rails 3 in Action for about a month now. It’s been a tough process because I haven’t felt sold on the idea or the “flow” of the chapter since I begun writing it. It’s a chapter about Software as a Service (SaaS), mainly covering letting users sign up for an account on a monthly subscription that has different limits depending on the plans they picked. My main thought has been “What does this have to do with Rails 3?”. Sure, there’s some elements of it such as using the <code>scope</code> method in routes to change the URLs from <code>/projects/1/tickets/2</code> to <code>/[account_name]/projects/1/tickets/2</code>, (which by the way I hear the <a href="http://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html#method-i-scope">API’s got a pretty good example of</a>) but as for introducing new features, it’s a pretty barren chapter.</p>
 
 <p>Plus, it’s long. Simply implementing that scope breaks a whole bunch of functionality in the application and the chapter (in its current form) goes through covering how to fix that up. Most of it is the same two fixes. Not all that terribly exciting. I had planned to put the fixing-everything-up into one chapter (12) and then the actual SaaS stuff into the next chapter (13). However, tonight the fixing-everything-up chapter has gotten too long and it just feels tedious writing it.</p>
 
@@ -75,14 +74,21 @@
 
 <p>I’ve put a Chapter 12 related question <a href="http://stackoverflow.com/questions/4613996/implementing-account-scoping">on Stack Overflow</a> that somebody may know the answer to. It’s to do with the routing helpers, which was the main headache with this chapter.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2011/01/why-you-should-run-bundle-update">Why you should run bundle update</a></p>
+    <p><span>After this:</span> <a href="/2011/01/why-pivotal-now-charging-for-tracker-is-a-good-thing">Why Pivotal now charging for Tracker is a good thing</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

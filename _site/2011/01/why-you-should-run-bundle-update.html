@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2011/01/why-you-should-run-bundle-update">
-        <h2 class="my-0 mt-4">Why you should run bundle update</h2>
-      </a>
-      <small>04 Jan 2011</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <h3 id="prelude">Prelude</h3>
+
+  <p class="date">4 January 2011</p>
+  <h1>Why you should run bundle update</h1>
+
+  <article>
+    <h3 id="prelude">Prelude</h3>
 
 <p><code>bundle update</code> is a command provided by the Bundler gem which will update <em>all</em> your gem dependencies to their latest versions. Providing you have a <code>Gemfile.lock</code> pre-existing, running <code>bundle install</code> will only install the versions specified in the <code>Gemfile.lock</code> and will complain that you have incompatible versions:</p>
 
@@ -115,14 +114,21 @@ the gems in your Gemfile, which may resolve the conflict.
 
 <p>So it’s <em>almost always unsafe</em> to run <code>bundle update</code> because new versions of gems could break your application, but there is a chance everything could go off without a hitch if people (including you) have been smart in specifying proper gem dependencies. Best you stick to updating single dependencies at a time rather than the whole bundle.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2011/01/extending-active-record">Extending Active Record</a></p>
+    <p><span>After this:</span> <a href="/2011/01/rails-3-in-action-saas">Rails 3 in Action: SaaS</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

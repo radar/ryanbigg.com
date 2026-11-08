@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2025/04/cursor-based-querying">
-        <h2 class="my-0 mt-4">Cursor-based querying with Rails</h2>
-      </a>
-      <small>03 Apr 2025</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
+
+  <p class="date">3 April 2025</p>
+  <h1>Cursor-based querying with Rails</h1>
+
+  <article>
+    <p>It’s a well known issue that <code>LIMIT</code> + <code>OFFSET</code> pagination in any SQL server will lead to performance problems once the value of <code>OFFSET</code> reaches a high enough value. This is because the database has to scan through the first [<code>OFFSET</code> amount] of records that match the query before it can start returning an amount of records up to the <code>LIMIT</code>.</p>
 
 <p>This sort of addition of a <code>LIMIT</code> + <code>OFFSET</code> to a slow query is commonly also used as a stop-gap for expensive queries. Perhaps before adding this, you have a query that’s building up a long list of transactions for another business to consume, and then one of your customers has a particularly impressive day and then your database has a particularly not-so-impressive time with that query. No problem, you think, you’ll find the data in batches of 1000 by using a <code>LIMIT</code> and <code>OFFSET</code> (such as how <code>find_in_batches</code> in Rails operates). This query will operate <em>better</em> than one without, but as soon as that <code>OFFSET</code> value hits a high number, you’ll run into performance problems again.</p>
 
@@ -93,14 +92,21 @@ end
 
 <p>This massively eases the memory pressure on the database as it doesn’t need to load more than 1,000 records at a single time, and keeps its performance linear even if we’re iterating through a whole bunch of different records. All without needing a <code>LIMIT</code> or <code>OFFSET</code>!</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2025/03/note-taking">Note taking</a></p>
+    <p><span>After this:</span> <a href="/2025/05/show-dont-tell">Show, Don't Tell</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

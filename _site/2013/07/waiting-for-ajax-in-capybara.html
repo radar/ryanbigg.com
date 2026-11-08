@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2013/07/waiting-for-ajax-in-capybara">
-        <h2 class="my-0 mt-4">Waiting for AJAX in Capybara</h2>
-      </a>
-      <small>09 Jul 2013</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>In Spree recently, we’ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree’s API</a> for the Backend component. This means that we’ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
+
+  <p class="date">9 July 2013</p>
+  <h1>Waiting for AJAX in Capybara</h1>
+
+  <article>
+    <p>In Spree recently, we’ve been using more and more of <a href="http://guides.spreecommerce.com/api">Spree’s API</a> for the Backend component. This means that we’ve introduced more AJAX-powered features into the backend, which has lead to some interesting test failures.</p>
 
 <p>Some of these test failures are that the tests just aren’t waiting long enough for an AJAX request to complete before checking for content on the page. Others are more … bewildering:</p>
 
@@ -97,14 +96,21 @@ end
 <p>Use this <code>wait_for_ajax</code> method when you need to wait for AJAX requests to finish in your tests to prevent weird, unpredictable JavaScript errors.</p>
 
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2013/06/finding-sql-queries-in-rails">Finding SQL queries in Rails</a></p>
+    <p><span>After this:</span> <a href="/2013/08/bundler-local-paths">Bundler local paths</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

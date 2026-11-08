@@ -1,0 +1,115 @@
+  :root { --bg: #f7f4ec; --fg: #26231d; --muted: #7a7466; --line: #d9d3c3; --link: oklch(48% .15 150); --mark: oklch(90% .12 150); --accent: oklch(72.3% .219 149.579); --code-bg: #efeadc; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17160f; --fg: #e4dfd0; --muted: #9a9482; --line: #38352a; --link: oklch(80% .16 150); --mark: oklch(35% .08 150); --accent: oklch(87% .17 150); --code-bg: #201f16; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--fg); font: 20px/1.7 "Lora", Georgia, serif; }
+  ::selection { background: var(--mark); }
+
+  a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+  a:hover { background: var(--mark); }
+
+  .page { max-width: 43rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .top { font-size: 1.15rem; font-style: italic; display: flex; justify-content: space-between; color: var(--muted); }
+  .top a { color: var(--muted); }
+  .top { align-items: center; margin-left: max(calc(50% - 50vw + 1.5rem), -6rem); line-height: 1; }
+  .top a.logo { display: block; background: none; text-decoration: none; }
+  .logo pre { margin: 0; padding: 0; border: 0; background: none; overflow: visible; font: .34rem/1.1 ui-monospace, Menlo, monospace; color: var(--accent); white-space: pre; letter-spacing: 0; }
+  .top a:hover { color: var(--link); background: none; }
+
+  /* title hangs up to 6rem left of the column (or the viewport edge on small screens), and the text sits clear below it */
+  .date { font-style: italic; color: var(--muted); margin: 4rem 0 0; margin-left: max(calc(50% - 50vw + 1.5rem), -6rem); }
+  h1 { position: relative; z-index: 0; font-size: clamp(2.75rem, 9vw, 5.5rem); line-height: 1.08; letter-spacing: -.04em; font-weight: 800; color: var(--accent);
+       margin: .5rem 0 0 max(calc(50% - 50vw + 1.5rem), -6rem); max-width: calc(100% + 6rem); text-wrap: balance; margin-bottom: 2.5rem; }
+
+  /* long titles (Liquid adds .long when title > 40 chars): smaller, looser */
+  h1.long { font-size: clamp(2.1rem, 6.5vw, 3.6rem); line-height: 1.12; letter-spacing: -.025em; }
+
+  article p { margin: 0 0 1.4rem; text-wrap: pretty; hyphens: auto; }
+  article h2 { font-size: 1.55rem; line-height: 1.25; margin: 3rem 0 1rem; font-weight: 700; }
+  article h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; font-style: italic; font-weight: 600; }
+  article ul { margin: 0 0 1.4rem; padding-left: 1.4rem; }
+  article li { margin-bottom: .35rem; }
+  article li::marker { color: var(--muted); }
+
+  /* a quote is a quote: indented, italic, no box */
+  blockquote { margin: 2rem 0; padding: 0 0 0 1.4rem; border-left: 2px solid var(--fg); font-style: italic; }
+  blockquote p { margin: 0; }
+
+  code { font: .8em ui-monospace, "SF Mono", Menlo, monospace; background: var(--code-bg); padding: .1em .3em; }
+  pre { background: var(--code-bg); margin: 0 0 1.6rem; padding: 1rem 1.1rem; overflow-x: auto; font-size: 1rem; line-height: 1.6; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  pre code { background: none; padding: 0; font-size: .82rem; }
+
+  /* aside: how a person annotates, not a warning box */
+  .note { margin: 0 0 1.6rem; padding-left: 1.4rem; position: relative; font-style: italic; color: var(--muted); }
+  .note::before { content: "※"; position: absolute; left: 0; color: var(--link); font-style: normal; }
+  .note p { margin: 0; }
+
+  figure { margin: 2.25rem 0; }
+  figure .ph { aspect-ratio: 16/9; background: var(--code-bg); border: 1px solid var(--line); display: grid; place-content: center; color: var(--muted); font-style: italic; }
+  figcaption { font-size: .85rem; font-style: italic; color: var(--muted); margin-top: .5rem; }
+
+  .sign { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .sign .name { font-size: 1.15rem; font-style: italic; margin: 0 0 .25rem; }
+  .sign p { margin: 0 0 .5rem; color: var(--muted); font-size: .9rem; }
+
+  .more { margin-top: 2.5rem; font-size: .95rem; }
+  .more p { margin: 0 0 .4rem; }
+  .more span { color: var(--muted); font-style: italic; }
+
+  footer { margin-top: 4rem; font-size: .8rem; font-style: italic; color: var(--muted); text-align: center; }
+
+  /* real-post additions */
+  article img, article video { max-width: 100%; height: auto; }
+  article figure { margin: 2.25rem 0; }
+  article figcaption { font-size: .85rem; font-style: italic; color: var(--muted); margin-top: .5rem; }
+  article aside { margin: 0 0 1.6rem; padding-left: 1.4rem; position: relative; font-style: italic; color: var(--muted); }
+  article aside::before { content: "\203B"; position: absolute; left: 0; color: var(--link); font-style: normal; }
+  article aside p:last-child { margin-bottom: 0; }
+  article ol { margin: 0 0 1.4rem; padding-left: 1.6rem; }
+  article table { border-collapse: collapse; margin: 0 0 1.6rem; font-size: .9em; display: block; overflow-x: auto; }
+  article th, article td { border-bottom: 1px solid var(--line); padding: .4rem .8rem; text-align: left; }
+  article hr { border: 0; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  article h4 { font-size: 1.05rem; margin: 1.5rem 0 .5rem; }
+  /* highlight.js: keep its token colours, use the page's code background */
+  pre code.hljs { background: none; padding: 0; border: 0; }
+  pre code, pre .hljs { overflow-x: auto; display: block; }
+
+/* archive (/blogography) */
+.archive h1 { margin-bottom: 1.5rem; }
+.archive .intro { color: var(--muted); font-style: italic; margin: 0 0 3rem; text-wrap: pretty; }
+.archive .year { margin-bottom: 2.5rem; }
+.archive .year h2 { font-size: 1.55rem; line-height: 1.25; margin: 0 0 .75rem; font-weight: 700; color: var(--accent); }
+.archive ul { list-style: none; margin: 0; padding: 0; }
+.archive li { display: flex; gap: 1rem; margin-bottom: .45rem; }
+.archive li time { flex: none; width: 4.5rem; color: var(--muted); font-style: italic; font-size: .9em; }
+
+/* resume (/real-resume) */
+.resume h1 { margin-bottom: 1rem; }
+.resume .contact { margin: 0 0 2.5rem; color: var(--muted); font-style: italic; }
+.resume .skills span { font-style: italic; color: var(--muted); }
+.resume .job { margin-bottom: 2rem; }
+.resume .job h3 { margin: 0 0 .5rem; font-style: normal; font-size: 1.2rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem 1rem; }
+.resume .job .when { font-weight: 400; font-style: italic; color: var(--muted); font-size: .9rem; }
+.resume .job li b { font-weight: 600; margin-right: .4rem; }
+
+@media print {
+  @page { size: A4; margin: 0; }
+  html { font-size: 9pt; }
+  :root { --bg: #fff; --fg: #000; --muted: #555; --link: #000; --line: #ccc; --accent: #16a34a; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-size: 9pt; line-height: 1.45; }
+  .top, footer { display: none; }
+  .page { max-width: none; padding: 1.2cm 1.6cm; }
+  .resume h1 { font-size: 2.6rem; margin: 0 0 .4rem; max-width: none; }
+  .resume .date { margin: 0; }
+  .resume .contact { margin-bottom: 1rem; }
+  .resume article p { margin-bottom: .6rem; }
+  .resume article h2 { font-size: 1.2rem; margin: 1.1rem 0 .5rem; }
+  .resume .job { margin-bottom: .8rem; }
+  .resume .job h3 { font-size: 1rem; margin-bottom: .25rem; }
+  .resume article ul { margin-bottom: 0; }
+  .resume article li { margin-bottom: .15rem; }
+  .job { break-inside: avoid; }
+}

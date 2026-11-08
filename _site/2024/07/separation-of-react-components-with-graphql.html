@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2024/07/separation-of-react-components-with-graphql">
-        <h2 class="my-0 mt-4">Separation of data and view layers in React components</h2>
-      </a>
-      <small>05 Jul 2024</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>In my <a href="https://leanpub.com/apollo-handbook">Apollo Handbook</a> I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the <em>data layer</em> from the <em>view layer</em> of a component.</p>
+
+  <p class="date">5 July 2024</p>
+  <h1 class="long">Separation of data and view layers in React components</h1>
+
+  <article>
+    <p>In my <a href="https://leanpub.com/apollo-handbook">Apollo Handbook</a> I cover how to use React + Apollo to interact with a GraphQL API. I thought I’d share a pattern from that book that is making working with this library easier, in particular the pattern where we separate the <em>data layer</em> from the <em>view layer</em> of a component.</p>
 
 <p>With Apollo and <a href="https://the-guild.dev/graphql/codegen">GraphQL code generator</a>, we get React hooks that we can use in our component. It can be tempting to combine both these layers together in a single component:</p>
 
@@ -140,14 +139,21 @@ it("displays a product name", () =&gt; {
 
 <p>If we’re concerned with how the GraphQL layer is handling its response, then we still have the option to test that layer with something like <a href="https://mswjs.io/docs/api/graphql/">Mock Service Worker’s GraphQL API</a>.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2024/06/make-rspec-tests-go-faster">Decreasing Ruby app build times</a></p>
+    <p><span>After this:</span> <a href="/2024/07/debugging-checklist">Debugging Checklist</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

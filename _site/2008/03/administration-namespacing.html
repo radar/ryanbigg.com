@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2008/03/administration-namespacing">
-        <h2 class="my-0 mt-4">Administration Namespacing</h2>
-      </a>
-      <small>16 Mar 2008</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>A while after completing work at SeaLink, Tom asked me about my forum hobby project and why it wasn’t working. This led to me working on it for a few days and getting it all up to scratch again, and this involved moving it over to Rails 2.0 (that’s how long I hadn’t worked on it for), and using the awesomeness that is namespacing.</p>
+
+  <p class="date">16 March 2008</p>
+  <h1>Administration Namespacing</h1>
+
+  <article>
+    <p>A while after completing work at SeaLink, Tom asked me about my forum hobby project and why it wasn’t working. This led to me working on it for a few days and getting it all up to scratch again, and this involved moving it over to Rails 2.0 (that’s how long I hadn’t worked on it for), and using the awesomeness that is namespacing.</p>
 
 <p>Namespacing is where you have some controllers in a separate area of your site. In my example, I have an admin folder in <span class="term">app/controllers</span> which contains all the controllers for the administration section of my site, and all the relevant actions. Just inside the <span class="term">app/controllers</span> directory, I have the other controllers which do all the basic stuff such as showing forums, basically anything a standard user can do.</p>
 
@@ -117,14 +116,21 @@ end</pre>
 
 <p>For an action such as an update action, it would be <span class="term">admin_forum_path(forum_object)</span> with a <span class="term">:method =&gt; :put</span> option specified in whatever you’re using. Usually you won’t have to do this, because the form_for helper would do it for you, but in some cases you might have to.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2008/03/telemarketers">Telemarketers: First Contact</a></p>
+    <p><span>After this:</span> <a href="/2008/03/its-been-one-week">It's Been One Week</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

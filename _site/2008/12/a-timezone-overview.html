@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2008/12/a-timezone-overview">
-        <h2 class="my-0 mt-4">How Rails Works #1: A Timezone Overview</h2>
-      </a>
-      <small>31 Dec 2008</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>Today fowlduck and I were talking in the #rubyonrails channel and we both wondered about timezones and why they were so (apparently) screwy. It turns out all I (and he possibly also) forgot to do was to put <span class="term">config.time_zone</span> in the <i>config/environment.rb</i>. So what does this mysterious method do? Well:</p>
+
+  <p class="date">31 December 2008</p>
+  <h1>How Rails Works #1: A Timezone Overview</h1>
+
+  <article>
+    <p>Today fowlduck and I were talking in the #rubyonrails channel and we both wondered about timezones and why they were so (apparently) screwy. It turns out all I (and he possibly also) forgot to do was to put <span class="term">config.time_zone</span> in the <i>config/environment.rb</i>. So what does this mysterious method do? Well:</p>
 <h2>In Rails 2.2...</h2>
 <ul>
   <li>1. <b>The <span class="term">Configuration</span> Class</b><br />
@@ -99,14 +98,21 @@ So, assuming you did as the above when you go into your script/console and type:
   <li>Fixed line number linkings, linking directly to 2-2-stable branch which, ideally, should now never change.</li>
 </ol>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2008/12/windows-8-icon-size">Windows 8 Icon Size</a></p>
+    <p><span>After this:</span> <a href="/2009/01/how-dare-i">How Dare I!</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

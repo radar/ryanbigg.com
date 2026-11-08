@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2007/07/when-duplication-may-seem-necessary">
-        <h2 class="my-0 mt-4">When Duplication May Seem Necessary</h2>
-      </a>
-      <small>11 Jul 2007</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>At work we’re making a management system for Ferries, Accommodation, Rental Cars, Coach Tours and some other things. I’ve been assigned to work on the bookings section, which has proven to be quite difficult.</p>
+
+  <p class="date">11 July 2007</p>
+  <h1>When Duplication May Seem Necessary</h1>
+
+  <article>
+    <p>At work we’re making a management system for Ferries, Accommodation, Rental Cars, Coach Tours and some other things. I’ve been assigned to work on the bookings section, which has proven to be quite difficult.</p>
 
 <p>We have a table called Services, which keeps track of bookable items for the various items. The bookings table is linked to passengers and vehicles via has_many associations, and whenever we create a new booking we need to assign brand new passengers every time, so say if I travelled to Kangaroo Island every week, they would enter my name 52 times in a year. I know, not everyone travels 52 times a year, but over time this builds up.</p>
 
@@ -84,14 +83,21 @@
 <p>Every weekend I go “I have nothing planned for next weekend” and usually by Wednesday it’s all booked out. Eventually I’ll find one.</p>
 
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2007/07/he-who-codes-in-ruby">He Who Codes In Ruby...</a></p>
+    <p><span>After this:</span> <a href="/2007/07/traveling-salesman">Traveling Salesman</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

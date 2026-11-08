@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2018/06/making-tests-go-faster">
-        <h2 class="my-0 mt-4">Making Tests Go Faster</h2>
-      </a>
-      <small>15 Jun 2018</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>At Culture Amp, we have a large Rails app that we’ve been building since 2011. This app has about 150k LOC and an extensive test suite that uses Rubocop, RSpec, Capybara, Cucumber and FactoryBot.</p>
+
+  <p class="date">15 June 2018</p>
+  <h1>Making Tests Go Faster</h1>
+
+  <article>
+    <p>At Culture Amp, we have a large Rails app that we’ve been building since 2011. This app has about 150k LOC and an extensive test suite that uses Rubocop, RSpec, Capybara, Cucumber and FactoryBot.</p>
 
 <p>We run these tests for the application on Buildkite and currently they take about 16 minutes to run end-to-end. This is 16 minutes that developers are waiting to get feedback on whether their build passed or failed. While this is not unacceptably high, we could do better. Developers could ship things faster, or respond quicker to build failures, with faster builds.</p>
 
@@ -199,14 +198,21 @@ D, [2018-06-15T08:44:49.977091 #11587] DEBUG -- : MONGODB | localhost:27017 | mu
 
 <p>Taking almost a full minute off our build time doesn’t sound like much, but it’s a 16th of the build time saved. There’s plenty more cases like this in our application that we could fix and reduce the build time further. This would let developers get faster feedback on their builds, making the whole development cycle more efficient.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2018/03/on-writing-software-well-2-a-review">On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review</a></p>
+    <p><span>After this:</span> <a href="/2018/08/web-directions-code-leaders-hiring-juniors">Web Directions Code Leaders: Hiring Juniors</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

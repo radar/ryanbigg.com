@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2008/05/activeresource-zendesk">
-        <h2 class="my-0 mt-4">ActiveResource & ZenDesk</h2>
-      </a>
-      <small>14 May 2008</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>With many, many thanks to Frederick Cheung, who without this would’ve been way more painful and time-consuming. My original question and our discussion can be found <a href="http://groups.google.ca/group/rubyonrails-talk/browse_thread/thread/49616be220fb8d1d">here</a>.</p>
+
+  <p class="date">14 May 2008</p>
+  <h1>ActiveResource & ZenDesk</h1>
+
+  <article>
+    <p>With many, many thanks to Frederick Cheung, who without this would’ve been way more painful and time-consuming. My original question and our discussion can be found <a href="http://groups.google.ca/group/rubyonrails-talk/browse_thread/thread/49616be220fb8d1d">here</a>.</p>
 
 <p>At my new job we signed up with <a href="http://zendesk.com">ZenDesk</a>, which acts as our helpdesk/ticketing system for our clients who sign up to our site and buy our product. Because ZenDesk uses emails instead of plain ol’ usernames for authentication, Ruby chucked a fit when we tried doing stuff like:</p>
 <pre lang="rails">class User &lt; ActiveResource::Base
@@ -110,14 +109,21 @@ User.find(i).destroy
 end</pre>
 <p>Which, if you did it, say, all in the same day like I did, should delete all the users within that range.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2008/05/the-many-faces-of">The Many Faces of...</a></p>
+    <p><span>After this:</span> <a href="/2008/05/radarlan">RadarLAN</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

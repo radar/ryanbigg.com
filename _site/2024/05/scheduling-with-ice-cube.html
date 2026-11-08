@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2024/05/scheduling-with-ice-cube">
-        <h2 class="my-0 mt-4">Scheduling with Ice Cube</h2>
-      </a>
-      <small>22 May 2024</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the <em>end of the month</em> for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the <em>month</em> but also the <em>year</em>, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.</p>
+
+  <p class="date">22 May 2024</p>
+  <h1>Scheduling with Ice Cube</h1>
+
+  <article>
+    <p>I work in a system that needs to have recurring calendar-based payments happen, where the frequency of these payments is down to a (mostly) arbitrary selection by users. Recurring calendar events are interesting, especially if someone picks the <em>end of the month</em> for an event to occur. Some months that means the 30th, but it can also mean the 28th, 29th and 31st, depending on not only the <em>month</em> but also the <em>year</em>, thanks to leap years. Recurring payments can occur over multiple years, so one year there might be a payment done on the 29th of February one year, and another done on the 28th of February the year either side of that.</p>
 
 <p>The frequency of these payments that we allow for in our system are weekly, fortnightly, every-4-weeks, monthly, quarterly, half-yearly, and yearly. When a schedule is created, we use the start date for the schedule as the basis for the ongoing payments. Schedules can optionally have an end date too, where those payments will stop happening.</p>
 
@@ -159,14 +158,21 @@ puts schedule.next_occurrences(10)
 
 <p>The <a href="https://github.com/ice-cube-ruby/ice_cube">README for the gem</a> contains plenty of other examples.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2024/05/without-react-or-graphql">Thought Experiment: Without React or GraphQL</a></p>
+    <p><span>After this:</span> <a href="/2024/06/make-rspec-tests-go-faster">Decreasing Ruby app build times</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminal post - Ryan Bigg</title>
+<style>
+  :root { --bg: #0a0f0a; --fg: #c9ecd1; --dim: #4f7a58; --hot: #22c55e; --warn: #fbbf24; --code: #0f1a10; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(ellipse at top, #0f1a10 0%, var(--bg) 70%) fixed; color: var(--fg); font: 16px/1.7 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .term { max-width: 52rem; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+  a { color: var(--hot); text-decoration: none; border-bottom: 1px dashed var(--dim); }
+  a:hover { background: var(--hot); color: #000; }
+  .p { color: var(--hot); } .d { color: var(--dim); } .w { color: var(--warn); }
+  .chrome { display: flex; gap: .4rem; align-items: center; color: var(--dim); font-size: .8rem; margin-bottom: 1.5rem; }
+  .chrome i { width: .7rem; height: .7rem; border-radius: 50%; display: block; }
+  .chrome i:nth-child(1) { background: #ef4444; } .chrome i:nth-child(2) { background: #fbbf24; } .chrome i:nth-child(3) { background: var(--hot); }
+  .chrome span { margin-left: .75rem; }
+  .prompt { margin: 0 0 .5rem; }
+  .fm { color: var(--dim); border-left: 2px solid var(--dim); padding-left: 1rem; margin: 1rem 0 2.5rem; font-size: .9rem; }
+  .fm b { color: var(--warn); font-weight: 400; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 .5rem; color: var(--hot); font-weight: 700; }
+  h1::before { content: "# "; color: var(--dim); }
+  h2 { font-size: 1.25rem; margin: 2.5rem 0 .75rem; color: var(--hot); }
+  h2::before { content: "## "; color: var(--dim); }
+  h3 { font-size: 1.05rem; margin: 2rem 0 .5rem; color: var(--hot); }
+  h3::before { content: "### "; color: var(--dim); }
+  article p { margin: 0 0 1.25rem; max-width: 70ch; }
+  article ul { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+  article li { padding-left: 2ch; text-indent: -2ch; }
+  article li::before { content: "- "; color: var(--dim); }
+  blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 2px solid var(--hot); color: var(--dim); }
+  blockquote::before { content: "> "; }
+  code { color: var(--warn); }
+  pre { background: var(--code); border: 1px solid #1d3a22; padding: 1rem; overflow-x: auto; margin: 0 0 1.5rem; position: relative; font-size: .88rem; line-height: 1.55; }
+  pre code { color: var(--fg); }
+  pre::before { content: attr(data-lang); position: absolute; top: .25rem; right: .6rem; color: var(--dim); font-size: .7rem; }
+  .callout { border: 1px dashed var(--warn); padding: .75rem 1rem; margin: 0 0 1.5rem; color: var(--warn); }
+  .callout p { margin: 0; }
+  figure { margin: 2rem 0; }
+  figure .ph { border: 1px solid var(--dim); aspect-ratio: 16/7; display: grid; place-content: center; color: var(--dim); }
+  figcaption { color: var(--dim); font-size: .85rem; margin-top: .4rem; }
+  figcaption::before { content: "// "; }
+  .end { margin-top: 3rem; border-top: 1px dashed var(--dim); padding-top: 1.5rem; }
+  .cursor { display: inline-block; width: .6em; height: 1.1em; background: var(--fg); vertical-align: text-bottom; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
+</head>
+<body>
+<main class="term">
+  <div class="chrome"><i></i><i></i><i></i><span>me@ryanbigg.com: ~/blog</span></div>
+
+  <p class="prompt"><span class="p">me@ryanbigg.com</span>:<span class="d">~/blog</span>$ head -4 hands-on-the-wheel.md</p>
+  <div class="fm">date: <b>2026-10-06</b><br>reading_time: <b>6 min</b><br>tags: <b>ai, opinion</b></div>
+
+  <p class="prompt"><span class="p">me@ryanbigg.com</span>:<span class="d">~/blog</span>$ cat hands-on-the-wheel.md</p>
+
+  <article>
+    <h1>Hands on the wheel</h1>
+    <p>I've been writing software for two decades, and for the last year a good part of that has been done with an AI sitting beside me. People keep asking what I think about it. This is that answer, and I wrote every word of it myself.</p>
+    <p>The short version: it's a very fast, very confident junior who has read everything and understood some of it. That's useful, provided <a href="#">somebody competent is reviewing the work</a>.</p>
+
+    <h2>Where it helps</h2>
+    <p>Boring, well-understood work. Migrations, test scaffolding, the fourth form that looks exactly like the previous three.</p>
+    <ul>
+      <li>Writing the first draft of tests I'd have written anyway</li>
+      <li>Explaining an unfamiliar codebase back to me</li>
+      <li>Mechanical refactors across <code>40+</code> files</li>
+    </ul>
+
+    <blockquote>The model doesn't get tired, but it also doesn't get nervous, and nervous is a useful feeling when you're touching payments.</blockquote>
+
+    <h2>Where it doesn't</h2>
+    <p>Anything where the hard part is deciding <em>what</em> to build. Here's the sort of thing it will happily produce:</p>
+<pre data-lang="ruby"><code>def charge(amount, card)
+  Gateway.charge(amount: amount, card: card)
+rescue StandardError
+  nil # everything is fine
+end</code></pre>
+
+    <div class="callout"><p>! Rule of thumb: if you couldn't explain the diff to a teammate, you're not ready to merge it.</p></div>
+
+    <figure><div class="ph">[ image ]</div><figcaption>A caption, because images deserve one.</figcaption></figure>
+
+    <h3>Guardrails</h3>
+    <p>Keep the tests, the linting, and the code review exactly as they were. The AI doesn't get a lighter process; if anything it gets a stricter one.</p>
+  </article>
+
+  <div class="end">
+    <p class="prompt"><span class="p">me@ryanbigg.com</span>:<span class="d">~/blog</span>$ ls -t | grep -A1 -B1 hands-on</p>
+    <p><a href="#">&larr; ryan-bigg-is-looking-for-work.md</a><br><span class="d">(newest post)</span></p>
+    <p><a href="/design-lab/posts/">cd ..</a> &nbsp; <a href="/blog">cd ~/blog</a></p>
+    <p class="prompt"><span class="p">me@ryanbigg.com</span>:<span class="d">~/blog</span>$ <span class="cursor"></span></p>
+  </div>
+</main>
+</body>
+</html>

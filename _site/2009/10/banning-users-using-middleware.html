@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2009/10/banning-users-using-middleware">
-        <h2 class="my-0 mt-4">Banning Users Using Middleware</h2>
-      </a>
-      <small>06 Oct 2009</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p><a href="http://bjeanes.com">Bo Jeanes</a>, a coworker at Mocra, recently implemented a way to ban people on one of his side projects <a href="http://dearqut.com">DearQUT</a> because somebody was posting nasty messages. We were talking earlier today about it and the topic of using a middleware came up since we “don’t want to waste resources on that asshole”. So I thought I’d investigate to to see how easy it is to make a middleware in Rails, turns out it’s <strong>very easy!</strong>. If you don’t like reading blog posts, I have <a href="http://github.com/radar/hammer">sample Rails application</a> containing the very same source code I used for this blog post. This contains also the “Special Github” extras like an admin section for adding/editing/deleting banned IPs! I also “cheated” by stealing elements from the <a href="http://railscasts.com/episodes/151-rack-middleware">Railscast on Rack Middleware</a>.</p>
+
+  <p class="date">6 October 2009</p>
+  <h1>Banning Users Using Middleware</h1>
+
+  <article>
+    <p><a href="http://bjeanes.com">Bo Jeanes</a>, a coworker at Mocra, recently implemented a way to ban people on one of his side projects <a href="http://dearqut.com">DearQUT</a> because somebody was posting nasty messages. We were talking earlier today about it and the topic of using a middleware came up since we “don’t want to waste resources on that asshole”. So I thought I’d investigate to to see how easy it is to make a middleware in Rails, turns out it’s <strong>very easy!</strong>. If you don’t like reading blog posts, I have <a href="http://github.com/radar/hammer">sample Rails application</a> containing the very same source code I used for this blog post. This contains also the “Special Github” extras like an admin section for adding/editing/deleting banned IPs! I also “cheated” by stealing elements from the <a href="http://railscasts.com/episodes/151-rack-middleware">Railscast on Rack Middleware</a>.</p>
 
 <h3>The Ban Hammer</h3>
 <p>First off I generated a model called <span class="term">BannedIP</span> by running <span class="term">script/generate model BannedIP ip:string</span> and ran <span class="term">rake db:migrate</span> to create the database and the <em>banned_ips</em> table.</p>
@@ -97,14 +96,21 @@ end
 <p>Of course you could just use <a href="http://www.netfilter.org/">iptables</a> and do something like <span class="term">iptables -I INPUT -s 25.55.55.55 -j DROP</span>, but then they won’t be told <em>why</em> they’re banned.</p>
 
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2009/10/construct">Construct</a></p>
+    <p><span>After this:</span> <a href="/2009/10/fixed-by-rails-3">Fixed By Rails 3</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

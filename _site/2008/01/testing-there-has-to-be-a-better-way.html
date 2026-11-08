@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,40 +41,46 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2008/01/testing-there-has-to-be-a-better-way">
-        <h2 class="my-0 mt-4">Testing: There Has To Be A Better Way</h2>
-      </a>
-      <small>11 Jan 2008</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>I <strong>hate </strong>testing in Ruby on Rails. I hate writing tests, and I especially hate running them. At work, we have 618 examples and it takes 346 seconds to run. That’s 5 minutes and 46 seconds to run 6000 lines of code, it’s pathetic!</p>
+
+  <p class="date">11 January 2008</p>
+  <h1>Testing: There Has To Be A Better Way</h1>
+
+  <article>
+    <p>I <strong>hate </strong>testing in Ruby on Rails. I hate writing tests, and I especially hate running them. At work, we have 618 examples and it takes 346 seconds to run. That’s 5 minutes and 46 seconds to run 6000 lines of code, it’s pathetic!</p>
 
 <p>The reason for this is that we have a central object which a lot of other objects are related to, called booking. Now, without giving too much away I’ll say that, along with the bookings table, there are 8 other tables that are emptied and loaded with data during a large majority of the tests. All this emptying and refilling is taking time, time that could be better spent <strong>not waiting for the tests to finish!</strong></p>
 
 <p>This is why I propose a system that entirely relies on fixtures for its data supply, so it doesn’t have to empty &amp; load the tables again and again, but instead reads directly from the fixture files every time. I have no idea how to go about making one, but if anyone reads this and wants to collaborate with me on something like it, by all means please do. I <strong>hate</strong> having to read my emails whilst waiting for the tests to finish, I run out of emails.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2008/01/job-advertisements">Job Advertisements</a></p>
+    <p><span>After this:</span> <a href="/2008/01/it-runs-in-the-family">It Runs In The Family</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

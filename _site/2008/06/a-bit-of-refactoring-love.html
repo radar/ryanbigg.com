@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2008/06/a-bit-of-refactoring-love">
-        <h2 class="my-0 mt-4">A bit of refactoring love</h2>
-      </a>
-      <small>13 Jun 2008</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <h3>Find, Find, Find, Find, I don't think so...</h3>
+
+  <p class="date">13 June 2008</p>
+  <h1>A bit of refactoring love</h1>
+
+  <article>
+    <h3>Find, Find, Find, Find, I don't think so...</h3>
 
 <p>As explained in previous posts, Rails controllers have 7 default actions (index, new, create, show, edit, update, destroy). Four of these seven actions make the same find call, <span class="term">Model.find(params[:id])</span> and this tutorial is to tidy that up so you’re not repeating yourself over four different actions. To clean this up we’ll just call a before filter:</p>
 
@@ -157,14 +156,21 @@ end
 
 <p>As long as there’s a <span class="term">#to_s</span> method in the Forum model it will insert that as the phrase shown to the user for the link. All of the above should produce the same URL, with the exception of the first which will produce <span class="term">/forums/show/1</span>, and going down the list they’re just shorter ways of writing the same thing. If you had nested routes such as <span class="term">forum_topic_path(@forum, @topic)</span> you could do <span class="term">&lt;%= link_to @topic, [@forum, @topic] %&gt;</span> as the extremely short version of it. The reason why we can’t do just <span class="term">&lt;%= link_to [@forum, @topic] %&gt;</span> is because this will show the to_s version of @forum, followed immediately by the to_s version of @topic.</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2008/06/change-of-plans-2">Change of Plans #2</a></p>
+    <p><span>After this:</span> <a href="/2008/06/going-dark">Going Dark</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

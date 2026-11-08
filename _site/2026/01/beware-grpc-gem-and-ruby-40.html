@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700i|Koulen:400,700,700i&display=swap"
     rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-  <link rel='stylesheet' href='/css/style.css'>
+  
   <link rel='stylesheet' href='/css/highlighting.css' media='screen'>
   <script src="/js/highlight.js"></script>
   <script>hljs.highlightAll();</script>
@@ -41,27 +41,26 @@
   
 </head>
 
+<link rel="stylesheet" href="/css/post.css">
 
 <body>
-  <div class="flex">
-    <div class='text-center mr-8'>
-      <h1 class="my-0 mt-4 ml-4"><a href='/'>Ryan Bigg</a></h1>
-      <a href="/blog">&#x27F5; Posts</a>
-    </div>
-
-    <div class="post-title ml-auto">
-      <a href="/2026/01/beware-grpc-gem-and-ruby-40">
-        <h2 class="my-0 mt-4">Beware grpc gem and Ruby 4.0</h2>
-      </a>
-      <small>19 Jan 2026</small>
-    </div>
+<div class="page">
+    <div class="top">
+    <a href="/blogography">&larr; all posts</a>
+    <a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a>
   </div>
 
-  <div class="main">
-    <div class='content'>
-      <div class='content-inner'>
-        <article class="mt-8 mb-16">
-          <p>Finally got to the bottom of ridiculously slow build times on one of my applications. I’m talking 30+ minute builds, all without <code>sassc</code>!</p>
+
+  <p class="date">19 January 2026</p>
+  <h1>Beware grpc gem and Ruby 4.0</h1>
+
+  <article>
+    <p>Finally got to the bottom of ridiculously slow build times on one of my applications. I’m talking 30+ minute builds, all without <code>sassc</code>!</p>
 
 <p>We use a gem in the app called <code>newrelic-infinite_tracing</code>, which has a dependency on another gem called <code>grpc</code>. This gem has native extensions that are pre-built. You’ll see these listed on RubyGems as lists like:</p>
 
@@ -76,14 +75,21 @@
 
 <p>I got to the bottom of this issue by running <code>bundle install</code> with no more <code>-j</code> option, and then measuring which gem took the longest time to install during a CI build step. The step helpfully output timestamps on each line of the <code>bundle install</code> process, which helped a lot toward narrowing it down!</p>
 
-        </article>
-      </div>
-    </div>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
   </div>
-  <footer>
-</footer>
 
+  <div class="more">
+    <p><span>Before this:</span> <a href="/2025/11/triaging-bugs">Triaging bugs</a></p>
+    <p><span>After this:</span> <a href="/2026/02/hearts-clubs">Hearts & Clubs</a></p>
+  </div>
 
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
 </body>
 
 </html>
+

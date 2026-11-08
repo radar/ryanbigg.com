@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review - Ryan Bigg</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #f7f4ec; --fg: #26231d; --muted: #7a7466; --line: #d9d3c3; --link: oklch(48% .15 150); --mark: oklch(90% .12 150); --accent: oklch(72.3% .219 149.579); --code-bg: #efeadc; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17160f; --fg: #e4dfd0; --muted: #9a9482; --line: #38352a; --link: oklch(80% .16 150); --mark: oklch(35% .08 150); --accent: oklch(87% .17 150); --code-bg: #201f16; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--fg); font: 20px/1.7 "Lora", Georgia, serif; }
+  ::selection { background: var(--mark); }
+
+  a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .18em; }
+  a:hover { background: var(--mark); }
+
+  .page { max-width: 38rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+  .top { font-size: 1.15rem; font-style: italic; display: flex; justify-content: space-between; color: var(--muted); }
+  .top a { color: var(--muted); }
+  .top { align-items: flex-start; }
+  .top a.logo { background: none; text-decoration: none; }
+  .logo pre { margin: 0; padding: 0; border: 0; background: none; overflow: visible; font: .34rem/1.1 ui-monospace, Menlo, monospace; color: var(--accent); white-space: pre; letter-spacing: 0; }
+  .top a:hover { color: var(--link); background: none; }
+
+  /* title hangs up to 6rem left of the column (or the viewport edge on small screens), and the text sits clear below it */
+  .date { font-style: italic; color: var(--muted); margin: 4rem 0 0; margin-left: max(calc(50% - 50vw + 1.5rem), -6rem); }
+  h1 { position: relative; z-index: 0; font-size: clamp(2.75rem, 9vw, 5.5rem); line-height: 1.08; letter-spacing: -.04em; font-weight: 800; color: var(--accent);
+       margin: .5rem 0 0 max(calc(50% - 50vw + 1.5rem), -6rem); max-width: calc(100% + 6rem); text-wrap: balance; margin-bottom: 2.5rem; }
+
+  /* long titles (Liquid adds .long when title > 40 chars): smaller, looser */
+  h1.long { font-size: clamp(2.1rem, 6.5vw, 3.6rem); line-height: 1.12; letter-spacing: -.025em; }
+
+  article p { margin: 0 0 1.4rem; text-wrap: pretty; hyphens: auto; }
+  article h2 { font-size: 1.55rem; line-height: 1.25; margin: 3rem 0 1rem; font-weight: 700; }
+  article h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; font-style: italic; font-weight: 600; }
+  article ul { margin: 0 0 1.4rem; padding-left: 1.4rem; }
+  article li { margin-bottom: .35rem; }
+  article li::marker { color: var(--muted); }
+
+  /* a quote is a quote: indented, italic, no box */
+  blockquote { margin: 2rem 0; padding: 0 0 0 1.4rem; border-left: 2px solid var(--fg); font-style: italic; }
+  blockquote p { margin: 0; }
+
+  code { font: .8em ui-monospace, "SF Mono", Menlo, monospace; background: var(--code-bg); padding: .1em .3em; }
+  pre { background: var(--code-bg); margin: 0 0 1.6rem; padding: 1rem 1.1rem; overflow-x: auto; font-size: 1rem; line-height: 1.6; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  pre code { background: none; padding: 0; font-size: .82rem; }
+
+  /* aside: how a person annotates, not a warning box */
+  .note { margin: 0 0 1.6rem; padding-left: 1.4rem; position: relative; font-style: italic; color: var(--muted); }
+  .note::before { content: "※"; position: absolute; left: 0; color: var(--link); font-style: normal; }
+  .note p { margin: 0; }
+
+  figure { margin: 2.25rem 0; }
+  figure .ph { aspect-ratio: 16/9; background: var(--code-bg); border: 1px solid var(--line); display: grid; place-content: center; color: var(--muted); font-style: italic; }
+  figcaption { font-size: .85rem; font-style: italic; color: var(--muted); margin-top: .5rem; }
+
+  .sign { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .sign .name { font-size: 1.15rem; font-style: italic; margin: 0 0 .25rem; }
+  .sign p { margin: 0 0 .5rem; color: var(--muted); font-size: .9rem; }
+
+  .more { margin-top: 2.5rem; font-size: .95rem; }
+  .more p { margin: 0 0 .4rem; }
+  .more span { color: var(--muted); font-style: italic; }
+
+  footer { margin-top: 4rem; font-size: .8rem; font-style: italic; color: var(--muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top"><a href="/design-lab/posts/">&larr; all posts</a><a class="logo" href="/" aria-label="Ryan Bigg"><pre aria-hidden="true">██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝</pre></a></div>
+
+  <p class="date">6 October 2026</p>
+  <h1 class="long">On Writing Software Well #2: Using callbacks to manage auxiliary complexity: A review</h1>
+
+  <article>
+    <p>I've been writing software for two decades, and for the last year a good chunk of that has been done with an AI sitting next to me. People keep asking what I think of it. This is my answer, and I wrote every word of it myself.</p>
+
+    <p>The short version: it's a very fast, very confident junior who has read everything and understood some of it. That's useful, so long as <a href="#">someone competent is reviewing the work</a>.</p>
+
+    <h2>Where it helps</h2>
+    <p>Boring, well-understood work. Migrations, test scaffolding, the fourth form that looks exactly like the previous three.</p>
+    <ul>
+      <li>Writing the first draft of tests I'd have written anyway</li>
+      <li>Explaining an unfamiliar codebase back to me</li>
+      <li>Mechanical refactors across <code>40+</code> files</li>
+    </ul>
+
+    <blockquote><p>The model doesn't get tired, but it also doesn't get nervous, and nervous is a useful feeling when you're touching payments.</p></blockquote>
+
+    <h2>Where it doesn't</h2>
+    <p>Anything where the hard part is deciding <em>what</em> to build. Here's the sort of thing it'll cheerfully hand you:</p>
+<pre><code>def charge(amount, card)
+  Gateway.charge(amount: amount, card: card)
+rescue StandardError
+  nil # everything is fine
+end</code></pre>
+
+    <div class="note"><p>If you couldn't explain the diff to a teammate, you're not ready to merge it.</p></div>
+
+    <figure><div class="ph">image</div><figcaption>A caption, because images deserve one.</figcaption></figure>
+
+    <h2>Guardrails</h2>
+    <p>Keep the tests, the linting and the code review exactly as they were. The AI doesn't get a lighter process. If anything, it gets a stricter one.</p>
+  </article>
+
+  <div class="sign">
+    <p class="name">&mdash; Ryan</p>
+    <p>Got a thought? <a href="mailto:me@ryanbigg.com">Email me</a> or find me on <a href="https://ruby.social/@ryanbigg">Mastodon</a>.</p>
+  </div>
+
+  <div class="more">
+    <p><span>Before this:</span> <a href="#">Ryan Bigg is sorta looking for work</a></p>
+    <p><span>After this:</span> nothing yet</p>
+  </div>
+
+  <footer>Written by hand in Warrnambool.</footer>
+</div>
+</body>
+</html>
