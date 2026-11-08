@@ -16,7 +16,8 @@
   * { box-sizing:border-box; }
   body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font:17px/1.5 system-ui,-apple-system,sans-serif; display:grid; grid-template-columns:minmax(0,1fr); justify-items:center; align-items:start; padding:18vh 1rem 3rem; }
   .box { width:100%; max-width:40rem; min-width:0; }
-  h1 { font-size:1rem; font-weight:600; letter-spacing:.02em; color:var(--muted); margin:0 0 .75rem .25rem; } h1 b { color:var(--hot); }
+  h1 { font-size:1rem; font-weight:600; letter-spacing:.02em; color:var(--muted); margin:0 0 .75rem .25rem; display:flex; align-items:center; justify-content:space-between; gap:.75rem; } h1 b { color:var(--hot); }
+  .duck { outline:none; -webkit-tap-highlight-color:transparent; cursor:pointer; flex:none; margin-right:.25rem; } .duck:hover { transform:rotate(-8deg); } .duck { transition:transform .15s; position:relative; z-index:0; } .field { position:relative; z-index:1; }
   .field { background:var(--card); border:1px solid var(--line); border-radius:1rem; box-shadow:0 8px 30px rgba(0,0,0,.06); overflow:hidden; }
   .field:focus-within { border-color:var(--hot); }
   input { width:100%; border:0; outline:0; background:none; font:inherit; font-size:1.25rem; padding:1.1rem 1.25rem; color:inherit; }
@@ -46,7 +47,7 @@
   .try button { all:unset; cursor:pointer; font-size:.85rem; color:var(--muted); border:1px solid var(--line); border-radius:2rem; padding:.25rem .8rem; } .try button:hover { color:var(--hot); border-color:var(--hot); }
 </style></head><body>
 <div class="box">
-  <h1><b>Ryan Bigg</b> · what do you want to do?</h1>
+  <h1><span><b>Ryan Bigg</b> · <span id="hello">what do you want to do?</span></span><svg class="duck" tabindex="0" role="button" viewBox="0 0 32 32" width="28" height="28" aria-label="Rubber duck: click to quack"><title>Quack</title><path d="M4 17c0-3 2-4.500 5-4.500 1 0 1.500-.300 1.500-1.500v-1c0-3.500 2.500-6 6-6s6 2.500 6 6c0 2-.800 3.300-2 4.200C25 15 28 16 28 20c0 4.500-4 8-10 8H11C6.500 28 4 24 4 17z" fill="#fbbf24"/><path d="M22.500 10.500h5c.800 0 1.200.800.700 1.400-.9 1-2.700 1.600-5.700 1.200z" fill="#f97316"/><circle cx="19" cy="9" r="1.200" fill="#1a1d1b"/><path d="M9 20c2.500 3 7 3 10 .500-2-.500-3.500-2-4-3.500-1.500 2-4 2.500-6 3z" fill="#f59e0b"/></svg></h1>
   <div class="field">
     <input id="q" autofocus autocomplete="off" spellcheck="false" placeholder="Hire me, read a post, read my books, watch a talk…">
     <div class="say" id="say"></div>
@@ -61,6 +62,53 @@
 const q = document.getElementById('q'), res = document.getElementById('res'), say = document.getElementById('say');
 const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 let items = [], sel = 0;
+// Greeting by the visitor's local day and time
+function greeting(d = new Date()) {
+  const day = d.getDay(), h = d.getHours();
+  if (day === 6) return "Saturday. Shouldn't you be outside?";
+  if (day === 0) return "Sunday. Lovely day for clicking things.";
+  if (day === 1 && h < 12) return "New week. Fresh start, same inbox.";
+  if (day === 5 && h >= 12) return "Friday afternoon. Please don't deploy anything.";
+  if (day === 3 && h >= 9 && h < 17) return "Midweek. Hump day, as they say.";
+  if (h < 5 || h >= 23) return "It's late. Go to bed. After you've had a look around.";
+  if (h < 9) return "Up before the coffee? Same.";
+  if (h < 12) return "Coffee o'clock. What can I help with?";
+  if (h < 14) return "Lunch break browsing. Good choice.";
+  if (h < 17) return "Afternoon slump? Here, click something.";
+  if (h < 20) return "Good evening. Knocking off for the day?";
+  return "Evening. Still at the keyboard?";
+}
+document.getElementById('hello').textContent = greeting();
+// Rubber duck squeak
+const quacks = [1,2,3,4].map(n => { const a = new Audio(`/sounds/quack${n}.wav`); a.preload = 'auto'; return a; });
+let lastQuack = -1;
+function quack() {
+  let i; do { i = Math.floor(Math.random() * quacks.length); } while (i === lastQuack);
+  lastQuack = i;
+  const a = quacks[i];
+  a.playbackRate = 0.9 + Math.random() * 0.25;
+  a.currentTime = 0; a.play().catch(() => {});
+}
+const duck = document.querySelector('.duck');
+const popSound = new Audio('/sounds/pop.mp3'); popSound.preload = 'auto';
+const nextPop = () => 5 + Math.floor(Math.random() * 16);
+let clicks = 0, popAt = nextPop();
+function pop() {
+  clicks = 0; popAt = nextPop();
+  popSound.currentTime = 0; popSound.play().catch(() => {});
+  // Burst the duck, then slide a fresh one up from underneath the chat box.
+  const gone = duck.animate([{ transform:'scale(1)', opacity:1 }, { transform:'scale(1.8)', opacity:0 }], { duration:140, easing:'ease-out', fill:'forwards' });
+  duck.style.pointerEvents = 'none';
+  setTimeout(() => {
+    gone.cancel();
+    duck.style.pointerEvents = '';
+    const dy = document.querySelector('.field').getBoundingClientRect().top + 4 - duck.getBoundingClientRect().top;
+    duck.animate([{ transform:`translateY(${dy}px)` }, { transform:'translateY(0)' }], { duration:650, easing:'cubic-bezier(.2,.9,.3,1.15)' });
+  }, 2000);
+}
+function duckClick() { if (++clicks >= popAt) pop(); else quack(); }
+duck.onclick = duckClick;
+duck.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); duckClick(); } };
 let confettiCanvas, confettiCtx, confettiBits = [], confettiLast = 0, confettiRunning = false;
 function confetti(x, y) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
