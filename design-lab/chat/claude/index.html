@@ -1,0 +1,74 @@
+---
+---
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Ryan Bigg</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f7f4ec; --fg:#26231d; --muted:#7a7466; --line:#d9d3c3; --card:#fffdf7; --accent:oklch(72.3% .219 149.579); --link:oklch(48% .15 150); }
+  @media (prefers-color-scheme: dark) { :root { --bg:#17160f; --fg:#e4dfd0; --muted:#9a9482; --line:#38352a; --card:#201f16; --accent:oklch(87% .17 150); --link:oklch(80% .16 150); } }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font:19px/1.6 Lora, Georgia, serif; display:flex; flex-direction:column; }
+  main { flex:1; width:100%; max-width:44rem; margin:0 auto; padding:2rem 1.5rem 1rem; display:flex; flex-direction:column; }
+  .hero { margin:auto 0; text-align:center; padding-bottom: 6vh; }
+  .hero h1 { font-size:clamp(2.2rem,6vw,3.4rem); letter-spacing:-.03em; margin:0 0 .4rem; color:var(--accent); font-weight:800; }
+  .hero p { margin:0 0 2rem; color:var(--muted); font-style:italic; }
+  .chat { display:none; flex-direction:column; gap:1.5rem; padding:1rem 0 2rem; }
+  .started .chat { display:flex; } .started .hero { display:none; }
+  .me { align-self:flex-end; background:var(--card); border:1px solid var(--line); padding:.6rem 1rem; border-radius:1.2rem 1.2rem .3rem 1.2rem; max-width:80%; }
+  .bot p { margin:0 0 .9rem; }
+  .bot .tag { font-size:.8rem; font-style:italic; color:var(--muted); margin-bottom:.4rem; }
+  .cards { display:flex; flex-wrap:wrap; gap:.6rem; margin:.2rem 0 .8rem; }
+  .cards a { background:var(--card); border:1px solid var(--line); padding:.5rem .9rem; border-radius:.7rem; color:var(--link); text-decoration:none; font-size:.95rem; }
+  .cards a:hover { border-color:var(--link); }
+  .alts { font-size:.9rem; color:var(--muted); font-style:italic; }
+  .alts button { all:unset; cursor:pointer; color:var(--link); text-decoration:underline; text-underline-offset:.2em; margin-left:.4rem; }
+  .composer { position:sticky; bottom:0; background:linear-gradient(transparent, var(--bg) 30%); padding:1rem 0 1.25rem; }
+  form { display:flex; align-items:flex-end; gap:.5rem; background:var(--card); border:1px solid var(--line); border-radius:1.4rem; padding:.7rem .7rem .7rem 1.2rem; box-shadow:0 2px 14px rgba(0,0,0,.05); }
+  form:focus-within { border-color:var(--accent); }
+  textarea { flex:1; border:0; outline:0; background:none; resize:none; font:inherit; color:inherit; height:1.6em; max-height:8rem; }
+  textarea::placeholder { color:var(--muted); font-style:italic; }
+  form button { border:0; background:var(--accent); color:#06210f; width:2.3rem; height:2.3rem; border-radius:50%; font-size:1.1rem; cursor:pointer; flex:none; }
+  .chips { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin-top:1rem; }
+  .started .chips { display:none; }
+  .chips button { all:unset; cursor:pointer; font-size:.85rem; font-style:italic; border:1px solid var(--line); border-radius:2rem; padding:.3rem .85rem; color:var(--muted); }
+  .chips button:hover { color:var(--link); border-color:var(--link); }
+  footer { text-align:center; font-size:.8rem; font-style:italic; color:var(--muted); padding:0 0 1.2rem; }
+  .dots span { display:inline-block; width:.4rem; height:.4rem; border-radius:50%; background:var(--muted); margin-right:.25rem; animation:b 1s infinite; } .dots span:nth-child(2){animation-delay:.15s} .dots span:nth-child(3){animation-delay:.3s}
+  @keyframes b { 50% { opacity:.2; } }
+</style></head><body>
+<main id="m">
+  <div class="hero"><h1>Ryan Bigg</h1><p>Lead developer. What brings you by?</p></div>
+  <div class="chat" id="chat"></div>
+  <div class="composer">
+    <form id="f"><textarea id="q" rows="1" placeholder="Ask me anything, or say what you're after…" autofocus></textarea><button aria-label="Send">↑</button></form>
+    <div class="chips" id="chips"></div>
+  </div>
+</main>
+<footer>Not an AI. Just keywords, written by hand in Warrnambool.</footer>
+<script src="/design-lab/chat/intent.js"></script>
+<script>
+const $ = id => document.getElementById(id), chat = $('chat'), q = $('q');
+SUGGESTIONS.forEach(s => { const b = document.createElement('button'); b.textContent = s; b.onclick = () => send(s); $('chips').append(b); });
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const links = ls => `<div class="cards">${ls.map(([t,u]) => `<a href="${u}">${esc(t)} →</a>`).join('')}</div>`;
+function answer(text) {
+  const g = guess(text); let h = '';
+  if (g.intent) { h += `<div class="tag">Sounds like: ${esc(g.intent.label)}</div><p>${esc(g.intent.reply)}</p>${links(g.intent.links)}`; }
+  else h += `<p>${g.posts.length ? "I'm not sure what you're after, but a few posts look related." : "I'm not sure what you're after. I'm a lead developer who writes books and blog posts, so try one of these, or just email me."}</p>`;
+  if (g.posts.length) h += `<div class="tag">${g.intent ? 'Also' : 'Posts'} that might help</div>${links(g.posts.map(p => [p.t, p.u]))}`;
+  if (!g.intent && !g.posts.length) h += links([['Blog','/blog'],['Books','/books'],['Résumé','/real-resume'],['Email me','mailto:me@ryanbigg.com']]);
+  if (g.alts.length) h += `<div class="alts">Or maybe:${g.alts.map((a,i) => `<button data-i="${INTENTS.indexOf(a)}">${esc(a.label)}</button>`).join('')}</div>`;
+  return h;
+}
+function send(text) {
+  text = text.trim(); if (!text) return;
+  $('m').classList.add('started');
+  chat.insertAdjacentHTML('beforeend', `<div class="me">${esc(text)}</div>`);
+  const bot = document.createElement('div'); bot.className = 'bot'; bot.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>'; chat.append(bot);
+  setTimeout(() => { bot.innerHTML = answer(text); bot.querySelectorAll('.alts button').forEach(b => b.onclick = () => { const it = INTENTS[b.dataset.i]; chat.insertAdjacentHTML('beforeend', `<div class="bot"><div class="tag">${esc(it.label)}</div><p>${esc(it.reply)}</p>${links(it.links)}</div>`); scrollTo(0, document.body.scrollHeight); }); scrollTo(0, document.body.scrollHeight); }, 450);
+  q.value = ''; q.style.height = '1.6em';
+}
+$('f').onsubmit = e => { e.preventDefault(); send(q.value); };
+q.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(q.value); } };
+q.oninput = () => { q.style.height = '1.6em'; q.style.height = q.scrollHeight + 'px'; };
+</script></body></html>

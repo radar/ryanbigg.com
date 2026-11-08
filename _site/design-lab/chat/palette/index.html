@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Ryan Bigg</title>
+<style>
+  :root { --bg:#fafaf7; --fg:#1a1d1b; --muted:#7b8380; --line:#e3e6e1; --card:#fff; --hot:oklch(62% .2 150); --sel:#e9f7ed; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e110f; --fg:#e3e8e4; --muted:#8a948e; --line:#252b27; --card:#151a17; --hot:oklch(80% .18 150); --sel:#16281c; } }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font:17px/1.5 system-ui,-apple-system,sans-serif; display:grid; place-items:start center; padding:18vh 1rem 3rem; }
+  .box { width:100%; max-width:40rem; }
+  h1 { font-size:1rem; font-weight:600; letter-spacing:.02em; color:var(--muted); margin:0 0 .75rem .25rem; } h1 b { color:var(--hot); }
+  .field { background:var(--card); border:1px solid var(--line); border-radius:1rem; box-shadow:0 8px 30px rgba(0,0,0,.06); overflow:hidden; }
+  .field:focus-within { border-color:var(--hot); }
+  input { width:100%; border:0; outline:0; background:none; font:inherit; font-size:1.25rem; padding:1.1rem 1.25rem; color:inherit; }
+  input::placeholder { color:var(--muted); }
+  ul { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); } ul:empty { display:none; }
+  li a { display:flex; align-items:baseline; gap:.75rem; padding:.7rem 1.25rem; color:inherit; text-decoration:none; }
+  li.sel a, li a:hover { background:var(--sel); }
+  li .k { font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--hot); width:8.5rem; flex:none; font-weight:700; white-space:nowrap; }
+  li .t { flex:1; } li .u { color:var(--muted); font-size:.8rem; white-space:nowrap; }
+  .say { padding:.8rem 1.25rem; font-size:.95rem; color:var(--muted); border-top:1px solid var(--line); } .say:empty { display:none; }
+  .foot { display:flex; justify-content:space-between; color:var(--muted); font-size:.8rem; padding:.7rem .25rem; }
+  .disclaimer { margin-top:2.5rem; text-align:center; color:var(--muted); font-size:.8rem; }
+  kbd { font:inherit; border:1px solid var(--line); border-radius:.3rem; padding:0 .35rem; background:var(--card); }
+  .try button.hot { color:var(--hot); border-color:var(--hot); font-weight:600; box-shadow:0 0 0 0 rgba(34,197,94,.6), 0 0 14px rgba(34,197,94,.45); animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow:0 0 0 6px rgba(34,197,94,0), 0 0 22px rgba(34,197,94,.7); } }
+  @media (prefers-reduced-motion: reduce) { .try button.hot { animation:none; } }
+  .try { margin-top:1.5rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+  .try button { all:unset; cursor:pointer; font-size:.85rem; color:var(--muted); border:1px solid var(--line); border-radius:2rem; padding:.25rem .8rem; } .try button:hover { color:var(--hot); border-color:var(--hot); }
+</style></head><body>
+<div class="box">
+  <h1><b>Ryan Bigg</b> · what do you want to do?</h1>
+  <div class="field">
+    <input id="q" autofocus autocomplete="off" spellcheck="false" placeholder="Hire me, read a post, read my books, watch a talk…">
+    <div class="say" id="say"></div>
+    <ul id="res"></ul>
+  </div>
+  <div class="foot"><span><kbd>↑</kbd> <kbd>↓</kbd> to choose · <kbd>Enter</kbd> to open</span><span>AI-powered search</span></div>
+  <div class="try" id="try"></div>
+  <p class="disclaimer">Ryan is human and can make mistakes.</p>
+</div>
+<script src="/design-lab/chat/intent.js"></script>
+<script>
+const q = document.getElementById('q'), res = document.getElementById('res'), say = document.getElementById('say');
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let items = [], sel = 0;
+let confettiCanvas, confettiCtx, confettiBits = [], confettiLast = 0, confettiRunning = false;
+function confetti(x, y) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!confettiCanvas) {
+    confettiCanvas = document.createElement('canvas');
+    confettiCanvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99';
+    document.body.append(confettiCanvas);
+    confettiCtx = confettiCanvas.getContext('2d');
+  }
+  const dpr = devicePixelRatio || 1;
+  confettiCanvas.width = innerWidth * dpr; confettiCanvas.height = innerHeight * dpr;
+  confettiCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const colors = ['#22c55e','#fbbf24','#ef4444','#38bdf8','#e879f9','#ffffff'];
+  for (let i = 0; i < 90; i++) {
+    const a = -Math.PI / 2 + (Math.random() - .5) * Math.PI * 1.1, v = 350 + Math.random() * 550;
+    confettiBits.push({
+      x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+      w: 6 + Math.random() * 5, h: 9 + Math.random() * 6,
+      rot: Math.random() * 6.28, vr: (Math.random() - .5) * 12,
+      flip: Math.random() * 6.28, vf: 4 + Math.random() * 6,
+      life: 0, max: 1.8 + Math.random() * 1.2, color: colors[i % colors.length]
+    });
+  }
+  if (!confettiRunning) { confettiRunning = true; confettiLast = performance.now(); requestAnimationFrame(confettiTick); }
+}
+function confettiTick(now) {
+  const dt = Math.min((now - confettiLast) / 1000, .05); confettiLast = now;
+  const ctx = confettiCtx; ctx.clearRect(0, 0, innerWidth, innerHeight);
+  const drag = Math.pow(.08, dt);
+  confettiBits = confettiBits.filter(c => (c.life += dt) < c.max && c.y < innerHeight + 40);
+  for (const c of confettiBits) {
+    c.vx *= drag; c.vy = c.vy * drag + 900 * dt;
+    if (c.vy > 140) c.vy = 140 + (c.vy - 140) * Math.pow(.01, dt);
+    c.x += c.vx * dt; c.y += c.vy * dt; c.rot += c.vr * dt; c.flip += c.vf * dt;
+    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.rot); ctx.scale(1, Math.cos(c.flip));
+    ctx.globalAlpha = Math.min(1, (c.max - c.life) / .5); ctx.fillStyle = c.color;
+    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore();
+  }
+  if (confettiBits.length) requestAnimationFrame(confettiTick);
+  else { confettiRunning = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+}
+SUGGESTIONS.forEach(s => {
+  const b = document.createElement('button'); const hire = s === "I'm hiring a developer";
+  b.textContent = hire ? '🎉 ' + s + ' ✨' : s;
+  if (hire) b.className = 'hot';
+  b.onclick = e => { q.value = s; update(); q.focus(); if (hire) { const r = b.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2); } };
+  document.getElementById('try').append(b);
+});
+function update() {
+  const text = q.value; items = []; say.textContent = ''; sel = 0;
+  if (text.trim()) {
+    const g = guess(text);
+    if (g.intent) { say.textContent = g.intent.reply; g.intent.links.forEach(([t,u]) => items.push({k:g.intent.label.split(' ')[0], t, u})); }
+    g.posts.forEach(p => items.push({k:'Post', t:p.t, u:p.u}));
+    g.alts.forEach(a => items.push({k:'Maybe', t:a.label, u:a.links[0][1]}));
+    if (!items.length) { say.textContent = "No idea what that is. Try the blog, or just email me."; items = [{k:'Blog',t:'Browse the blog',u:'/blog'},{k:'Email',t:'me@ryanbigg.com',u:'mailto:me@ryanbigg.com'}]; }
+  }
+  render();
+}
+function render() { res.innerHTML = items.map((it,i) => `<li class="${i===sel?'sel':''}"><a href="${it.u}"><span class="k">${esc(it.k)}</span><span class="t">${esc(it.t)}</span><span class="u">${esc(it.u.replace(/^https?:\/\//,''))}</span></a></li>`).join(''); }
+q.oninput = update;
+q.onkeydown = e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel+1, items.length-1); render(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel-1, 0); render(); }
+  else if (e.key === 'Enter' && items[sel]) location.href = items[sel].u;
+};
+</script></body></html>

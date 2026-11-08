@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Ryan Bigg</title>
+<style>
+  :root { --bg:#0a0f0a; --fg:#b8f5c4; --dim:#4f7a58; --hot:#22c55e; --warn:#fbbf24; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:radial-gradient(ellipse at center,#0f1a10 0%,var(--bg) 70%) fixed; color:var(--fg); font:16px/1.65 ui-monospace,"SF Mono",Menlo,Consolas,monospace; }
+  .term { max-width:52rem; margin:0 auto; padding:2rem 1.25rem 6rem; text-shadow:0 0 6px rgba(34,197,94,.4); }
+  a { color:var(--hot); text-decoration:none; border-bottom:1px dashed var(--dim); } a:hover { background:var(--hot); color:#000; text-shadow:none; }
+  .p { color:var(--hot); } .d { color:var(--dim); } .w { color:var(--warn); }
+  .chrome { display:flex; gap:.4rem; align-items:center; color:var(--dim); font-size:.8rem; margin-bottom:1.5rem; }
+  .chrome i { width:.7rem; height:.7rem; border-radius:50%; display:block; } .chrome i:nth-child(1){background:#ef4444}.chrome i:nth-child(2){background:#fbbf24}.chrome i:nth-child(3){background:var(--hot)} .chrome span{margin-left:.75rem}
+  .out { margin:0 0 1.25rem; white-space:pre-wrap; } .out .ls { display:flex; flex-wrap:wrap; gap:.25rem 1.5rem; margin-top:.25rem; }
+  .row { display:flex; gap:.6ch; } .row label { white-space:nowrap; }
+  input { flex:1; min-width:0; background:none; border:0; outline:0; color:var(--fg); font:inherit; caret-color:var(--hot); text-shadow:inherit; }
+  .hint { color:var(--dim); font-size:.85rem; margin:.4rem 0 1.5rem; } .hint button { all:unset; cursor:pointer; color:var(--hot); border-bottom:1px dashed var(--dim); margin-right:1.2ch; } .hint button:hover{background:var(--hot);color:#000}
+  .conf { color:var(--dim); font-size:.8rem; }
+</style></head><body>
+<main class="term">
+  <div class="chrome"><i></i><i></i><i></i><span>me@ryanbigg.com: ~</span></div>
+  <div class="out"><span class="w">Hi, I'm Ryan.</span> Lead developer. Tell me what you're after and I'll point you at the right place.
+Type below, or try one of these:</div>
+  <div class="hint" id="hint"></div>
+  <div id="log"></div>
+  <div class="row"><label><span class="p">you@visitor</span>:<span class="d">~</span>$</label><input id="q" autofocus autocomplete="off" spellcheck="false" placeholder="what do you want to do?"></div>
+</main>
+<script src="/design-lab/chat/intent.js"></script>
+<script>
+const log = document.getElementById('log'), q = document.getElementById('q');
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const links = ls => `<div class="ls">${ls.map(([t,u]) => `<a href="${u}">${esc(t)}</a>`).join('')}</div>`;
+SUGGESTIONS.forEach(s => { const b = document.createElement('button'); b.textContent = s; b.onclick = () => run(s); document.getElementById('hint').append(b); });
+function typeInto(el, html, done) {
+  const plain = html; let i = 0; el.innerHTML = '';
+  // type text content only; links appear after
+  const tmp = document.createElement('div'); tmp.innerHTML = html; const text = tmp.querySelector('.say').textContent; const rest = tmp.querySelector('.rest').innerHTML;
+  el.innerHTML = '<span class="say"></span>'; const s = el.firstChild;
+  (function tick() { s.textContent = text.slice(0, ++i); if (i < text.length) setTimeout(tick, 8); else { el.insertAdjacentHTML('beforeend', rest); done && done(); } })();
+}
+function run(text) {
+  text = text.trim(); if (!text) return; q.value = '';
+  const g = guess(text);
+  log.insertAdjacentHTML('beforeend', `<div><span class="p">you@visitor</span>:<span class="d">~</span>$ ${esc(text)}</div>`);
+  const out = document.createElement('div'); out.className = 'out'; log.append(out);
+  let say, rest = '';
+  if (g.intent) {
+    say = `[${g.intent.label}] ${g.intent.reply}`; rest = links(g.intent.links) + `<div class="conf">guess confidence: ${Math.round(g.confidence * 100)}%</div>`;
+  } else {
+    say = g.posts.length ? "Not sure what you mean, but these posts look related." : "Not sure what you mean. Here's the directory:";
+    rest = links(g.posts.length ? g.posts.map(p => [p.t, p.u]) : [['blog/','/blog'],['books/','/books'],['resume/','/real-resume'],['email','mailto:me@ryanbigg.com']]);
+  }
+  if (g.intent && g.posts.length) rest += `<div style="margin-top:.5rem" class="d">related posts:</div>` + links(g.posts.map(p => [p.t, p.u]));
+  if (g.alts.length) rest += `<div style="margin-top:.5rem" class="d">did you mean: ${g.alts.map(a => `<a href="#" data-i="${INTENTS.indexOf(a)}">${esc(a.label)}</a>`).join(' · ')}</div>`;
+  typeInto(out, `<div class="say"></div><div class="rest"></div>`.replace('<div class="say"></div>', `<div class="say">${esc(say)}</div>`).replace('<div class="rest"></div>', `<div class="rest">${rest}</div>`), () => {
+    out.querySelectorAll('[data-i]').forEach(a => a.onclick = e => { e.preventDefault(); run(INTENTS[a.dataset.i].kw[0]); });
+    scrollTo(0, document.body.scrollHeight);
+  });
+  q.focus();
+}
+q.onkeydown = e => { if (e.key === 'Enter') run(q.value); };
+</script></body></html>
