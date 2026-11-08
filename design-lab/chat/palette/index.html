@@ -6,8 +6,8 @@
   :root { --bg:#fafaf7; --fg:#1a1d1b; --muted:#7b8380; --line:#e3e6e1; --card:#fff; --hot:oklch(62% .2 150); --sel:#e9f7ed; }
   @media (prefers-color-scheme: dark) { :root { --bg:#0e110f; --fg:#e3e8e4; --muted:#8a948e; --line:#252b27; --card:#151a17; --hot:oklch(80% .18 150); --sel:#16281c; } }
   * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font:17px/1.5 system-ui,-apple-system,sans-serif; display:grid; place-items:start center; padding:18vh 1rem 3rem; }
-  .box { width:100%; max-width:40rem; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font:17px/1.5 system-ui,-apple-system,sans-serif; display:grid; grid-template-columns:minmax(0,1fr); justify-items:center; align-items:start; padding:18vh 1rem 3rem; }
+  .box { width:100%; max-width:40rem; min-width:0; }
   h1 { font-size:1rem; font-weight:600; letter-spacing:.02em; color:var(--muted); margin:0 0 .75rem .25rem; } h1 b { color:var(--hot); }
   .field { background:var(--card); border:1px solid var(--line); border-radius:1rem; box-shadow:0 8px 30px rgba(0,0,0,.06); overflow:hidden; }
   .field:focus-within { border-color:var(--hot); }
@@ -21,6 +21,15 @@
   .say { padding:.8rem 1.25rem; font-size:.95rem; color:var(--muted); border-top:1px solid var(--line); } .say:empty { display:none; }
   .foot { display:flex; justify-content:space-between; color:var(--muted); font-size:.8rem; padding:.7rem .25rem; }
   .disclaimer { margin-top:2.5rem; text-align:center; color:var(--muted); font-size:.8rem; }
+  @media (max-width: 34rem) {
+    body { padding-top:8vh; }
+    li a { flex-wrap:wrap; gap:.1rem .75rem; padding:.65rem 1rem; }
+    li .k { width:auto; min-width:4.5rem; }
+    li .t { flex:1 1 0; min-width:0; }
+    li .u { flex-basis:100%; padding-left:0; white-space:normal; overflow-wrap:anywhere; font-size:.75rem; }
+    .foot { flex-direction:column; gap:.25rem; }
+    .say { padding:.8rem 1rem; }
+  }
   kbd { font:inherit; border:1px solid var(--line); border-radius:.3rem; padding:0 .35rem; background:var(--card); }
   .try button.hot { color:var(--hot); border-color:var(--hot); font-weight:600; box-shadow:0 0 0 0 rgba(34,197,94,.6), 0 0 14px rgba(34,197,94,.45); animation:pulse 2s ease-in-out infinite; }
   @keyframes pulse { 50% { box-shadow:0 0 0 6px rgba(34,197,94,0), 0 0 22px rgba(34,197,94,.7); } }
