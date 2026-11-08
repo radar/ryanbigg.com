@@ -1,0 +1,170 @@
+---
+layout: null
+title: Ryan Bigg
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ryan Bigg (terminal)</title>
+<meta name="description" content="Lead developer working with AI, Ruby, React and TypeScript. Author, mentor and open source maintainer.">
+<link rel="shortcut icon" href="/favicon.png" type="image/x-icon">
+<link href="/feed.xml" rel="alternate" title="RyanBigg.com" type="application/atom+xml">
+<meta property="og:title" content="Ryan Bigg">
+<meta property="og:site_name" content="Ryan Bigg">
+<meta property="og:url" content="https://ryanbigg.com/terminal">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ryanbigg.com/images/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root { --bg: #0a0f0a; --fg: #b8f5c4; --dim: #4f7a58; --hot: #22c55e; --warn: #fbbf24; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at center, #0f1a10 0%, var(--bg) 70%); color: var(--fg); font: 16px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  body::after { content: ""; position: fixed; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgba(0,0,0,.18) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
+  .term { max-width: 60rem; margin: 0 auto; padding: 2rem 1.25rem 6rem; text-shadow: 0 0 6px rgba(34,197,94,.45); }
+  .chrome { display: flex; gap: .4rem; margin-bottom: 1.5rem; align-items: center; color: var(--dim); font-size: .8rem; }
+  .chrome i { width: .7rem; height: .7rem; border-radius: 50%; background: var(--dim); display: block; }
+  .chrome i:nth-child(1) { background: #ef4444; } .chrome i:nth-child(2) { background: #fbbf24; } .chrome i:nth-child(3) { background: var(--hot); }
+  .chrome span { margin-left: .75rem; }
+  a { color: var(--hot); text-decoration: none; border-bottom: 1px dashed var(--dim); }
+  a:hover { background: var(--hot); color: #000; text-shadow: none; }
+  .p { color: var(--hot); } .d { color: var(--dim); } .w { color: var(--warn); }
+  pre { margin: 0; font: inherit; white-space: pre-wrap; }
+  .logo { display: flex; gap: 4ch; color: var(--hot); font-size: .9rem; line-height: 1.15; margin: 0 0 1rem; }
+  .logo pre { white-space: pre; }
+  @media (max-width: 48rem) { body { font-size: 14px; } .logo { flex-direction: column; gap: .5rem; font-size: min(.9rem, calc((100vw - 2.5rem) / 26)); } }
+  .line { min-height: 1.6em; }
+  .step[data-type] { margin-top: 1.5rem; }
+  .step[data-type] + .step { margin-top: .75rem; }
+  .step p { margin: 0; }
+  a.ext { border-bottom-style: dotted; }
+  .hide { opacity: 0; height: 0; overflow: hidden; }
+  .cursor { display: inline-block; width: .6em; height: 1.1em; background: var(--fg); vertical-align: text-bottom; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .ls { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 0 1.5rem; }
+  .skip { position: fixed; right: 1rem; bottom: 1rem; font-size: .8rem; color: var(--dim); background: none; border: 1px solid var(--dim); padding: .3rem .6rem; font-family: inherit; cursor: pointer; }
+  .skip:hover { color: var(--hot); border-color: var(--hot); }
+  nav a { display: inline-block; margin-right: 1rem; }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } }
+</style>
+</head>
+<body>
+<main class="term">
+  <div class="chrome"><i></i><i></i><i></i><span>me@ryanbigg.com: ~</span></div>
+
+<div class="logo" role="img" aria-label="Ryan Bigg">
+<pre>
+██████╗ ██╗   ██╗ █████╗ ███╗   ██╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝
+</pre>
+<pre>
+██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗██║██║   ██║██║   ██║
+██████╔╝██║╚██████╔╝╚██████╔╝
+╚═════╝ ╚═╝ ╚═════╝  ╚═════╝
+</pre>
+</div>
+
+  <div id="out">
+    <div class="step" data-type="whoami"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <p>
+        I'm currently <a href='/work'>looking for my next full-time job</a>.
+      </p>
+      <p>Lead developer, two decades deep. Working with Claude Code, Ruby, Go, React and TypeScript.<br>
+      <strong>Previously</strong>: Led the Customer Experience team at Fat Zebra, to build payments software that has processed billions of dollars worth of transactions.<br>
+      <strong>Previously Previously</strong>: Full-time Senior developer at places like Covidence, Culture Amp and LIFX. Along the way I wrote <a href="/books">books</a> on Ruby, Rails and Elixir, and I maintain the <a class="ext" href="https://github.com/ruby-i18n/i18n" target="_blank" rel="noopener">i18n ↗</a> and <a class="ext" href="https://github.com/mikel/mail" target="_blank" rel="noopener">mail ↗</a> gems.<br>
+      <strong>I can make the robots behave.</strong></p>
+    </div>
+
+    <div class="step hide" data-type="ls -1 favourites/"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <p>
+        <a href="/2026/10/hands-on-the-wheel">hands-on-the-wheel.md</a> <span class="d"># my opinion on AI, written by hand</span><br>
+        <a href="/2024/03/tailwind-has-won">tailwind-has-won.md</a> <span class="d"># why we picked Tailwind over Bulma and Bootstrap</span><br>
+        <a href="/2023/02/why-game-programming-and-why-magic">why-game-programming-and-why-magic.md</a> <span class="d"># building Magic: The Gathering in Ruby, because it's hard</span>
+      </p>
+    </div>
+
+    <div class="step hide" data-type="ls -t ~/blog | head -3"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <p>
+        {% for post in site.posts limit:3 %}
+        <a href="{{ post.url }}">{{ post.slug }}.md</a><br>
+        {% endfor %}
+        <a href="/blogography">&rarr; all posts</a>
+      </p>
+    </div>
+
+    <div class="step hide" data-type="ls -1 ~/videos"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <p>
+        <a class="ext" href="https://www.youtube.com/watch?v=aD6dci9rLXM" target="_blank" rel="noopener">hiring-juniors.mp4 ↗</a><br>
+        <a class="ext" href="https://www.youtube.com/watch?v=btIbue1JkA0" target="_blank" rel="noopener">magic-is-ruby-ruby-is-magic.mp4 ↗</a><br>
+        <a class="ext" href="https://www.youtube.com/watch?v=94ELQLqWjxM" target="_blank" rel="noopener">railway-oriented-programming.mp4 ↗</a>
+      </p>
+    </div>
+
+    <div class="step hide" data-type="ls ~/more"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <nav class="ls">
+        <a href="/blog">blog/</a>
+        <a href="/books">books/</a>
+        <a href="/now">now/</a>
+        <a href="/real-resume">resume/</a>
+        <a href="/feed.xml">rss.xml</a>
+        <a href="/work">work/</a>
+      </nav>
+    </div>
+
+    <div class="step hide" data-type="cat ~/contact.md"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <p>Best way to reach me is <a class="ext" href="mailto:me@ryanbigg.com">email</a> or <a class="ext" rel="me" href="https://ruby.social/@ryanbigg" target="_blank">Mastodon (@ryanbigg@ruby.social)</a>.</p>
+    </div>
+
+    <div class="step hide" data-type="ls ~/elsewhere" id="elsewhere"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
+    <div class="step hide" data-out>
+      <nav class="ls">
+        <a class="ext" href="https://github.com/radar" target="_blank" rel="noopener me">github ↗</a>
+        <a class="ext" href="https://www.linkedin.com/in/ryanbigg/" target="_blank" rel="noopener me">linkedin ↗</a>
+      </nav>
+    </div>
+
+    <div class="step hide" data-final><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="cursor"></span></div>
+  </div>
+</main>
+<button class="skip" id="skip">skip ⏭</button>
+
+<script>
+(() => {
+  const steps = [...document.querySelectorAll('.step')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let skipped = reduce, i = 0;
+  document.getElementById('skip').onclick = () => { skipped = true; };
+  const sleep = ms => new Promise(r => setTimeout(r, skipped ? 0 : ms));
+
+  async function run() {
+    for (const s of steps) {
+      s.classList.remove('hide');
+      const cmd = s.dataset.type;
+      if (cmd) {
+        const t = s.querySelector('.t');
+        for (const ch of cmd) { t.textContent += ch; await sleep(45 + Math.random() * 60); }
+        await sleep(250);
+      } else { await sleep(150); }
+    }
+    document.getElementById('skip').remove();
+  }
+  run();
+})();
+</script>
+<noscript><style>.hide { opacity: 1; height: auto; } .skip { display: none; }</style></noscript>
+</body>
+</html>
