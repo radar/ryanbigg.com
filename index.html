@@ -31,7 +31,9 @@ title: Ryan Bigg
   a:hover { background: var(--hot); color: #000; text-shadow: none; }
   .p { color: var(--hot); } .d { color: var(--dim); } .w { color: var(--warn); }
   pre { margin: 0; font: inherit; white-space: pre-wrap; }
-  .logo { color: var(--hot); font-size: clamp(.45rem, 1.9vw, .9rem); line-height: 1.15; margin: 0 0 1rem; }
+  .logo { display: flex; gap: 4ch; color: var(--hot); font-size: .9rem; line-height: 1.15; margin: 0 0 1rem; }
+  .logo pre { white-space: pre; }
+  @media (max-width: 48rem) { body { font-size: 14px; } .logo { flex-direction: column; gap: .5rem; font-size: min(.9rem, calc((100vw - 2.5rem) / 26)); } }
   .line { min-height: 1.6em; }
   .step[data-type] { margin-top: 1.5rem; }
   .step[data-type] + .step { margin-top: .75rem; }
@@ -51,14 +53,24 @@ title: Ryan Bigg
 <main class="term">
   <div class="chrome"><i></i><i></i><i></i><span>me@ryanbigg.com: ~</span></div>
 
-<pre class="logo" aria-label="Ryan Bigg">
-██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ██████╗ ██╗ ██████╗  ██████╗
-██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔══██╗██║██╔════╝ ██╔════╝
-██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ██████╔╝██║██║  ███╗██║  ███╗
-██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ██╔══██╗██║██║   ██║██║   ██║
-██║  ██║   ██║   ██║  ██║██║ ╚████║    ██████╔╝██║╚██████╔╝╚██████╔╝
-╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═════╝ ╚═╝ ╚═════╝  ╚═════╝
+<div class="logo" role="img" aria-label="Ryan Bigg">
+<pre>
+██████╗ ██╗   ██╗ █████╗ ███╗   ██╗
+██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║
+██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║
+██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║
+██║  ██║   ██║   ██║  ██║██║ ╚████║
+╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝
 </pre>
+<pre>
+██████╗ ██╗ ██████╗  ██████╗
+██╔══██╗██║██╔════╝ ██╔════╝
+██████╔╝██║██║  ███╗██║  ███╗
+██╔══██╗██║██║   ██║██║   ██║
+██████╔╝██║╚██████╔╝╚██████╔╝
+╚═════╝ ╚═╝ ╚═════╝  ╚═════╝
+</pre>
+</div>
 
   <div id="out">
     <div class="step" data-type="whoami"><span class="p">me@ryanbigg.com</span>:<span class="d">~</span>$ <span class="t"></span></div>
