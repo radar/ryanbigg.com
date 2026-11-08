@@ -2,7 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 
-const target = process.argv.includes("--ai") ? "resume-ai" : "resume";
+const target = process.argv.includes("--ai")
+  ? "resume-ai"
+  : process.argv.includes("--ashby")
+    ? "real-resume-ashby"
+    : process.argv.includes("--real")
+    ? "real-resume"
+    : "resume";
 const url = process.env.RESUME_URL || `http://localhost:4000/${target}.html`;
 const outPath = `${target}.pdf`;
 const watch = process.argv.includes("--watch");

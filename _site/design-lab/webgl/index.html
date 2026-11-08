@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebGL - Ryan Bigg</title>
+<style>
+  :root { --hot: #22c55e; }
+  * { box-sizing: border-box; }
+  html { scroll-snap-type: y proximity; }
+  body { margin: 0; background: #020503; color: #eafff0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  /* fallback when no WebGL */
+  body.nogl { background: radial-gradient(circle at 30% 20%, #0f5a2b, transparent 55%), radial-gradient(circle at 80% 70%, #064e3b, transparent 50%), #020503; }
+  main { position: relative; z-index: 1; }
+  section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 6vh 6vw; scroll-snap-align: start; }
+  a { color: inherit; }
+  nav.top { position: fixed; z-index: 2; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; padding: 1rem 6vw; font: 600 .8rem ui-monospace, Menlo, monospace; text-transform: uppercase; mix-blend-mode: difference; color: #fff; }
+  nav.top a { text-decoration: none; }
+
+  h1 { margin: 0; font-size: clamp(4rem, 17vw, 18rem); font-weight: 900; letter-spacing: -.06em; line-height: .82; mix-blend-mode: difference; color: #fff; }
+  .sub { max-width: 40rem; margin-top: 2rem; font-size: clamp(1.1rem, 2vw, 1.6rem); line-height: 1.4; text-shadow: 0 2px 20px rgba(0,0,0,.6); }
+  .sub b { color: var(--hot); font-weight: 600; }
+  .hint { position: absolute; bottom: 2rem; left: 6vw; font: .75rem ui-monospace, Menlo, monospace; opacity: .6; animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(6px); } }
+
+  h2 { font-size: clamp(2rem, 6vw, 5rem); letter-spacing: -.04em; margin: 0 0 2rem; }
+  .glass { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .glass a { display: block; padding: 1.5rem; text-decoration: none; background: rgba(255,255,255,.06); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border: 1px solid rgba(255,255,255,.15); border-radius: 1.25rem; transition: transform .2s, background .2s, border-color .2s; transform-style: preserve-3d; will-change: transform; }
+  .glass a:hover { background: rgba(34,197,94,.18); border-color: var(--hot); }
+  .glass h3 { margin: 0 0 .5rem; font-size: 1.4rem; letter-spacing: -.02em; }
+  .glass p { margin: 0; opacity: .75; }
+
+  .big { display: flex; flex-wrap: wrap; gap: 1rem 3rem; font-size: clamp(2rem, 7vw, 6rem); font-weight: 900; letter-spacing: -.05em; }
+  .big a { text-decoration: none; mix-blend-mode: difference; color: #fff; position: relative; }
+  .big a::after { content: ""; position: absolute; left: 0; bottom: .05em; height: .08em; width: 0; background: var(--hot); transition: width .3s; }
+  .big a:hover::after { width: 100%; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .8s, transform .8s; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .hint { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<nav class="top"><a href="/design-lab/">← All designs</a><a href="mailto:me@ryanbigg.com">Say hi</a></nav>
+
+<main>
+  <section>
+    <h1>Ryan<br>Bigg</h1>
+    <p class="sub">
+      Lead developer. <b>AI (Claude Code)</b>, Ruby, React and TypeScript.
+      Led the Customer Experience team at Fat Zebra, building payments software that has processed billions of dollars.
+      I mentor developers, write books and maintain the <b>i18n</b> and <b>mail</b> gems. I can make the robots behave.
+    </p>
+    <span class="hint">move your mouse ↓ scroll</span>
+  </section>
+
+  <section>
+    <h2 class="reveal">Favourites</h2>
+    <div class="glass reveal">
+      <a href="/2026/10/hands-on-the-wheel"><h3>Hands on the wheel</h3><p>My opinion on AI, written by hand.</p></a>
+      <a href="/2024/03/tailwind-has-won"><h3>Tailwind has won</h3><p>Why I stopped worrying and started using utility classes.</p></a>
+      <a href="/2023/02/why-game-programming-and-why-magic"><h3>Why game programming, and why Magic?</h3><p>On picking a weird side project and sticking with it.</p></a>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="reveal">More</h2>
+    <nav class="big reveal">
+      <a href="/work">Work</a><a href="/blog">Blog</a><a href="/now">Now</a><a href="/books">Books</a>
+      <a href="/contact-me">Contact</a><a href="https://github.com/radar">GitHub</a><a href="/feed.xml">RSS</a>
+    </nav>
+  </section>
+</main>
+
+<script>
+(() => {
+  const canvas = document.getElementById('gl');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
+  if (!gl) { document.body.classList.add('nogl'); canvas.remove(); }
+  else {
+    const vs = 'attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }';
+    const fs = `
+      precision highp float;
+      uniform vec2 r; uniform float t; uniform vec2 m; uniform float s;
+      vec3 hash3(vec2 p){ vec3 q = vec3(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)), dot(p,vec2(419.2,371.9))); return fract(sin(q)*43758.5453); }
+      float noise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+        float a=hash3(i).x, b=hash3(i+vec2(1,0)).x, c=hash3(i+vec2(0,1)).x, d=hash3(i+vec2(1,1)).x;
+        return mix(mix(a,b,f.x), mix(c,d,f.x), f.y); }
+      float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<5;i++){ v+=a*noise(p); p*=2.02; a*=.5; } return v; }
+      void main(){
+        vec2 uv = gl_FragCoord.xy / r;
+        vec2 p = (gl_FragCoord.xy - .5*r) / r.y;
+        vec2 mm = (m*r - .5*r) / r.y;
+        float d = length(p - mm);
+        p += (p - mm) * .35 * exp(-d*3.);          // lens around cursor
+        vec2 q = p*2.2 + vec2(0., s*.0008);        // scroll drifts the field
+        float n = fbm(q + vec2(t*.07, -t*.05) + fbm(q*1.5 - t*.1));
+        float ridge = 1. - abs(n*2. - 1.);
+        ridge = pow(ridge, 4.);
+        vec3 deep = vec3(.008,.02,.012);
+        vec3 green = vec3(.133,.773,.369);
+        vec3 teal = vec3(.02,.35,.25);
+        vec3 col = deep + teal*n*.9 + green*ridge*.8;
+        col += green * .35 * exp(-d*5.);           // cursor glow
+        col *= 1. - .6*dot(uv-.5, uv-.5)*2.;       // vignette
+        gl_FragColor = vec4(col, 1.);
+      }`;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { document.body.classList.add('nogl'); canvas.remove(); }
+    else {
+      gl.useProgram(prog);
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      const U = n => gl.getUniformLocation(prog, n);
+      const uR = U('r'), uT = U('t'), uM = U('m'), uS = U('s');
+      let mx = .5, my = .5, tx = .5, ty = .5;
+      addEventListener('pointermove', e => { tx = e.clientX / innerWidth; ty = 1 - e.clientY / innerHeight; });
+      const scale = Math.min(devicePixelRatio, 1.5) * .6; // render at lower res for perf
+      function resize() { canvas.width = innerWidth * scale; canvas.height = innerHeight * scale; gl.viewport(0, 0, canvas.width, canvas.height); }
+      addEventListener('resize', resize); resize();
+      const t0 = performance.now();
+      function frame() {
+        mx += (tx - mx) * .08; my += (ty - my) * .08;
+        gl.uniform2f(uR, canvas.width, canvas.height);
+        gl.uniform1f(uT, reduce ? 0 : (performance.now() - t0) / 1000);
+        gl.uniform2f(uM, mx, my);
+        gl.uniform1f(uS, scrollY);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        if (!reduce || true) requestAnimationFrame(frame);
+      }
+      frame();
+    }
+  }
+
+  // reveal on scroll
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: .2 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // tilt cards
+  if (!reduce) document.querySelectorAll('.glass a').forEach(c => {
+    c.addEventListener('pointermove', e => {
+      const b = c.getBoundingClientRect();
+      const x = (e.clientX - b.left) / b.width - .5, y = (e.clientY - b.top) / b.height - .5;
+      c.style.transform = `perspective(700px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateZ(8px)`;
+    });
+    c.addEventListener('pointerleave', () => c.style.transform = '');
+  });
+})();
+</script>
+</body>
+</html>
