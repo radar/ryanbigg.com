@@ -85,11 +85,42 @@ const duck = document.querySelector('.duck');
 const popSound = new Audio('/sounds/pop.mp3'); popSound.preload = 'auto';
 const nextPop = () => 5 + Math.floor(Math.random() * 16);
 let clicks = 0, popAt = nextPop();
+function explode() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const r = duck.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  const cv = document.createElement('canvas');
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9';
+  document.body.appendChild(cv);
+  const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr);
+  const colours = ['#fbbf24', '#fbbf24', '#f59e0b', '#f97316', '#1a1d1b'];
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const bits = Array.from({ length: 22 }, (_, i) => {
+    const a = Math.random() * Math.PI * 2, v = 180 + Math.random() * 380, size = 3 + Math.random() * 6;
+    return { x: cx + Math.cos(a) * 6, y: cy + Math.sin(a) * 6, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 120,
+      rot: Math.random() * 6, vr: (Math.random() - .5) * 20, size, colour: colours[i % colours.length],
+      pts: [0, 1, 2].map(k => [Math.cos(k * 2.1 + Math.random()) * size, Math.sin(k * 2.1 + Math.random()) * size]) };
+  });
+  let last = performance.now(), age = 0;
+  (function frame(now) {
+    const dt = Math.min((now - last) / 1000, .05); last = now; age += dt;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    const fade = Math.max(0, 1 - Math.max(0, age - .6) / .5);
+    for (const b of bits) {
+      b.vx *= Math.pow(.06, dt); b.vy = b.vy * Math.pow(.06, dt) + 900 * dt;
+      b.x += b.vx * dt; b.y += b.vy * dt; b.rot += b.vr * dt;
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.globalAlpha = fade; ctx.fillStyle = b.colour;
+      ctx.beginPath(); b.pts.forEach(([px, py], k) => k ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.fill(); ctx.restore();
+    }
+    if (fade > 0) requestAnimationFrame(frame); else cv.remove();
+  })(last);
+}
 function pop() {
   clicks = 0; popAt = nextPop();
   popSound.currentTime = 0; popSound.play().catch(() => {});
-  // Burst the duck, then slide a fresh one up from underneath the chat box.
-  const gone = duck.animate([{ transform:'scale(1)', opacity:1 }, { transform:'scale(1.8)', opacity:0 }], { duration:140, easing:'ease-out', fill:'forwards' });
+  // Explode the duck into shards, then slide a fresh one up from underneath the chat box.
+  const gone = duck.animate([{ opacity:1 }, { opacity:0 }], { duration:1, fill:'forwards' });
+  explode();
   duck.style.pointerEvents = 'none';
   setTimeout(() => {
     gone.cancel();
