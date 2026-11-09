@@ -91,24 +91,38 @@ function explode() {
   cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9';
   document.body.appendChild(cv);
   const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr);
-  const colours = ['#fbbf24', '#fbbf24', '#f59e0b', '#f97316', '#1a1d1b'];
-  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-  const bits = Array.from({ length: 22 }, (_, i) => {
-    const a = Math.random() * Math.PI * 2, v = 180 + Math.random() * 380, size = 3 + Math.random() * 6;
-    return { x: cx + Math.cos(a) * 6, y: cy + Math.sin(a) * 6, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 120,
-      rot: Math.random() * 6, vr: (Math.random() - .5) * 20, size, colour: colours[i % colours.length],
-      pts: [0, 1, 2].map(k => [Math.cos(k * 2.1 + Math.random()) * size, Math.sin(k * 2.1 + Math.random()) * size]) };
+
+  // Paint the duck's own SVG shapes onto a texture, then cut it into triangular pieces.
+  const T = 8, tex = document.createElement('canvas'), tc = tex.getContext('2d', { willReadFrequently: true });
+  tex.width = tex.height = 32 * T; tc.scale(T, T);
+  duck.querySelectorAll('path, circle').forEach(el => {
+    tc.fillStyle = el.getAttribute('fill');
+    if (el.tagName === 'circle') { tc.beginPath(); tc.arc(+el.getAttribute('cx'), +el.getAttribute('cy'), +el.getAttribute('r'), 0, Math.PI * 2); tc.fill(); }
+    else tc.fill(new Path2D(el.getAttribute('d')));
   });
+  const k = r.width / 32 * 1.8, N = 4, cell = 32 / N, bits = [];
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  for (let gy = 0; gy < N; gy++) for (let gx = 0; gx < N; gx++) {
+    const x0 = gx * cell, y0 = gy * cell, x1 = x0 + cell, y1 = y0 + cell;
+    const tris = (gx + gy) % 2 ? [[[x0,y0],[x1,y0],[x1,y1]], [[x0,y0],[x1,y1],[x0,y1]]] : [[[x0,y0],[x1,y0],[x0,y1]], [[x1,y0],[x1,y1],[x0,y1]]];
+    for (const tri of tris) {
+      const mx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3, my = (tri[0][1] + tri[1][1] + tri[2][1]) / 3;
+      if (!tc.getImageData(mx * T | 0, my * T | 0, 1, 1).data[3]) continue;
+      const ox = (mx - 16) * k, oy = (my - 16) * k, ang = Math.atan2(oy || .01, ox || .01) + (Math.random() - .5) * .8, v = 160 + Math.random() * 320;
+      bits.push({ tri, mx, my, x: cx + ox, y: cy + oy, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v - 140, rot: 0, vr: (Math.random() - .5) * 14 });
+    }
+  }
   let last = performance.now(), age = 0;
   (function frame(now) {
     const dt = Math.min((now - last) / 1000, .05); last = now; age += dt;
     ctx.clearRect(0, 0, innerWidth, innerHeight);
-    const fade = Math.max(0, 1 - Math.max(0, age - .6) / .5);
+    const fade = Math.max(0, 1 - Math.max(0, age - .7) / .5);
     for (const b of bits) {
-      b.vx *= Math.pow(.06, dt); b.vy = b.vy * Math.pow(.06, dt) + 900 * dt;
+      b.vx *= Math.pow(.1, dt); b.vy = b.vy * Math.pow(.1, dt) + 900 * dt;
       b.x += b.vx * dt; b.y += b.vy * dt; b.rot += b.vr * dt;
-      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.globalAlpha = fade; ctx.fillStyle = b.colour;
-      ctx.beginPath(); b.pts.forEach(([px, py], k) => k ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot); ctx.scale(k, k); ctx.globalAlpha = fade;
+      ctx.beginPath(); b.tri.forEach(([px, py], i) => (i ? ctx.lineTo : ctx.moveTo).call(ctx, px - b.mx, py - b.my)); ctx.closePath(); ctx.clip();
+      ctx.drawImage(tex, -b.mx, -b.my, 32, 32); ctx.restore();
     }
     if (fade > 0) requestAnimationFrame(frame); else cv.remove();
   })(last);
